@@ -1,0 +1,272 @@
+		public adler32
+adler32		proc near		; CODE XREF: deflateSetDictionary+5Fp
+					; deflateResetKeep:loc_10001D37p ...
+
+arg_0		= dword	ptr  8
+arg_4		= dword	ptr  0Ch
+arg_8		= dword	ptr  10h
+
+		push	ebp
+		mov	ebp, esp
+		mov	ecx, [ebp+arg_0]
+		push	ebx
+		mov	ebx, [ebp+arg_8]
+		push	esi
+		mov	esi, ecx
+		and	ecx, 0FFFFh
+		shr	esi, 10h
+		cmp	ebx, 1
+		jnz	short loc_1000104E
+		mov	eax, [ebp+arg_4]
+		movzx	eax, byte ptr [eax]
+		add	ecx, eax
+		cmp	ecx, 0FFF1h
+		jb	short loc_10001031
+		sub	ecx, 0FFF1h
+
+loc_10001031:				; CODE XREF: adler32+29j
+		add	esi, ecx
+		cmp	esi, 0FFF1h
+		jb	short loc_10001041
+		sub	esi, 0FFF1h
+
+loc_10001041:				; CODE XREF: adler32+39j
+		shl	esi, 10h
+		or	esi, ecx
+		mov	eax, esi
+		pop	esi
+		pop	ebx
+		pop	ebp
+		retn	0Ch
+; ---------------------------------------------------------------------------
+
+loc_1000104E:				; CODE XREF: adler32+19j
+		push	edi
+		mov	edi, [ebp+arg_4]
+		test	edi, edi
+		jnz	short loc_10001060
+		lea	eax, [edi+1]
+		pop	edi
+		pop	esi
+		pop	ebx
+		pop	ebp
+		retn	0Ch
+; ---------------------------------------------------------------------------
+
+loc_10001060:				; CODE XREF: adler32+54j
+		cmp	ebx, 10h
+		jnb	short loc_100010AA
+		test	ebx, ebx
+		jz	short loc_1000107D
+		lea	esp, [esp+0]
+
+loc_10001070:				; CODE XREF: adler32+7Bj
+		movzx	eax, byte ptr [edi]
+		lea	edi, [edi+1]
+		add	ecx, eax
+		add	esi, ecx
+		dec	ebx
+		jnz	short loc_10001070
+
+loc_1000107D:				; CODE XREF: adler32+67j
+		cmp	ecx, 0FFF1h
+		jb	short loc_1000108B
+		sub	ecx, 0FFF1h
+
+loc_1000108B:				; CODE XREF: adler32+83j
+		mov	eax, 80078071h
+		mul	esi
+		pop	edi
+		shr	edx, 0Fh
+		mov	eax, edx
+		shl	eax, 4
+		sub	eax, edx
+		add	eax, esi
+		shl	eax, 10h
+		pop	esi
+		or	eax, ecx
+		pop	ebx
+		pop	ebp
+		retn	0Ch
+; ---------------------------------------------------------------------------
+
+loc_100010AA:				; CODE XREF: adler32+63j
+		cmp	ebx, 15B0h
+		jb	loc_10001196
+		mov	eax, 5E6EA9AFh
+		mul	ebx
+		shr	edx, 0Bh
+		mov	[ebp+arg_4], edx
+		jmp	short loc_100010D0
+; ---------------------------------------------------------------------------
+		align 10h
+
+loc_100010D0:				; CODE XREF: adler32+C3j adler32+190j
+		sub	ebx, 15B0h
+		mov	edx, 15Bh
+		jmp	short loc_100010E0
+; ---------------------------------------------------------------------------
+		align 10h
+
+loc_100010E0:				; CODE XREF: adler32+DBj adler32+163j
+		movzx	eax, byte ptr [edi]
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+1]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+2]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+3]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+4]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+5]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+6]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+7]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+8]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+9]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Ah]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Bh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Ch]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Dh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Eh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Fh]
+		add	esi, ecx
+		add	edi, 10h
+		add	ecx, eax
+		add	esi, ecx
+		dec	edx
+		jnz	loc_100010E0
+		mov	eax, 80078071h
+		mul	ecx
+		shr	edx, 0Fh
+		imul	eax, edx, 0FFFF000Fh
+		add	ecx, eax
+		mov	eax, 80078071h
+		mul	esi
+		shr	edx, 0Fh
+		imul	eax, edx, 0FFFF000Fh
+		add	esi, eax
+		dec	[ebp+arg_4]
+		jnz	loc_100010D0
+
+loc_10001196:				; CODE XREF: adler32+B0j
+		test	ebx, ebx
+		jz	loc_10001271
+		cmp	ebx, 10h
+		jb	loc_1000123C
+		mov	edx, ebx
+		shr	edx, 4
+		lea	esp, [esp+0]
+
+loc_100011B0:				; CODE XREF: adler32+236j
+		movzx	eax, byte ptr [edi]
+		sub	ebx, 10h
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+1]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+2]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+3]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+4]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+5]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+6]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+7]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+8]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+9]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Ah]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Bh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Ch]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Dh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Eh]
+		add	esi, ecx
+		add	ecx, eax
+		movzx	eax, byte ptr [edi+0Fh]
+		add	esi, ecx
+		add	edi, 10h
+		add	ecx, eax
+		add	esi, ecx
+		dec	edx
+		jnz	loc_100011B0
+
+loc_1000123C:				; CODE XREF: adler32+1A1j
+		test	ebx, ebx
+		jz	short loc_1000124D
+
+loc_10001240:				; CODE XREF: adler32+24Bj
+		movzx	eax, byte ptr [edi]
+		lea	edi, [edi+1]
+		add	ecx, eax
+		add	esi, ecx
+		dec	ebx
+		jnz	short loc_10001240
+
+loc_1000124D:				; CODE XREF: adler32+23Ej
+		mov	eax, 80078071h
+		mul	ecx
+		mov	eax, 80078071h
+		shr	edx, 0Fh
+		imul	edx, 0FFFF000Fh
+		add	ecx, edx
+		mul	esi
+		shr	edx, 0Fh
+		imul	eax, edx, 0FFFF000Fh
+		add	esi, eax
+
+loc_10001271:				; CODE XREF: adler32+198j
+		shl	esi, 10h
+		or	esi, ecx
+		pop	edi
+		mov	eax, esi
+		pop	esi
+		pop	ebx
+		pop	ebp
+		retn	0Ch
+adler32		endp

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="console_colored" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%highlight{[%-5level] %d{MM-dd HH:mm:ss.SSS} %logger{36} [%t] %c{1} - %msg%n}{FATAL=bright red, ERROR=bright red, WARN=bright yellow, INFO=bright green, DEBUG=cyan, TRACE=black}" />
+		</Console>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%-5level] %d{MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+		</Console>
+		<File name="MyFile" fileName="$PATH_DATA$\kam1n0.log.txt">
+			<PatternLayout
+				pattern="%highlight{[%-5level] %d{MM-dd HH:mm:ss.SSS} %logger{36} [%t] %c{1} - %msg%n}{FATAL=bright red, ERROR=bright red, WARN=bright yellow, INFO=bright green, DEBUG=cyan, TRACE=black}" />
+		</File>
+		<Async name="Async">
+			<AppenderRef ref="MyFile" />
+		</Async>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.apache.cassandra" level="WARN" additivity="false">
+			<AppenderRef ref="console_colored" />
+			<AppenderRef ref="Async" />
+		</Logger>
+		<Logger name="org.apache.spark" level="ERROR" additivity="false">
+			<AppenderRef ref="console_colored" />
+			<AppenderRef ref="Async" />
+		</Logger>
+		<Logger name="akka." level="ERROR" additivity="false">
+			<AppenderRef ref="console_colored" />
+			<AppenderRef ref="Async" />
+		</Logger>
+		<Logger name="com.datastax" level="WARN" additivity="false">
+			<AppenderRef ref="console_colored" />
+			<AppenderRef ref="Async" />
+		</Logger>
+		<Root level="info" additivity="false">
+			<AppenderRef ref="console_colored" />
+			<AppenderRef ref="Async" />
+		</Root>
+	</Loggers>
+</Configuration>

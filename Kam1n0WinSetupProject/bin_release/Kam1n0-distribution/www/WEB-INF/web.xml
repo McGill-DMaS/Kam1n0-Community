@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<display-name>Kam1n0 Web Application</display-name>
+	<description>
+        This is a simple web application with a source code organization
+        based on the recommendations of the Application Developer's Guide.
+    </description>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<!-- api servlets -->
+	<servlet>
+		<servlet-name>FunctionFlow</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.FunctionFlowAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>FunctionSurrogateClone</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.FunctionCloneSurrogateAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>FunctionClone</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.FunctionCloneAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>FunctionCloneForBinary</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.FunctionCloneForBinaryAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>QueryRunningJobID</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.application.cli.QueryRunningJobID</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Comment</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.FunctionCommentAPI</servlet-class>
+	</servlet>
+
+	<!-- admin servlets -->
+	<servlet>
+		<servlet-name>UserList</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.UserList</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UserDrop</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.UserDrop</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UserAddOrUpdate</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.UserAddOrUpdate</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>BinaryIndex</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.BinaryIndexAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>BinarySurrogateIndex</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.BinarySurrogateIndexAPI</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>BinaryDrop</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.BinaryDrop</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>JobList</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.JobList</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>JobTerminate</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.JobTerminate</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>BinaryList</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.BinaryList</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>InfoSystem</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.InfoSystem</servlet-class>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>InfoDB</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.admin.InfoDB</servlet-class>
+	</servlet>
+	
+
+	<!-- test servlets -->
+	<servlet>
+		<servlet-name>local</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.application.cli.GetObjectInLocalPool</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>UITest</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.test.UITest</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>ProcessFromSearchEngine</servlet-name>
+		<servlet-class>ca.mcgill.sis.dmas.kam1n0.www.services.application.ProcessFromSearchEngine</servlet-class>
+	</servlet>
+
+	<!-- api mapping -->
+	<servlet-mapping>
+		<servlet-name>FunctionFlow</servlet-name>
+		<url-pattern>/FunctionFlow</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FunctionSurrogateClone</servlet-name>
+		<url-pattern>/FunctionSurrogateClone</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FunctionClone</servlet-name>
+		<url-pattern>/FunctionClone</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FunctionCloneForBinary</servlet-name>
+		<url-pattern>/FunctionCloneForBinary</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>QueryRunningJobID</servlet-name>
+		<url-pattern>/JobID</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Comment</servlet-name>
+		<url-pattern>/Comment</url-pattern>
+	</servlet-mapping>
+
+	<!-- admin mapping -->
+	<servlet-mapping>
+		<servlet-name>UserList</servlet-name>
+		<url-pattern>/admin/UserList</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UserDrop</servlet-name>
+		<url-pattern>/admin/UserDrop</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UserAddOrUpdate</servlet-name>
+		<url-pattern>/admin/UserAddOrUpdate</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>BinaryIndex</servlet-name>
+		<url-pattern>/admin/BinaryIndex</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>BinarySurrogateIndex</servlet-name>
+		<url-pattern>/admin/BinarySurrogateIndex</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JobList</servlet-name>
+		<url-pattern>/admin/JobList</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JobTerminate</servlet-name>
+		<url-pattern>/admin/JobTerminate</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>BinaryList</servlet-name>
+		<url-pattern>/admin/BinaryList</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>BinaryDrop</servlet-name>
+		<url-pattern>/admin/BinaryDrop</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>InfoSystem</servlet-name>
+		<url-pattern>/admin/InfoSystem</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>InfoDB</servlet-name>
+		<url-pattern>/admin/InfoDB</url-pattern>
+	</servlet-mapping>
+	
+	<!-- test mapping -->
+	<servlet-mapping>
+		<servlet-name>local</servlet-name>
+		<url-pattern>/local</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UITest</servlet-name>
+		<url-pattern>/UITest</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>ProcessFromSearchEngine</servlet-name>
+		<url-pattern>/ProcessFromSearchEngine</url-pattern>
+	</servlet-mapping>
+</web-app> 
