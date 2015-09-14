@@ -1,0 +1,54 @@
+
+circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+text {
+  font: 8px sans-serif;
+  pointer-events: none;
+  fill-opacity:.8;
+}
+div.forcegraphprediff{
+	width: 100%;
+	overflow-x:scroll ;
+    overflow-y: hidden;
+    white-space: nowrap;
+    text-align: center;
+}
+
+div.forcegraphprewrapper{
+	text-align: left;
+	display: inline-block;
+	width: 250px;
+	vertical-align: top;
+	border-top: solid 1px #33333F;
+	border-left: solid 1px #33333;
+	border-right: solid 1px #33333;
+	border-bottom: solid 1px #33333;
+}
+pre.forcegraphpre {
+	width: 250px;
+    max-width: 250px;
+    overflow: auto;
+	font-size: 10px;
+	background-color: #322F2F;
+	border-radius: 0px;
+	border: 1px solid #F9F9F9;
+	color: rgb(0, 255, 32);
+}
+
+del {
+	color: #FC0E0E;
+	text-decoration: none;
+}
+ins {
+	color: #FFFC00;
+	text-decoration: none;
+}
+
