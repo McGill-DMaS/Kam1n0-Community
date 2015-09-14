@@ -1,0 +1,15 @@
+C:\Users\lynn\Desktop\WiXUI\CustomActions\bin\Debug\CustomActions.dll
+C:\Users\lynn\Desktop\WiXUI\CustomActions\bin\Debug\CustomActions.CA.dll
+C:\Users\lynn\Desktop\WiXUI\CustomActions\bin\Debug\CustomActions.pdb
+C:\Users\lynn\Desktop\WiXUI\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
+C:\Users\lynn\Desktop\WiXUI\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
+C:\Users\lynn\Desktop\WiXUI\CustomActions\obj\x86\Debug\CustomActions.dll
+C:\Users\lynn\Desktop\WiXUI\CustomActions\obj\x86\Debug\CustomActions.pdb
+C:\Users\lynn\Desktop\WiXUI\CustomActions\obj\x86\Debug\CustomActions.csprojResolveAssemblyReference.cache
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\CustomActions.dll
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\CustomActions.CA.dll
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\CustomActions.pdb
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\obj\x86\Debug\CustomActions.dll
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\obj\x86\Debug\CustomActions.pdb
