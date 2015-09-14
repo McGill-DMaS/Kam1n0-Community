@@ -27,9 +27,6 @@
     <Compile Include="GroupPlugin.wxs" />
     <Compile Include="InstallerUI.wxs" />
     <Compile Include="Product.wxs" />
-    <Compile Include="ProgressDialog.wxs" />
-    <Compile Include="SetupDialog.wxs" />
-    <Compile Include="UserRegDialog.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Definitions.wxi" />

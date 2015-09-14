@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+//******************************************************************************
+// Copyright 2015 McGill University									
+//																					
+// Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
+// you may not use this file except in compliance with the License.				
+// You may obtain a copy of the License at										
+//																				
+//    https://creativecommons.org/licenses/by-nc-nd/3.0/								
+//																				
+// Unless required by applicable law or agreed to in writing, software			
+// distributed under the License is distributed on an "AS IS" BASIS,			
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
+// See the License for the specific language governing permissions and			
+// limitations under the License.												
+//******************************************************************************//
+-->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
 
@@ -63,6 +80,9 @@
         <Control Id="explanationText" X="5" Y="140" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="300" Height="100" Text="{\TahomaNormal}To continue with the setup click on the Install button. If you choose not to install this application, close this dialog to exit." />
         <Control Id="explanationTextBk" Type="Bitmap" Text="bkImgR" Height="23" Width="305" X="0" Y="140" TabSkip="no" />
 
+        <Control Id="introText5"  Type="Text" X="5" Y="188" Width="500" Height="20" Transparent="yes" Text="{\TahomaNormalBold}Contributors: Benjamin C. M. Fung and Steven H. H. Ding" />
+        <Control Id="introText56Bk" Type="Bitmap" Text="bkImgB" Height="12" Width="280" X="0" Y="188" TabSkip="no" />
+
         <Control Id="installButton" Type="PushButton" Text="btnInstall" Height="31" Width="90" X="500" Y="159" Bitmap="yes">
           <Publish Event="NewDialog" Value="DialogLicense" />
         </Control>
@@ -126,7 +146,7 @@
         </Control>
 
         <Control Id="LicenseText" Type="ScrollableText" X="145" Y="80" Width="415" Height="150" Sunken="no" TabSkip="no">
-          <Text SourceFile="C:/Users/lynn/Desktop/test.rtf"  />
+          <Text SourceFile="..\License.rtf"  />
         </Control>
 
       </Dialog>

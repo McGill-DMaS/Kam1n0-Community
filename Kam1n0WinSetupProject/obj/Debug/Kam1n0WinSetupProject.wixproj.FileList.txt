@@ -1,13 +1,12 @@
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.msi
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.wixpdb
 obj\Debug\GroupDependency.wixobj
 obj\Debug\GroupDistribution.wixobj
 obj\Debug\GroupPlugin.wixobj
+obj\Debug\InstallerUI.wixobj
 obj\Debug\Product.wixobj
-C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.msi
-C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.wixpdb
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.msi
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.wixpdb
 obj\Debug\Kam1n0WinSetupProject.wixproj.BindContentsFileListnull.txt
 obj\Debug\Kam1n0WinSetupProject.wixproj.BindOutputsFileListnull.txt
 obj\Debug\Kam1n0WinSetupProject.wixproj.BindBuiltOutputsFileListnull.txt
-obj\Debug\SetupDialog.wixobj
-obj\Debug\ProgressDialog.wixobj
-obj\Debug\UserRegDialog.wixobj
-obj\Debug\InstallerUI.wixobj
