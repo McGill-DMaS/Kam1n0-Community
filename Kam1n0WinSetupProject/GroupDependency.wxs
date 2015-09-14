@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?include Definitions.wxi ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="DEPENDENCIESDIR">
+            <Component Id="cmp265F7CB061B622455C00FABDE82AD82D" Guid="{71930FD3-B0B4-4764-A1C7-B930B22FB1F3}">
+                <File Id="cefPython" KeyPath="yes" Source="$(var.dir_src_plugins_depend)\cefpython3-31.2.py2.7-win32.exe" />
+            </Component>
+            <Component Id="cmp2A98D9AB6E773D2F1FA4E60448FC4079" Guid="{8BE00888-6427-4062-AEC9-9677DEE03A6A}">
+                <File Id="wxPython" KeyPath="yes" Source="$(var.dir_src_plugins_depend)\wxPython3.0-win32-3.0.2.0-py27.exe" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="GroupDependency">
+            <ComponentRef Id="cmp265F7CB061B622455C00FABDE82AD82D" />
+            <ComponentRef Id="cmp2A98D9AB6E773D2F1FA4E60448FC4079" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

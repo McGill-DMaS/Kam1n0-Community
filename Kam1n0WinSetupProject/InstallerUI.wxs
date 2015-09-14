@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+
+    <UI Id="InstallerUI">
+
+      <?define ui.license="C:/Users/lynn/Desktop/ethics.txt" ?>
+
+      <!--General text styles-->
+      <TextStyle Id="TahomaHeader" FaceName="Tahoma" Size="20" Bold="yes" Red="255" Blue="255" Green="255" />
+      <TextStyle Id="TahomaHeader2" FaceName="Tahoma" Size="16" Bold="yes" Red="255" Blue="255" Green="255" />
+      <TextStyle Id="TahomaLogo" FaceName="Tahoma" Size="22" Bold="yes" Red="255" Blue="255" Green="255" />
+      <TextStyle Id="TahomaNormal" FaceName="Tahoma" Size="9"  Red="255" Blue="255" Green="255" />
+      <TextStyle Id="TahomaNormalBold" FaceName="Tahoma" Size="9"  Red="255" Blue="255" Green="255" Bold="yes" />
+      <TextStyle Id="TahomaNormalBlk" FaceName="Tahoma" Size="9"  Red="0" Blue="0" Green="0" />
+      <TextStyle Id="TahomaBig" FaceName="Tahoma" Size="22" Bold="yes" Red="255" Green="255" Blue="255" />
+      <UIText Id="AbsentPath">(Depends on the plugins folder)</UIText>
+      <UIText Id="VolumeCostAvailable">Available</UIText>
+      <UIText Id="VolumeCostDifference">Difference</UIText>
+      <UIText Id="VolumeCostRequired">Required</UIText>
+      <UIText Id="VolumeCostSize">Size</UIText>
+      <UIText Id="VolumeCostVolume">Volume</UIText>
+      <UIText Id="bytes">bytes</UIText>
+      <UIText Id="GB">GB</UIText>
+      <UIText Id="KB">KB</UIText>
+      <UIText Id="MB">MB</UIText>
+      <UIText Id="MenuAllLocal">Entire features will be installed on your local hard drive.</UIText>
+      <UIText Id="MenuLocal">Will be installed on your local hard drive.</UIText>
+
+      <!--Define default front-->
+      <Property Id="DefaultUIFont" Value="TahomaNormal" />
+
+      <!--General images-->
+
+      <Binary Id="bkImg" SourceFile="images/bg.bmp"/>
+      <Binary Id="bkImgW" SourceFile="images/bgw.bmp"/>
+      <Binary Id="bkImgB" SourceFile="images/bgb.bmp"/>
+      <Binary Id="bkImgR" SourceFile="images/bgr.bmp"/>
+      <Binary Id="cover" SourceFile="images/cover.png"/>
+      <Binary Id="cvImg" SourceFile="images/cover.png"/>
+      <Binary Id="btnCancel" SourceFile="images/cancelbtn.bmp"/>
+      <Binary Id="btnInstall" SourceFile="images/installbtn.png"/>
+      <Binary Id="side" SourceFile="images/side.bmp"/>
+      <Binary Id="error_folder" SourceFile="images/folder_error.png"/>
+      <Binary Id="up_folder" SourceFile="images/folder_up.ico"/>
+      <Binary Id="add_folder" SourceFile="images/folder_add.ico"/>
+      <Binary Id="icnT" SourceFile="images/icon.bmp"/>
+
+
+
+      <Dialog Id="DialogWelcome" Width="600" Height="200" Title="Data Mining and Security Lab">
+
+        <Control Id="background" Type="Bitmap" Text="cover" Height="220" Width="600" X="0" Y="0" TabSkip="no" />
+
+        <Control Id="introText"  Type="Text" X="5" Y="20" Width="500" Height="30" Transparent="yes" Text="{\TahomaBig}Welcome to Kam1n0 Engine Setup" />
+        <Control Id="introText1Bk" Type="Bitmap" Text="bkImgR" Height="30" Width="400" X="0" Y="20" TabSkip="no" />
+        <Control Id="introText2"  Type="Text" X="5" Y="75" Width="500" Height="30" Transparent="yes" Text="{\TahomaNormal}Presented by" />
+        <Control Id="introText2Bk" Type="Bitmap" Text="bkImgR" Height="30" Width="240" X="0" Y="75" TabSkip="no" />
+        <Control Id="introText3"  Type="Text" X="5" Y="85" Width="500" Height="30" Transparent="yes" Text="{\TahomaHeader2}Data Mining and Security Lab" />
+        <Control Id="introText4"  Type="Text" X="5" Y="110" Width="500" Height="30" Transparent="yes" Text="{\TahomaHeader2}School of Information Studies, McGill University" />
+        <Control Id="introText4Bk" Type="Bitmap" Text="bkImgR" Height="22" Width="385" X="0" Y="110" TabSkip="no" />
+
+        <Control Id="explanationText" X="5" Y="140" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="300" Height="100" Text="{\TahomaNormal}To continue with the setup click on the Install button. If you choose not to install this application, close this dialog to exit." />
+        <Control Id="explanationTextBk" Type="Bitmap" Text="bkImgR" Height="23" Width="305" X="0" Y="140" TabSkip="no" />
+
+        <Control Id="installButton" Type="PushButton" Text="btnInstall" Height="31" Width="90" X="500" Y="159" Bitmap="yes">
+          <Publish Event="NewDialog" Value="DialogLicense" />
+        </Control>
+
+        <Control Id="cancelButton" Type="PushButton" Text="btnCancel" Height="0" Width="0" X="135" Y="245" Cancel="yes" Bitmap="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+      <Property Id="chkLicenseAccepted">1</Property>
+      <Dialog Id="DialogLicense" Width="580" Height="300" Title="Data Mining and Security Lab">
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="500" X="125" Y="0" TabSkip="no" />
+
+
+        <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="{\TahomaNormalBold}License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+        
+
+        <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Sofware License and Agreement" />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please carefully review this so you know what you're agreeing to." />
+        <Control Id="explanationText2" X="145" Y="233" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}To continue the setup, you need to accept the above license terms" />
+        <Control Id="chkLicenseAccepted" Type="CheckBox" X="145" Y="248" Width="10" Height="10" CheckBoxValue="1" Property="LicenseAccepted" Text="{\TahomaNormal}I accept the above license terms" />
+        <Control Id="acceptionText" X="160" Y="247" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}By checking this box, I agree the above license terms." />
+
+
+        <Control Id="backButton" Type="PushButton" Text="back" Height="17" Width="50" X="394" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogWelcome" />
+        </Control>
+
+        <Control Id="nextButton" Type="PushButton" Text="next" Height="17" Width="50" X="447" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogPath" />
+          <Condition Action="disable"><![CDATA[LicenseAccepted <> "1"]]></Condition>
+          <Condition Action="enable">LicenseAccepted = "1"</Condition>
+        </Control>
+
+
+        <Control Id="cancelButton" Type="PushButton" Text="exit" Height="17" Width="50" X="500" Y="275" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+        <Control Id="LicenseText" Type="ScrollableText" X="145" Y="80" Width="415" Height="150" Sunken="no" TabSkip="no">
+          <Text SourceFile="C:/Users/lynn/Desktop/test.rtf"  />
+        </Control>
+
+      </Dialog>
+
+      <Dialog Id="DialogPath" Width="580" Height="300" Title="Data Mining and Security Lab">
+
+
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="500" X="125" Y="0" TabSkip="no" />
+
+
+        <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="{\TahomaNormalBold}Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+        
+
+        <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Selecting the Installation Location" />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please choose where you would like us to install the software." />
+        <Control Id="explanationText2" X="165" Y="80" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}The plugin has to be installed at the plugins folder under IDA-Pro folder. Please select the $IDAPRO$/plugins as the installation path. Typically on x86 windows it will be C:\Program Files\IDA 6.7\plugins." />
+        <Control Id="explanationText3" X="145" Y="200" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}We will validate the selected path before next step to ensure it will be working properly." />
+
+        <Control Id="FolderLabel" X="145" Y="135" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}The plugins folder under IDA-Pro installation path:" />
+        <Control Id="Folder" Type="PathEdit" Sunken="no" X="145" Y="150" Width="320" Height="18" Property="INSTALL_DIR" Indirect="yes" />
+        <Control Id="ChangeFolder" Sunken="no" Type="PushButton" X="470" Y="150" Width="56" Height="17" Text="Browse" >
+          <Publish Property="_BrowseProperty" Value="[INSTALL_DIR]" Order="1">1</Publish>
+          <Publish Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
+        </Control>
+
+
+        <Control Id="backButton" Type="PushButton" Text="back" Height="17" Width="50" X="394" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogLicense" />
+        </Control>
+
+        <Control Id="nextButton" Type="PushButton" Text="next" Height="17" Width="50" X="447" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogFeatures" />
+          <Publish Event="SetTargetPath" Value="[INSTALL_DIR]" Order="1">1</Publish>
+          <Publish Event="DoAction" Value="ValidaIDAPRO" Order="2">1</Publish>
+          <Publish Event="SpawnDialog" Value="InvalidDirDlg" Order="3"><![CDATA[INSTALL_DIR_VALID<>"1"]]></Publish>
+          <Publish Event="NewDialog" Value="DialogFeatures" Order="4">INSTALL_DIR_VALID="1"</Publish>
+        </Control>
+
+
+        <Control Id="cancelButton" Type="PushButton" Text="exit" Height="17" Width="50" X="500" Y="275" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+      <Dialog Id="InvalidDirDlg" Width="260" Height="85" Title="Invalid Path">
+        <Control Id="background2" Type="Bitmap" Text="bkImgW" Height="260" Width="260" X="0" Y="0" TabSkip="no" />
+        <Control Id="OK" Type="PushButton" X="102" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="OK)">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Text" Type="Text" X="48" Y="22" Width="194" Height="30" Text="{\TahomaNormalBlk}The selected installaton path is not valid." Transparent="yes" />
+        <Control Id="Icon" Type="Bitmap" Text="error_folder" Height="32" Width="32" X="15" Y="15" TabSkip="no" />
+      </Dialog>
+
+      <Dialog Id="BrowseDlg" Width="370" Height="220" Title="Choose a directory:">
+        <Control Id="background2" Type="Bitmap" Text="bkImgW" Height="250" Width="370" X="0" Y="0" TabSkip="no" />
+
+        <Control Id="ComboLabel" Type="Text" Transparent="yes" X="25" Y="18" Width="44" Height="10" TabSkip="no" Text="{\TahomaNormalBlk}Look in:  " />
+
+        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="15" Width="220" Height="80" Property="_BrowseProperty" Indirect="yes" Fixed="yes" Remote="yes">
+          <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
+        </Control>
+
+        <Control Id="WixUI_Bmp_Up" Type="PushButton" X="298" Y="15" Width="19" Height="19" ToolTip="Up one level" Icon="yes" FixedSize="yes" IconSize="16" Text="up_folder">
+          <Publish Event="DirectoryListUp" Value="0">1</Publish>
+        </Control>
+
+        <Control Id="NewFolder" Type="PushButton" X="325" Y="15" Width="19" Height="19" ToolTip="New folder" Icon="yes" FixedSize="yes" IconSize="16" Text="add_folder">
+          <Publish Event="DirectoryListNew" Value="0">1</Publish>
+        </Control>
+
+        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="43" Width="320" Height="98" Property="_BrowseProperty" Sunken="no" Indirect="yes" TabSkip="no" />
+
+        <Control Id="PathLabel" Type="Text" Transparent="yes" X="25" Y="150" Width="320" Height="15" TabSkip="no" Text="{\TahomaNormalBlk}Selected path:" />
+        <Control Id="PathEdit" Type="PathEdit" X="25" Y="170" Width="320" Height="18" Property="_BrowseProperty" Indirect="yes" />
+
+
+        <Control Id="OK" Type="PushButton" X="220" Y="195" Width="56" Height="17" Default="yes" Text="Ok">
+          <Publish Event="SetTargetPath" Value="[_BrowseProperty]">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="284" Y="195" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="Reset" Value="0">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+
+
+      </Dialog>
+
+      <Dialog Id="DialogFeatures" Width="580" Height="300" Title="Data Mining and Security Lab">
+
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="500" X="125" Y="0" TabSkip="no" />
+
+        
+        <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="{\TahomaNormalBold}Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+        
+        
+        
+        <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Features to be Installed" />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please review the following features that to be installed on your computer." />
+
+        <Control Id="Tree" Type="SelectionTree" X="145" Y="80" Width="202" Height="115" Property="_BrowseProperty" Sunken="no" TabSkip="no" Text="Features" />
+        <Control Id="Box" Type="GroupBox" X="357" Y="76" Width="202" Height="118" />
+        <Control Id="ItemDescription" Type="Text" Transparent="yes" X="362" Y="85" Width="131" Height="50" Text="Description:">
+          <Subscribe Event="SelectionDescription" Attribute="Text" />
+        </Control>
+        <Control Id="VolumeList" Type="VolumeCostList" X="145" Y="205" Width="414" Height="40" Sunken="no" Fixed="yes" Remote="yes" Text="Disk costs:" />
+        <Control Id="Location" Type="Text" X="255" Y="255" Width="200" Height="20" Text="location" Transparent="yes">
+          <Subscribe Event="SelectionPath" Attribute="Text" />
+          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
+        </Control>
+        <Control Id="LocationLabel" Type="Text" X="145" Transparent="yes" Y="255" Width="95" Height="10" Text="Installation Location:">
+          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
+        </Control>
+
+        <Control Id="backButton" Type="PushButton" Text="back" Height="17" Width="50" X="394" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogPath" />
+        </Control>
+
+        <Control Id="nextButton" Type="PushButton" Text="next" Height="17" Width="50" X="447" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogConfig"/>
+        </Control>
+
+        <Control Id="cancelButton" Type="PushButton" Text="exit" Height="17" Width="50" X="510" Y="275" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+      <Dialog Id="DialogConfig" Width="580" Height="300" Title="Data Mining and Security Lab">
+
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="455" X="125" Y="0" TabSkip="no" />
+
+        
+        <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="{\TahomaNormalBold}Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+
+        
+        
+        
+        <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Kam1n0 Engine Configuration" />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please configure the directory for Kam1n0 to store the indexed the data." />
+        <Control Id="explanationText2" X="145" Y="80" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}Following data will be stored at this directory: " />
+        <Control Id="explanationText2l1" X="155" Y="90" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}* The indexed assembly data" />
+        <Control Id="explanationText2l2" X="155" Y="100" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}* The engine logs" />
+
+
+        <Control Id="Folder" Type="PathEdit" Sunken="no" X="145" Y="130" Width="320" Height="18" Property="DATA_DIR" Indirect="yes" />
+        <Control Id="ChangeFolder" Sunken="no" Type="PushButton" X="470" Y="130" Width="56" Height="17" Text="Browse" >
+          <Publish Property="_BrowseProperty" Value="[DATA_DIR]" Order="1">1</Publish>
+          <Publish Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
+        </Control>
+
+        <Control Id="explanationText3" X="145" Y="160" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="410" Height="100" Text="{\TahomaNormal}More settings can be found in the configuration file under the installed Kam1n0 distribution directory. At this moment we keep them as default." />
+
+        <Control Id="backButton" Type="PushButton" Text="back" Height="17" Width="50" X="394" Y="275" Bitmap="no">
+          <Publish Event="NewDialog" Value="DialogFeatures" />
+        </Control>
+
+        <Control Id="nextButton" ElevationShield="yes" Type="PushButton" Text="install" Height="17" Width="60" X="447" Y="275" Bitmap="no">
+          <Publish Event="EndDialog" Value="Return"/>
+        </Control>
+
+        <Control Id="cancelButton" Type="PushButton" Text="exit" Height="17" Width="50" X="510" Y="275" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+      <Dialog Id="DialogProgress" Width="580" Height="300" Title="Data Mining and Security Lab" Modeless="yes">
+
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="455" X="125" Y="0" TabSkip="no" />
+        
+        <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="{\TahomaNormalBold}Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+
+        
+        
+
+        <Control Id="installationText"  Type="Text" X="145" Y="10" Width="400" Height="40" Transparent="yes" Text="{\TahomaBig}Kam1n0 Installation" />
+        <Control Id="waitText" X="145" Y="70" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="20" Text="{\TahomaNormal}Please wait while Kam1n0 is being installed. Click on the 'exit' button to exit." />
+        <Control Id="progressText" Type="Text" X="145" Y="100" Width="405" Height="32" NoWrap="no" Transparent="yes">
+          <Subscribe Event="ActionData" Attribute="Text" />
+        </Control>
+
+        <Control Id="installProgressBar" Type="ProgressBar" X="145" Y="150" Width="405" Height="20" >
+          <Subscribe Event="SetProgress" Attribute="Progress" />
+        </Control>
+
+        <Control Id="cancelButton" Type="PushButton" Text="exit" Height="17" Width="50" X="510" Y="275" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+      <Dialog Id="DialogExit" Width="580" Height="300" Title="Data Mining and Security Lab">
+
+        <Control Id="background" Type="Bitmap" Text="side" Height="300" Width="125" X="0" Y="0" TabSkip="no" />
+        <Control Id="background2" Type="Bitmap" Text="bkImg" Height="300" Width="455" X="125" Y="0" TabSkip="no" />
+
+        
+                <Control Id="logoText"  Type="Text" X="5" Y="10" Width="400" Height="25" Transparent="yes" Text="{\TahomaLogo}KAM1N0" />
+        <Control Id="logoText2"  Type="Text" X="5" Y="33" Width="400" Height="25" Transparent="yes" Text="by" />
+        <Control Id="logoText3"  Type="Text" X="5" Y="43" Width="400" Height="25" Transparent="yes" Text="Data Mining and Security Lab" />
+        <Control Id="logoTextBk" Type="Bitmap" Text="bkImgR" Height="50" Width="132" X="0" Y="10" TabSkip="no" />
+        
+        <Control Id="inctDL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="72" TabSkip="no" />
+        <Control Id="txtDL" Type="Text" Text="License Agreement" Height="15" Width="150" X="20" Y="70" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctIL" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="92" TabSkip="no" />
+        <Control Id="txtIL" Type="Text" Text="Installation location" Height="15" Width="150" X="20" Y="90" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctFI" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="112" TabSkip="no" />
+        <Control Id="txtFI" Type="Text" Text="Features" Height="15" Width="110" X="20" Y="110" TabSkip="no" Transparent="yes" />
+        
+        <Control Id="inctCF" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="132" TabSkip="no" />
+        <Control Id="txtCF" Type="Text" Text="Configuration" Height="15" Width="150" X="20" Y="130" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctPR" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="152" TabSkip="no" />
+        <Control Id="txtPR" Type="Text" Text="Progress" Height="15" Width="150" X="20" Y="150" TabSkip="no" Transparent="yes" />
+
+        <Control Id="inctCM" Type="Bitmap" Text="icnT" Height="10" Width="10" X="5" Y="172" TabSkip="no" />
+        <Control Id="txtCM" Type="Text" Text="{\TahomaNormalBold}Completed" Height="15" Width="150" X="20" Y="170" TabSkip="no" Transparent="yes" />
+
+        
+        
+        
+        <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Kam1n0 Engine Configuration" />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}The installation of Kam1n0 and its plugin for IDA-Pro has completed; however, we stil need to install some of its dependencies." />
+        <Control Id="explanationText2" X="145" Y="100" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}After this dialog, you will be prompted to install other dependencies in sequence." />
+        
+        <Control Id="Finish" Type="PushButton" Height="17" Width="200" X="360" Y="275"  Default="yes" Cancel="yes" Text="Install Dependencies and Finish" >
+          <Publish Event="DoAction" Value="InstallCefPython" Order="1">1</Publish>
+          <Publish Event="DoAction" Value="InstallWxPython" Order="2">1</Publish>
+          <Publish Event="EndDialog" Value="Exit" Order="999">1</Publish>
+        </Control>
+
+      </Dialog>
+
+    </UI>
+
+    <InstallUISequence>
+      <Show Dialog="DialogWelcome" Before="DialogProgress"/>
+      <Show Dialog="DialogProgress" Before="ExecuteAction"/>
+      <Show Dialog="DialogExit" OnExit="success" />
+    </InstallUISequence>
+
+    <AdminUISequence>
+      <Show Dialog="DialogExit" OnExit="success"/>
+    </AdminUISequence>
+
+
+
+
+
+  </Fragment>
+</Wix>

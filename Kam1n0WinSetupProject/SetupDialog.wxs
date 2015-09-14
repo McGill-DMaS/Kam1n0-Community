@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <UI Id="SetupDialogUI">
+
+      <Property Id="Install">installbtn</Property>
+      <Binary Id="installbtn" SourceFile="imgs/installbtn.bmp"/>
+
+      <DialogRef Id="ProgressDialog"/>
+
+      <TextStyle Id="TahomaHeader" FaceName="Tahoma" Size="18" Bold="yes" Red="255" Blue="255" Green="255" />
+      <TextStyle Id="TahomaNormal" FaceName="Tahoma" Size="8"  Red="255" Blue="255" Green="255" />
+      <Property Id="DefaultUIFont" Value="TahomaNormal" />
+
+      <Dialog Id="SetupDialog" Width="400" Height="300" Title="Silly Software">
+
+        <Control Id="background" Type="Bitmap" Text="bgPic" Height="300" Width="400" X="0" Y="0" TabSkip="no" />
+
+        <Control Id="introText"  Type="Text" X="75" Y="50" Width="350" Height="22" Transparent="yes" Text="{\TahomaHeader}Welcome to Metro App setup." />
+        <Control Id="explanationText" X="85" Y="100" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="250" Height="100" Text="{\TahomaNormal}To continue with the setup click on the Install button. If you choose not to install this application, click on the Cancel button to exit." />
+
+        <Control Id="installButton" Type="PushButton" Text="[Install]" Height="62" Width="222" X="90" Y="180" Bitmap="yes">
+          <Publish Event="EndDialog" Value="Return" />
+        </Control>
+
+        <Control Id="cancelButton" Type="PushButton" Text="[Cancel]" Height="40" Width="144" X="135" Y="245" Cancel="yes" Bitmap="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+
+      </Dialog>
+
+    </UI>
+
+    <InstallUISequence>
+      <Show Dialog="SetupDialog" Before="ExecuteAction" />
+    </InstallUISequence>
+  </Fragment>
+</Wix>

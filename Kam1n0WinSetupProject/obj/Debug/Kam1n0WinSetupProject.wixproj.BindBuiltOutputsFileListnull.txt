@@ -1,0 +1,2 @@
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.msi
+C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.wixpdb

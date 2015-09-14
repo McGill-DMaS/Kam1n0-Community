@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?include Definitions.wxi ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <Product Id="*"
+           Name="Kam1n0 engine with plugin for IDA-pro"
+           Language="1033"
+           Version="0.0.1" Manufacturer="Data Mining and Security Lab, McGill University"
+           UpgradeCode="260a564d-021c-43bb-92d9-11f0c6cb02ae">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <Icon Id="AppIcon" SourceFile="images\K.ico"/>
+    <Icon Id="ExeIcon.exe" SourceFile="images\K.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+
+    <Feature Id="Complete" Title="Complete" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="Install the complete set of features.">
+      <Feature Id="FeatureDistribution" Title="Kam1n0 Engine Core" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="This feature contains the main core Kam1n0 engine libraries to index and search data.">
+        <ComponentGroupRef Id="GroupDistribution" />
+        <ComponentRef Id="CompProgramMenuApplicationDir"/>
+      </Feature>
+      <Feature Id="FeaturePlugin" Title="Plugin in for IDA-Pro" Level="1" ConfigurableDirectory="PLUGINSDIR" AllowAdvertise="no" Absent="disallow" Display="expand" Description="This feature consists of scripts and resources for IDA-Pro plugin.">
+        <ComponentGroupRef Id="GroupPlugin" />
+      </Feature>
+      <Feature Id="FeatureDependency" Title="Plugin Dependencies" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand"  Description="Dependencies for the plugin to work properly.">
+        <Feature Id="cefPython" Title="cefPython" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="cefPython provides a connector and embeded chromium instance.">
+          <ComponentRef Id="cmp265F7CB061B622455C00FABDE82AD82D" />
+        </Feature>
+        <Feature Id="wxPython" Title="wxPython" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="wxPython. ">
+          <ComponentRef Id="cmp2A98D9AB6E773D2F1FA4E60448FC4079" />
+        </Feature>
+      </Feature>
+    </Feature>
+
+
+
+    <UIRef Id="InstallerUI" />
+    <Property Id="INSTALL_DIR">PLUGINSDIR</Property>
+    <Property Id="DATA_DIR">KAM_DATA_DIR</Property>
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
+
+    <!--Actions-->
+    <Binary Id="CustomActions.CA.dll"
+            src="..\CustomActions\bin\$(var.Configuration)\CustomActions.CA.dll" />
+    <CustomAction Id="ValidaIDAPRO"
+              Return="check"
+              Execute="immediate"
+              BinaryKey="CustomActions.CA.dll"
+              DllEntry="ValidaIDAPRO" />
+    <CustomAction Id="InstallCefPython" FileKey="cefPython" ExeCommand="" Execute="immediate" Impersonate="yes" Return="ignore" />
+    <CustomAction Id="InstallWxPython" FileKey="wxPython" ExeCommand="" Execute="immediate" Impersonate="yes" Return="ignore" />
+
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="PLUGINSDIR" Name="plugins">
+          <Directory Id="DISTRIBUTIONDIR" Name="Kam1n0-distribution" />
+          <Directory Id="DEPENDENCIESDIR" Name="Kam1n0-dependency" />
+        </Directory>
+      </Directory>
+
+      <Directory Id="CommonAppDataFolder" >
+        <Directory Id="KAM_DATA_DIR" Name ="Kam1n0-data"/>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuApplicationDir" Name="Kam1n0">
+          <Component Id="CompProgramMenuApplicationDir" Guid="*">
+            <RemoveFolder Id="ProgramMenuApplicationDir" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key='Software\[Manufacturer]\[ProductName]'  Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+  </Fragment>
+
+</Wix>

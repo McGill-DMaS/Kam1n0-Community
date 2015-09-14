@@ -1,0 +1,12 @@
+﻿<Shortcut Id="shortcutProgramFilesMenuApplication" Directory="ProgramMenuApplicationDir" Name="Kam1n0" WorkingDirectory='DISTRIBUTIONDIR' Icon="Kam1n0-0.1.0.jar" IconIndex="0" Advertise="yes" />
+<Shortcut Id="shortcutDesktopApplication" Directory="DesktopFolder" Name="Kam1n0" WorkingDirectory='DISTRIBUTIONDIR' Icon="Kam1n0-0.1.0.jar" IconIndex="0" Advertise="yes" />
+
+
+<Component Id="LogConf" Guid="A70DAF37-0EAC-49BD-A8B0-2C5D8AF81086">
+    <File Id="LogConfXml" Name="log4j2.xml" Source="log4j2.xml" Vital="yes" />
+    <util:XmlFile Id="LogConfXmlE" Action="setValue" ElementPath="/Configuration/Appenders/File" File="[INSTALLFOLDER]\log4j2.xml" Name="fileName" Value="[KAM_DATA_DIR]"/>
+</Component>
+<Component Id="FileConf" Guid="A70DAF37-0EAC-49BD-A8B0-2C5D8AF81087">
+    <File Id="FileConfXml" Name="kam1n0-conf.xml" Source="kam1n0-conf.xml" Vital="yes" />
+    <util:XmlFile Id="FileConfXmlE" Action="setValue" ElementPath="/Kam1n0-Configuration/entry/string[\[]text()='$PATH_DATA$'[\]]" File="[INSTALLFOLDER]\kam1n0-conf.xml" Value="[KAM_DATA_DIR]"/>
+</Component>

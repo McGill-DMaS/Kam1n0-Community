@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+
+  <!-- <?include Definitions.wxi ?> -->
+  
+  <!--Paths-->
+  <?define dir_src="C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\Kam1n0WinSetupProject\bin_release\"?>
+  <?define dir_src_plugins="$(var.dir_src)\plugins" ?>
+  <?define dir_src_plugins_depend="$(var.dir_src)\Kam1n0-depenencies" ?>
+  <?define dir_src_distribution="$(var.dir_src)\Kam1n0-distribution" ?>
+
+</Include>
