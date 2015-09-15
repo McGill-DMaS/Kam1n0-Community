@@ -34,7 +34,7 @@ The current release of the Kam1n0 IDA Pro plug-in is bundled with a local Kam1n0
 * [Required] The latest x86 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 * [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
-Next, download the latest ```.msi``` installation file for Windows from our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+Next, download the ```Kam1n0_IDA_Pro_v0.0.2.zip``` file on our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 ## Where does Kam1n0 store the data?
 At the end of the installation, the installer will ask you to select the path for storing the local data and log files. It also creates a folder ```~/Kam1n0/``` to store the plug-in data and errors. The local Kam1n0 engine can be found in the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
