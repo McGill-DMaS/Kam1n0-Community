@@ -21,7 +21,7 @@ Next, download the latest ```.msi``` installation file for Windows at our [relea
 At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found IN the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
 
 # Tutorial
-This tutorial first introduceS Kam1n0's basic functionalities and then walk you through a simple index and search example. 
+This tutorial first introduces Kam1n0's basic functionalities and then walk you through a simple index and search example. 
 
 ## Functionalities
 The Kam1n0 engine with the plug-in provide you the functionalities to index and search assembly functions. 
