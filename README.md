@@ -60,7 +60,7 @@ These functionalities can be found in:
      ![view-a](https://cloud.githubusercontent.com/assets/8474647/9766486/24253840-56e7-11e5-844a-19ab8ada57b9.png)
 
 
-Even though you can select functions in the popup menu of the *IDA PRO Functions Window* to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a *Selection Window* which provides A more detailed configuration for multiple search. While using the plugin, we recommend you to keep the *Output window* open in IDA Pro. 
+Even though you can select functions in the popup menu of the **IDA PRO Functions Window** to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a **Selection Window** which provides A more detailed configuration for multiple search. While using the plugin, we recommend you to keep the **Output window** open in IDA Pro. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766922/84f86aaa-56e9-11e5-936a-0f5483686dc5.png)
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766925/8f145134-56e9-11e5-9b98-7c0ca4e53039.png)
@@ -88,15 +88,15 @@ Kam1n0 should open a browser with a login page as shown below. The default usern
 
 ### Indexing
 
-Open IDA-Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual. Click on the Manage Connection Button in the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit the connections of the plugin. There is already a default connection for the local engine. These connections will be stored for future use. 
+Open IDA-Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual. Click on the **Manage Connection Button** in the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit the connections of the plugin. There is already a default connection for the local engine. These connections will be stored for future use. 
 
 ![cnnw](https://cloud.githubusercontent.com/assets/8474647/9767976/efda63d2-56ee-11e5-9cff-e15a68fa7312.png)
 
-To index the functions, click on the *Selected Functions to Index Button* at the toolbar (or in the other aforementioned location). Check the *Selected All Functions Option* and click the *Index button* (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
+To index the functions, click on the **Selected Functions to Index Button** at the toolbar (or in the other aforementioned location). Check the **Selected All Functions Option** and click the **Index button** (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768328/dc0c1e02-56f0-11e5-9c12-3f231a299159.png)
 
-Wait until the indexing process finishes as shown in the *Progress Form*. Detailed progress info is printed in the *IDA Output Window*. Press the OK Button to close the form when you see 100% at the end of the list.
+Wait until the indexing process finishes as shown in the **Progress Form**. Detailed progress info is printed in the **IDA Output Window**. Press the OK Button to close the form when you see 100% at the end of the list.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768256/7eed4cbe-56f0-11e5-9080-d747454bb2c9.png)
 
