@@ -169,7 +169,7 @@ The plug-in is written in python using ```idaapi```. The root of this repository
 ## User Interface
 
 The user interface consists of two parts: 
-* The native ```idaapi``` forms and controls: Connection Management Form, Search Progress Form, Index Progress Form, Select Function to Search Form, Select Function to Inex Form.
+* The native ```idaapi``` forms and controls: the Connection Management Form, the Search Progress Form, the Index Progress Form, the Select Function to Search Form, and the Select Function to Inex Form.
 * The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. 
 
 ## Synchronization
