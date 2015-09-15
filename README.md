@@ -1,6 +1,6 @@
 # What is Kam1n0?
 
-Kam1n0 is a scalable system that supports assembly code clones search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a give target binary file. Kam1n0 plugin is a plugin for IDA-Pro user to perform the indexing the searching capabilities on Kam1n0 via the IDA user interface.
+Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. Kam1n0 has a IDA-Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
 
 
 * [Installation](#installation)
@@ -10,66 +10,66 @@ Kam1n0 is a scalable system that supports assembly code clones search. It allows
 
 # Installation
 
-The current distribution of Kam1n0 plugin for IDA-Pro is bundled with a local Kam1n0 engine. In order to have it working properly, you need the following dependencies:
+The current distribution of the Kam1n0 IDA Pro plug-in is bundled with a local Kam1n0 engine. In order to have it work properly, you need the following dependencies:
 
-* [Required] The latest 32bit 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x86).
-* [Required] The latest version of IDA Pro with the python plugin [idapython](https://code.google.com/p/idapython/) plugin installed. The python plugin and runtime should have already been shipped with IDA-Pro. Re-install IDA-Pro if necessary. 
+* [Required] The latest x86 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x86).
+* [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
-Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plugin and runtime. Please note that the plugin has to be installed at the IDA-Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA-Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 # Where does Kam1n0 store the data?
-At the end of installation, the installer will ask you to select the path for storing local data. All the data and log files will be stored there. Also it creates a folder ```~/Kam1n0/``` to store plugin data and errors. The local kam1n0 engine can be found at the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
+At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found IN the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
 
 # Tutorial
-This tutorial will firstly introduce Kam1n0's basic functionalities; and then walk you through a simple index and search example. 
+This tutorial first introduceS Kam1n0's basic functionalities and then walk you through a simple index and search example. 
 
 ## Functionalities
-The Kam1n0 engine with the plugin provide you the functionalities to index and search assembly functions. 
+The Kam1n0 engine with the plug-in provide you the functionalities to index and search assembly functions. 
 
-Icon | Functionality | Description | Hot-key
+Icon | Functionality | Description | Hot key
 ----------|---------------- | -------------------- | -----------
-![search](https://cloud.githubusercontent.com/assets/8474647/9765944/9ef7df76-56e4-11e5-86c8-20bc1589fe2c.png)| Search current function | Search the function at current EA address | Ctrl+Shift+S
-![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png)| Search selected functions | Search the selected functions | Ctrl+Shift+A
-![upload](https://cloud.githubusercontent.com/assets/8474647/9766055/17aa5e76-56e5-11e5-8293-9e72357431f1.png)| Index current function | Index the function at current EA address | Ctrl+Shift+K
-![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png)| Index selected functions | Index the selected functions | Ctrl+Shift+J
-![setting-cnn](https://cloud.githubusercontent.com/assets/8474647/9766145/711b3f98-56e5-11e5-8797-3952bf9c0916.png)| Manage connections | Connections to different repository | NA
+![search](https://cloud.githubusercontent.com/assets/8474647/9765944/9ef7df76-56e4-11e5-86c8-20bc1589fe2c.png)| Search current function | Search the function at current address | Ctrl+Shift+S
+![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png)| Search selected functions | Select functions to search | Ctrl+Shift+A
+![upload](https://cloud.githubusercontent.com/assets/8474647/9766055/17aa5e76-56e5-11e5-8293-9e72357431f1.png)| Index current function | Index the function at current address | Ctrl+Shift+K
+![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png)| Index selected functions | Select functions to index | Ctrl+Shift+J
+![setting-cnn](https://cloud.githubusercontent.com/assets/8474647/9766145/711b3f98-56e5-11e5-8797-3952bf9c0916.png)| Manage connections | Manage connections to different repositories | NA
 ![setting](https://cloud.githubusercontent.com/assets/8474647/9766158/8a598906-56e5-11e5-8fce-722c49665e89.png) | Manage storage | Mange local/remote accounts and storage | NA
 
-These functionalities can be found at:
+These functionalities can be found in:
 
-* IDA search toolbar:  
+* IDA Pro Search Toolbar:  
 
      ![image](https://cloud.githubusercontent.com/assets/8474647/9766506/40b20128-56e7-11e5-9720-37205bc024b5.png)
 
-* IDA function window:
+* IDA Pro Functions Window:
 
      ![menu-search](https://cloud.githubusercontent.com/assets/8474647/9766673/33187f14-56e8-11e5-99f9-e430fc6c4c63.png)
 
-* IDA search menu:
+* IDA Pro Search Menu:
 
      ![image](https://cloud.githubusercontent.com/assets/8474647/9766626/e77efad8-56e7-11e5-8685-c8146b52ab3b.png)
 
 
-* IDA edit menu:
+* IDA Pro Edit Menu:
 
      ![image](https://cloud.githubusercontent.com/assets/8474647/9766646/010cf5fe-56e8-11e5-84e3-fefe0f132187.png)
 
 
-* IDA-view A (Pop-up menu): 
+* IDA Pro View A (popup menu): 
 
      ![view-a](https://cloud.githubusercontent.com/assets/8474647/9766486/24253840-56e7-11e5-844a-19ab8ada57b9.png)
 
 
-Even though you can select functions at the popup menu of the IDA's *Function Window* to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) can open a selection window which provides more detailed configuration for multiple search. 
+Even though you can select functions in the popup menu of the *IDA PRO Functions Window* to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a *Selection Window* which provides A more detailed configuration for multiple search. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766922/84f86aaa-56e9-11e5-936a-0f5483686dc5.png)
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766925/8f145134-56e9-11e5-9b98-7c0ca4e53039.png)
 
 
 
-For example, you can apply different filter and choose which connection you want to use to search/index them.
+For example, you can apply different filters and choose which connection you want to use to search/index them.
 
-## Walk-through example
+## Walk through example
 Let's go through a simple index and search case using the engine and plugin. 
 
 ### Preparing the data
