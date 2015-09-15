@@ -98,22 +98,26 @@ Open IDA-Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual.
 
 ![cnnw](https://cloud.githubusercontent.com/assets/8474647/9767976/efda63d2-56ee-11e5-9cff-e15a68fa7312.png)
 
-To index the functions, click on the ```Selected Functions to Index Button```at the toolbar (or in the other aforementioned location). Check the ```Selected All Functions Option``` and click the ```Index Button``` (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
+To index the functions, click on the ```Select Functions to Index Button```at the toolbar (or in the other aforementioned location). Check the ```Select All Functions Option``` and click the ```Index Button``` (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768328/dc0c1e02-56f0-11e5-9c12-3f231a299159.png)
 
 Wait until the indexing process finishes as shown in the ```Progress Form```. Detailed progress info is printed in the ```IDA Output Window```. Press the ```OK Button``` to close the form when you see 100% shown in the form.
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768256/7eed4cbe-56f0-11e5-9080-d747454bb2c9.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9867900/89e2dd88-5b40-11e5-832c-da6dd61170dd.png)
+
+![image](https://cloud.githubusercontent.com/assets/8474647/9867909/9eddea0c-5b40-11e5-9190-812308009793.png)
+
 
 ## Search and add comments
 Open IDA Pro and disassemble the target ```zlib-1.2.7.dll``` binary file as usual. Click on the ```Select Functions to Search Button``` at the toolbar ![image](https://cloud.githubusercontent.com/assets/8474647/9768419/95e4bba4-56f1-11e5-8c42-9bee9a5cba28.png). Suppose we want to search the ```alder32``` and ```compress2```. Select them using ctrl+click on the list. Click on the ```Search Button```. (Shown as the Step 1 and Step 2 in image below).
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768549/61d0de0a-56f2-11e5-81ba-df77b27c4955.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9867961/42fec16a-5b41-11e5-89c1-86ff62985fbe.png)
 
 The search should end in seconds. You will be able to see a progress form and the ```Clone Graph View```. 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768653/0ddec586-56f3-11e5-8630-d51ec9e326be.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9867977/6aef8aa6-5b41-11e5-885f-c816afdbbf74.png)
+
 
 The ```Clone Graph View``` can be dragged and zoomed in/out with mouse scrolling. Each circle represents a function. Each color represents different binary. A link between two nodes indicates their similarity. The two blue circles are our selected target functions. By double-clicking on the ```alder32``` node (blue node in the center), we open the ```Clone List Window``` as shown below:
 
