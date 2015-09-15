@@ -1,7 +1,14 @@
 # What is Kam1n0?
 
-Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. Kam1n0 has a IDA-Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
+Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process; since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. 
 
+Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the one on the left and the one on the right as shown below). Kam1n0 supports rich comment format, and it  has a IDA-Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
+
+![image](https://cloud.githubusercontent.com/assets/8474647/9867360/a130631c-5b3a-11e5-8b76-83afec582886.png)
+
+In this repository we release the initial version of Kam1n0 and its plugin for IDA Pro. It can run on a single workstation/server, and provide clone search service through RESTful web services. The users can connect to the server through IDA Pro. Alternatively it can be deployed on a distributed cluster (next major release).
+
+## Table of Content
 
 * [Installation](#installation)
 * [Tutorial](#tutorial)
@@ -17,7 +24,7 @@ The current distribution of the Kam1n0 IDA Pro plug-in is bundled with a local K
 
 Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA-Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
-# Where does Kam1n0 store the data?
+## Where does Kam1n0 store the data?
 At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found IN the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
 
 # Tutorial
@@ -29,9 +36,9 @@ The Kam1n0 engine with the plug-in provide you the functionalities to index and 
 Icon | Functionality | Description | Hot key
 ----------|---------------- | -------------------- | -----------
 ![search](https://cloud.githubusercontent.com/assets/8474647/9765944/9ef7df76-56e4-11e5-86c8-20bc1589fe2c.png)| Search current function | Search the function at current address | Ctrl+Shift+S
-![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png)| Search selected functions | Select functions to search | Ctrl+Shift+A
+![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png)| Select functions to search | Select functions to search | Ctrl+Shift+A
 ![upload](https://cloud.githubusercontent.com/assets/8474647/9766055/17aa5e76-56e5-11e5-8293-9e72357431f1.png)| Index current function | Index the function at current address | Ctrl+Shift+K
-![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png)| Index selected functions | Select functions to index | Ctrl+Shift+J
+![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png)| Select functions to index | Select functions to index | Ctrl+Shift+J
 ![setting-cnn](https://cloud.githubusercontent.com/assets/8474647/9766145/711b3f98-56e5-11e5-8797-3952bf9c0916.png)| Manage connections | Manage connections to different repositories | NA
 ![setting](https://cloud.githubusercontent.com/assets/8474647/9766158/8a598906-56e5-11e5-8fce-722c49665e89.png) | Manage storage | Mange local/remote accounts and storage | NA
 
@@ -146,4 +153,3 @@ In the Clone View, you are able to add rich comments to each assembly code instr
 
 
 # How does the Plug-in Work
-
