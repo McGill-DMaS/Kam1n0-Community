@@ -145,12 +145,11 @@ The Text-Diff View tries to fully ally two assembly functions using basic string
 
 The Clones View lists different cloned subgraphs and compares their differences. The panel below two text views lists these cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding blocks and compare their differences using string alignment. 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9769340/938bbbb8-56f7-11e5-9309-1d170e2adf71.png)
-
+![image](https://cloud.githubusercontent.com/assets/8474647/9868089/b6f03026-5b42-11e5-8368-e304ba7674c4.png)
 
 In the Clone View, you are able to add rich comments to each assembly code instruction of each function. Move the mouse to the line for which you want to add a comment, and click on the ```+``` button to show the ```Comment Form```. Markdown language is supported. 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9769527/bddc1bf0-56f8-11e5-99ca-e7d7263b8774.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9868101/e766cecc-5b42-11e5-891c-b559f78cbe28.png)
 
 
 # How does the Plug-in Work
