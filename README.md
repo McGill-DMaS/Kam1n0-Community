@@ -172,4 +172,4 @@ The user interface consists of two parts:
 We find it difficult to update the IDA Pro UI asynchronously. If a thread other than the main thread updates interface and the user interacts with (e.g. click on) the interface at the same moment, the IDA Pro will freeze/crash.  
 
 ## Communication
-To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the [Connector](blob/master/Kam1n0WinSetupProject/bin_release/plugins/Kam1n0/Connector.py). 
+To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the [Connector](Kam1n0WinSetupProject/bin_release/plugins/Kam1n0/Connector.py). 
