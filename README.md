@@ -76,7 +76,7 @@ These functionalities can be found in:
      ![view-a](https://cloud.githubusercontent.com/assets/8474647/9766486/24253840-56e7-11e5-844a-19ab8ada57b9.png)
 
 
-Even though you can select functions in the popup menu of the ```IDA PRO Functions Window``` to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a ```Selection Window``` which provides A more detailed configuration for multiple search. While using the plugin, we recommend you to keep the ```Output Window``` open in IDA Pro. 
+Even though you can select functions in the popup menu of the ```IDA PRO Functions Window``` to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a ```Selection Window``` which provides a more detailed configuration for multiple search. While using the plugin, we recommend you to keep the ```Output Window``` open in IDA Pro. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766922/84f86aaa-56e9-11e5-936a-0f5483686dc5.png)
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766925/8f145134-56e9-11e5-9b98-7c0ca4e53039.png)
