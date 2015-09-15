@@ -60,7 +60,7 @@ These functionalities can be found in:
      ![view-a](https://cloud.githubusercontent.com/assets/8474647/9766486/24253840-56e7-11e5-844a-19ab8ada57b9.png)
 
 
-Even though you can select functions in the popup menu of the *IDA PRO Functions Window* to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a *Selection Window* which provides A more detailed configuration for multiple search. 
+Even though you can select functions in the popup menu of the *IDA PRO Functions Window* to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) open a *Selection Window* which provides A more detailed configuration for multiple search. While using the plugin, we recommend you to keep the *Output window* open in IDA Pro. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766922/84f86aaa-56e9-11e5-936a-0f5483686dc5.png)
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766925/8f145134-56e9-11e5-9b98-7c0ca4e53039.png)
@@ -73,30 +73,30 @@ For example, you can apply different filters and choose which connection you wan
 Let's go through a simple index and search case using the engine and plugin. 
 
 ### Preparing the data
-Suppose we have a binary file [zlibwapi.dll](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/raw/master/example/zlibwapi.dll) from zlib 2.7. This sample file is included in ```Kam1n0_windows.zip```. We suggest you to try this binary file first as to be consistent with following descriptions. You may index other binary files later as you wish.  We copy this binary as ```zlibwapi.dll``` and ```zlibwapi2.dll```. We try to index the first binary file and search the second one against the first binary file. It is important that they have different filenames.
+Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in our release file ```Kam1n0_IDA_Pro_v0.0.2.zip```. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index the first binary file ```libpng-1.7.0b54.dll``` and search the second one ```zlib-1.2.7.dll``` against it.
 
 ### Start the engine
-To start with, we need to start the kam1n0 storage and search engine. You can run it from apps in your start menu or desktop shortcut (if you chose to create one).
+To begin with, we first need to start the kam1n0 storage and search engine. You can run it from apps in your Start Menu or desktop shortcut.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9767402/1303ad08-56ec-11e5-8379-04d7007d5d5c.png)
  
-Kam1n0 is a console application. It is fine to see some warning messages at the first run because the engine cannot find lots of thing and trying to create them. Please note that if you choose a system path to be the storage directory, you need to have the engine run as administrator. 
+Kam1n0 is a console application. It is normal to see some warning messages at the first run, as the engine tries to find and create several elements. Please note that if you chose a system path to be the storage directory, you need to have the engine run as administrator. 
 
-Kam1n0 should popup a browser with a login page as shown below. The default username and password are both ```admin```. You can change it later after you are logged in. At this moment you may close the browser first. We can manage it through IDA plugin.
+Kam1n0 should open a browser with a login page as shown below. The default username and password are both ```admin```. You can change the later after you are logged in. You can close the browser, as we will use IDA Pro. 
 
 ![login](https://cloud.githubusercontent.com/assets/8474647/9767556/c6e50cf4-56ec-11e5-8f41-e3f9a0668050.png)
 
 ### Indexing
 
-Open IDA-Pro and disassemble the ```zlibwapi.dll``` binary file as usual. Click on the manage connection button at the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit connections of the plugin. There is already a default connection for local engine. These connections will be stored for future use. 
+Open IDA-Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual. Click on the Manage Connection Button in the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit the connections of the plugin. There is already a default connection for the local engine. These connections will be stored for future use. 
 
 ![cnnw](https://cloud.githubusercontent.com/assets/8474647/9767976/efda63d2-56ee-11e5-9cff-e15a68fa7312.png)
 
-To index the functions, click at the ```index selected functions``` button at the toolbar (or other aforementioned location ). Check the ```Selected all functions``` option; and click the ```Index``` button (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path and each indexed function is uniquely identified by its binary's id and its starting ea address. 
+To index the functions, click on the *Selected Functions to Index Button* at the toolbar (or in the other aforementioned location). Check the *Selected All Functions Option* and click the *Index button* (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768328/dc0c1e02-56f0-11e5-9c12-3f231a299159.png)
 
-Wait until the indexing process finishes as shown in the progress form. You may need to scroll down the list. Press the OK button to close the form when you see 100% at the end of the list.
+Wait until the indexing process finishes as shown in the *Progress Form*. Detailed progress info is printed in the *IDA Output Window*. Press the OK Button to close the form when you see 100% at the end of the list.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768256/7eed4cbe-56f0-11e5-9080-d747454bb2c9.png)
 
