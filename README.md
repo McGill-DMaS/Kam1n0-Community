@@ -109,41 +109,41 @@ The search should end in seconds. You will be able to see a progress form and th
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768653/0ddec586-56f3-11e5-8630-d51ec9e326be.png)
 
-The graph view can be dragged by mouse and zoom in/out by scrolling. Different circle with different name stands for different function. Different color stands for different binary. A link between two nodes represents their similarity. The two blue circles are our selected target functions. By double-clicking on the ```compress2``` node (blue color), we open the ```clone list``` window as shown below:
+The ```Clone Graph View``` can be dragged and zoomed in/out with mouse scrolling. Each circle represents a function. Each color represents different binary. A link between two nodes indicates their similarity. The two blue circles are our selected target functions. By double-clicking on the ```alder32``` node (blue node in the center), we open the ```Clone List Window``` as shown below:
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768785/e8abe7ca-56f3-11e5-814f-9d9c377db3c1.png)
 
-The window lists all the connected nodes with more details about similarity and binary name. There are three views to inspect each result: 
+The window lists all the connected nodes with more details about thier similarity and binary name. There are three views to inspect each result: 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768873/861dda4a-56f4-11e5-901c-9a64aad17b00.png)
 
 
-### The flow view: 
+### The Flow View 
 
-This flow view explores cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hub. In this example, there is only one cloned sub-graph; therefore, there is only one convex hub. Currently we ignore blocks with length less than 4 lines of code. Both graphs can be zoom in/out and dragged. We provided a scroll (blue) for each of them. 
+The Flow View explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with different color. Currently we ignore blocks with less than 4 instructions. Both graphs can be zoom in/out and dragged. We provide a scroll (blue) for each of them. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768939/f43b4ca6-56f4-11e5-9094-f066cbc999ea.png)
 
 
-### The text-diff view
+### The Text-Diff View
 
-The text-diff view tries to fully allies two assembly function. It is useful to compare two functions with high degree of similarity. The lines with red background mean deletion; and the lines with green background mean addition. 
+The Text-Diff View tries to fully ally two assembly functions using basic string comparison algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion; while the ones with a green background mean addition. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9769084/d348879c-56f5-11e5-87fe-fc0ebb29987a.png)
 
 
 
-### The Clones view
+### The Clones View
 
-The clones view lists different cloned sub-graphs and compares their differences. The panel below two text views lists these cloned sub-graphs as cloned groups. Each group consists of pairs of cloned basic block between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to corresponding blocks and compare their differences. 
+The Clones View lists different cloned subgraphs and compares their differences. The panel below two text views lists these cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding blocks and compare their differences using string alignment. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9769340/938bbbb8-56f7-11e5-9309-1d170e2adf71.png)
 
 
-In this clones view, you are able to add rich comment to each line of assembly code for each function. Move the mouse to the line that you want to leave some comment, and click on the ```+``` button to show the comment form. Markdown language is supported. 
+In the Clone View, you are able to add rich comments to each assembly code instruction of each function. Move the mouse to the line for which you want to add a comment, and click on the ```+``` button to show the ```Comment Form```. Markdown language is supported. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9769527/bddc1bf0-56f8-11e5-99ca-e7d7263b8774.png)
 
 
-# How does the Plugin Work
+# How does the Plug-in Work
 
