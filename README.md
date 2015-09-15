@@ -165,13 +165,11 @@ The plug-in is written in python using ```idaapi```. The root of this repository
 
 ## User Interface
 The user interface consists of two parts: 
-* The native idaapi forms and controls: Connection Management Form, Search Progress Form, Index Progress Form, Select Function to Search Form, Select Function to Inex Form.
-* The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View.
-* These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. 
-* 
+* The native ```idaapi``` forms and controls: Connection Management Form, Search Progress Form, Index Progress Form, Select Function to Search Form, Select Function to Inex Form.
+* The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. 
 
 ## Synchronization
 We find it difficult to update the IDA Pro UI asynchronously. If a thread other than the main thread updates interface and the user interacts with (e.g. click on) the interface at the same moment, the IDA Pro will freeze/crash.  
 
 ## Communication
-To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the Connector. 
+To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the [Connector](blob/master/Kam1n0WinSetupProject/bin_release/plugins/Kam1n0/Connector.py). 
