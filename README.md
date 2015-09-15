@@ -1,4 +1,4 @@
-# What is Kam1n0?
+# ![letter-k-icon 2](https://cloud.githubusercontent.com/assets/8474647/9867492/577c7d8a-5b3c-11e5-9334-520bddc3ddc8.png) What is Kam1n0?
 
 Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process; since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. 
 
@@ -50,11 +50,12 @@ These functionalities can be found in:
 
 * IDA Pro Functions Window:
 
-     ![menu-search](https://cloud.githubusercontent.com/assets/8474647/9766673/33187f14-56e8-11e5-99f9-e430fc6c4c63.png)
+     ![image](https://cloud.githubusercontent.com/assets/8474647/9867551/06fad3ce-5b3d-11e5-835f-9faba1f37962.png)
+
 
 * IDA Pro Search Menu:
 
-     ![image](https://cloud.githubusercontent.com/assets/8474647/9766626/e77efad8-56e7-11e5-8685-c8146b52ab3b.png)
+     ![image](https://cloud.githubusercontent.com/assets/8474647/9867512/a1daab4a-5b3c-11e5-82e6-098a44094fad.png)
 
 
 * IDA Pro Edit Menu:
