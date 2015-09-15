@@ -2,7 +2,9 @@
 
 Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process; since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. 
 
-Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the one on the left and the one on the right as shown below). Kam1n0 supports rich comment format, and it  has a IDA Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
+Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the one on the left and the one on the right as shown below). Kam1n0 supports rich comment format, and it  has an IDA Pro plug-in to use its indexing and searching capabilities via the IDA Pro. 
+
+Kam1n0 is developed at the McGill Data Mining and Security Lab in Canada.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867360/a130631c-5b3a-11e5-8b76-83afec582886.png)
 
@@ -27,7 +29,7 @@ In this repository we release the initial version of Kam1n0 and its plugin for I
 
 # Installation
 
-The current distribution of the Kam1n0 IDA Pro plug-in is bundled with a local Kam1n0 engine. In order to have it work properly, you need the following dependencies:
+The current release of the Kam1n0 IDA Pro plug-in is bundled with a local Kam1n0 engine. In order to have it work properly, you need the following dependencies:
 
 * [Required] The latest x86 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x86).
 * [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
@@ -35,13 +37,13 @@ The current distribution of the Kam1n0 IDA Pro plug-in is bundled with a local K
 Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 ## Where does Kam1n0 store the data?
-At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found IN the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
+At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found in the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
 
 # Tutorial
-This tutorial first introduces Kam1n0's basic functionalities and then walk you through a simple index and search example. 
+This tutorial first introduces Kam1n0's basic functionalities and then goes through a simple index and search example. 
 
 ## Functionalities
-The Kam1n0 engine with the plug-in provide you the functionalities to index and search assembly functions. 
+The Kam1n0 engine with the plug-in provides you the functionalities to index and search assembly functions. 
 
 Icon | Functionality | Description | Hot key
 ----------|---------------- | -------------------- | -----------
@@ -108,7 +110,7 @@ Open IDA Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual.
 
 ![cnnw](https://cloud.githubusercontent.com/assets/8474647/9767976/efda63d2-56ee-11e5-9cff-e15a68fa7312.png)
 
-To index the functions, click on the ```Select Functions to Index Button```at the toolbar (or in the other aforementioned location). Check the ```Select All Functions Option``` and click the ```Index Button``` (shown as Step 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
+To index the functions, click on the ```Select Functions to Index Button```at the toolbar (or in the other aforementioned location). Check the ```Select All Functions Option``` and click the ```Index Button``` (shown as Steps 1, 2 and 3 in the image below). Each indexed binary is uniquely identified by its path, and each indexed function by its binary's id and its starting address. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9768328/dc0c1e02-56f0-11e5-9c12-3f231a299159.png)
 
@@ -169,8 +171,8 @@ The plug-in is written in python using ```idaapi```. The root of this repository
 ## User Interface
 
 The user interface consists of two parts: 
-* The native ```idaapi``` forms and controls: the Connection Management Form, the Search Progress Form, the Index Progress Form, the Select Function to Search Form, and the Select Function to Inex Form.
-* The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. 
+* The native ```idaapi``` forms and controls: the Connection Management Form, the Search Progress Form, the Index Progress Form, the Select Function to Search Form, and the Select Function to Index Form.
+* The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately, pages cannot be rendered, so we switch to wxpython. 
 
 ## Synchronization
 
@@ -179,3 +181,13 @@ We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```.
 ## Communication
 
 To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. 
+
+## Licensing
+
+The software is developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at McGill Data Mining and Security Lab. Currently, we adopt a restrictive Creative Commons licensing model: Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0). In brief,
+
+- Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+- NonCommercial — You may not use the material for commercial purposes.
+- NoDerivatives — If you remix, transform, or build upon the material, you may not distribute the modified material.
+
+Please refer to License.txt for details.
