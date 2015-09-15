@@ -57,11 +57,9 @@ These functionalities can be found in:
 
      ![image](https://cloud.githubusercontent.com/assets/8474647/9867512/a1daab4a-5b3c-11e5-82e6-098a44094fad.png)
 
-
 * IDA Pro Edit Menu:
 
-     ![image](https://cloud.githubusercontent.com/assets/8474647/9766646/010cf5fe-56e8-11e5-84e3-fefe0f132187.png)
-
+     ![image](https://cloud.githubusercontent.com/assets/8474647/9867835/e3d14ea2-5b3f-11e5-8eac-7e300a09b4f9.png)
 
 * IDA Pro View A (popup menu): 
 
