@@ -4,6 +4,8 @@ Kam1n0 is a scalable system that supports assembly code clones search. It allows
 
 
 * [Installation](#Installation)
+* [Tutorial](#Tutorial)
+* [How does the Plugin Works](#How-does-the-Plugin-Work)
 
 
 # Installation
@@ -141,3 +143,7 @@ The clones view lists different cloned sub-graphs and compares their differences
 In this clones view, you are able to add rich comment to each line of assembly code for each function. Move the mouse to the line that you want to leave some comment, and click on the ```+``` button to show the comment form. Markdown language is supported. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9769527/bddc1bf0-56f8-11e5-99ca-e7d7263b8774.png)
+
+
+# How the plugin works
+
