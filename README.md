@@ -178,4 +178,4 @@ We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```.
 
 ## Communication
 
-To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the [Connector](Kam1n0WinSetupProject/bin_release/plugins/Kam1n0/Connector.py). 
+To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. 
