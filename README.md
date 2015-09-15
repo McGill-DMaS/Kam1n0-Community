@@ -5,14 +5,14 @@ Kam1n0 is a scalable system that supports assembly code clones search. It allows
 
 * [Installation](#installation)
 * [Tutorial](#tutorial)
-* [How does the Plugin Works](#how-does-the-plugin-work)
+* [How does the Plugin Work](#how-does-the-plugin-work)
 
 
 # Installation
 
 The current distribution of Kam1n0 plugin for IDA-Pro is bundled with a local Kam1n0 engine. In order to have it working properly, you need the following dependencies:
 
-* [Required] The latest 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x64/x86).
+* [Required] The latest 32bit 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x86).
 * [Required] The latest version of IDA Pro with the python plugin [idapython](https://code.google.com/p/idapython/) plugin installed. The python plugin and runtime should have already been shipped with IDA-Pro. Re-install IDA-Pro if necessary. 
 
 Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plugin and runtime. Please note that the plugin has to be installed at the IDA-Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
@@ -145,5 +145,5 @@ In this clones view, you are able to add rich comment to each line of assembly c
 ![image](https://cloud.githubusercontent.com/assets/8474647/9769527/bddc1bf0-56f8-11e5-99ca-e7d7263b8774.png)
 
 
-# How does the Plugin Works
+# How does the Plugin Work
 
