@@ -3,6 +3,9 @@
 Kam1n0 is a scalable system that supports assembly code clones search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a give target binary file. Kam1n0 plugin is a plugin for IDA-Pro user to perform the indexing the searching capabilities on Kam1n0 via the IDA user interface.
 
 
+* [Installation](#Installation)
+
+
 # Installation
 
 The current distribution of Kam1n0 plugin for IDA-Pro is bundled with a local Kam1n0 engine. In order to have it working properly, you need the following dependencies:
