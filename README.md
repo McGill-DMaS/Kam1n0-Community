@@ -118,29 +118,27 @@ The search should end in seconds. You will be able to see a progress form and th
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867977/6aef8aa6-5b41-11e5-885f-c816afdbbf74.png)
 
-
 The ```Clone Graph View``` can be dragged and zoomed in/out with mouse scrolling. Each circle represents a function. Each color represents different binary. A link between two nodes indicates their similarity. The two blue circles are our selected target functions. By double-clicking on the ```alder32``` node (blue node in the center), we open the ```Clone List Window``` as shown below:
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768785/e8abe7ca-56f3-11e5-814f-9d9c377db3c1.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9868018/e305557a-5b41-11e5-9dce-d2c7b87ac9f5.png)
+
 
 The window lists all the connected nodes with more details about thier similarity and binary name. There are three views to inspect each result: 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768873/861dda4a-56f4-11e5-901c-9a64aad17b00.png)
+![image](https://cloud.githubusercontent.com/assets/8474647/9868038/03dd27f0-5b42-11e5-84fd-f3d4abaf0cb8.png)
 
 
 ### The Flow View 
 
 The Flow View explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with different color. Currently we ignore blocks with less than 4 instructions. Both graphs can be zoom in/out and dragged. We provide a scroll (blue) for each of them. 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9768939/f43b4ca6-56f4-11e5-9094-f066cbc999ea.png)
-
+![image](https://cloud.githubusercontent.com/assets/8474647/9868051/30f424b4-5b42-11e5-8614-a19f8ab205d4.png)
 
 ### The Text-Diff View
 
 The Text-Diff View tries to fully ally two assembly functions using basic string comparison algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion; while the ones with a green background mean addition. 
 
-![image](https://cloud.githubusercontent.com/assets/8474647/9769084/d348879c-56f5-11e5-87fe-fc0ebb29987a.png)
-
+![image](https://cloud.githubusercontent.com/assets/8474647/9868058/448e88c0-5b42-11e5-97b5-fd5a857d45c4.png)
 
 
 ### The Clones View
