@@ -12,7 +12,7 @@ In this repository we release the initial version of Kam1n0 and its plugin for I
 
 * [Installation](#installation)
 * [Tutorial](#tutorial)
-* [How does the Plugin Work](#how-does-the-plugin-work)
+* [How does the Plugin Work](#how-does-the-plug-in-work)
 
 
 # Installation
@@ -153,3 +153,5 @@ In the Clone View, you are able to add rich comments to each assembly code instr
 
 
 # How does the Plug-in Work
+
+The plug-in is written in python using idaapi. The root of this repository is the windows installer. The source code of the plugin can be found [here](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins). The user interfaces consists of two parts: the native idaapi forms and the local web pages. Local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA-Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. To interact with the Kam1n0 web services, we use the build-in urllib in python to send request and parse json results. 
