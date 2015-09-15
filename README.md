@@ -20,6 +20,9 @@ In this repository we release the initial version of Kam1n0 and its plugin for I
     * [Indexing](#indexing)
     * [Search and add comments](#search-and-add-comments)
 * [How does the Plugin Work](#how-does-the-plug-in-work)
+    * [User Interface](#user-interface)
+    * [Synchronization](#synchronization)
+    * [Communication](#communication)
 
 
 # Installation
@@ -171,7 +174,7 @@ The user interface consists of two parts:
 
 ## Synchronization
 
-We find it difficult to update the IDA Pro UI asynchronously. If a thread other than the main thread updates interface and the user interacts with (e.g. click on) the interface at the same moment, the IDA Pro will freeze/crash.  
+We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```. If a thread other than the main thread updates interface and the user interacts with (e.g. click on) the interface at the same moment, the IDA Pro will freeze/crash.  
 
 ## Communication
 
