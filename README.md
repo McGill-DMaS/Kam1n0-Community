@@ -2,7 +2,7 @@
 
 Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process; since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or a binary file. 
 
-Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the one on the left and the one on the right as shown below). Kam1n0 supports rich comment format, and it  has a IDA-Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
+Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the one on the left and the one on the right as shown below). Kam1n0 supports rich comment format, and it  has a IDA Pro plug-in to use its indexing and searching capabilities via the IDA Pro.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867360/a130631c-5b3a-11e5-8b76-83afec582886.png)
 
@@ -29,7 +29,7 @@ The current distribution of the Kam1n0 IDA Pro plug-in is bundled with a local K
 * [Required] The latest x86 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (x86).
 * [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
-Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA-Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+Next, download the latest ```.msi``` installation file for Windows at our [release page](https://github.com/steven-hh-ding/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 ## Where does Kam1n0 store the data?
 At the end of the installation, the installer will ask you to select the path for storing local data and log files. It also creates a folder ```~/Kam1n0/``` to store plug-in data and errors. The local Kam1n0 engine can be found IN the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
@@ -101,7 +101,7 @@ Kam1n0 should open a browser with a login page as shown below. The default usern
 
 ### Indexing
 
-Open IDA-Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual. Click on the ```Manage Connection Button``` in the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit the connections of the plugin. There is already a default connection for the local engine. These connections will be stored for future use. 
+Open IDA Pro and disassemble the ```libpng-1.7.0b54.dll``` binary file as usual. Click on the ```Manage Connection Button``` in the toolbar ![cnn](https://cloud.githubusercontent.com/assets/8474647/9767812/03b32f16-56ee-11e5-9284-c628c33e4031.png). You are now able to review and edit the connections of the plugin. There is already a default connection for the local engine. These connections will be stored for future use. 
 
 ![cnnw](https://cloud.githubusercontent.com/assets/8474647/9767976/efda63d2-56ee-11e5-9cff-e15a68fa7312.png)
 
@@ -161,6 +161,17 @@ In the Clone View, you are able to add rich comments to each assembly code instr
 
 # How does the Plug-in Work
 
-The plug-in is written in python using idaapi. The root of this repository is the windows installer. The source code of the plugin can be found [here](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins). The user interfaces consists of two parts: the native idaapi forms and the local web pages. Local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA-Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. To interact with the Kam1n0 web services, we use the build-in urllib in python to send request and parse json results. 
+The plug-in is written in python using ```idaapi```. The root of this repository is the windows installer. The source code of the plugin can be found [here](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins). 
 
+## User Interface
+The user interface consists of two parts: 
+* The native idaapi forms and controls: Connection Management Form, Search Progress Form, Index Progress Form, Select Function to Search Form, Select Function to Inex Form.
+* The local wabpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View.
+* These local webpages are redenered using the embeded chromieum shipped with cefpython; and the frame used to hold chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately pages cannot be rendered, so we switch to wxpython. 
+* 
 
+## Synchronization
+We find it difficult to update the IDA Pro UI asynchronously. If a thread other than the main thread updates interface and the user interacts with (e.g. click on) the interface at the same moment, the IDA Pro will freeze/crash.  
+
+## Communication
+To interact with the Kam1n0 web services, we use the build-in ```urllib``` in python to send request and the ```json``` lib parse the json results. After that json results are pass to javascripts using ```cefpython```. More details can be found at the Connector. 
