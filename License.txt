@@ -1,7 +1,7 @@
 -------------------------------------------------------
 Software: Kam1n0 plugin for IDA Pro
 Contributors: Steven H. H. Ding and Benjamin C. M. Fung
-Copyright 2015 McGill University
+Copyright 2015 McGill University All rights reserved.
 -------------------------------------------------------
 
 Creative Commons
