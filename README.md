@@ -191,3 +191,6 @@ The software was developed by Steven H. H. Ding under the supervision of Benjami
 - NoDerivatives — If you remix, transform, or build upon the material, you may not distribute the modified material.
 
 Please refer to License.txt for details.
+
+Copyright 2015 McGill Unviersity 
+All rights reserved.
