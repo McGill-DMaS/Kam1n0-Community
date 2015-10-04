@@ -76,7 +76,7 @@ r"""BUTTON YES* Index
 BUTTON CANCEL Cancel
 Kam1n0
 {FormChangeCb}
-Select Function to be indexed
+Select function to be indexed
 <(Use ctrl/shift + click to select multiple functions):{fvChooser}>
 <Select all functions:{chkSearchAll}>
 <Select all library functions:{chkOnlyLib}>

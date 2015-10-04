@@ -78,7 +78,7 @@ r"""BUTTON YES* Search
 BUTTON CANCEL Cancel
 Kam1n0
 {FormChangeCb}
-Select Function to be searched
+Select function to be searched
 <(Use ctrl/shift + click to select multiple functions):{fvChooser}>
 <Select all functions:{chkSearchAll}><Skip library functions:{chkSkipLib}>{adSearchGroup}>
 Search configuration

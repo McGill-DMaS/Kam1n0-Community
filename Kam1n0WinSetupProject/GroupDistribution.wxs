@@ -46,6 +46,7 @@
       <Component Id="cmp387A9B7B00334EBEB1B608DBDA717DCA" Guid="{53C9B447-17A0-41DC-B909-863C934414AB}">
         <File Id="fil6FF9EA9D029E0D5373A2BA745B7885AE" KeyPath="yes" Source="$(var.dir_src_distribution)\kam1n0-conf.xml" />
         <util:XmlFile Id="FileConfXmlE" Action="setValue" ElementPath="/Kam1n0-Configuration/entry/string[\[]text()='$PATH_DATA$'[\]]" File="[DISTRIBUTIONDIR]\kam1n0-conf.xml" Value="[KAM_DATA_DIR]"/>
+        <util:XmlFile Id="FileConfXmlE.IDA.PATH" Action="setValue" ElementPath="/Kam1n0-Configuration/entry/string[\[]text()='$PATH_IDA$'[\]]" File="[DISTRIBUTIONDIR]\kam1n0-conf.xml" Value="[PATH_IDA]"/>
       </Component>
       <Component Id="cmp0F399B4ED81C3C9C333EB81B8DA3C2E3" Guid="{A157AE6F-0BC6-4595-96C1-954E3B51EE32}">
         <File Id="Kam1n0.exe" KeyPath="yes" Source="$(var.dir_src_distribution)\Kam1n0.exe" >

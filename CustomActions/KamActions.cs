@@ -24,26 +24,6 @@ namespace CustomActions
 {
     public class KamActions
     {
-
-        public static void main()
-        {
-
-        }
-
-
-        public static void setPath(string distrPath, string setDataPath)
-        {
-            string confFile = distrPath + "\\kam1n0-conf.xml";
-            string logFile = distrPath + "\\log4j2.xml";
-            string confStr = File.ReadAllText(confFile);
-            string logStr = File.ReadAllText(logFile);
-            string identifier = @"$PATH_DATA$";
-            confStr = confStr.Replace(identifier, setDataPath);
-            logStr = logStr.Replace(identifier, setDataPath);
-            File.WriteAllText(confFile, confStr);
-            File.WriteAllText(logFile, logStr);
-        }
-
         public static bool CheckIfIsIdaPluginsFolder(String selectedPath)
         {
             bool isCorrectFolder = false;
@@ -73,34 +53,17 @@ namespace CustomActions
             string selectedPath = session[selectedVar];
             session.Log(selectedPath);
             if (CheckIfIsIdaPluginsFolder(selectedPath))
+            {
                 session["INSTALL_DIR_VALID"] = "1";
+                session["PATH_IDA"] = (new DirectoryInfo(selectedPath)).Parent.FullName;
+            }
             else
+            {
                 session["INSTALL_DIR_VALID"] = "0";
+                session["PATH_IDA"] = "";
+            }
 
             return ActionResult.Success;
         }
-
-        [CustomAction]
-        public static ActionResult UpdateConfFiles(Session session)
-        {
-
-            session.Log("here");
-            session.Log("here");
-            session.Log("here");
-
-            string intallVar = session["INSTALL_DIR"];
-            string installPath = session[intallVar];
-            string dataVar = session["DATA_DIR"];
-            string dataPath = session[dataVar];
-
-            setPath(installPath, dataPath);
-
-            return ActionResult.Success;
-        }
-
-
-
-
-
     }
 }

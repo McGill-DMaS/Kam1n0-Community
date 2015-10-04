@@ -41,7 +41,6 @@
     <Content Include="images\folder_up.ico" />
     <Content Include="images\icon.bmp" />
     <Content Include="images\installbtn.bmp" />
-    <Content Include="images\installbtn.png" />
     <Content Include="images\progressbar.bmp" />
     <Content Include="images\side.bmp" />
     <Content Include="_note.txt" />

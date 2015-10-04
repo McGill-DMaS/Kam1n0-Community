@@ -53,12 +53,12 @@
       <Binary Id="bkImgW" SourceFile="images/bgw.bmp"/>
       <Binary Id="bkImgB" SourceFile="images/bgb.bmp"/>
       <Binary Id="bkImgR" SourceFile="images/bgr.bmp"/>
-      <Binary Id="cover" SourceFile="images/cover.png"/>
-      <Binary Id="cvImg" SourceFile="images/cover.png"/>
+      <Binary Id="cover" SourceFile="images/cover.bmp"/>
+      <Binary Id="cvImg" SourceFile="images/cover.bmp"/>
       <Binary Id="btnCancel" SourceFile="images/cancelbtn.bmp"/>
-      <Binary Id="btnInstall" SourceFile="images/installbtn.png"/>
+      <Binary Id="btnInstall" SourceFile="images/installbtn.bmp"/>
       <Binary Id="side" SourceFile="images/side.bmp"/>
-      <Binary Id="error_folder" SourceFile="images/folder_error.png"/>
+      <Binary Id="error_folder" SourceFile="images/folder_error.bmp"/>
       <Binary Id="up_folder" SourceFile="images/folder_up.ico"/>
       <Binary Id="add_folder" SourceFile="images/folder_add.ico"/>
       <Binary Id="icnT" SourceFile="images/icon.bmp"/>
@@ -80,7 +80,7 @@
         <Control Id="explanationText" X="5" Y="140" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="300" Height="100" Text="{\TahomaNormal}To continue with the setup click on the Install button. If you choose not to install this application, close this dialog to exit." />
         <Control Id="explanationTextBk" Type="Bitmap" Text="bkImgR" Height="23" Width="305" X="0" Y="140" TabSkip="no" />
 
-        <Control Id="introText5"  Type="Text" X="5" Y="188" Width="500" Height="20" Transparent="yes" Text="{\TahomaNormalBold}Contributors: Benjamin C. M. Fung and Steven H. H. Ding" />
+        <Control Id="introText5"  Type="Text" X="5" Y="188" Width="500" Height="20" Transparent="yes" Text="{\TahomaNormalBold}Contributors: Steven H. H. Ding and Benjamin C. M. Fung" />
         <Control Id="introText56Bk" Type="Bitmap" Text="bkImgB" Height="12" Width="280" X="0" Y="188" TabSkip="no" />
 
         <Control Id="installButton" Type="PushButton" Text="btnInstall" Height="31" Width="90" X="500" Y="159" Bitmap="yes">
@@ -184,7 +184,7 @@
 
         <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Selecting the Installation Location" />
         <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please choose where you would like us to install the software." />
-        <Control Id="explanationText2" X="165" Y="80" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}The plugin has to be installed at the plugins folder under IDA-Pro folder. Please select the $IDAPRO$/plugins as the installation path. Typically on x86 windows it will be C:\Program Files\IDA 6.7\plugins." />
+        <Control Id="explanationText2" X="165" Y="80" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}The plugin has to be installed at the plugins folder under IDA-Pro folder. Please select the $IDAPRO$/plugins as the installation path. Typically on x86 windows it will be C:\Program Files\IDA 6.8\plugins." />
         <Control Id="explanationText3" X="145" Y="200" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}We will validate the selected path before next step to ensure it will be working properly." />
 
         <Control Id="FolderLabel" X="145" Y="135" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}The plugins folder under IDA-Pro installation path:" />
@@ -219,7 +219,7 @@
         <Control Id="OK" Type="PushButton" X="102" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="OK)">
           <Publish Event="EndDialog" Value="Return">1</Publish>
         </Control>
-        <Control Id="Text" Type="Text" X="48" Y="22" Width="194" Height="30" Text="{\TahomaNormalBlk}The selected installaton path is not valid." Transparent="yes" />
+        <Control Id="Text" Type="Text" X="48" Y="22" Width="194" Height="30" Text="{\TahomaNormalBlk}The selected installation path is not valid." Transparent="yes" />
         <Control Id="Icon" Type="Bitmap" Text="error_folder" Height="32" Width="32" X="15" Y="15" TabSkip="no" />
       </Dialog>
 
@@ -290,7 +290,7 @@
         
         
         <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Features to be Installed" />
-        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please review the following features that to be installed on your computer." />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please review the following features that will be installed on your computer." />
 
         <Control Id="Tree" Type="SelectionTree" X="145" Y="80" Width="202" Height="115" Property="_BrowseProperty" Sunken="no" TabSkip="no" Text="Features" />
         <Control Id="Box" Type="GroupBox" X="357" Y="76" Width="202" Height="118" />
@@ -353,7 +353,7 @@
         
         
         <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Kam1n0 Engine Configuration" />
-        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please configure the directory for Kam1n0 to store the indexed the data." />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}Please configure the directory for Kam1n0 to store the indexed data." />
         <Control Id="explanationText2" X="145" Y="80" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}Following data will be stored at this directory: " />
         <Control Id="explanationText2l1" X="155" Y="90" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}* The indexed assembly data" />
         <Control Id="explanationText2l2" X="155" Y="100" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}* The engine logs" />
@@ -461,7 +461,7 @@
         
         
         <Control Id="introText"  Type="Text" X="145" Y="20" Width="400" Height="25" Transparent="yes" Text="{\TahomaHeader}Kam1n0 Engine Configuration" />
-        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}The installation of Kam1n0 and its plugin for IDA-Pro has completed; however, we stil need to install some of its dependencies." />
+        <Control Id="explanationText" X="145" Y="60" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="400" Height="100" Text="{\TahomaNormal}The installation of Kam1n0 and its plugin for IDA-Pro has completed; however, we still need to install some of its dependencies." />
         <Control Id="explanationText2" X="145" Y="100" NoWrap="no" RightAligned="no" Transparent="yes" Type="Text" Width="350" Height="100" Text="{\TahomaNormal}After this dialog, you will be prompted to install other dependencies in sequence." />
         
         <Control Id="Finish" Type="PushButton" Height="17" Width="200" X="360" Y="275"  Default="yes" Cancel="yes" Text="Install Dependencies and Finish" >

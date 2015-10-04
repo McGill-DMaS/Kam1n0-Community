@@ -58,6 +58,7 @@
     <UIRef Id="InstallerUI" />
     <Property Id="INSTALL_DIR">PLUGINSDIR</Property>
     <Property Id="DATA_DIR">KAM_DATA_DIR</Property>
+    <Property Id="PATH_IDA"></Property>
     <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
 
     <!--Actions-->

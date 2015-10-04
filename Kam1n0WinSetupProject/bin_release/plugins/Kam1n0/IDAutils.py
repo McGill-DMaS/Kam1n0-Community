@@ -77,9 +77,7 @@ def GetContentStr(func):
 
 
 def GetBinaryName():
-    global BinaryName
-    if BinaryName is None:
-        BinaryName = idaapi.get_input_file_path()
+    BinaryName = idaapi.get_input_file_path()
     return BinaryName
 
 

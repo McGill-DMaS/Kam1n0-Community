@@ -13,3 +13,10 @@ C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\Microsoft.
 C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
 C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\obj\x86\Debug\CustomActions.dll
 C:\ding\IDA 6.7\plugins\Kam1n0WinSetupProject\CustomActions\obj\x86\Debug\CustomActions.pdb
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\bin\Debug\CustomActions.dll
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\bin\Debug\CustomActions.CA.dll
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\bin\Debug\CustomActions.pdb
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\obj\x86\Debug\CustomActions.dll
+E:\GitRepo\Kam1n0-Plugin-IDA-Pro\CustomActions\obj\x86\Debug\CustomActions.pdb
