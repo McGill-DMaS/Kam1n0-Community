@@ -190,7 +190,7 @@ The software was developed by Steven H. H. Ding under the supervision of Benjami
 - NonCommercial — You may not use the material for commercial purposes.
 - NoDerivatives — If you remix, transform, or build upon the material, you may not distribute the modified material.
 
-Please refer to License.txt for details.
+Please refer to License.txt for details. We will relax the licensing model after having some publications.
 
 Copyright 2015 McGill Unviersity 
 All rights reserved.
