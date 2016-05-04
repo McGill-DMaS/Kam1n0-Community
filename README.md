@@ -88,12 +88,12 @@ Next, download the ```Kam1n0-client-idaplugin.msi``` installer on our [release p
 In the previous version of Kam1n0, only a single repository is supported on a workstation, and the configuration files for Kam1n0 stay in the same folder as the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation, and each repository can support different type of processor architecture. Each repository is given a data directory where you can find its configuration files. More details can be found in our Kam1n0 workbench tutorial.
 
 #  Other Documentation
-* [Manage Repositories with Kam1n0 Workbench](#manage-repositories)
-* [Web Interface Tutorial](#web-interface-tutorial)
-* [IDA Pro Plug-in Tutorial](#ida-pro-plugin-tutorial)
-* [Working with a Cluster](#working-with-a-cluster)
-* [Create Your Own Processor Definition](#create-your-own-processor-definition)
-* [Migrate Repository from Previous Version](#migrate-repository)
+* [Manage repositories with Kam1n0 Workbench](documentation/workbench.md#kam1n0-workbench-tutorial)
+* [Web interface tutorial](documentation/web-ui.md#kam1n0-web-ui-tutorial)
+* [IDA Pro plug-in tutorial](#documentation/ida-pro-plugin.md#ida-pro-plug-in-tutorial)
+* [Working with a cluster](#documentation/)
+* [Create your own processor definition](#documentation/processor-definition.md#create-your-own-processor-definition)
+* [Migrate repository from the previous version](#documentation/)
 
 ## Licensing
 
