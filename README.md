@@ -20,7 +20,7 @@ In this repository we release the initial version of Kam1n0 and its IDA Pro plug
 * [Kam1n0 Core] Support user-defined processor architecture.
 * [Kam1n0 Core] Optimized index structure supports better scalability and clone search quality.
 * [Kam1n0 Core] Kam1n0 no longer skips basic blocks which have less than three lines of instruction. Now only single line basic block is skipped; thanks to the new index structure.
-* [IDA Pro plug-in for Kam1n0] Added assembly fragment search functionality. 
+* [IDA Pro plug-in for Kam1n0] [Experimental] Added assembly fragment search functionality. 
 * [IDA Pro plug-in for Kam1n0] Added a tree view for browsing large number of clones.
 
 ## Compatibility:
@@ -33,7 +33,7 @@ The current release of the Kam1n0 consists of two installers: the server core in
 
 <table>
   <tr>
-    <th colspan="2">Installer</th>
+    <th>Installer</th>
     <th>Included components</th>
     <th>Description</th>
   </tr>
@@ -47,12 +47,12 @@ The current release of the Kam1n0 consists of two installers: the server core in
      <td>An user interface to manage the repositories and the running service.</td>
   </tr>
  <tr>
-      <td>Web user interfaces</td>
-     <td>Web user interfaces for searching/indexing binary file and assembly functions.</td>
+      <td>Web user interface</td>
+     <td>Web user interface for searching/indexing binary file and assembly function.</td>
   </tr>
   <tr>
     <td rowspan="3">Kam1n0-client-idaplugin.msi</td>
-     <td>Plug-in for IDA Pro</td>
+     <td>Plug-in</td>
      <td>Connectors and user interface.</td>
   </tr>
 <tr>
@@ -72,11 +72,16 @@ The Kam1n0 core engine is purely written in Java. In order to have it work prope
 * [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 * [Optional] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
-Download the ```Kam1n0-server.msi``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path as well as the IDA Pro installation path. The later is optional if the server does not have to deal with any disassembling. In other words, the client side all uses the Kam1n0 plugin for IDA Pro. It is strongly suggested for the server to work with IDA Pro. 
+Download the ```Kam1n0-server.msi``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path as well as the IDA Pro installation path. The later is optional if the server does not have to deal with any disassembling. In other words, the client side all uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. At this moment we only support IDA Pro.
 
 ## Installing the IDA Pro Plug-in
 
-Next, download the ```Kam1n0_IDA_Pro_v0.0.2.zip``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+The IDA Pro plug-in for Kam1n0 is written in python for logic and in html/JavaScript for rendering. Before installation, it needs the following dependency:
+
+* [Optional] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
+
+
+Next, download the ```Kam1n0-client-idaplugin.msi``` installer on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 
 #  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Other Documentation
