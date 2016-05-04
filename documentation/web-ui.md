@@ -2,7 +2,7 @@
 
 * [Kam1n0 Web UI](#kam1n0-web-ui)
   * [Preparing the Data](#preparing-the-data)
-  * [Create a Repository and Run the Kam1n0 Service](#start-a-repository)
+  * [Create a Repository and Run the Kam1n0 Service](#create-a-repository-and-run-the-kam1n0-service)
   * [Index a Binary File](#index-a-binary-file)
   * [Search with an Assembly Function](#search-with-an-assembly-function)
   * [Search with a Binary File](#search-with-a-binary-file)
