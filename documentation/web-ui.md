@@ -82,7 +82,7 @@ The `Clone Graph View` can be dragged and zoomed in/out with mouse scrolling. Ea
 ![picture2](https://cloud.githubusercontent.com/assets/8474647/15021218/8973868a-11f3-11e6-8228-48effe4e786e.png)
 
 
-Besides of the `Clone Graph View`, there is a `Clone List View` on the other tab. Instead of showing the clone relationship in a force graph, the `Clone List View` shows it in a tree structure. It is much easier to browse when the number of clone is large.
+Besides of the `Clone Graph View`, there is a `Clone List View` on the other tab. Instead of showing the clone relationship in a force graph, the `Clone List View` shows it in a tree structure. It is much easier to browse the clones when the number of clone is large.
 
 ![picture1](https://cloud.githubusercontent.com/assets/8474647/15021171/51e4ee52-11f3-11e6-9cf0-f201cc991458.png)
 
