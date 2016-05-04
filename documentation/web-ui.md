@@ -1,12 +1,12 @@
 # Kam1n0 Web UI Tutorial 
 
 * [Kam1n0 Web UI](#kam1n0-web-ui)
-  * [Preparing the Data](#preparing-the-data)
-  * [Create a Repository and Run the Kam1n0 Service](#create-a-repository-and-run-the-kam1n0-service)
-  * [Index a Binary File](#index-a-binary-file)
-  * [Search with an Assembly Function](#search-with-an-assembly-function)
-  * [Search with a Binary File](#search-with-a-binary-file)
-  * [Browse a Clone Search Result](#browse-a-clone-search-result)
+  * [Preparing the data](#preparing-the-data)
+  * [Create a repository and start the Kam1n0 Service](#create-a-repository-and-start-the-kam1n0-service)
+  * [Index a binary file](#index-a-binary-file)
+  * [Search with an assembly function](#search-with-an-assembly-function)
+  * [Search with a binary file](#search-with-a-binary-file)
+  * [Browse a clone search result](#browse-a-clone-search-result)
 
 ## Kam1n0 Web UI
 
@@ -16,7 +16,7 @@ Starting from version 1.x.x we include a set of web-based user interface for Kam
 
 Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the second one ```zlib-1.2.7.dll``` against it.
 
-## Create a Repository and Start the Engine
+## Create a repository and start the engine
 
 In this step we need to create a repository and start the Kam1n0 engine. Create a repository using the Kam1n0 workbench. Click the `new` button and pick a folder for this repository. Select `metapc.xml` in the drop-down box as architecture. Name this repository anything you like. An example is given in the figure below: 
 
@@ -41,7 +41,7 @@ To save some space, you can minimize the navigation bar by clicking this button:
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15006669/8c34c17a-11a0-11e6-8802-676823666825.png)
 
-## Index a Binary File
+## Index a binary file
 
 By clicking the `Dashboard` link on the navigation bar, you will be directed to the administration portal. Basically this page contains multiple boxes that show different information. The tile of each box is quite self-explained. Thus we won't go into details of these boxes. It is noted that we have not implemented the `Search Queries` and `Spark job` boxes yet. For the `Registered user` box, the `user roles` field is a multiple choice box. Make sure you select both the `user` and `admin` roles when you are creating or updating an admin user.
 
@@ -61,7 +61,7 @@ Follow the same procedure to index the file `libpng-1.7.0b54.dll`. Now we have t
 ![image](https://cloud.githubusercontent.com/assets/8474647/15006977/e20bfa1c-11a2-11e6-8af1-f3267b39d47d.png)
 
 
-## Search with an Assembly Function
+## Search with an assembly function
 
 Next, we want to search an assembly function against the repository. By clicking the `clone search` link on the navigation bar, we are redirected to the assembly function/fragment search page. Basically it has a text box with a search button.
 
@@ -106,7 +106,7 @@ The `Clone Group View` lists different cloned subgraphs and compares their diffe
 ![image](https://cloud.githubusercontent.com/assets/8474647/15021943/5d59baac-11f7-11e6-9bc6-2b8bcd363760.png)
 
 
-## Search with a Binary File
+## Search with a binary file
 
 Next, we try to search with a binary file. First, we navigate to the `Composition analysis` page using the navigation bar on the left. As you can see in the figure below, basically this page contains a file upload form. 
 
@@ -147,7 +147,7 @@ By clicking any entry in the table, you can see the details of a given clone in 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15023073/bfa45c76-11fc-11e6-837e-e679f99fa407.png)
 
 
-## Browse a Clone Search Result
+## Browse a clone search result
 
 After Kam1n0 completes a search query with a binary file, it will generate a `.kam` file which contains all the details about the query and the search results. The kam file can be found at %repository_directory%/tmp/%user_name%/. Specifically, this file contains serveral B-Tree which indexs the following information:
 
