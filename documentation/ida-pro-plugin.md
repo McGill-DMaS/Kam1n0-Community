@@ -12,12 +12,7 @@
     * [Synchronization](#synchronization)
     * [Communication](#communication)
 
-
-
-## Where does the plug-in store the data?
 The IDA Pro plug-in for Kam1n0 creates a folder ```~/Kam1n0/``` to store the plug-in data and errors.
-
-# Tutorial
 This tutorial first introduces Kam1n0's basic functionalities and then goes through a simple index and search example. 
 
 ## Functionalities
