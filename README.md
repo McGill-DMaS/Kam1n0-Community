@@ -10,12 +10,7 @@ Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M
 
 In this repository we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server, and provides clone search service through RESTful web services. The users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
 
-## Latest Release Note
-
-###  2016-05-03 1.0.0-rc1
-
-#### Changes:
-
+#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Release Note 2016-05-03 1.0.0-rc1
 * [Web UI] Added a web interface for clone search of assembly function.
 * [Web UI] Added a web interface for clone search of whole binary file.
 * [Kam1n0 Workbench] Added a Kam1n0 workbench to create and manage multiple repositories on a single workstation.
@@ -28,16 +23,67 @@ In this repository we release the initial version of Kam1n0 and its IDA Pro plug
 * [IDA Pro plug-in for Kam1n0] Added assembly fragment search functionality. 
 * [IDA Pro plug-in for Kam1n0] Added a tree view for browsing large number of clones.
 
-#### Compatibility:
+## Compatibility:
 
-* The repositories and configuration files used in previous versions are no longer supported by the latest version.
+* The assembly code repositories and configuration files used in previous versions (<1.0.0) are no longer supported by the latest version. See documentations about how to migrate previous repositories. 
 
-## Documentation
+#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Installation
 
-* [Installation](#installation)
+The current release of the Kam1n0 consists of two installers: the server core installer and the IDA Pro plug-in installer for Kam1n0. 
+
+<table>
+  <tr>
+    <th colspan="2">Installer</th>
+    <th>Included components</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td rowspan="3">Kam1n0-server.msi</td>
+     <td>Core engine</td>
+     <td>Main engine providing service for indexing and searching</td>
+  </tr>
+   <tr>
+      <td>Workbench</td>
+     <td>An user interface to manage the repositories and the running service.</td>
+  </tr>
+ <tr>
+      <td>Web user interfaces</td>
+     <td>Web user interfaces for searching/indexing binary file and assembly functions.</td>
+  </tr>
+  <tr>
+    <td rowspan="3">Kam1n0-client-idaplugin.msi</td>
+     <td>Plug-in for IDA Pro</td>
+     <td>Connectors and user interface.</td>
+  </tr>
+<tr>
+     <td>Cefpython</td>
+     <td>Rendering engine for the user interface.</td>
+  </tr>
+<tr>
+     <td>Wxpython</td>
+     <td>Rendering engine for Cefpython.</td>
+  </tr>
+</table>
+
+## Installing the Kam1n0 Server
+
+The Kam1n0 core engine is purely written in Java. In order to have it work properly, you need the following dependencies:
+
+* [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+* [Optional] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
+
+Download the ```Kam1n0-server.msi``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path as well as the IDA Pro installation path. The later is optional if the server does not have to deal with any disassembling. In other words, the client side all uses the Kam1n0 plugin for IDA Pro. It is strongly suggested for the server to work with IDA Pro. 
+
+## Installing the IDA Pro Plug-in
+
+Next, download the ```Kam1n0_IDA_Pro_v0.0.2.zip``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+
+
+#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Other Documentation
 * [Manage Repositories with Kam1n0 Workbench](#manage-repositories)
 * [Web Interface Tutorial](#web-interface-tutorial)
 * [IDA Pro Plug-in Tutorial](#ida-pro-plugin-tutorial)
+* [Working with a Cluster](#working-with-a-cluster)
 * [Create Your Own Processor Definition](#create-your-own-processor-definition)
 * [Migrate Repository from Previous Version](#migrate-repository)
 
