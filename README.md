@@ -10,7 +10,7 @@ Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M
 
 In this repository we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server, and provides clone search service through RESTful web services. The users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
 
-#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Release Note 2016-05-03 1.0.0-rc1
+#  Release Note 2016-05-03 1.0.0-rc1
 * [Web UI] Added a web interface for clone search of assembly function.
 * [Web UI] Added a web interface for clone search of whole binary file.
 * [Kam1n0 Workbench] Added a Kam1n0 workbench to create and manage multiple repositories on a single workstation.
@@ -27,7 +27,7 @@ In this repository we release the initial version of Kam1n0 and its IDA Pro plug
 
 * The assembly code repositories and configuration files used in previous versions (<1.0.0) are no longer supported by the latest version. See documentations about how to migrate previous repositories. 
 
-#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Installation
+#  Installation
 
 The current release of the Kam1n0 consists of two installers: the server core installer and the IDA Pro plug-in installer for Kam1n0. 
 
@@ -78,13 +78,16 @@ Download the ```Kam1n0-server.msi``` file on our [release page](https://github.c
 
 The IDA Pro plug-in for Kam1n0 is written in python for logic and in html/JavaScript for rendering. Before installation, it needs the following dependency:
 
-* [Optional] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
+* [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
 
 Next, download the ```Kam1n0-client-idaplugin.msi``` installer on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
+## Configuring the Kam1n0 Engine
 
-#  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) Other Documentation
+In the previous version of Kam1n0, only a single repository is supported on a workstation, and the configuration files for Kam1n0 stay in the same folder as the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation, and each repository can support different type of processor architecture. Each repository is given a data directory where you can find its configuration files. More details can be found in our Kam1n0 workbench tutorial.
+
+#  Other Documentation
 * [Manage Repositories with Kam1n0 Workbench](#manage-repositories)
 * [Web Interface Tutorial](#web-interface-tutorial)
 * [IDA Pro Plug-in Tutorial](#ida-pro-plugin-tutorial)
