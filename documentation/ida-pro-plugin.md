@@ -14,8 +14,8 @@
 
 
 
-## Where does Kam1n0 store the data?
-At the end of the installation, the installer will ask you to select the path for storing the local data and log files. It also creates a folder ```~/Kam1n0/``` to store the plug-in data and errors. The local Kam1n0 engine can be found in the installation path. You can customize its configuration file ```kam1n0-conf.xml```.
+## Where does the plug-in store the data?
+The IDA Pro plug-in for Kam1n0 creates a folder ```~/Kam1n0/``` to store the plug-in data and errors.
 
 # Tutorial
 This tutorial first introduces Kam1n0's basic functionalities and then goes through a simple index and search example. 
