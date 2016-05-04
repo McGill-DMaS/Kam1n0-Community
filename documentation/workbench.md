@@ -1,12 +1,12 @@
 # Kam1n0 Workbench Tutorial
 
 * [Kam1n0 Workbench ](#kam1n0-workbench)
-  * [Create a Repository](#create-a-repository)
-  * [Edit a Repository](#edit-a-repository)
-  * [Remove a Repository](#remove-a-repository)
-  * [Start or Stop the Kam1n0 Engine](#start-or-stop-the-kam1n0-engine)
-  * [JVM Options for the Kam1n0 Engine](#jvm-options-for-the-kam1n0-engine)
-  * [Moving a Repository](#moving-a-repository)
+  * [Create a repository](#create-a-repository)
+  * [Edit a repository](#edit-a-repository)
+  * [Remove a repository](#remove-a-repository)
+  * [Start or stop the Kam1n0 Engine](#start-or-stop-the-kam1n0-engine)
+  * [JVM options for the Kam1n0 Engine](#jvm-options-for-the-kam1n0-engine)
+  * [Moving a repository](#moving-a-repository)
 
 # Kam1n0 Workbench
 
@@ -30,7 +30,7 @@ Each repository shows its name, architecture, last access time, and directory in
 
 With Kam1n0 workbench, a user can maintain multiple repositories on a workstation, start the Kam1n0 service with a selected repository, and stop the service. It is noted that only one Kam1n0 service can be running at a time on a given workstation. The Kam1n0 workbench will be minimized into a tray icon on the task bar. Double-clicking the tray icon will pop up the workbench again. Closing the workbench will shutdown the running Kam1n0 service. 
 
-## Create a Repository
+## Create a repository
 
 It is simple to create a repository on your workstation. Click the `new` button below the repository list. You will see a new tab is added in the lower tab panel (as shown in the figure below).
 
@@ -44,7 +44,7 @@ After you create a repository, make sure to click the `save` button to persist t
 
 The list of repository is stored at a folder name `Kam1n0` under your user directory.
 
-## Edit a Repository
+## Edit a repository
 
 To edit a repository is simple, just double click any entry in the repository list table. A new tab is created in the same way you create a new repository. By editing any field in the newly created tab, you will see the same changes apply to the repository list.  Remember to click the `save` button after you finish editing.
 
@@ -53,11 +53,11 @@ To edit a repository is simple, just double click any entry in the repository li
 
 It is noted that the chosen architecture of a repository in workbench will only be used to create the repository. If you want to really change the processor architecture of a given repository, you need to change the configuration file under the directory of that directory for the changes to really take effect. It is not recommended to change this option once a repository is created. 
 
-# Remove a Repository
+# Remove a repository
 
 To remove a specific repository, simply select it from the repository list table and click the `delete` button. After the changes make sure you click the `save` button. It is noted that removing a repository from the list does not remove the actual repository on your hard drive. It is still there and you can add it back using the same procedure above to create a new repository. The Kam1n0 engine will automatically recognize that it is an existing repository. To permanently delete a repository, you need to remove its directory manually. 
 
-# Start or Stop the Kam1n0 Engine
+# Start or stop the Kam1n0 Engine
 
 To start the engine, you need to pick one of the repository from the upper table and then click the `Start` button. You will see that the Engine log tab in the lower tab panel being automatically activated and the engine starts running. The repository table will be disabled when you run the engine, since only one engine is allowed to run at a time on a workstation. 
 
@@ -71,11 +71,11 @@ If your browser pops up a login page like the one below. The engine is running g
 
 To shutdown the engine, simply click the stop button on the workbench UI. Alternatively you could close the workbench and it will shutdown the engine before exiting. 
 
-## JVM Options for the Kam1n0 Engine
+## JVM options for the Kam1n0 Engine
 
 You can edit the JVM options for the Kam1n0 engine by clicking the menu bar item `Edit` and the entry `JVM Options` under the sub-menu. A new tab is created for you to modify the JVM option. Options are separated by lines. Click the `save` button on the newly created tab to persists the JVM option.
 
-## Moving a Repository
+## Moving a repository
 
 After moving a repository to another directory, you need to manually update the following configurations:
 
