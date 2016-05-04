@@ -90,10 +90,10 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
 #  Other Documentation
 * [Manage repositories with Kam1n0 Workbench](documentation/workbench.md#kam1n0-workbench-tutorial)
 * [Web interface tutorial](documentation/web-ui.md#kam1n0-web-ui-tutorial)
-* [IDA Pro plug-in tutorial](#documentation/ida-pro-plugin.md#ida-pro-plug-in-tutorial)
-* [Working with a cluster](#documentation/)
-* [Create your own processor definition](#documentation/processor-definition.md#create-your-own-processor-definition)
-* [Migrate repository from the previous version](#documentation/)
+* [IDA Pro plug-in tutorial](documentation/ida-pro-plugin.md#ida-pro-plug-in-tutorial)
+* [Working with a cluster](documentation/)
+* [Create your own processor definition](documentation/processor-definition.md#create-your-own-processor-definition)
+* [Migrate repository from the previous version](documentation/)
 
 ## Licensing
 
