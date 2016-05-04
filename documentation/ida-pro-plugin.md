@@ -151,7 +151,7 @@ In the Clone View, you are able to add rich comments to each assembly code instr
 
 ### Assembly Fragment Search
 
-![image](https://cloud.githubusercontent.com/assets/8474647/15026221/60af674c-120b-11e6-8a05-dfc0798e9ad9.png)
+![picture10](https://cloud.githubusercontent.com/assets/8474647/15026377/31a10554-120c-11e6-8b1b-48af7c536029.png)
 
 Start from version 1.x.x we support assembly fragment search in IDA Pro. This is still an experimental feature at this moment. You can simply select a couple lines of assembly code and right click it to pop out the menu. Select the entry `Query fragment`. You will see a pop up window in which you are able to edit the selected assembly code. Then click the `search` button.
 
