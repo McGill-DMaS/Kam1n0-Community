@@ -116,6 +116,7 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
 * [Working with a cluster](documentation/cluster.md#working-with-a-cluster)
 * [Create your own processor definition](documentation/processor-definition.md#create-your-own-processor-definition)
 * [Migrate repository from the previous version](documentation/migration.md#migrate-repository-from-the-previous-version)
+* [CLI tutorial](documentation/CLI.md#cli-tutorial)
 
 ## Licensing
 
