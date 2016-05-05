@@ -15,8 +15,8 @@ Locate the `<cassandra>` xml tag. It contains necessary information about the Ca
 ```
 
 * `<host>` tag: the remote host name or IP address of the Cassandra cluster. It will not be used by the embeded Cassandra instance.
-* `<port>` tag: the remote port of the Cassandra cluster. It also will be used as local port by the embeded Cassandra instance.
-* `<portStorage>` tag: the port used for Cassandra iternal communication.
+* `<port>` tag: the remote port of the Cassandra cluster. It will also be used as a local port by the embeded Cassandra instance.
+* `<portStorage>` tag: the port used for Cassandra internal communication.
 * `<embedded>` tag: a boolean value which indicates whether Kam1n0 should use an embeded Cassandra database locally or connect to a remote Cassandra cluster.
 
 ### Configure the Spark connection
