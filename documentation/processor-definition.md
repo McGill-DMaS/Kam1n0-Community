@@ -1,14 +1,14 @@
 # Create your own processor definition
 
-To add a customized processor architecture is simple. Follow these steps:
+To add a customized processor architecture, follow these steps:
 
-* Create an xml file according to the template in this page.
+* Create an xml file according to the template on this page.
 * Put it under your %kam1n0_installation_directory%/architectures/
-* Open the workbench, Now you can create a repository with your own processor architecture.
+* Open the workbench. Now you can create a repository with your own processor architecture.
 
 ## XML scheme for defining the processor specific assembly language
 
-The definition of your own processor specific assembly language should follow the scheme below. You can find example definitions for arm, powerpc, and metapc under the directory `%kam1n0_installation_directory%/architectures/`. It should be noted that the xml definition of the assembly language does not need to be strictly inclusive. Missing some rarely used suffix for the operations will not have significant impact on the clone search result.
+The definition of your own processor-specific assembly language should follow the scheme below. You can find some sample definitions for ARM, PowerPC, and metapc from the directory `%kam1n0_installation_directory%/architectures/`. It should be noted that the xml definition of the assembly language does not need to be strictly inclusive. Missing some rarely used suffix for the operations will not have significant impact on the clone search result.
 
 ```xml
 
