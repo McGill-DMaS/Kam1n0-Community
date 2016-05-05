@@ -67,21 +67,21 @@ The current release of the Kam1n0 consists of two installers: the server core in
 
 ## Installing the Kam1n0 Server
 
-The Kam1n0 core engine is purely written in Java. In order to have it work properly, you need the following dependencies:
+The Kam1n0 core engine is purely written in Java. You need the following dependencies:
 
 * [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 * [Optional] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
-Download the ```Kam1n0-server.msi``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path as well as the IDA Pro installation path. The later is optional if the server does not have to deal with any disassembling. In other words, the client side all uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. At this moment we only support IDA Pro.
+Download the ```Kam1n0-server.msi``` file on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path as well as the IDA Pro installation path. The later is optional if the server does not have to deal with any disassembling. In other words, the client side  uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. The current version of Kam1n0 only supports IDA Pro.
 
 ## Installing the IDA Pro Plug-in
 
-The IDA Pro plug-in for Kam1n0 is written in python for logic and in html/JavaScript for rendering. Before installation, it needs the following dependency:
+The IDA Pro plug-in for Kam1n0 is written in Python for logic and in html/JavaScript for rendering. Before installation, it needs the following dependency:
 
 * [Required] The latest version of IDA Pro with the [idapython](https://code.google.com/p/idapython/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Re-install IDA Pro if necessary. 
 
 
-Next, download the ```Kam1n0-client-idaplugin.msi``` installer on our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
+Next, download the ```Kam1n0-client-idaplugin.msi``` installer from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins directory which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.8/plugins```. The installer will validate the path. 
 
 ## Configuring the Kam1n0 Engine
 
