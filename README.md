@@ -114,6 +114,8 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
     * [Synchronization](documentation/ida-pro-plugin.md#synchronization)
     * [Communication](documentation/ida-pro-plugin.md#communication)
 * [Working with a cluster](documentation/cluster.md#working-with-a-cluster)
+  * [Configure the Cassandra connection](documentation/cluster.md#configure-the-cassandra-connection)
+  * [Configure the Spark connection](documentation/cluster.md#configure-the-spark-connection) 
 * [Create your own processor definition](documentation/processor-definition.md#create-your-own-processor-definition)
 * [Migrate repository from the previous version](documentation/migration.md#migrate-repository-from-the-previous-version)
 * [CLI tutorial](documentation/CLI.md#cli-tutorial)
