@@ -54,7 +54,7 @@ These functionalities can be found in the:
 
 
 
-Even though you can select functions in the popup menu of the ```IDA Pro Functions Window``` to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) opens a ```Selection Window``` which provides a more detailed configuration for multiple search. While using the plugin, we recommend to keep the ```Output Window``` open in IDA Pro. 
+Even though you can select functions from the popup menu of the ```IDA Pro Functions Window``` to search/index functions, using ![searchs](https://cloud.githubusercontent.com/assets/8474647/9765980/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](https://cloud.githubusercontent.com/assets/8474647/9766100/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) opens a ```Selection Window``` which provides a more detailed configuration for multiple search. While using the plugin, we recommend to keep the ```Output Window``` open in IDA Pro. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766922/84f86aaa-56e9-11e5-936a-0f5483686dc5.png)
 ![image](https://cloud.githubusercontent.com/assets/8474647/9766925/8f145134-56e9-11e5-9b98-7c0ca4e53039.png)
@@ -71,7 +71,7 @@ Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```z
 
 ### Start The engine
 
-In this step we need to create a repository and start the Kam1n0 engine. Create a repository using the Kam1n0 workbench. Click the `new` button and pick a folder for this repository. Select `metapc.xml` in the drop-down box as architecture. Name this repository anything you like. An example is given in the figure below: 
+In this step, we need to create a repository and start the Kam1n0 engine. To create a repository using the Kam1n0 workbench, click the `new` button and pick a folder for this repository, select `metapc.xml` in the drop-down box as architecture, and assign a name to the repository . An example is given in the figure below: 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15006258/dfc3b188-119c-11e6-9cfd-058d25654e9b.png)
 
@@ -95,11 +95,11 @@ Wait until the indexing process finishes as shown in the ```Progress Form```. De
 
 
 ## Search and add comments
-Open IDA Pro and disassemble the target ```zlib-1.2.7.dll``` binary file as usual. Click on the ```Select Functions to Search Button``` in the toolbar ![image](https://cloud.githubusercontent.com/assets/8474647/9768419/95e4bba4-56f1-11e5-8c42-9bee9a5cba28.png). Suppose we want to search the ```alder32``` and ```compress2``` functions. Select them using ctrl+click in the list. Click on the ```Search Button``` (shown as the Step 1 and Step 2 in image below).
+Open IDA Pro and disassemble the target ```zlib-1.2.7.dll``` binary file as usual. Click on the ```Select Functions to Search Button``` in the toolbar ![image](https://cloud.githubusercontent.com/assets/8474647/9768419/95e4bba4-56f1-11e5-8c42-9bee9a5cba28.png). Suppose we want to search for the ```alder32``` and ```compress2``` functions. Select them using ctrl+click in the list. Click on the ```Search Button``` (shown as Step 1 and Step 2 in image below).
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867961/42fec16a-5b41-11e5-89c1-86ff62985fbe.png)
 
-You will be able to see a progress form during the search. The search should end in seconds, and it will pop up two windows: the `Kam1n0` window and the `Clone Tree` window.
+You will see a progress form during the search. The search should end in seconds, and it will pop up two windows: the `Kam1n0` window and the `Clone Tree` window.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15025384/06b73084-1207-11e6-95f4-31a05c63e992.png)
 
@@ -129,14 +129,14 @@ The Flow View explores the cloned control flow graph structure between two funct
 
 ### The Text-Diff View
 
-The Text-Diff View tries to fully ally two assembly functions using a basic string comparison algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion; while the ones with a green background mean addition. 
+The Text-Diff View tries to fully align two assembly functions using a basic string comparison algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion while the ones with a green background mean addition. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9868058/448e88c0-5b42-11e5-97b5-fd5a857d45c4.png)
 
 
 ### The Clones View
 
-The Clones View lists different cloned subgraphs and compares their differences. The panel below two text views lists these cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group, since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding basic blocks and compare their differences using string alignment. 
+The Clones View lists different cloned subgraphs and compares their differences. The panel below the two text views lists the cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding basic blocks and compare their differences using string alignment. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9868089/b6f03026-5b42-11e5-8368-e304ba7674c4.png)
 
@@ -148,7 +148,7 @@ In the Clone View, you are able to add rich comments to each assembly code instr
 
 ![picture10](https://cloud.githubusercontent.com/assets/8474647/15026377/31a10554-120c-11e6-8b1b-48af7c536029.png)
 
-Start from version 1.x.x we support assembly fragment search in IDA Pro. This is still an experimental feature at this moment. You can simply select a couple lines of assembly code and right click it to pop out the menu. Select the entry `Query fragment`. You will see a pop up window in which you are able to edit the selected assembly code. Then click the `search` button.
+Starting from version 1.x.x, we support assembly fragment search in IDA Pro. This is still an experimental feature at this moment. You can simply select a couple lines of assembly code and right click on it to pop out the menu. Select the entry `Query fragment`. You will see a pop up window in which you are able to edit the selected assembly code. Then click the `search` button.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15026263/879ba42e-120b-11e6-9efd-cbf70decf2e9.png)
 
@@ -159,18 +159,18 @@ After that, a search progress form will pop up and the search will finish in sec
 
 # How does the Plug-in Work
 
-The plug-in is written in python using ```idaapi```. The root of this repository is the Windows installer. The source code of the plug-in can be found [here](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins). 
+The plug-in is written inPpython using ```idaapi```. The root of this repository is the Windows installer. The source code of the plug-in can be found [here](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins). 
 
 ## User Interface
 
 The user interface consists of two parts: 
 * The native ```idaapi``` forms and controls: the Connection Management Form, the Search Progress Form, the Index Progress Form, the Select Function to Search Form, and the Select Function to Index Form.
-* The local webpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are rendered using the embeded Chromieum shipped with cefpython, and the frame used to hold Chromieum is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately, pages cannot be rendered, so we switch to wxpython. 
+* The local webpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are rendered using the embeded Chromium shipped with cefpython, and the frame used to hold Chromium is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately, pages cannot be rendered, so we switch to wxpython. 
 
 ## Synchronization
 
-We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```. If a thread other than the main thread updates the interface, while the user interacts with (e.g. clicks on) the interface, IDA Pro will freeze/crash. 
+We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```. If a thread other than the main thread updates the interface while the user interacts with (e.g. clicks on) the interface, IDA Pro will freeze/crash. 
 
 ## Communication
 
-To interact with the Kam1n0 web services, we use the build-in ```urllib``` in Python to send requests and the ```json``` lib parses the json results. After that, json results are passed to javascripts using ```cefpython```. 
+To interact with the Kam1n0 web services, we use the built-in ```urllib``` in Python to send requests and the ```json``` lib to parse the json results. After that, the json results are passed to javascripts using ```cefpython```. 
