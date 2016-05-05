@@ -10,7 +10,7 @@
 
 # Kam1n0 Workbench
 
-Kam1n0 Workbench is a user interface for managing multiple repositories as well as the running Kam1n0 instance. It is bundled with the installer for the core engine. After installing the Kam1n0 core engine, you could find its short cut on your starting menu and desktop. 
+Kam1n0 Workbench is a user interface for managing multiple repositories as well as the running Kam1n0 instance. It is bundled with the installer for the core engine. After installing the Kam1n0 core engine, you could find its shortcut on your Start menu and desktop. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15004968/282b6896-118c-11e6-830b-0c40b7412471.png)
 
@@ -36,7 +36,7 @@ It is simple to create a repository on your workstation. Click the `new` button 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15005406/151c5138-1192-11e6-89ca-f9d83af8622e.png)
 
-You need to pick a directory for this new repository. Make sure the Kam1n0 engine has the proper privilege to create files in that directory. All the data and configuration files of this repository will be stored at that location. Also you need to choose a processor architecture from the drop down list. Lastly, please name the repository. Make sure the name is unique among the others in the repository list table.
+You need to pick a directory for this new repository. Make sure the Kam1n0 engine has the proper privilege to create files in that directory. All the data and configuration files of this repository will be stored at that location. Also, you need to choose a processor architecture from the drop down list. Lastly, please name the repository. Make sure the name is unique among the others in the repository list table.
 
 After you create a repository, make sure to click the `save` button to persist the repository list on the hard drive. In the connector log tab you can see a new line is added: `changes saved`  (as shown in the figure below).
 
@@ -46,30 +46,30 @@ The list of repository is stored at a folder name `Kam1n0` under your user direc
 
 ## Edit a repository
 
-To edit a repository is simple, just double click any entry in the repository list table. A new tab is created in the same way you create a new repository. By editing any field in the newly created tab, you will see the same changes apply to the repository list.  Remember to click the `save` button after you finish editing.
+To edit a repository, double click on any entry in the repository list table. A new tab is created in the same way you create a new repository. By editing any field in the newly created tab, you will see the same changes applied to the repository list.  Remember to click the `save` button after you finish editing.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15005622/0ab7206c-1195-11e6-87b8-dda70bad7828.png)
 
 
-It is noted that the chosen architecture of a repository in workbench will only be used to create the repository. If you want to really change the processor architecture of a given repository, you need to change the configuration file under the directory of that directory for the changes to really take effect. It is not recommended to change this option once a repository is created. 
+It is noted that the chosen architecture of a repository in workbench will only be used to create the repository. If you want to really change the processor architecture of a given repository, you need to change the configuration file under the directory of that directory for the changes to take effect. It is not recommended to change this option once a repository is created. 
 
 # Remove a repository
 
-To remove a specific repository, simply select it from the repository list table and click the `delete` button. After the changes make sure you click the `save` button. It is noted that removing a repository from the list does not remove the actual repository on your hard drive. It is still there and you can add it back using the same procedure above to create a new repository. The Kam1n0 engine will automatically recognize that it is an existing repository. To permanently delete a repository, you need to remove its directory manually. 
+To remove a specific repository, select it from the repository list table and click the `delete` button. After the changes, make sure you click the `save` button. It is noted that removing a repository from the list does not remove the actual repository on your hard drive. It is still there and you can add it back using the same procedure above to create a new repository. The Kam1n0 engine will automatically recognize that it is an existing repository. To permanently delete a repository, you need to remove its directory manually. 
 
 # Start or stop the Kam1n0 Engine
 
-To start the engine, you need to pick one of the repository from the upper table and then click the `Start` button. You will see that the Engine log tab in the lower tab panel being automatically activated and the engine starts running. The repository table will be disabled when you run the engine, since only one engine is allowed to run at a time on a workstation. 
+To start the engine, you need to pick one of the repository from the upper table and then click on the `Start` button. You will see that the Engine log tab in the lower tab panel being automatically activated and the engine starts running. The repository table will be disabled when you run the engine because only one engine is allowed to run at a time on a workstation. 
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15005707/ff95ff2c-1195-11e6-84e2-e68a7c1e6dfb.png)
 
-If the chosen repository is a new repository, Kam1n0 engine will initialize the repository's directory with necessary data and configuration files. If not, Kam1n0 will run the service according to the existing configuration file. Default configurations can be found at the Kam1n0's installation directory.
+If the chosen repository is a new repository, Kam1n0 engine will initialize the repository's directory with the necessary data and configuration files; otherwise, Kam1n0 will run the service according to the existing configuration file. Default configurations can be found in the Kam1n0's installation directory.
 
 If your browser pops up a login page like the one below. The engine is running good. The default username and password are both `admin`. Usually it takes a couple seconds to start up the engine.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/15005811/631c4f46-1197-11e6-843d-d79c84c12a18.png)
 
-To shutdown the engine, simply click the stop button on the workbench UI. Alternatively you could close the workbench and it will shutdown the engine before exiting. 
+To shutdown the engine, click the stop button on the workbench UI. Alternatively, you could close the workbench and it will shutdown the engine before exiting. 
 
 ## JVM options for the Kam1n0 Engine
 
