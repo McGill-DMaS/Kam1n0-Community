@@ -2,7 +2,7 @@
 
 Make sure you have properly setup the cluster with Spark and Cassandra. Spark and Cassandra can run on the same cluster. In order to have Kam1n0 engine work with on a cluster, firstly you need to create a local repository using Kam1n0 workbench. After that, start the Kam1n0 engine. Let it initialize the configuration files for the newly created repository. You will find the configuration file `kam1n0-conf.xml` under its directory. Shutdown the engine, and modify the configuration file as follows:
 
-### Configure the cassandra connection
+### Configure the Cassandra connection
 Locate the `<cassandra>` xml tag. It contains necessary information about the Cassandra connector. 
 
 ```xml
@@ -19,7 +19,7 @@ Locate the `<cassandra>` xml tag. It contains necessary information about the Ca
 * `<portStorage>` tag: the port used for Cassandra iternal communication.
 * `<embedded>` tag: a boolean value which indicates whether Kam1n0 should use an embeded Cassandra database locally or connect to a remote Cassandra cluster.
 
-### Configure the spark connection
+### Configure the Spark connection
 Locate the `<spark>` xml tag. It contains necessary information about the Spark connector. 
 
 ```xml
