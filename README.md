@@ -11,9 +11,9 @@ Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M
 In this repository we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server, and provides clone search service through RESTful web services. The users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
 
 ##  Release Note 2016-05-03 1.0.0-rc1
-* [Web UI] Added a web interface for clone search of assembly function.
-* [Web UI] Added a web interface for clone search of whole binary file.
-* [Kam1n0 Workbench] Added a Kam1n0 workbench to create and manage multiple repositories on a single workstation.
+* [Web UI] Added a web interface for clone search with an assembly function.
+* [Web UI] Added a web interface for clone search with a binary file.
+* [Kam1n0 Workbench] Added Kam1n0 Workbench for creating and managing multiple repositories on a single workstation.
 * [Kam1n0 Core] The binary file clone search result can be shared and browsed on the other machine without access to the repository.
 * [Kam1n0 Core] Support indexing and searching for large binary file (>40mb) without limits on system memory.
 * [Kam1n0 Core] Support ARM, PowerPC, x86 and amd86 binaries.
