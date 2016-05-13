@@ -1,12 +1,12 @@
 #  ![image](https://cloud.githubusercontent.com/assets/8474647/14999349/a530f954-1156-11e6-8d8b-6b2136c322bb.png) What Is Kam1n0?
 
+[![Join the chat at https://gitter.im/steven-hh-ding/Kam1n0-Plugin-IDA-Pro](https://badges.gitter.im/steven-hh-ding/Kam1n0-Plugin-IDA-Pro.svg)](https://gitter.im/steven-hh-ding/Kam1n0-Plugin-IDA-Pro?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process, since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries, and then search for the code clones of a given target function or binary file. 
 
 Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the ones on the left and the right as shown below). Kam1n0 supports rich comment format and has an IDA Pro plug-in to use its indexing and searching capabilities via IDA Pro. 
 
-Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung in the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. This software won the second prize in the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
-
-* S. H. H. Ding, B. C. M. Fung, and P. Charland. Kam1n0: MapReduce-based Assembly Clone Search for Reverse Engineering. In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (SIGKDD)</i>, 10 pages, San Francisco, CA: ACM Press, August 2016.
+Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung in the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. This software won the second prize in the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/).
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867360/a130631c-5b3a-11e5-8b76-83afec582886.png)
 
