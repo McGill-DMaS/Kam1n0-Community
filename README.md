@@ -30,7 +30,6 @@ In this repository we release the initial version of Kam1n0 and its IDA Pro plug
 ## Compatibility:
 
 * The assembly code repositories and configuration files used in previous versions (<1.0.0) are no longer supported by the latest version. See documentations about how to migrate previous repositories. 
-* 
 
 ## Scalability
 
