@@ -33,7 +33,7 @@ In this repository we release the initial version of Kam1n0 and its IDA Pro plug
 
 ## Scalability
 
-* You can index millions of functions in each repository on a single machine. The average response time for a query still stays around 1s; and the average indexing time for a function still stays around 13ms.
+* You can index millions of functions in each repository on a single machine. The average response time for a query still stays around 1s; and the average indexing time for a function still stays around 20ms.
 
 #  Installation
 
