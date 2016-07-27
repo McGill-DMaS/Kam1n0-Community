@@ -132,13 +132,18 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
 
 ## Licensing
 
-The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt a restrictive Creative Commons licensing model: Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0). In brief,
+The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt a Creative Commons licensing model: Attribution-NonCommercial-ShareAlike 4.0 International ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)). In brief, you are free to:
+
+- Share — copy and redistribute the material in any medium or format
+- Adapt — remix, transform, and build upon the material
+
+under the following terms
 
 - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
 - NonCommercial — You may not use the material for commercial purposes.
-- NoDerivatives — If you remix, transform, or build upon the material, you may not distribute the modified material.
+- ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
 
-Please refer to License.txt for details. We will relax the licensing model after having some publications.
+Please refer to License.txt for details.
 
 Copyright 2015 McGill Unviersity 
 All rights reserved.
