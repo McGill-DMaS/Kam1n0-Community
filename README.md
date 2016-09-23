@@ -132,7 +132,7 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
 
 ## Licensing
 
-The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt a Creative Commons licensing model: Attribution-ShareAlike International ([CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/legalcode)). In brief, you are free to:
+The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt a Creative Commons licensing model: Attribution-ShareAlike 4.0 International ([CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/legalcode)). In brief, you are free to:
 
 - Share — copy and redistribute the material in any medium or format
 - Adapt — remix, transform, and build upon the material
