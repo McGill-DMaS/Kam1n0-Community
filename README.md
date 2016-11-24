@@ -54,7 +54,7 @@ The current release of the Kam1n0 consists of two installers: the server core in
   </tr>
    <tr>
       <td>Workbench</td>
-     <td>An user interface to manage the repositories and the running service.</td>
+     <td>A user interface to manage the repositories and the running service.</td>
   </tr>
  <tr>
       <td>Web user interface</td>
@@ -132,7 +132,7 @@ In the previous version of Kam1n0, only a single repository is supported on a wo
 
 ## Licensing
 
-The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt Apache Lincense Version 2.0. Please refer to LICENSE.txt for details.
+The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. Currently, we adopt Apache License Version 2.0. Please refer to LICENSE.txt for details.
 
 Copyright 2015 McGill Unviersity 
 All rights reserved.
