@@ -22,7 +22,7 @@ table.dataTable tfoot th {
 }
 
 table.dataTable thead td {
-  padding: 2px
+  padding: 2px;
   border-bottom: 1px solid #111111;
   font-size:13px;
 }
@@ -65,7 +65,7 @@ table.dataTable tbody tr.selected {
 table.dataTable tbody th,
 table.dataTable tbody td {
   padding: 2px;
-  font-size:12px;
+  font-size:13px;
   border: 0px;
   border-bottom: 1px solid #ddd
 }

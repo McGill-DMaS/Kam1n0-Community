@@ -161,13 +161,12 @@ class MainFrame(wx.Frame):
         self.SetSize(size)
 
         if not url:
-            url = "file://"+GetApplicationPath("www/CloneGraph.html")
+            url = "file://"+GetApplicationPath("www/FragmentInput.html")
             # Test hash in url.
             # url += "#test-hash"
 
 
         if TEST_EMBEDDING_IN_PANEL:
-            print("Embedding in a wx.Panel!")
             # You also have to set the wx.WANTS_CHARS style for
             # all parent panels/controls, if it's deeply embedded.
             self.mainPanel = wx.Panel(self, style=wx.WANTS_CHARS)
@@ -192,7 +191,6 @@ class MainFrame(wx.Frame):
 
         jsBindings = cefpython.JavascriptBindings(
             bindToFrames=False, bindToPopups=True)
-        jsBindings.SetFunction("PyPrint", PyPrint)
         jsBindings.SetProperty("pyProperty", "This was set in Python")
         jsBindings.SetProperty("pyConfig", ["This was set in Python",
                 {"name": "Nested dictionary", "isNested": True},
@@ -203,8 +201,8 @@ class MainFrame(wx.Frame):
             gdata = GetData()
 
         self.javascriptExternal = JavascriptExternal(self.browser, gdata)
+        self.javascriptExternal.frame = self
         jsBindings.SetObject("external", self.javascriptExternal)
-        jsBindings.SetProperty("sources", GetSources())
         jsBindings.SetProperty("GData", gdata)
         if not params is None:
             jsBindings.SetProperty("params", params)
@@ -220,7 +218,6 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         if USE_EVT_IDLE and not popup:
             # Bind EVT_IDLE only for the main application frame.
-            print("Using EVT_IDLE to execute the CEF message loop work")
             self.Bind(wx.EVT_IDLE, self.OnIdle)
 
     def CreateMenu(self):
@@ -256,6 +253,10 @@ class MainFrame(wx.Frame):
         # cleanly. Otherwise there may be issues for example with cookies
         # not being flushed to disk when closing app immediately
         # (Issue 158).
+
+        #td = self.javascriptExternal.mainBrowser.GetMainFrame().GetProperty("pyProperty")
+        #print td
+
         del self.javascriptExternal.mainBrowser
         del self.clientHandler.mainBrowser
         del self.browser
@@ -273,12 +274,8 @@ class MainFrame(wx.Frame):
     def OnIdle(self, event):
         cefpython.MessageLoopWork()
 
-def PyPrint(message):
-    print("[wxpython.py] PyPrint: "+message)
-
 class JavascriptExternal:
     mainBrowser = None
-    stringVisitor = None
 
     def __init__(self, mainBrowser, gdata):
         self.mainBrowser = mainBrowser
@@ -298,20 +295,11 @@ class JavascriptExternal:
         frame.Show()
 
     def Print(self, message):
-        print("[wxpython.py] Print: "+message)
+        print(message)
 
-    def TestAllTypes(self, *args):
-        print("[wxpython.py] TestAllTypes: "+str(args))
 
     def ExecuteFunction(self, *args):
         self.mainBrowser.GetMainFrame().ExecuteFunction(*args)
-
-    def TestJSCallback(self, jsCallback):
-        print("[wxpython.py] jsCallback.GetFunctionName() = %s"\
-                % jsCallback.GetFunctionName())
-        print("[wxpython.py] jsCallback.GetFrame().GetIdentifier() = %s" % \
-                jsCallback.GetFrame().GetIdentifier())
-        jsCallback.Call("This message was sent from python using js callback")
 
     def CreatePopup(self, file, params, max=0):
         #self.mainBrowser.GetMainFrame().ExecuteJavascript(
@@ -358,6 +346,22 @@ class JavascriptExternal:
                 callBack.Call("You have indexed current function.")
             callBack.Call(content[1])
 
+    def SetInputText(self, txt):
+        global inputText
+        inputText = txt
+
+        print "###########"
+        global inputText
+        print inputText
+        print "###########"
+
+        del self.frame.javascriptExternal.mainBrowser
+        del self.frame.clientHandler.mainBrowser
+        del self.frame.browser
+
+        # Destroy wx frame, this will complete the destruction of CEF browser
+        self.frame.Destroy()
+
     def make_cookie(self, name, value, domain):
         return cookielib.Cookie(
         version=0,
@@ -379,108 +383,6 @@ class JavascriptExternal:
         rfc2109=False
         )
 
-    def TestJSCallbackComplexArguments(self, jsObject):
-        jsCallback = jsObject["myCallback"];
-        jsCallback.Call(1, None, 2.14, "string", ["list", ["nested list", \
-                {"nested object":None}]], \
-                {"nested list next":[{"deeply nested object":1}]})
-
-    def TestPythonCallback(self, jsCallback):
-        jsCallback.Call(self.PyCallback)
-
-    def PyCallback(self, *args):
-        message = "PyCallback() was executed successfully! "\
-                "Arguments: %s" % str(args)
-        print("[wxpython.py] "+message)
-        self.mainBrowser.GetMainFrame().ExecuteJavascript(
-                "window.alert(\"%s\")" % message)
-
-    def GetSource(self):
-        # Must keep a strong reference to the StringVisitor object
-        # during the visit.
-        self.stringVisitor = StringVisitor()
-        self.mainBrowser.GetMainFrame().GetSource(self.stringVisitor)
-
-    def GetText(self):
-        # Must keep a strong reference to the StringVisitor object
-        # during the visit.
-        self.stringVisitor = StringVisitor()
-        self.mainBrowser.GetMainFrame().GetText(self.stringVisitor)
-
-    def ShowDevTools(self):
-        print("[wxpython.py] external.ShowDevTools called")
-        self.mainBrowser.ShowDevTools()
-
-    # -------------------------------------------------------------------------
-    # Cookies
-    # -------------------------------------------------------------------------
-    cookieVisitor = None
-
-    def VisitAllCookies(self):
-        # Need to keep the reference alive.
-        self.cookieVisitor = CookieVisitor()
-        cookieManager = self.mainBrowser.GetUserData("cookieManager")
-        if not cookieManager:
-            print("\n[wxpython.py] Cookie manager not yet created! Visit"\
-                    " the cookietester website first and create some cookies")
-            return
-        cookieManager.VisitAllCookies(self.cookieVisitor)
-
-    def VisitUrlCookies(self):
-        # Need to keep the reference alive.
-        self.cookieVisitor = CookieVisitor()
-        cookieManager = self.mainBrowser.GetUserData("cookieManager")
-        if not cookieManager:
-            print("\n[wxpython.py] Cookie manager not yet created! Visit"\
-                    " the cookietester website first and create some cookies")
-            return
-        cookieManager.VisitUrlCookies(
-            "http://www.html-kit.com/tools/cookietester/",
-            False, self.cookieVisitor)
-        # .www.html-kit.com
-
-    def SetCookie(self):
-        cookieManager = self.mainBrowser.GetUserData("cookieManager")
-        if not cookieManager:
-            print("\n[wxpython.py] Cookie manager not yet created! Visit"\
-                    "the cookietester website first and create some cookies")
-            return
-        cookie = cefpython.Cookie()
-        cookie.SetName("Created_Via_Python")
-        cookie.SetValue("yeah really")
-        cookieManager.SetCookie("http://www.html-kit.com/tools/cookietester/",
-                cookie)
-        print("\n[wxpython.py] Cookie created! Visit html-kit cookietester to"\
-                " see it")
-
-    def DeleteCookies(self):
-        cookieManager = self.mainBrowser.GetUserData("cookieManager")
-        if not cookieManager:
-            print("\n[wxpython.py] Cookie manager not yet created! Visit"\
-                    " the cookietester website first and create some cookies")
-            return
-        cookieManager.DeleteCookies(
-                "http://www.html-kit.com/tools/cookietester/",
-                "Created_Via_Python")
-        print("\n[wxpython.py] Cookie deleted! Visit html-kit cookietester "\
-                "to see the result")
-
-class StringVisitor:
-    def Visit(self, string):
-        print("\n[wxpython.py] StringVisitor.Visit(): string:")
-        print("--------------------------------")
-        print(string)
-        print("--------------------------------")
-
-class CookieVisitor:
-    def Visit(self, cookie, count, total, deleteCookie):
-        if count == 0:
-            print("\n[wxpython.py] CookieVisitor.Visit(): total cookies: %s"\
-                    % total)
-        print("\n[wxpython.py] CookieVisitor.Visit(): cookie:")
-        print("    "+str(cookie.Get()))
-        # True to continue visiting cookies
-        return True
 
 class ClientHandler:
     mainBrowser = None # May be None for global client callbacks.
@@ -488,166 +390,23 @@ class ClientHandler:
     def __init__(self):
         pass
 
-    # -------------------------------------------------------------------------
-    # DisplayHandler
-    # -------------------------------------------------------------------------
-
-    def OnAddressChange(self, browser, frame, url):
-        print("[wxpython.py] DisplayHandler::OnAddressChange()")
-        print("    url = %s" % url)
-
-    def OnTitleChange(self, browser, title):
-        print("[wxpython.py] DisplayHandler::OnTitleChange()")
-        print("    title = %s" % title)
-
-    def OnTooltip(self, browser, textOut):
-        # OnTooltip not yet implemented (both Linux and Windows),
-        # will be fixed in next CEF release, see Issue 783:
-        # https://code.google.com/p/chromiumembedded/issues/detail?id=783
-        print("[wxpython.py] DisplayHandler::OnTooltip()")
-        print("    text = %s" % textOut[0])
-
-    statusMessageCount = 0
-    def OnStatusMessage(self, browser, value):
-        if not value:
-            # Do not notify in the console about empty statuses.
-            return
-        self.statusMessageCount += 1
-        if self.statusMessageCount > 3:
-            # Do not spam too much.
-            return
-        print("[wxpython.py] DisplayHandler::OnStatusMessage()")
-        print("    value = %s" % value)
-
-    def OnConsoleMessage(self, browser, message, source, line):
-        print("[wxpython.py] DisplayHandler::OnConsoleMessage()")
-        print("    message = %s" % message)
-        print("    source = %s" % source)
-        print("    line = %s" % line)
-
-    # -------------------------------------------------------------------------
-    # KeyboardHandler
-    # -------------------------------------------------------------------------
-
-    def OnPreKeyEvent(self, browser, event, eventHandle,
-            isKeyboardShortcutOut):
-        print("[wxpython.py] KeyboardHandler::OnPreKeyEvent()")
-
-    def OnKeyEvent(self, browser, event, eventHandle):
-        if event["type"] == cefpython.KEYEVENT_KEYUP:
-            # OnKeyEvent is called twice for F5/Esc keys, with event
-            # type KEYEVENT_RAWKEYDOWN and KEYEVENT_KEYUP.
-            # Normal characters a-z should have KEYEVENT_CHAR.
-            return False
-        print("[wxpython.py] KeyboardHandler::OnKeyEvent()")
-        print("    type=%s" % event["type"])
-        print("    modifiers=%s" % event["modifiers"])
-        print("    windows_key_code=%s" % event["windows_key_code"])
-        print("    native_key_code=%s" % event["native_key_code"])
-        print("    is_system_key=%s" % event["is_system_key"])
-        print("    character=%s" % event["character"])
-        print("    unmodified_character=%s" % event["unmodified_character"])
-        print("    focus_on_editable_field=%s" \
-                % event["focus_on_editable_field"])
-        linux = (platform.system() == "Linux")
-        windows = (platform.system() == "Windows")
-        # F5
-        if (linux and event["native_key_code"] == 71) \
-                or (windows and event["windows_key_code"] == 116):
-            print("[wxpython.py] F5 pressed, calling"
-                    " browser.ReloadIgnoreCache()")
-            browser.ReloadIgnoreCache()
-            return True
-        # Escape
-        if (linux and event["native_key_code"] == 9) \
-                or (windows and event["windows_key_code"] == 27):
-            print("[wxpython.py] Esc pressed, calling browser.StopLoad()")
-            browser.StopLoad()
-            return True
-        # F12
-        if (linux and event["native_key_code"] == 96) \
-                or (windows and event["windows_key_code"] == 123):
-            print("[wxpython.py] F12 pressed, calling"
-                    " browser.ShowDevTools()")
-            browser.ShowDevTools()
-            return True
-        return False
-
-    # -------------------------------------------------------------------------
-    # RequestHandler
-    # -------------------------------------------------------------------------
-
-    def OnBeforeBrowse(self, browser, frame, request, isRedirect):
-        print("[wxpython.py] RequestHandler::OnBeforeBrowse()")
-        print("    url = %s" % request.GetUrl()[:100])
-        # Handle "magnet:" links.
-        if request.GetUrl().startswith("magnet:"):
-            print("[wxpython.p] RequestHandler::OnBeforeBrowse(): "
-                    "magnet link clicked, cancelling browse request")
-            return True
-        return False
-
-    def OnBeforeResourceLoad(self, browser, frame, request):
-        print("[wxpython.py] RequestHandler::OnBeforeResourceLoad()")
-        print("    url = %s" % request.GetUrl()[:100])
-        return False
-
-    def OnResourceRedirect(self, browser, frame, oldUrl, newUrlOut):
-        print("[wxpython.py] RequestHandler::OnResourceRedirect()")
-        print("    old url = %s" % oldUrl[:100])
-        print("    new url = %s" % newUrlOut[0][:100])
 
     def GetAuthCredentials(self, browser, frame, isProxy, host, port, realm,
             scheme, callback):
-        # This callback is called on the IO thread, thus print messages
-        # may not be visible.
-        print("[wxpython.py] RequestHandler::GetAuthCredentials()")
-        print("    host = %s" % host)
-        print("    realm = %s" % realm)
         callback.Continue(username="test", password="test")
         return True
 
     def OnQuotaRequest(self, browser, originUrl, newSize, callback):
-        print("[wxpython.py] RequestHandler::OnQuotaRequest()")
-        print("    origin url = %s" % originUrl)
-        print("    new size = %s" % newSize)
         callback.Continue(True)
         return True
 
-    def GetCookieManager(self, browser, mainUrl):
-        # Create unique cookie manager for each browser.
-        # You must set the "unique_request_context_per_browser"
-        # application setting to True for the cookie manager
-        # to work.
-        # Return None to have one global cookie manager for
-        # all CEF browsers.
-        if not browser:
-            # The browser param may be empty in some exceptional
-            # case, see docs.
-            return None
-        cookieManager = browser.GetUserData("cookieManager")
-        if cookieManager:
-            return cookieManager
-        else:
-            print("[wxpython.py] RequestHandler::GetCookieManager():"\
-                    " created cookie manager")
-            cookieManager = cefpython.CookieManager.CreateManager("")
-            if "cache_path" in g_applicationSettings:
-                path = g_applicationSettings["cache_path"]
-                # path = os.path.join(path, "cookies_browser_{}".format(
-                #     browser.GetIdentifier()))
-                cookieManager.SetStoragePath(path)
-            browser.SetUserData("cookieManager", cookieManager)
-            return cookieManager
 
     def OnProtocolExecution(self, browser, url, allowExecutionOut):
         # There's no default implementation for OnProtocolExecution on Linux,
         # you have to make OS system call on your own. You probably also need
         # to use LoadHandler::OnLoadError() when implementing this on Linux.
-        print("[wxpython.py] RequestHandler::OnProtocolExecution()")
-        print("    url = %s" % url)
+
         if url.startswith("magnet:"):
-            print("[wxpython.py] Magnet link allowed!")
             allowExecutionOut[0] = True
 
     def _OnBeforePluginLoad(self, browser, url, policyUrl, info):
@@ -656,179 +415,37 @@ class ClientHandler:
         # the same plugin may be called multiple times.
         # This callback is called on the IO thread, thus print messages
         # may not be visible.
-        print("[wxpython.py] RequestHandler::_OnBeforePluginLoad()")
-        print("    url = %s" % url)
-        print("    policy url = %s" % policyUrl)
-        print("    info.GetName() = %s" % info.GetName())
-        print("    info.GetPath() = %s" % info.GetPath())
-        print("    info.GetVersion() = %s" % info.GetVersion())
-        print("    info.GetDescription() = %s" % info.GetDescription())
         # False to allow, True to block plugin.
         return False
 
     def _OnCertificateError(self, certError, requestUrl, callback):
         # This is a global callback set using SetGlobalClientCallback().
-        print("[wxpython.py] RequestHandler::_OnCertificateError()")
-        print("    certError = %s" % certError)
-        print("    requestUrl = %s" % requestUrl)
+
         if requestUrl == "https://testssl-expire.disig.sk/index.en.html":
-            print("    Not allowed!")
             return False
         if requestUrl \
                 == "https://testssl-expire.disig.sk/index.en.html?allow=1":
-            print("    Allowed!")
             callback.Continue(True)
             return True
         return False
 
-    def OnRendererProcessTerminated(self, browser, status):
-        print("[wxpython.py] RequestHandler::OnRendererProcessTerminated()")
-        statuses = {
-            cefpython.TS_ABNORMAL_TERMINATION: "TS_ABNORMAL_TERMINATION",
-            cefpython.TS_PROCESS_WAS_KILLED: "TS_PROCESS_WAS_KILLED",
-            cefpython.TS_PROCESS_CRASHED: "TS_PROCESS_CRASHED"
-        }
-        statusName = "Unknown"
-        if status in statuses:
-            statusName = statuses[status]
-        print("    status = %s" % statusName)
-
-    def OnPluginCrashed(self, browser, pluginPath):
-        print("[wxpython.py] RequestHandler::OnPluginCrashed()")
-        print("    plugin path = %s" % pluginPath)
-
-    # -------------------------------------------------------------------------
-    # LoadHandler
-    # -------------------------------------------------------------------------
-
-    def OnLoadingStateChange(self, browser, isLoading, canGoBack,
-            canGoForward):
-        print("[wxpython.py] LoadHandler::OnLoadingStateChange()")
-        print("    isLoading = %s, canGoBack = %s, canGoForward = %s" \
-                % (isLoading, canGoBack, canGoForward))
-
-    def OnLoadStart(self, browser, frame):
-        print("[wxpython.py] LoadHandler::OnLoadStart()")
-        print("    frame url = %s" % frame.GetUrl()[:100])
-
-    def OnLoadEnd(self, browser, frame, httpStatusCode):
-        print("[wxpython.py] LoadHandler::OnLoadEnd()")
-        print("    frame url = %s" % frame.GetUrl()[:100])
-        # For file:// urls the status code = 0
-        print("    http status code = %s" % httpStatusCode)
-        # Tests for the Browser object methods
-        # self._Browser_LoadUrl(browser)
 
     def _Browser_LoadUrl(self, browser):
         if browser.GetUrl() == "data:text/html,Test#Browser.LoadUrl":
              browser.LoadUrl("file://"+GetApplicationPath("www/CloneGraph.html"))
 
-    def OnLoadError(self, browser, frame, errorCode, errorTextList, failedUrl):
-        print("[wxpython.py] LoadHandler::OnLoadError()")
-        print("    frame url = %s" % frame.GetUrl()[:100])
-        print("    error code = %s" % errorCode)
-        print("    error text = %s" % errorTextList[0])
-        print("    failed url = %s" % failedUrl)
-        # Handle ERR_ABORTED error code, to handle the following cases:
-        # 1. Esc key was pressed which calls browser.StopLoad() in OnKeyEvent
-        # 2. Download of a file was aborted
-        # 3. Certificate error
-        if errorCode == cefpython.ERR_ABORTED:
-            print("[wxpython.py] LoadHandler::OnLoadError(): Ignoring load "
-                    "error: Esc was pressed or file download was aborted, "
-                    "or there was certificate error")
-            return
-
-        frame.LoadUrl("data:text/html,%s %s %s" % (errorCode, failedUrl, errorTextList[0]))
-
     # -------------------------------------------------------------------------
     # LifespanHandler
     # -------------------------------------------------------------------------
 
-    # ** This callback is executed on the IO thread **
-    # Empty place-holders: popupFeatures, client.
-    def OnBeforePopup(self, browser, frame, targetUrl, targetFrameName,
-            popupFeatures, windowInfo, client, browserSettings,
-            noJavascriptAccess):
-        print("[wxpython.py] LifespanHandler::OnBeforePopup()")
-        print("    targetUrl = %s" % targetUrl)
-
-        # Custom browser settings for popups:
-        # > browserSettings[0] = {"plugins_disabled": True}
-
-        # Set WindowInfo object:
-        # > windowInfo[0] = cefpython.WindowInfo()
-
-        # On Windows there are keyboard problems in popups, when popup
-        # is created using "window.open" or "target=blank". This issue
-        # occurs only in wxPython. PyGTK or PyQt do not require this fix.
-        # The solution is to create window explicitilly, and not depend
-        # on CEF to create window internally.
-        # If you set allowPopups=True then CEF will create popup window.
-        # The wx.Frame cannot be created here, as this callback is
-        # executed on the IO thread. Window should be created on the UI
-        # thread. One solution is to call cefpython.CreateBrowser()
-        # which runs asynchronously and can be called on any thread.
-        # The other solution is to post a task on the UI thread, so
-        # that cefpython.CreateBrowserSync() can be used.
-        cefpython.PostTask(cefpython.TID_UI, self._CreatePopup, targetUrl)
-
-        allowPopups = False
-        return not allowPopups
 
     def _CreatePopup(self, url):
         frame = MainFrame(url=url, popup=True)
         frame.Show()
 
     def _OnAfterCreated(self, browser):
-        # This is a global callback set using SetGlobalClientCallback().
-        print("[wxpython.py] LifespanHandler::_OnAfterCreated()")
-        print("    browserId=%s" % browser.GetIdentifier())
+        return;
 
-    def RunModal(self, browser):
-        print("[wxpython.py] LifespanHandler::RunModal()")
-        print("    browserId=%s" % browser.GetIdentifier())
-
-    def DoClose(self, browser):
-        print("[wxpython.py] LifespanHandler::DoClose()")
-        print("    browserId=%s" % browser.GetIdentifier())
-
-    def OnBeforeClose(self, browser):
-        print("[wxpython.py] LifespanHandler::OnBeforeClose")
-        print("    browserId=%s" % browser.GetIdentifier())
-
-    # -------------------------------------------------------------------------
-    # JavascriptDialogHandler
-    # -------------------------------------------------------------------------
-
-    def OnJavascriptDialog(self, browser, originUrl, acceptLang, dialogType,
-                   messageText, defaultPromptText, callback,
-                   suppressMessage):
-        print("[wxpython.py] JavascriptDialogHandler::OnJavascriptDialog()")
-        print("    originUrl="+originUrl)
-        print("    acceptLang="+acceptLang)
-        print("    dialogType="+str(dialogType))
-        print("    messageText="+messageText)
-        print("    defaultPromptText="+defaultPromptText)
-        # If you want to suppress the javascript dialog:
-        # suppressMessage[0] = True
-        return False
-
-    def OnBeforeUnloadJavascriptDialog(self, browser, messageText, isReload,
-            callback):
-        print("[wxpython.py] OnBeforeUnloadJavascriptDialog()")
-        print("    messageText="+messageText)
-        print("    isReload="+str(isReload))
-        # Return True if the application will use a custom dialog:
-        #   callback.Continue(allow=True, userInput="")
-        #   return True
-        return False
-
-    def OnResetJavascriptDialogState(self, browser):
-        print("[wxpython.py] OnResetDialogState()")
-
-    def OnJavascriptDialogClosed(self, browser):
-        print("[wxpython.py] OnDialogClosed()")
 
 
 class MyApp(wx.App):
@@ -838,15 +455,10 @@ class MyApp(wx.App):
 
     def OnInit(self):
         if not USE_EVT_IDLE:
-            print("[wxpython.py] Using TIMER to run CEF message loop")
             self.CreateTimer()
         self.mainFrame = MainFrame()
         self.SetTopWindow(self.mainFrame)
         self.mainFrame.Show()
-
-        url = "file://"+GetApplicationPath("www/CloneTree.html")
-        frame = MainFrame(url=url, popup=True)
-        frame.Show()
 
         return True
 
@@ -863,34 +475,9 @@ class MyApp(wx.App):
         cefpython.MessageLoopWork()
 
     def OnExit(self):
-        # When app.MainLoop() returns, MessageLoopWork() should
-        # not be called anymore.
-        print("[wxpython.py] MyApp.OnExit")
         if not USE_EVT_IDLE:
             self.timer.Stop()
 
-
-def GetSources():
-    # Get sources of all python functions and methods from this file.
-    # This is to provide sources preview to wxpython.html.
-    # The dictionary of functions is binded to "window.sources".
-    thisModule = sys.modules[__name__]
-    functions = inspect.getmembers(thisModule, inspect.isfunction)
-    classes = inspect.getmembers(thisModule, inspect.isclass)
-    sources = {}
-    for funcTuple in functions:
-        sources[funcTuple[0]] = inspect.getsource(funcTuple[1])
-    for classTuple in classes:
-        className = classTuple[0]
-        classObject = classTuple[1]
-        methods = inspect.getmembers(classObject)
-        for methodTuple in methods:
-            try:
-                sources[methodTuple[0]] = inspect.getsource(\
-                        methodTuple[1])
-            except:
-                pass
-    return sources
 
 def GetData():
         str = ""
@@ -927,12 +514,11 @@ def GetConnector():
     return connector
 
 if __name__ == '__main__':
-    print('[wxpython.py] architecture=%s-bit' % (8 * struct.calcsize("P")))
-    print('[wxpython.py] wx.version=%s' % wx.version())
 
-    global gdata, funcSurrogateMap
+    global gdata, funcSurrogateMap, inputText
     gdata = None
     funcSurrogateMap = None
+    inputText = ['']
 
     global connector
     connector = None
@@ -947,9 +533,9 @@ if __name__ == '__main__':
         # "cache_path": "webcache/",
 
         # CEF Python debug messages in console and in log_file
-        "debug": True,
+        "debug": False,
         # Set it to LOGSEVERITY_VERBOSE for more details
-        "log_severity": cefpython.LOGSEVERITY_INFO,
+        "log_severity": cefpython.LOGSEVERITY_ERROR,
         # Set to "" to disable logging to a file
         "log_file": GetLogPath("debug.log"),
         # This should be enabled only when debugging
@@ -1026,7 +612,6 @@ if __name__ == '__main__':
     #   Larger 150% = 144 DPI = 2.0 zoom level
     #   Custom 75% = 72 DPI = -1.0 zoom level
     g_applicationSettings["auto_zooming"] = "system_dpi"
-    print("[wxpython.py] Calling SetProcessDpiAware")
     cefpython.DpiAware.SetProcessDpiAware()
 
     # Browser settings. You may have different settings for each

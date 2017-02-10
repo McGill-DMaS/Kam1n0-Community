@@ -1,33 +1,36 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
 #!/usr/bin/env python
 #
-
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
 
 import idaapi
+from subprocess import PIPE, Popen
 from Forms.ProgressForm import SearchProgressForm
 from Forms.ProgressFormIndex import IndexProgressForm
 from Forms.SelectionForm import SelectionForm
 from Forms.SelectionFormIndex import IndexSelectionForm
 from Forms.ConnectionManagementForm import ConnectionManagementForm
+from Forms.ProgressFormRaw import  SearchProgressFormRaw
 import threading
+from threading import Thread
 from Connector import Connector, OK
 import os
 import pickle
-import  IDAutils
+import IDAutils
+import re
 
 
 class Kam1n0PluginManager():
@@ -41,6 +44,7 @@ class Kam1n0PluginManager():
 
         self.Kconf = self.getConfiguration()
         if self.Kconf is None:
+            print "Creating default plugin configuration..."
             self.connector = Connector()
             self.Kconf = {}
             self.Kconf['cnns'] = {}
@@ -48,6 +52,8 @@ class Kam1n0PluginManager():
             self.Kconf['cnns'][cnnInfo['key']] = cnnInfo
             self.Kconf['default-cnn'] = cnnInfo['key']
             self.setConfiguration(self.Kconf)
+            self.Kconf['default-threshold'] = 0.01
+            self.Kconf['default-topk'] = 10
         else:
             if self.Kconf['default-cnn'] is None:
                 self.connector = None
@@ -61,9 +67,20 @@ class Kam1n0PluginManager():
                     pw=cnnInfo['pw']
                 )
 
+        if('default-threshold' not in self.Kconf):
+            self.Kconf['default-threshold'] = 0.01
+        if('default-topk' not in self.Kconf):
+            self.Kconf['default-topk'] = 10
+
         global hooks
         hooks = Hooks()
         re = hooks.hook()
+
+    def getConfTopK(self):
+        return self.Kconf['default-topk']
+
+    def getConfThreshold(self):
+        return self.Kconf['default-threshold']
 
     def loadIcons(self):
         self.icon = {}
@@ -73,6 +90,8 @@ class Kam1n0PluginManager():
         self.icon[IDAutils.ICON_INDEXS] =  IDAutils.loadIcon(IDAutils.ICON_INDEXS)
         self.icon[IDAutils.ICON_SETT] =  IDAutils.loadIcon(IDAutils.ICON_SETT)
         self.icon[IDAutils.ICON_CONN] =  IDAutils.loadIcon(IDAutils.ICON_CONN)
+        self.icon[IDAutils.ICON_FRAG] = IDAutils.loadIcon(IDAutils.ICON_FRAG)
+        self.icon[IDAutils.ICON_COMP] = IDAutils.loadIcon(IDAutils.ICON_COMP)
 
     def removeAllAction(self):
         for action in self.actions:
@@ -163,6 +182,34 @@ class Kam1n0PluginManager():
         self.actions.append(action)
         if not action.registerAction(False):
             return 1
+			
+        action = ActionWrapper(
+            id="Kam1n0:compositionQuery",
+            name="Composition Analysis",
+            icon=self.icon[IDAutils.ICON_COMP],
+            tooltip="Composition Analysis",
+            shortcut="",
+            menuPath="Search/next code",
+            callback=self.queryCompositionAnalysis,
+            args=None
+        )
+        self.actions.append(action)
+        if not action.registerAction(True):
+            return 1
+
+        action = ActionWrapper(
+            id="Kam1n0:queryFragment",
+            name="Query fragment",
+            icon=self.icon[IDAutils.ICON_FRAG],
+            tooltip="Query a code fragment",
+            shortcut="",
+            menuPath="Search/next code",
+            callback=self.queryFragment,
+            args=None
+        )
+        self.actions.append(action)
+        if not action.registerAction(False):
+            return 1
 
         return 0
 
@@ -195,7 +242,7 @@ class Kam1n0PluginManager():
             for fidx in ctx.chooser_selection:
                 func = idaapi.getn_func(fidx - 1)
                 funcs.append(func)
-            self.createProgressForm(funcs)
+            self.createProgressForm(funcs, self.getConfThreshold(), self.getConfTopK())
         else:
             form = SelectionForm(self)
             ok = form.Execute()
@@ -203,19 +250,51 @@ class Kam1n0PluginManager():
             s_cnn = form.cnn
             form.Free()
             if ok == 1:
-                self.createProgressForm(funcs, s_cnn)
+                self.createProgressForm(funcs, form.threshold, form.topk, cnn=s_cnn)
 
     def queryCurrentFunction(self, ctx):
         func = IDAutils.GetCurrentFunction()
         if not func:
             print "Current address does not belong to a function"
             return 0
-        self.createProgressForm([func])
+        self.createProgressForm([func],  self.getConfThreshold(), self.getConfTopK())
+		
+    def queryCompositionAnalysis(self, ctx):
+        print "Generating binary surrogate for composition query..."
+        surrogate = IDAutils.GetBinarySurrogate()
+        if not surrogate:
+            print "Cannot generate the binary surrogate"
+            return 0
+        code, content = self.connector.tryLoginAndExecute(
+                queryFunction=self.connector.querySurrogateComposition,
+                params=[surrogate, self.Kconf['default-threshold'], self.Kconf['default-topk']]
+            )
+        if code > OK:
+            Connector.getCodeDescription(code, content)
+            idaapi.warning("Connection failed. Please review your connection. \n \"%s\"" % content)
+            self.openConnectionManagmentForm(ctx=None)
+        else:
+            print "Opening composition view..."
+            thread = Thread(target = self.connector.openCompositionPage)
+            thread.start()
+
+    def queryFragment(self, ctx):
+        selection = idaapi.read_selection()
+        content = ""
+        if(selection[0] == True):
+            content = IDAutils.GetSelectedCode(selection[1], selection[2])
+        frag = self.openFragmentInputForm(content=content)
+        if(frag is not None):
+            self.createProgressFormRaw([frag], self.getConfThreshold(), self.getConfTopK(), cnn=self.connector)
+        else:
+            print "No input/Input cancelled."
+
 
     def openConnectionManagmentForm(self, ctx):
         form = ConnectionManagementForm(self)
         form.Execute()
         self.setConfiguration(self.Kconf)
+        #print self.Kconf
 
         # update connection:
         if self.Kconf['default-cnn'] is not None:
@@ -232,12 +311,49 @@ class Kam1n0PluginManager():
             self.connector = None
 
     def openAdminForm(self, ctx):
-        self.connector.openAdminPage()
+        thread = Thread(target = self.connector.openAdminPage)
+        thread.start()
 
-    def createProgressForm(self, funcs, cnn=None):
+    def openFragmentInputForm(self, content =""):
+        cmd = [self.connector.getPythonExePath(),
+                os.path.dirname(os.path.realpath(__file__)) + "/Forms/FragmentInputForm.py"]
+        p = Popen(cmd,
+              shell=True,
+              stdin=PIPE,
+              stdout=PIPE,
+              stderr=PIPE)
+
+        stdout, stderr = p.communicate(content)
+        valid = False
+        res = ''
+        if(stderr is not None):
+            sear = re.search("###########([\s\S]+?)###########", stdout)
+            if(sear is not None):
+                res = sear.group(0).replace("###########","")
+                if(len(res.strip()) > 0):
+                    valid = True
+        if(valid):
+            return res
+        else:
+            return None
+
+    def createProgressForm(self, funcs, threshold, topk, cnn=None):
         if cnn is None:
             cnn = self.connector
-        form = SearchProgressForm(cnn, funcs)
+        form = SearchProgressForm(cnn, funcs, threshold, topk)
+        form.Execute()
+        code = form.ErrorCode
+        content = form.Content
+        form.Free()
+        if code > OK:
+            Connector.getCodeDescription(code, content)
+            idaapi.warning("Connection failed. Please review your connection. \n \"%s\"" % content)
+            self.openConnectionManagmentForm(ctx=None)
+
+    def createProgressFormRaw(self, funcs, threshold, topk, cnn=None):
+        if cnn is None:
+            cnn = self.connector
+        form = SearchProgressFormRaw(cnn, funcs, threshold, topk)
         form.Execute()
         code = form.ErrorCode
         content = form.Content
@@ -334,6 +450,11 @@ class Hooks(idaapi.UI_Hooks):
                 form,
                 popup,
                 "Kam1n0:queryCurrent",
+                None)
+            idaapi.attach_action_to_popup(
+                form,
+                popup,
+                "Kam1n0:queryFragment",
                 None)
         if idaapi.get_tform_title(form) == "Functions window":
             idaapi.attach_action_to_popup(

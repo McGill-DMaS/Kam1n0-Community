@@ -1,18 +1,19 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+
 from subprocess import PIPE, Popen
 import threading
 import time
@@ -25,22 +26,22 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '..'))
+import Connector
 import json
 
 
 class FunctionListView(Choose2):
-    def __init__(self, title, flags=0):
+    def __init__(self, title, allFuncs, flags=0):
         Choose2.__init__(self,
                          title,
                          [ ["Address", 12 | Choose2.CHCOL_DEC],
                            ["Function Name", 20 | Choose2.CHCOL_PLAIN] ],
                          embedded=True, width=35, height=10,  flags=flags)
+        self.allFuncs = allFuncs
         self.PopulateItems()
 
     def PopulateItems(self):
-        global allFuncs
-        allFuncs = [ GetFunction(x) for x in GetFunctions()]
-        self.items = [ [hex(x.startEA), GetFunctionName(x) ] for x in allFuncs ]
+        self.items = [ [hex(x.startEA), GetFunctionName(x) ] for x in self.allFuncs ]
 
     def OnClose(self):
         pass
@@ -57,9 +58,10 @@ class FunctionListView(Choose2):
 
 class IndexSelectionForm(Form):
     def __init__(self, manager):
-        global funcListG
-        self.funcList = FunctionListView("asm", flags=Choose2.CH_MULTI)
+        self.allFuncs = [ GetFunction(x) for x in GetFunctions()]
+        self.funcList = FunctionListView("asm", allFuncs=self.allFuncs, flags=Choose2.CH_MULTI)
         self.funcs = []
+
 
         self.cnn = manager.connector
         self.Kconf = manager.Kconf
@@ -76,7 +78,7 @@ r"""BUTTON YES* Index
 BUTTON CANCEL Cancel
 Kam1n0
 {FormChangeCb}
-Select function to be indexed
+Select Function to be indexed
 <(Use ctrl/shift + click to select multiple functions):{fvChooser}>
 <Select all functions:{chkSearchAll}>
 <Select all library functions:{chkOnlyLib}>
@@ -103,14 +105,14 @@ Index configuration
             if self.GetControlValue(self.chkOnlyLib) == 1:
                 self.SetControlValue(self.chkSkipLib, 0)
                 self.SetControlValue(self.chkSearchAll, 0)
-                self.SetControlValue(self.fvChooser, getLibIndex(allFuncs))
+                self.SetControlValue(self.fvChooser, getLibIndex(self.allFuncs))
                 self.activated = True
 
         if fid == self.chkSkipLib.id:
             if self.GetControlValue(self.chkSkipLib) == 1:
                 self.SetControlValue(self.chkOnlyLib, 0)
                 self.SetControlValue(self.chkSearchAll, 0)
-                self.SetControlValue(self.fvChooser, getNotLibIndex(allFuncs))
+                self.SetControlValue(self.fvChooser, getNotLibIndex(self.allFuncs))
                 self.activated = True
 
 
@@ -118,7 +120,7 @@ Index configuration
             if self.GetControlValue(self.chkSearchAll) == 1:
                 self.SetControlValue(self.chkOnlyLib, 0)
                 self.SetControlValue(self.chkSkipLib, 0)
-                self.SetControlValue(self.fvChooser, range(len(allFuncs)))
+                self.SetControlValue(self.fvChooser, range(len(self.allFuncs)))
                 self.activated = True
 
         if fid == self.dpServer:
@@ -137,9 +139,9 @@ Index configuration
 
         if fid == -2:
             funcInds = self.GetControlValue(self.fvChooser)
-            global allFuncs
-            if allFuncs is not None:
-                funcs = [allFuncs[x] for x in funcInds]
+            print "Kam1n0:index selected %d functions" % len(funcInds)
+            if self.allFuncs is not None:
+                funcs = [self.allFuncs[x] for x in funcInds]
                 if len(funcs) < 1:
                     print "number of selected functions is less than 1"
                 else:

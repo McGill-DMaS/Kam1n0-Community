@@ -1,20 +1,3 @@
-<!--
-//******************************************************************************
-// Copyright 2015 McGill University									
-//																					
-// Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-// you may not use this file except in compliance with the License.				
-// You may obtain a copy of the License at										
-//																				
-//    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-//																				
-// Unless required by applicable law or agreed to in writing, software			
-// distributed under the License is distributed on an "AS IS" BASIS,			
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-// See the License for the specific language governing permissions and			
-// limitations under the License.												
-//******************************************************************************//
--->
 <!DOCTYPE html style="height:100%;width:100%">
 <html>
 <head>
@@ -373,10 +356,62 @@
         color: rgb(188, 188, 188);
         }
 
+
+
+
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.95);
+            /* remove the gradient */
+            background-image: none ;
+            border-bottom: 2px solid dodgerblue;
+            line-height: 40px ;
+            box-shadow: 0 9px 6px -6px rgba(0, 0, 0, 0.2) ;
+        }
+
+        .triangle-down {
+            opacity:0.4;
+        }
+
+        .triangle-down:hover{
+            opacity:0.8;
+        }
+
+        .triangle-down p {
+            color:white;
+        }
+        .triangle-down p:hover {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+
+
     </style>
 </head>
-<body style="height:100%;width:100%">
-<div id="container" style="height:100%;width:100%">
+<body style="width:100%">
+
+<div class='navbar navbar-fixed-top' style="margin-top:-32px;">
+    <nav class='navbar-inner header'>
+        <div class='container' style="height:32px">
+            <ul class='nav'>
+                <div style="height:30px" class="pull-right">
+                    <input type="text" id="textSearchBox" style="height: 25px;margin:2.5px;line-height: 13px; "/>
+                    <button id="textSearchBtn" type="button" class="btn btn-default btn-sm pull-right" style="margin-right:35px;margin-left:2.5px;margin-top: -26px;">
+                        <i class="fa  fa-arrow-right"  aria-hidden="true"></i>
+                    </button>
+                </div>
+            </ul>
+            <div id="togglerContainer" class='triangle-down pull-right' style=" position: relative;top:1.5px;width:30px;height:30px;background-color: dodgerblue;">
+                <p style=" text-align: center; transition: color .2s; ">
+                    <i class='fa fa-search' style="height:10px;font-size:1.3em;margin-top:6px;" id='toggle'></i>
+                </p>
+            </div>
+        </div>
+    </nav>
+    <br>
+</div>
+
+<div id="container" style="width:100%;margin-top:10px;">
         <table id="cloneTable" style="width:100%;"
                class="table table-bordered table-hover dataTable">
             <thead>
@@ -407,6 +442,40 @@
 
 <!-- Page script -->
 <script type="text/javascript">
+
+    $('#textSearchBtn').click(function () {
+            var v = $('#textSearchBox').val();
+            external.Search(v);
+    });
+
+
+    $("#toggle").click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass("isDown")) {
+            $(".navbar-fixed-top").animate({
+                "margin-top": "-32px"
+            }, "fast");
+            $("#container").animate({
+                "margin-top": "10px"
+            }, "fast");
+            $('#togglerContainer').animate({
+                "top": "1.5px"
+            }, "fast");
+            $(this).removeClass("isDown");
+        } else {
+            $(".navbar-fixed-top").animate({
+                "margin-top": "0px"
+            }, "fast");
+            $("#container").animate({
+                "margin-top": "40px"
+            }, "fast");
+            $('#togglerContainer').animate({
+                "top": "-30px"
+            }, "fast");
+            $(this).addClass("isDown");
+        }
+        return false;
+    });
 
     function getCookie(cname) {
         var name = cname + "=";
@@ -465,19 +534,21 @@
 
         if (valid) {
             var views = ["ViewFlow.html","ViewTextDiff.html","ViewTextClone.html"];
-            var viewNames = ["Flow", "Text-Diff", "Clones"];
+            var viewIcons = ["<i class='fa fa-fw  fa-object-ungroup lnk'></i>", "<i class='fa fa-fw  fa-clone lnk'></i>", "<i class='fa fa-fw  fa-object-group lnk'></i>"];
+            var viewNames = ["Flow graph comparison.", "Full text alignment.", "Clone group alignment."];
+
             var central = globalData.results[d.index];
             for (var i = 0; i < central.clones.length; ++i) {
                 var target_c = central.clones[i];
                 var vbtns = "<div>";
                 for(var j = 0; j < views.length; ++j){
-                    vbtns += '<a href=\"javascript:external.CreatePopup(\'';
-                    vbtns += views[j] + '\', [' + d.index + "," + i + '], 1);\">' + viewNames[j] + '</a> ';
+                    vbtns += '<span title=\"'+ viewNames[j] +'\" onClick=\"javascript:external.CreatePopup(\'';
+                    vbtns += views[j] + '\', [' + d.index + "," + i + '], 1);\">' + viewIcons[j] + '</span> ';
                 }
                 vbtns += "</div>";
                 var nrow = cloneTable.row.add([
                     target_c.functionName,
-                    target_c.similarity,
+                    Math.round(target_c.similarity * 10000)/10000.0,
                     target_c.binaryName,
                     vbtns
                     ]).node();

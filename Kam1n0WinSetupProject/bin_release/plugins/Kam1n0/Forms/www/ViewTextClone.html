@@ -1,20 +1,3 @@
-<!--
-//******************************************************************************
-// Copyright 2015 McGill University									
-//																					
-// Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-// you may not use this file except in compliance with the License.				
-// You may obtain a copy of the License at										
-//																				
-//    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-//																				
-// Unless required by applicable law or agreed to in writing, software			
-// distributed under the License is distributed on an "AS IS" BASIS,			
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-// See the License for the specific language governing permissions and			
-// limitations under the License.												
-//******************************************************************************//
--->
 <!DOCTYPE html >
 <html  style="height:100%">
 <head>
@@ -375,10 +358,65 @@
         color: rgb(188, 188, 188);
         }
 
+        .header {
+            background-color: rgba(255, 255, 255, 0.95);
+            /* remove the gradient */
+            background-image: none ;
+            border-bottom: 2px solid dodgerblue;
+            line-height: 40px ;
+            box-shadow: 0 9px 6px -6px rgba(0, 0, 0, 0.2) ;
+        }
+
+        .triangle-down {
+            opacity:0.4;
+        }
+
+        .triangle-down:hover{
+            opacity:0.8;
+        }
+
+        .triangle-down p {
+            color:white;
+        }
+        .triangle-down p:hover {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        span.lselected{
+            background-color:lightyellow;
+        }
+
+        #split-bar {
+            background-color:lightgrey;
+            width:100%;
+            height: 6px;
+            cursor: row-resize;
+        }
+
     </style>
 </head>
 <body style="height:100%">
-<div style="height:100%">
+<div class='navbar navbar-fixed-top' style="margin-top:-32px;">
+    <nav class='navbar-inner header'>
+        <div class='container' style="height:32px">
+            <ul class='nav'>
+                <div style="height:30px" class="pull-right">
+                    <input type="text" id="textSearchBox" style="line-height: 13px;top: -5px;position: relative;height: 25px;margin:2.5px "/>
+                    <button id="textSearchBtn" type="button" class="btn btn-default btn-sm pull-right" style="height:28px;margin-right:33px;margin-left:2.5px;margin-top:-38px;">
+                        <i class="fa  fa-arrow-right"  aria-hidden="true"></i>
+                    </button>
+                </div>
+            </ul>
+            <div id="togglerContainer" class='triangle-down' style="position: relative;top:1.5px;right:20px;width:30px;height:30px;background-color: dodgerblue;">
+                <p style=" text-align: center; transition: color .2s; ">
+                    <i class='fa fa-search' style="height:10px;font-size:1.3em;margin-top:6px;" id='toggle'></i>
+                </p>
+            </div>
+        </div>
+    </nav>
+    <br>
+</div>
+<div style="height:100%;margin-top:10px;">
     <div class="box box-info collapsed-box" id="textViewDiff" style="height:100%">
         <div class="box-body no-padding" style="height:100%">
             <div id="bheader" style="font-size:12px;height: 40px; padding-left: 20px;background-color: #f7f7f7;border: 1px solid #d8d8d8;padding:5px;border-top-left-radius: 2px;border-top-right-radius: 2px;margin-left:10px;margin-right:10px;">
@@ -403,6 +441,7 @@
                     </div>
                 </div>
             </div>
+            <div id="split-bar"></div>
              <div id="clone-group-list"
              style="height:200px;overflow-y:scroll;margin-left:10px;margin-right:10px;">
             </div>
@@ -442,6 +481,41 @@
 
 <!-- Page script -->
 <script type="text/javascript">
+
+
+    $('#textSearchBtn').click(function () {
+        var v = $('#textSearchBox').val();
+        external.Search(v);
+    });
+
+
+    $("#toggle").click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass("isDown")) {
+            $(".navbar-fixed-top").animate({
+                "margin-top": "-32px"
+            }, "fast");
+            $("#container").animate({
+                "margin-top": "10px"
+            }, "fast");
+            $('#togglerContainer').animate({
+                "top": "1.5px"
+            }, "fast");
+            $(this).removeClass("isDown");
+        } else {
+            $(".navbar-fixed-top").animate({
+                "margin-top": "0px"
+            }, "fast");
+            $("#container").animate({
+                "margin-top": "40px"
+            }, "fast");
+            $('#togglerContainer').animate({
+                "top": "-30px"
+            }, "fast");
+            $(this).addClass("isDown");
+        }
+        return false;
+    });
 
     function resize(){
         var docHeight = $(window).height();
@@ -496,6 +570,10 @@
         }
         return query_string;
     }();
+
+    function normalize(line){
+        return line.replace(/^0x[0-9a-fA-F]+\s/g, "").replace(/\s{2,}/g, ' ').replace(/;[\s\S]*/g, '') + "\r\n";
+    }
 
     function drawBlockText(fun, $holder) {
         $holder.html('');
@@ -627,9 +705,12 @@
                 var block_left, block_right;
 
 
-                $li.click(function () {
+                $li.click(function (ev) {
 
                     // update & compare blocks:
+                    var $target = $(ev.target);
+                    holder.find('span').removeClass('lselected');
+                    $target.addClass('lselected');
 
                     // clear previous marks
                     if (block_left != null) {
@@ -686,13 +767,13 @@
                     for (var j = 0; j < p_a.srcCodes.length; ++j) {
                         var parts = p_a.srcCodes[j].split(' ');
                         addr_a.push(parts[0]);
-                        code_a += p_a.srcCodes[j].replace(parts[0], "").replace(/\s{2,}/g, ' ') + "\r\n";
+                        code_a += normalize(p_a.srcCodes[j]) + "\r\n";
                     }
 
                     for (var j = 0; j < p_b.srcCodes.length; ++j) {
                         var parts = p_b.srcCodes[j].split(' ');
                         addr_b.push(parts[0]);
-                        code_b += p_b.srcCodes[j].replace(parts[0], "").replace(/\s{2,}/g, ' ') + "\r\n";
+                        code_b += normalize(p_b.srcCodes[j]) + "\r\n";
                     }
 
                     var cache = [];
@@ -1079,7 +1160,7 @@
                                         return; // should never reach here.
 
                                     var currentLine = $lineNumberRow.attr('id');
-                                    var currentFun = $crow.parent().parent().data('block').functionIdStr;
+                                    var currentFun = $crow.parent().parent().data('block').functionId;
                                     createForm($crow.prev(),
                                             currentLine,
                                             currentFun,
@@ -1117,7 +1198,7 @@
 
         }else{
             var currentLine = $(tspan).parent().text().replace('+', ' ');
-            var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionIdStr;
+            var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionId;
             createForm($tspan.parent().parent(),currentLine,currentFun).insertAfter(row);
 
         }
@@ -1125,7 +1206,7 @@
 
     function plotComments(fun, $holder){
         external.GetComments(
-            fun.functionIdStr,
+            fun.functionId,
             function (data) {
                 data =  $.parseJSON(data);
                 $.each(data, function(ind,ent){
@@ -1214,12 +1295,39 @@
 
         p_a = window.params[0];
         p_b = window.params[1];
-        var p_b_param = gd.results[p_a].clones[p_b].functionIdStr;
+        var p_b_param = gd.results[p_a].clones[p_b].functionId;
         pa_fun = gd.results[p_a].function;
         cp = gd.results[p_a].clones[p_b].clonedParts
         external.GetFunc(p_b_param, callBack);
 
      }
+
+
+    var maxH = 3600;
+    var minH = 100;
+
+    $('#split-bar').mousedown(function (e) {
+
+        var docHeight = $(window).height();
+
+        e.preventDefault();
+        $(document).mousemove(function (e) {
+            e.preventDefault();
+            var y = docHeight - e.pageY + 15;
+            if (y > minH && y < maxH) {
+                $('#clone-group-list').css("height", y);
+                var div1Height = $('#bheader').height();
+                var div3Height = $('#clone-group-list').height();
+                var div2Height = docHeight - div1Height - div3Height - 7.5;
+                $('#bbody').css('height', div2Height);
+                $('#clone-text-left-scroller').css('height', div2Height);
+                $('#clone-text-right-scroller').css('height', div2Height);
+            }
+        })
+    });
+    $(document).mouseup(function (e) {
+        $(document).unbind('mousemove');
+    });
 
 
 

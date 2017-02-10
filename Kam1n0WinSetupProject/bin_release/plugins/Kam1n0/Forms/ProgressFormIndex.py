@@ -1,18 +1,18 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
 
 from subprocess import PIPE, Popen
 import threading
@@ -41,7 +41,10 @@ class ActionView(Choose2):
         self.items = []
         self.items.append(["%s funcs" % len(funcs), "in progress", "see console"])
         self.form = form
+        print "Preparing queries..."
         self.query = Query(form=self.form, funcs=funcs)
+
+    def Query(self):
         self.query.start()
 
     def OnClose(self):
@@ -90,6 +93,7 @@ Indexing job
     def OnFormChange(self, fid):
         if fid == -1:
             self.initialized = True
+            self.actionView.Query()
         return 1
 
 class Query(threading.Thread):
@@ -105,25 +109,30 @@ class Query(threading.Thread):
 
     def run(self):
 
-
         cnn = self.form.cnn
         total = len(self.funcs)
         pro = 1
+        count = 0
 
-        for func in self.funcs:
+        start_time = time.time()
+        print "Starting.. "
 
-            if self.cont == False:
+        for funcBatch in IDAutils.batch(self.funcs, 1000):
+
+            if not self.cont:
                 return 0
 
-            surrogate = IDAutils.GetFuncInputSurrogate(
-                func=func,
+            count+=1
+
+            surrogate = IDAutils.GetFuncInputSurrogateBatch(
+                funcs=funcBatch,
                 binaryName=IDAutils.GetBinaryName()
             )
 
             if cnn is None:
                 self.form.ErrorCode = 10
                 self.form.Content = "No connection is available."
-                self.form.actionView.items.append( [IDAutils.GetFunctionName(func), "Failed. Code [10]", "100%"])
+                self.form.actionView.items.append( ["Batch #["+str(count)+"]", "Failed. Code [10]", "100%"])
                 if self.form.initialized:
                     self.form.RefreshField(self.form.cEChooser)
                 return 1
@@ -136,25 +145,31 @@ class Query(threading.Thread):
             if code != OK:
                 self.form.ErrorCode = code
                 self.form.Content = content
-                self.form.actionView.items.append( [IDAutils.GetFunctionName(func), "Failed. Code ["+str(code)+"]", "100%"])
+                self.form.actionView.items.append( ["Batch #["+str(count)+"]", "Failed. Code ["+str(code)+"]", "100%"])
                 if self.form.initialized:
                     self.form.RefreshField(self.form.cEChooser)
                 return 1
 
-
+            elapsed_time = (time.time() - start_time) / 60.0
             if "O:" in content:
-                msg = "| %-20.20s | %-20.20s | %-10.10s" % (IDAutils.GetFunctionName(func), "Completed", str(pro * 100 / total)+"%")
+                msg = "| %-25.25s | %-20.20s ms | %-10.10s | %-15.15s min" % (
+                    "Batch #["+str(count)+"] " + str(len(funcBatch)) + " funcs",
+                    "Completed in " + content.replace('O:',''),
+                    str(pro * 100 / total)+"%",
+                    "Elapsed: " + str(elapsed_time) )
             else:
-                msg = "| %-20.20s | %-20.20s | %-10.10s" % (IDAutils.GetFunctionName(func), content, str(pro * 100 / total)+"%")
+                msg = "| %-25.25s | %-20.20s ms | %-10.10s | %-15.15s min" % (
+                    "Batch #["+str(count)+"] " + str(len(funcBatch)) + " funcs",
+                    content,
+                    str(pro * 100 / total)+"%",
+                    "Elapsed: " + str(elapsed_time) )
 
             if self.cont == False:
                 return 0
             print msg
 
-            pro+=1
+            pro+=len(funcBatch)
 
         self.form.actionView.items.append(["%s funcs" % len(self.funcs), "Completed", "100%"])
         if self.form.initialized:
             self.form.RefreshField(self.form.cEChooser)
-
-

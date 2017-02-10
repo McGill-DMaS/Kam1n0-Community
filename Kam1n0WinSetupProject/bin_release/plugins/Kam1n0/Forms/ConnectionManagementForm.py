@@ -1,18 +1,19 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+
 from subprocess import PIPE, Popen
 import threading
 import time
@@ -64,6 +65,7 @@ class ConnectionManagementForm(Form):
         self.Kconf = manager.Kconf
         self.listView = ConnectionListView(manager)
 
+
         dpItems = self.Kconf['cnns'].keys()
         if self.Kconf['default-cnn'] is not None:
             defaultIndex = self.Kconf['cnns'].keys().index(
@@ -88,7 +90,9 @@ Login Info:
 <User     :{txtUser}>
 <Password :{txtPw}>
 <Update / Add:{btnUpdate}>
-<Default  :{dpCnn}>
+<Default threshold :{txtSim}>
+<Default top-K     :{txtTopK}>
+<Default connector :{dpCnn}>
 <  >
 """ , {
                           'fvChooser': Form.EmbeddedChooserControl(self.listView),
@@ -100,6 +104,8 @@ Login Info:
                           'txtPw': Form.StringInput(swidth=30,tp=Form.FT_ASCII),
                           'btnRemove' : Form.ButtonInput(self.OnButtonRemove),
                           'btnUpdate' : Form.ButtonInput(self.OnButtonUpdate),
+                          'txtSim': Form.StringInput(swidth=25,tp=Form.FT_ASCII, value=str(self.Kconf['default-threshold'])),
+                          'txtTopK': Form.StringInput(swidth=25,tp=Form.FT_ASCII, value=str(self.Kconf['default-topk'])),
                           'dpCnn' : Form.DropdownListControl(swidth=45, width=45, selval=defaultIndex, items=dpItems, readonly=True)
                       })
         self.Compile()
@@ -175,7 +181,6 @@ Login Info:
                 self.Kconf['default-cnn'] = key
 
 
-
         if fid == self.fvChooser.id:
             inds = self.GetControlValue(self.fvChooser)
             if inds is not None and len(inds) > 0:
@@ -187,5 +192,10 @@ Login Info:
                 self.SetControlValue(self.txtPort,cnnInfo['port'])
                 self.SetControlValue(self.txtUser,cnnInfo['un'])
                 self.SetControlValue(self.txtPw,cnnInfo['pw'])
+
+        if fid == -2:
+            self.Kconf['default-threshold'] = float(self.GetControlValue(self.txtSim))
+            self.Kconf['default-topk'] = int(self.GetControlValue(self.txtTopK))
+            #print self.Kconf
 
         return 1

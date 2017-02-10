@@ -1,24 +1,26 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+
 import urllib2
 import urllib
 import cookielib
 import json
 import os
-import sys
+import datetime
+
 from subprocess import  Popen, PIPE
 import threading
 import subprocess
@@ -39,8 +41,10 @@ class Connector:
     URL_SEARCH2 = "/FunctionSurrogateClone"
     URL_GETFUNC = "/FunctionFlow"
     URL_GETCOMM = "/Comment"
+    URL_BINCOMPOSITION = "/BinarySurrogateComposition"
     URL_INDFUNC = "/admin/BinarySurrogateIndex"
     URL_ADMIN = "/admin/IdaProDashboard.html"
+    URL_COMPOSITION = "/BinaryCompositionAnalysis.html"
 
     def __init__(self, server = URL_LOCAL, protocol = URL_PROTOCOL, port = URL_PORT, un="admin", pw="admin", ssid = None):
         self.server = server
@@ -147,12 +151,36 @@ class Connector:
               "fname": fname}
         return self.doPost(url, data)
 
-    def querySurrogate(self, surrogate):
+    def querySurrogate(self, params):
         if self.validateCJ() == 0:
            return (ERROR_LOGIN, "E:")
 
         url = self.getConnectionURL() + self.URL_SEARCH2
-        data={"func": json.dumps(surrogate) }
+        data={"func": json.dumps(params[0]),
+              "thld": params[1],
+              "topk": params[2]}
+        return self.doPost(url, data)
+
+    def queryRaw(self, params):
+        if self.validateCJ() == 0:
+           return (ERROR_LOGIN, "E:")
+        dateStr = datetime.datetime.now().strftime("%I:%M:%S%p-on-%B-%d-%Y")
+        url = self.getConnectionURL() + self.URL_SEARCH
+        fname = "Func-"+dateStr
+        bname = "Bin-"+dateStr
+        data={"asmf": params[0], "fname":fname , "bname": bname,  "thld": params[1],
+              "topk": params[2]
+              }
+        return self.doPost(url, data)
+
+    def querySurrogateComposition(self, params):
+        if self.validateCJ() == 0:
+           return (ERROR_LOGIN, "E:")
+        dateStr = datetime.datetime.now().strftime("%I:%M:%S%p-on-%B-%d-%Y")
+        url = self.getConnectionURL() + self.URL_BINCOMPOSITION
+        data={"file": json.dumps(params[0]),  "threshold": params[1],
+              "topk": params[2]
+              }
         return self.doPost(url, data)
 
 
@@ -350,6 +378,25 @@ class Connector:
          cnn['port'] = self.port
          cnn['ssid'] = self.getSessionID()
          cnn['url'] = self.getConnectionURL() + self.URL_ADMIN
+
+         stdout, stderr = p.communicate(json.dumps(cnn))
+
+    def openCompositionPage(self):
+
+         cmd = [self.getPythonExePath(),
+                os.path.dirname(os.path.realpath(__file__)) + "/Forms/AdminForm.py"]
+         p = Popen(cmd,
+              shell=True,
+              stdin=PIPE,
+              stdout=PIPE,
+              stderr=PIPE)
+
+         cnn = {}
+         cnn['server'] = self.server
+         cnn['protocol'] = self.protocol
+         cnn['port'] = self.port
+         cnn['ssid'] = self.getSessionID()
+         cnn['url'] = self.getConnectionURL() + self.URL_COMPOSITION
 
          stdout, stderr = p.communicate(json.dumps(cnn))
 

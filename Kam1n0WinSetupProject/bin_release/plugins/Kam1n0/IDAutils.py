@@ -1,26 +1,25 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+
 import idaapi
+import _idaapi
 import idc
 import idautils
 import os
 import inspect
-
-global BinaryName
-BinaryName = None
 
 ICON_SEARCH = "search"
 ICON_SEARCHMULTI = "searchs"
@@ -28,6 +27,8 @@ ICON_INDEX = "upload"
 ICON_INDEXS = "uploads"
 ICON_CONN = "setting-cnn"
 ICON_SETT = "setting"
+ICON_COMP = "components"
+ICON_FRAG = "page_edit"
 
 
 def GetCurrentFunction():
@@ -77,23 +78,64 @@ def GetContentStr(func):
 
 
 def GetBinaryName():
-    BinaryName = idaapi.get_input_file_path()
-    return BinaryName
+    return  idaapi.get_input_file_path()
 
-
-def SetBinaryName(name):
-    global BinaryName
-    BinaryName = name
-
-def GetFuncInputSurrogate(func, binaryName):
+def GetFuncInputSurrogateBatch(funcs, binaryName):
     data = dict()
+    data['name'] = GetBinaryName()
+    data['architecture'] = {}
+    info = idaapi.get_inf_structure()
+    data['architecture']['type'] = info.procName.lower();
+    data['architecture']['size'] = "b32"
+    if info.is_32bit():
+        data['architecture']['size'] = "b32" 
+    if info.is_64bit(): 
+        data['architecture']['size'] = "b64";
+    data['architecture']['endian'] = "be" if _idaapi.cvar.inf.mf else "le";
+    if info.procName.lower().startswith('mips'):
+        data['architecture']['type'] = 'mips'
+		
     data['name'] = binaryName
     data['functions'] = list()
+    for func in funcs:
+        data['functions'].append(GetFuncInputSurrogate(func))
+    return data
+	
+def GetBinarySurrogate():
+    data = dict()
+    data['name'] = GetBinaryName()
+    data['architecture'] = {}
+    info = idaapi.get_inf_structure()
+    data['architecture']['type'] = info.procName.lower();
+    data['architecture']['size'] = "b32"
+    if info.is_32bit():
+        data['architecture']['size'] = "b32" 
+    if info.is_64bit(): 
+        data['architecture']['size'] = "b64";
+    data['architecture']['endian'] = "be" if _idaapi.cvar.inf.mf else "le";
+    if info.procName.lower().startswith('mips'):
+        data['architecture']['type'] = 'mips'
+    
+    
+    data['functions'] = list()
+    for func in GetFunctions():
+        data['functions'].append(GetFuncInputSurrogate(GetFunction(func)))
+    return data
+
+def GetSelectedCode(startEA, endEA):
+    fcode = ""
+    for head in idautils.Heads(startEA, endEA):
+        fcode +=  ' %s \r\n' % (unicode(idc.GetDisasm(head), errors='replace'))
+    return fcode
+
+def GetFuncInputSurrogate(func):
+
+    info = idaapi.get_inf_structure();
+    arch = info.procName.lower();
 
     function_ea = func.startEA
     f_name = GetFunctionName(func)
     function = dict()
-    data['functions'].append(function)
     function['name'] = f_name
     function['id'] = function_ea
     # ignore call-graph at this moment
@@ -107,13 +149,37 @@ def GetFuncInputSurrogate(func, binaryName):
         sblock = dict()
         sblock['id'] = bblock.id
         sblock['sea'] = bblock.startEA
+        if(arch == 'arm'):
+               sblock['sea'] += idc.GetReg(bblock.startEA, 'T')
         sblock['eea'] = bblock.endEA
+        sblock['name'] = 'loc_' + format(bblock.startEA, 'x').upper()
+        dat = {}
+        sblock['dat'] = dat
+        s = idc.GetManyBytes(bblock.startEA, bblock.endEA - bblock.startEA)
+        if(s != None):
+            sblock['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
 
-        fcode = ''
+        tlines = []
         for head in idautils.Heads(bblock.startEA, bblock.endEA):
-            fcode += '%s %s \r\n' % (str(head), unicode(idc.GetDisasm(head), errors='replace'))
+            tline = []
+            tline.append(str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
+            mnem = idc.GetMnem(head)
+            if mnem == "":
+                continue
+            tline.append(mnem)
+            for i in range(5):
+                opd = idc.GetOpnd(head, i)
+                if opd == "":
+                      continue
+                tline.append(opd)
+            tlines.append(tline)
 
-        sblock['src'] = fcode
+            refdata = list(idautils.DataRefsFrom(head))
+            if(len(refdata)>0):
+                for ref in refdata:
+                    dat[head] = format(idc.Qword(ref), 'x')[::-1]
+
+        sblock['src'] = tlines
 
         # flow chart
         bcalls = list()
@@ -122,7 +188,7 @@ def GetFuncInputSurrogate(func, binaryName):
         sblock['call'] = bcalls
         function['blocks'].append(sblock)
 
-    return data
+    return function
 
 
 def GetFunctionName(func):
@@ -145,3 +211,7 @@ def loadIcon(name):
         scriptPath + "/imgs/" + name + ".png"
     )
 
+def batch(iterable, n=1):
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]

@@ -65,7 +65,7 @@ class ActionView(Choose2):
         return len(self.items)
 
 
-class SearchProgressForm(Form):
+class SearchProgressFormRaw(Form):
 
     def __init__(self, cnn, funcs, threshold, topk):
         self.threshold = threshold
@@ -116,7 +116,7 @@ class Query(threading.Thread):
             if self.cont == False:
                 return 0
 
-            surrogate = IDAutils.GetFuncInputSurrogateBatch([func], IDAutils.GetBinaryName())
+            surrogate = func
 
             if cnn is None:
                 self.form.ErrorCode = 10
@@ -127,7 +127,7 @@ class Query(threading.Thread):
                 return 0
 
             code, content = cnn.tryLoginAndExecute(
-                queryFunction=cnn.querySurrogate,
+                queryFunction=cnn.queryRaw,
                 params=[surrogate, self.form.threshold, self.form.topk]
             )
 
@@ -143,14 +143,14 @@ class Query(threading.Thread):
             response = json.loads(content)
 
             if len(response['results']) > 0:
-                response['results'][0]['function']['surrogate'] = surrogate
+                response['results'][0]['function']['raw'] = surrogate
             response['cnn'] = {}
             response['cnn']['server'] = cnn.server
             response['cnn']['protocol'] = cnn.protocol
             response['cnn']['port'] = cnn.port
             response['cnn']['ssid'] = cnn.getSessionID()
 
-            msg = "| %-20.20s | %-20.20s ms | %-10.10s" % (IDAutils.GetFunctionName(func), str(response['takenTime']), str(pro * 100 / total)+"%")
+            msg = "| %-20.20s | %-20.20s | %-10.10s" % ("user input function", str(response['takenTime']), str(pro * 100 / total)+"%")
             if self.cont == False:
                 return 0
 

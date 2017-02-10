@@ -1,18 +1,19 @@
-#******************************************************************************
-# Copyright 2015 McGill University									
-#																					
-# Licensed under the Creative Commons CC BY-NC-ND 3.0 (the "License");				
-# you may not use this file except in compliance with the License.				
-# You may obtain a copy of the License at										
-#																				
-#    https://creativecommons.org/licenses/by-nc-nd/3.0/								
-#																				
-# Unless required by applicable law or agreed to in writing, software			
-# distributed under the License is distributed on an "AS IS" BASIS,			
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.		
-# See the License for the specific language governing permissions and			
-# limitations under the License.												
-#******************************************************************************//
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+
 from subprocess import PIPE, Popen
 import threading
 import time
@@ -63,6 +64,7 @@ class SelectionForm(Form):
         self.funcs = []
 
         self.cnn = manager.connector
+
         self.Kconf = manager.Kconf
         dpItems = self.Kconf['cnns'].keys()
         if self.Kconf['default-cnn'] is not None:
@@ -73,22 +75,28 @@ class SelectionForm(Form):
         else:
             defaultIndex = 0
 
+        self.threshold = self.Kconf['default-threshold']
+        self.topk = self.Kconf['default-topk']
+
+
         Form.__init__(self,
 r"""BUTTON YES* Search
 BUTTON CANCEL Cancel
 Kam1n0
 {FormChangeCb}
-Select function to be searched
+Select Function to be searched
 <(Use ctrl/shift + click to select multiple functions):{fvChooser}>
 <Select all functions:{chkSearchAll}><Skip library functions:{chkSkipLib}>{adSearchGroup}>
 Search configuration
 <Threshold:{txtSim}>
+<TopK     :{txtTopK}>
 <Server   :{dpServer}>
 
 """, {
                           'adSearchGroup': Form.ChkGroupControl(["chkSearchAll", "chkSkipLib"]),
                           'FormChangeCb': Form.FormChangeCb(self.OnFormChange),
-                          'txtSim': Form.StringInput(swidth=25,tp=Form.FT_ASCII, value='0.5'),
+                          'txtSim': Form.StringInput(swidth=25,tp=Form.FT_ASCII, value=str(self.threshold)),
+                          'txtTopK': Form.StringInput(swidth=25,tp=Form.FT_ASCII, value=str(self.topk)),
                           'dpServer':Form.DropdownListControl(swidth=45, width=45, selval=defaultIndex, items=dpItems, readonly=True),
                           'fvChooser': Form.EmbeddedChooserControl(self.funcList)
                       })
@@ -124,6 +132,13 @@ Search configuration
                     un=cnnInfo['un'],
                     pw=cnnInfo['pw']
                 )
+
+        if fid == self.txtSim:
+            self.threshold = float(self.GetControlValue(self.txtSim))
+
+        if fid == self.txtTopK:
+            self.topk = int(self.GetControlValue(self.txtTopK))
+
 
         if fid == -2:
             funcInds = self.GetControlValue(self.fvChooser)
