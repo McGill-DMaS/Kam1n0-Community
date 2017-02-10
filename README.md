@@ -60,7 +60,7 @@ The current release of the Kam1n0 consists of two installers: the server core in
     <th>Description</th>
   </tr>
   <tr>
-    <td rowspan="3">Kam1n0-server.msi</td>
+    <td rowspan="4">Kam1n0-server.msi</td>
      <td>Core engine</td>
      <td>Main engine providing service for indexing and searching</td>
   </tr>
@@ -71,6 +71,10 @@ The current release of the Kam1n0 consists of two installers: the server core in
  <tr>
       <td>Web user interface</td>
      <td>Web user interface for searching/indexing binary file and assembly function.</td>
+  </tr>
+  <tr>
+     <td>Visual C++ Redistributable for VS15</td>
+     <td>Dependecy for z3.</td>
   </tr>
   <tr>
     <td rowspan="3">Kam1n0-client-idaplugin.msi</td>
