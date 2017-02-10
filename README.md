@@ -16,6 +16,18 @@ Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M
 
 In this repository we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server, and provides clone search service through RESTful web services. The users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
 
+##  Release note 2016-02-09 1.1.0
+* [Kam1n0 Core] Added a new symbolic mode. Now it supports cross-architecture sub-graph clone search on the symbolic expression level. Included libvex and z3 library. Supported architecture: x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
+* [Kam1n0 Core] Updated graph search algorithm. Improved scalability & accuracy. Updated default ALSH settings.
+* [Kam1n0 Core] Added Visual C++ Redistributable for VS15 dependency (included in the installer, it is for z3).
+* [Web UI] In the symbolic mode, we also visualize the control flow graph with abstract syntax tree for each basic block.
+* [Web UI] User can index multiple files at a time. 
+* [Web UI] User can directly index idb or i64 file.
+* [Web UI] Fix web UI bugs and improve usability.
+* [Web UI] User can interrupt running jobs through the administration portal.
+* [RESTful API] The old API is no longer working. Check out new API after installation.
+* [IDA Pro plug-in for Kam1n0] Support composition analysis query. 
+
 ##  Release note 2016-05-03 1.0.0-rc1
 * [Web UI] Added a web interface for clone search with an assembly function.
 * [Web UI] Added a web interface for clone search with a binary file.
