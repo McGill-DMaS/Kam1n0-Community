@@ -10,7 +10,7 @@ Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorph
 
 Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung in the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. This software won the second prize in the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
 
-* S. H. H. Ding, B. C. M. Fung, and P. Charland. [Kam1n0: MapReduce-based Assembly Clone Search for Reverse Engineering](http://dmas.lab.mcgill.ca/fung/pub/DFC16kdd.pdf). In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (SIGKDD)</i>, 10 pages, San Francisco, CA: ACM Press, August 2016.
+* S. H. H. Ding, B. C. M. Fung, and P. Charland. [Kam1n0: MapReduce-based Assembly Clone Search for Reverse Engineering](http://dmas.lab.mcgill.ca/fung/pub/DFC16kdd.pdf). In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (SIGKDD)</i>, pages 461-470, San Francisco, CA: ACM Press, August 2016.
 
 ![image](https://cloud.githubusercontent.com/assets/8474647/9867360/a130631c-5b3a-11e5-8b76-83afec582886.png)
 
