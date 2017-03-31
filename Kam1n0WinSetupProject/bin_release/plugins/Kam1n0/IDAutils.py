@@ -20,6 +20,8 @@ import idc
 import idautils
 import os
 import inspect
+import binascii
+import struct
 
 ICON_SEARCH = "search"
 ICON_SEARCHMULTI = "searchs"
@@ -177,7 +179,7 @@ def GetFuncInputSurrogate(func):
             refdata = list(idautils.DataRefsFrom(head))
             if(len(refdata)>0):
                 for ref in refdata:
-                    dat[head] = format(idc.Qword(ref), 'x')[::-1]
+                    dat[head] = binascii.hexlify(struct.pack("<Q", idc.Qword(ref)))
 
         sblock['src'] = tlines
 
