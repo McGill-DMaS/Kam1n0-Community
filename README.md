@@ -111,7 +111,7 @@ Next, download the ```Kam1n0-client-idaplugin.msi``` installer from our [release
 
 ## Configuring the Kam1n0 Engine
 
-In the previous version of Kam1n0, only a single repository was supported on a workstation and the configuration files for Kam1n0 were in the same folder than the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation and each repository can support different processor architectures. Each repository is given a data directory where you can find its configuration files. More details can be found in the Kam1n0 workbench tutorial.
+In the previous version of Kam1n0, only a single repository was supported on a workstation and the configuration files for Kam1n0 were in the same folder than the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation and each repository can support different processor architectures. Each repository is given a data folder where you can find its configuration files. More details can be found in the Kam1n0 workbench tutorial.
 
 # Documentation
 * [Manage repositories with the Kam1n0 Workbench](documentation/workbench.md#kam1n0-workbench-tutorial)
@@ -135,7 +135,7 @@ In the previous version of Kam1n0, only a single repository was supported on a w
     * [Start the engine](documentation/ida-pro-plugin.md#start-the-engine)
     * [Indexing](documentation/ida-pro-plugin.md#indexing)
     * [Search and add comments](documentation/ida-pro-plugin.md#search-and-add-comments)
-  * [How does the plug-in Work](documentation/ida-pro-plugin.md#how-does-the-plug-in-work)
+  * [How does the plug-in work?](documentation/ida-pro-plugin.md#how-does-the-plug-in-work)
     * [User interface](documentation/ida-pro-plugin.md#user-interface)
     * [Synchronization](documentation/ida-pro-plugin.md#synchronization)
     * [Communication](documentation/ida-pro-plugin.md#communication)
@@ -150,5 +150,5 @@ In the previous version of Kam1n0, only a single repository was supported on a w
 
 The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to LICENSE.txt for details.
 
-Copyright 2017 McGill Unviersity 
+Copyright 2017 McGill University. 
 All rights reserved.
