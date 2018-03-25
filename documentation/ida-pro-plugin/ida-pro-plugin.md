@@ -140,7 +140,7 @@ Starting from version 1.x.x, we support assembly fragment search in IDA Pro. You
 
 There is a search box to help you quickly locate the wanted information on the web pages of the embedded chromium browser. The search box is hidden on the right edge of every web page. It can be activated and slides out if the user press control+F or click the search icon. After typing the keyword to be searched and pressing the key Enter, one can loop through the search results on the web page. By pressing ESC key, one will clear the search text box as well as all the highlighted search results.
 
-![image](images/ctrf.png)
+![image](images/ctrf.PNG)
 
 
 # How does the Plug-in Work
