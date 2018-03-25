@@ -6,7 +6,7 @@
   * [Create an APP](#create-an-APP)
   * [Share an APP](#share-an-APP)
   * [Preparing the data](#preparing-the-data)
-  * [Get the URL for IDA Pro Plugin](#get-the-URL-for-IDA-Pro-Plugin)
+  * [Get the URL for IDA Pro Plugin](#get-the-url-for-ida-pro-plugin)
   * [Index binary files](#index-binary-files)
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
