@@ -1,3 +1,0 @@
-# Cli tutorial
-
-Coming soon...
