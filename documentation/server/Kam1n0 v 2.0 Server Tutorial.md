@@ -92,13 +92,13 @@ After the process finishes, the page will refresh and the result will be present
 
  ![](images/functionsearchresult.png)
 
-For each retrieved function, you can see the similarity, flow graph comparison, full text alignment, clone group alignment by clicking the corresponding icon. You can also see the clone graph by clicking the it from the right side.
+For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
 
  ![](images/searchviews.png)
 
 ### Flow graph view
 
- The `Flow Graph View` explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with a different color. Currently, we ignore blocks with a single instruction. Both graphs can be zoomed in/out and dragged. We provide a scroll (blue) for each of them.
+`Flow Graph View` explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with a different color. Currently, we ignore blocks with a single instruction. Both graphs can be zoomed in/out and dragged. We provide a scroll (blue) for each of them.
 
 ![](images/flow.png)
 
@@ -110,7 +110,7 @@ For each retrieved function, you can see the similarity, flow graph comparison, 
 
 ### Clone group view
 
-The `Clone Group View` lists different cloned subgraphs and compares their differences. The panel below the two text columns lists the cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding basic blocks and compare their differences using string alignment.
+`Clone Group View` lists different cloned subgraphs and compares their differences. The panel below the two text columns lists the cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding basic blocks and compare their differences using string alignment.
 
 ![](images/group.png)
 
