@@ -11,7 +11,7 @@
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
     * [Text diff view](#text-diff-view)
-    * [Clone group view)](#clone-group-view)
+    * [Clone group view](#clone-group-view)
   * [Search with a binary file](#search-with-a-binary-file)
   * [Browse a clone search result](#browse-a-clone-search-result)
     * [The summary boxes](#the-summary-boxes)
