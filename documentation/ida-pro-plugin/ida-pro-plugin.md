@@ -5,7 +5,7 @@
   * [Walk through example](#walk-through-example)
 
     * [Preparing the data](#preparing-the-data)
-    * [Start the engine and get the URL for IDA Pro Plugin](#start-the-engine-and-get-the-URL-for-IDA-Pro-Plugin)
+    * [Start the engine and get the URL for IDA Pro Plugin](#start-the-engine-and-get-the-url-for-ida-pro-plugin)
     * [Set up connection](#set-up-connection)
     * [Indexing](#indexing)
     * [Functions Search](#functions-search)
