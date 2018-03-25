@@ -6,7 +6,7 @@
   * [Create an APP](#create-an-APP)
   * [Share an APP](#share-an-APP)
   * [Preparing the data](#preparing-the-data)
-  * [Get the URL for IDA Pro Plugin](#get-the URL-for-IDA-Pro-Plugin)
+  * [Get the URL for IDA Pro Plugin](#get-the-URL-for-IDA-Pro-Plugin)
   * [Index binary files](#index-binary-files)
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
@@ -60,7 +60,7 @@ Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```z
 
 ## Get the URL for IDA Pro Plugin
 
-Enter the APP by licking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right click it and choose "copy link address".
+Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right click it and choose "copy link address".
 
 ![](images/plugin_link.png)
 
