@@ -112,13 +112,13 @@ Next, download the ```Kam1n0-client-idaplugin.msi``` installer from our [release
 In the previous version of Kam1n0, only a single repository was supported on a workstation and the configuration files for Kam1n0 were in the same folder than the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation and each repository can support different processor architectures. Each repository is given a data folder where you can find its configuration files. More details can be found in the Kam1n0 workbench tutorial.
 
 # Documentation
-* [Kam1n0 Tutorial](documentation/server/server.md#tutorial)
+* [Kam1n0 Server Tutorial](documentation/server/server.md#tutorial)
   * [Configurate and start engine](documentation/server/server.md#edit-and-start-engine)
   * [Register an account and login](documentation/server/server.md#register-an-account-and-login)
   * [Create an application](documentation/server/server.md#create-an-app)
   * [Share an application](documentation/server/server.md#share-an-app)
   * [Preparing the data](documentation/server/server.md#preparing-the-data)
-  * [Get the application URL for IDA Pro Plugin](documentation/server/server.md#get-the-url-for-ida-pro-plugin)
+  * [The application URL for IDA Pro Plugin](documentation/server/server.md#get-the-url-for-ida-pro-plugin)
   * [Index binary files](documentation/server/server.md#index-binary-files)
   * [Search with an assembly function](documentation/server/server.md#search-with-an-assembly-function)
     * [Flow graph view](documentation/server/server.md#flow-graph-view)
