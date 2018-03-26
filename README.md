@@ -130,6 +130,21 @@ In the previous version of Kam1n0, only a single repository was supported on a w
   * [Browse a clone search result](documentation/server/server.md#browse-a-clone-search-result)
     * [The summary boxes](documentation/server/server.md#the-summary-boxes)
     * [Details](documentation/server/server.md#details)
+* [IDA Pro Plug-in Tutorial](documentation/ida-pro-plugin/ida-pro-plugin.md#tutorial)
+  * [Functionalities](documentation/ida-pro-plugin/ida-pro-plugin.md#functionalities)
+  * [Walk through example](documentation/ida-pro-plugin/ida-pro-plugin.md#walk-through-example)
+    * [Preparing the data](documentation/ida-pro-plugin/ida-pro-plugin.md#preparing-the-data)
+    * [Start the engine and get the URL for IDA Pro Plugin](documentation/ida-pro-plugin/ida-pro-plugin.md#start-the-engine-and-get-the-url-for-ida-pro-plugin)
+    * [Set up connection](documentation/ida-pro-plugin/ida-pro-plugin.md#set-up-connection)
+    * [Indexing](documentation/ida-pro-plugin/ida-pro-plugin.md#indexing)
+    * [Functions Search](documentation/ida-pro-plugin/ida-pro-plugin.md#functions-search)
+    * [Composition analysis](documentation/ida-pro-plugin/ida-pro-plugin.md#composition-analysis)
+    * [Assembly fragment search](documentation/ida-pro-plugin/ida-pro-plugin.md#assembly-fragment-search)
+    * [Search box](documentation/ida-pro-plugin/ida-pro-plugin.md#search-box)
+  * [How does the Plugin Work](documentation/ida-pro-plugin/ida-pro-plugin.md#how-does-the-plug-in-work)
+    * [User Interface](documentation/ida-pro-plugin/ida-pro-plugin.md#user-interface)
+    * [Synchronization](documentation/ida-pro-plugin/ida-pro-plugin.md#synchronization)
+    * [Communication](documentation/ida-pro-plugin/ida-pro-plugin.md#communication)
 
 
 ## Licensing
