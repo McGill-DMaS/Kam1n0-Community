@@ -116,7 +116,7 @@ In the previous version of Kam1n0, only a single repository was supported on a w
   * [Configurate and start engine](documentation/server/server.md#edit-and-start-engine)
   * [Register an account and login](documentation/server/server.md#register-an-account-and-login)
   * [Create an application](documentation/server/server.md#create-an-app)
-  * [Share an application](documentation/server/server.md#share-an-app)
+  * [Application Sharing and Access Control](documentation/server/server.md#share-an-app)
   * [Preparing the data](documentation/server/server.md#preparing-the-data)
   * [The application URL for IDA Pro Plugin](documentation/server/server.md#get-the-url-for-ida-pro-plugin)
   * [Index binary files](documentation/server/server.md#index-binary-files)
