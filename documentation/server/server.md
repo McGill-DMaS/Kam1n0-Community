@@ -1,12 +1,12 @@
 # Kam1n0 v 2.0 Server Tutorial
 
 * [Kam1n0 Tutorial](#tutorial)
-  * [Edit and start engine](#edit-and-start-engine)
+  * [Configure and start engine](#edit-and-start-engine)
   * [Register an account and login](#register-an-account-and-login)
-  * [Create an APP](#create-an-app)
-  * [Share an APP](#share-an-app)
+  * [Create an application](#create-an-app)
+  * [Share an application](#share-an-app)
   * [Preparing the data](#preparing-the-data)
-  * [Get the URL for IDA Pro Plugin](#get-the-url-for-ida-pro-plugin)
+  * [Get the application URL for IDA Pro Plugin](#get-the-url-for-ida-pro-plugin)
   * [Index binary files](#index-binary-files)
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
