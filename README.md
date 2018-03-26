@@ -2,6 +2,13 @@
 
 <h1> <img src="documentation/others/kam1n0.png" width="45" />   What Is Kam1n0? </h1>
 
+![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg) 
+![image](https://img.shields.io/badge/release-2.0.0-orange.svg) 
+![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg)
+
+
+
+
 Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process, since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries and then search for the code clones of a given target function or binary file. We created a promotional video on YouTube to illustrate assembly code clone search:
 
 * [Kam1n0 on YouTube](https://youtu.be/31Ty1tYh1tw)
