@@ -6,7 +6,7 @@
   * [Create an application](#create-an-application)
   * [Share an application](#share-an-application)
   * [Preparing the data](#preparing-the-data)
-  * [Get the application URL for IDA Pro Plugin](#get-the-url-for-ida-pro-plugin)
+  * [Get the application URL for IDA Pro Plugin](#get-the-application-url-for-ida-pro-plugin)
   * [Index binary files](#index-binary-files)
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
@@ -58,7 +58,7 @@ If you want to share your APP with another user, you can edit it and grant read/
 Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the second one ```zlib-1.2.7.dll``` against it.
 
 
-## Get the URL for IDA Pro Plugin
+## Get the application URL for IDA Pro Plugin
 
 Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right click it and choose "copy link address".
 
