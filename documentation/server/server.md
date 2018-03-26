@@ -1,12 +1,12 @@
 # Kam1n0 v 2.0 Server Tutorial
 
 * [Kam1n0 Tutorial](#tutorial)
-  * [Configure and start engine](#edit-and-start-engine)
+  * [Configure and start engine](#configure-and-start-engine)
   * [Register an account and login](#register-an-account-and-login)
-  * [Create an application](#create-an-app)
-  * [Share an application](#share-an-app)
+  * [Create an application](#create-an-application)
+  * [Share an application](#share-an-application)
   * [Preparing the data](#preparing-the-data)
-  * [Get the application URL for IDA Pro Plugin](#get-the-url-for-ida-pro-plugin)
+  * [Get the application URL for IDA Pro Plugin](#get-the-application-url-for-ida-pro-plugin)
   * [Index binary files](#index-binary-files)
   * [Search with an assembly function](#search-with-an-assembly-function)
     * [Flow graph view](#flow-graph-view)
@@ -19,7 +19,7 @@
 
 
 
-## Edit and start engine
+## Configure and start engine
 After you start Kam1n0 workbench, you will see a control panel. In this step, you need to set the appropriate values for all properties. If you installed kam1n0 in a system boot disk, you need to run the workbench as administrator to edit the properties. The main property to edit is kam1n0.data.path. If you use kam1n0 server in Windows operating systems, the kam1n0.ida.home will be automatically recognized; If you use kam1n0 server in Linux, you need to correctly set the value of kam1n0.ida.home. Then you can start the engine.
 
 ![](images/KkM76hw.png)
@@ -38,13 +38,13 @@ After you register an account, you can login using the username and password and
 
 ![](images/IuunWz5.png)
 
-## Create an APP
+## Create an application
 
 The next thing to do is create an APP. So far, you can choose from the three kinds of Application: asm2vec-clone, asm-clone, and sym1n0-clone and customize your settings. General Information can be edited again later and Application Settings will be fixed.
 
 ![](images/g5cqoTz.png)
 
-## Share an APP
+## Share an application
 
 If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
 
@@ -58,7 +58,7 @@ If you want to share your APP with another user, you can edit it and grant read/
 Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the second one ```zlib-1.2.7.dll``` against it.
 
 
-## Get the URL for IDA Pro Plugin
+## Get the application URL for IDA Pro Plugin
 
 Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right click it and choose "copy link address".
 
