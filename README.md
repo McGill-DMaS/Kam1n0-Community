@@ -113,7 +113,7 @@ In the previous version of Kam1n0, only a single repository was supported on a w
 
 # Documentation
 * [Kam1n0 Server Tutorial](documentation/server/server.md#tutorial)
-  * [Configurate and start engine](documentation/server/server.md#edit-and-start-engine)
+  * [Configuration and Engine Startup](documentation/server/server.md#edit-and-start-engine)
   * [Register an account and login](documentation/server/server.md#register-an-account-and-login)
   * [Create an application](documentation/server/server.md#create-an-app)
   * [Application Sharing and Access Control](documentation/server/server.md#share-an-app)
