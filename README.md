@@ -132,22 +132,22 @@ In the previous version of Kam1n0, only a single repository was supported on a w
   * [Functionalities](documentation/ida-pro-plugin/ida-pro-plugin.md#functionalities)
   * [Walk through example](documentation/ida-pro-plugin/ida-pro-plugin.md#walk-through-example)
     * [Preparing the data](documentation/ida-pro-plugin/ida-pro-plugin.md#preparing-the-data)
-    * [Start the engine and get the URL for IDA Pro Plugin](documentation/ida-pro-plugin/ida-pro-plugin.md#start-the-engine-and-get-the-url-for-ida-pro-plugin)
-    * [Set up connection](documentation/ida-pro-plugin/ida-pro-plugin.md#set-up-connection)
-    * [Indexing](documentation/ida-pro-plugin/ida-pro-plugin.md#indexing)
-    * [Functions Search](documentation/ida-pro-plugin/ida-pro-plugin.md#functions-search)
+    * [Engine startup and application URL](documentation/ida-pro-plugin/ida-pro-plugin.md#start-the-engine-and-get-the-url-for-ida-pro-plugin)
+    * [Connection configuration](documentation/ida-pro-plugin/ida-pro-plugin.md#set-up-connection)
+    * [Indexing from plug-in](documentation/ida-pro-plugin/ida-pro-plugin.md#indexing)
+    * [Functions search](documentation/ida-pro-plugin/ida-pro-plugin.md#functions-search)
     * [Composition analysis](documentation/ida-pro-plugin/ida-pro-plugin.md#composition-analysis)
     * [Assembly fragment search](documentation/ida-pro-plugin/ida-pro-plugin.md#assembly-fragment-search)
     * [Search box](documentation/ida-pro-plugin/ida-pro-plugin.md#search-box)
   * [How does the Plugin Work](documentation/ida-pro-plugin/ida-pro-plugin.md#how-does-the-plug-in-work)
     * [User Interface](documentation/ida-pro-plugin/ida-pro-plugin.md#user-interface)
     * [Synchronization](documentation/ida-pro-plugin/ida-pro-plugin.md#synchronization)
-    * [Communication](documentation/ida-pro-plugin/ida-pro-plugin.md#communication)
+    * [Two-way Communication](documentation/ida-pro-plugin/ida-pro-plugin.md#communication)
 
 
 ## Licensing
 
-The software was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to LICENSE.txt for details.
+The software was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to LICENSE.txt for details.
 
 Copyright 2017 McGill University. 
 All rights reserved.
