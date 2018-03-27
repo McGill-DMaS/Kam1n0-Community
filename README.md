@@ -89,7 +89,7 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
   <img src="documentation/others/asm2vec.png"/> 
 </p>
 
-## Platform
+## The Overall Platform
 
 The figure below shows the major UI components and functionalities of Kam1n0 v2.x.
 
@@ -97,11 +97,11 @@ The figure below shows the major UI components and functionalities of Kam1n0 v2.
   <img src="documentation/others/pic2.png"/> 
 </p>
 
-## Compatibility
+## Backward Compatibility
 
-* The assembly code repositories and configuration files used in previous versions (<1.0.0) are no longer supported by the latest version. See the documentation on how to migrate previous repositories. 
+* The assembly code repositories and configuration files used in previous versions (<2.0.0) are no longer supported by the latest version. 
 
-#  Installation
+#  Installation Instruction
 
 The current release of Kam1n0 consists of two installers: The core server and IDA Pro plug-in. 
 
