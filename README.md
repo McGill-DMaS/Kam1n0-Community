@@ -91,44 +91,15 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
 
 ## Platform
 
+The figure below shows the major UI components and functionalities of Kam1n0 v2.x.
+
 <p align="center">
   <img src="documentation/others/pic2.png"/> 
 </p>
 
-In this repository, we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server and provides a clone search service through RESTful web services. Users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
-
-##  Release note 2017-02-09 1.1.0
-* [Kam1n0 Core] Added a new symbolic mode. Now it supports cross-architecture subgraph clone search on the symbolic expression level. Included libvex and z3 library. Supported architecture: x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
-* [Kam1n0 Core] Updated graph search algorithm. Improved scalability & accuracy. Updated default ALSH settings.
-* [Kam1n0 Core] Added Visual C++ Redistributable for VS15 dependency (included in the installer for z3).
-* [Web UI] In the symbolic mode, we also visualize the control flow graph with abstract syntax tree for each basic block.
-* [Web UI] User can index multiple files at a time. 
-* [Web UI] User can directly index idb or i64 file.
-* [Web UI] Fixed web UI bugs and improved usability.
-* [Web UI] User can interrupt running jobs through the administration portal.
-* [RESTful API] The old API is no longer working. Check out new API after installation.
-* [IDA Pro plug-in for Kam1n0] Support composition analysis query. 
-
-##  Release note 2016-05-03 1.0.0-rc1
-* [Web UI] Added a web interface for clone search of an assembly function.
-* [Web UI] Added a web interface for clone search of a binary file.
-* [Kam1n0 Workbench] Multiple repositories can be created and managed on a single workstation.
-* [Kam1n0 Core] The clone search results file can be shared and browsed on another machine without access to the repository.
-* [Kam1n0 Core] Support indexing and searching of large binary files (>40 MB) without limits on system memory.
-* [Kam1n0 Core] Support ARM, PowerPC, x86, and AMD64 binaries.
-* [Kam1n0 Core] Support user-defined processor architectures.
-* [Kam1n0 Core] Optimized index structure provides better scalability and clone search quality.
-* [Kam1n0 Core] Kam1n0 no longer skips basic blocks which have less than three instructions. Now, only single instruction basic blocks are skipped, thanks to the new index structure.
-* [IDA Pro plug-in for Kam1n0] [Experimental] Added an assembly fragment search functionality. 
-* [IDA Pro plug-in for Kam1n0] Added a tree view for browsing a large number of clones.
-
 ## Compatibility
 
 * The assembly code repositories and configuration files used in previous versions (<1.0.0) are no longer supported by the latest version. See the documentation on how to migrate previous repositories. 
-
-## Scalability
-
-* You can index millions of functions in each repository on a single machine. The average response time for a query still stays around 1 s and the average indexing time for a function, around 20 ms.
 
 #  Installation
 
