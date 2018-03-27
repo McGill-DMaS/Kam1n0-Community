@@ -23,7 +23,7 @@ Kam1n0 was developed by Steven H. H. Ding and Miles Q. Li under the supervision 
 
 ## Asm-Clone
 
-Asm-Clone applications try to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below).
+Asm-Clone applications try to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions (<1.3s average query time and <30ms average index time with 2.3M functions). Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below).
 
 * Application Type: Asm-Clone
 * The original clone search service used in Kam1n0 v1.x.
@@ -44,8 +44,9 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 ## Sym1n0
 
+Semantic clone search by differentiated fuzzing testing and constraint sovlving. An efficient and scalable dynamic-static hybrid approach (<1s average query time and <100ms average index time with 1.5M functions). Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below). Support visualization of abstract syntax graph.
 * Application Type: Sym1n0 (v2 only)
-* Clone search by symbolic execution and concrete execution. 
+* Clone search by both symbolic execution and concrete execution. 
 * Differentiate functions based on their different I/O behavior.
 * Clone search conducted on the abstract syntax graph constructed from Vex IR (powered by LibVex). 
   * \+ Clone search across different assembly code families.
@@ -67,6 +68,8 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 ## Ams2Vec
 
+Asm2Vec leverages representation learning. It understands the lexical semantic relationship of assembly code. For example, `xmm*` regiters are semantically related to vector operations such as `addps`. `memcpy` is similar to `strcpy`. The graph below shows different assembly functions compiled from the same source code of gmpz tdiv r 2exp in libgmp. From left to right, the assembly functions are compiled with gcc O0 option, gcc O3 option, LLVM obfuscator Control Flow Graph, Flattening option, and LLVM obfuscator Bogus Control Flow Graph option. Asm2Vec can **_statically_** identify them as clones.
+
 * Leverage representation learning.
 * Understand the lexical semantic relationship of assembly code.
   * \+ State-of-the-art for clone search against heavy code obfuscation techniques.
@@ -76,8 +79,10 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
   * \+ Even better result than the most recent dynamic approach.
   * \+ It is much more efficient than recent dynamic approaches. 
   * \+ Do not need to define the architecture. It learns by reading any code.
+  * \+ Static approach: efficient and scalable.
   * \- No subgraphs.
   * \- Assumes that all assembly code belongs to the same processor family.
+  * \- Static approach: cannot recognize jump table etc.
 
 
 <p align="center">
