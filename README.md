@@ -109,7 +109,7 @@ The current release of Kam1n0 consists of two installers: The core server and ID
     <th>Description</th>
   </tr>
   <tr>
-    <td rowspan="4">Kam1n0-server.msi</td>
+    <td rowspan="4">Kam1n0-Server.msi</td>
      <td>Core engine</td>
      <td>Main engine providing service for indexing and searching.</td>
   </tr>
@@ -126,7 +126,7 @@ The current release of Kam1n0 consists of two installers: The core server and ID
      <td>Dependecy for z3.</td>
   </tr>
   <tr>
-    <td rowspan="3">Kam1n0-client-idaplugin.msi</td>
+    <td rowspan="3">Kam1n0-IDA-Plugin.msi</td>
      <td>Plug-in</td>
      <td>Connectors and user interface.</td>
   </tr>
