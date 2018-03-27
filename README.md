@@ -92,7 +92,11 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
 
 ## Platform Overview
 
-The figure below shows the major UI components and functionalities of Kam1n0 v2.x. In general, each user has an application list, a running-job list, and a result file list. Application list shows the applications owned by the user and shared by the others. Running-job list shows the running progress for a large query (such as chrome.dll) and indexing procedure. Result file list displays the saved results. More details can be found in our detailed [tutorial](#documentation). 
+The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a materialize design. In general, each user has an application list, a running-job list, and a result file list. 
+* Application list shows the applications owned by the user and shared by the others. 
+* Running-job list shows the running progress for a large query (such as chrome.dll) and indexing procedure.
+* Result file list displays the saved results. 
+More details of the UI design can be found in our detailed [tutorial](#documentation). 
 
 <p align="center">
   <img src="documentation/others/pic2.png"/> 
