@@ -44,7 +44,7 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 ## Sym1n0
 
-Semantic clone search by differentiated fuzzing testing and constraint sovlving. An efficient and scalable dynamic-static hybrid approach (<1s average query time and <100ms average index time with 1.5M functions). Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below). Support visualization of abstract syntax graph.
+Semantic clone search by differentiated fuzz testing and constraint sovlving. An efficient and scalable dynamic-static hybrid approach (<1s average query time and <100ms average index time with 1.5M functions). Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below). Support visualization of abstract syntax graph.
 * Application Type: Sym1n0 (v2 only)
 * Clone search by both symbolic execution and concrete execution. 
 * Differentiate functions based on their different I/O behavior.
