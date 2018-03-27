@@ -163,6 +163,10 @@ Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page]
 
 The assembly code repositories and configuration files used in previous versions (<2.0.0) are no longer supported by the latest version. Please contact us if you need to migrate your old repositories.
 
+## Installing Kam1n0 on Linux
+
+In progress.
+
 # Documentation
 * [Kam1n0 Server Tutorial](documentation/server/server.md#tutorial)
   * [Configuration and Engine Startup](documentation/server/server.md#edit-and-start-engine)
