@@ -210,7 +210,7 @@ In progress.
 
 The software was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to [LICENSE.txt](LICENSE.txt) for details.
 
-Copyright 2017 McGill University. 
+Copyright 2018 McGill University. 
 All rights reserved.
 
 ## Acknowledgement
