@@ -58,7 +58,7 @@ These functionalities can be found in the:
 
 
 
-Even though you can select functions from the popup menu of the ```IDA Pro Functions Window``` to search/index functions, using ![searchs](images/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](images/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) opens a ```Selection Window``` which provides a more detailed configuration for multiple search.
+Even though you can select functions from the popup menu of the ```IDA Pro Functions Window``` to search/index functions, using ![searchs](images/c69949c0-56e4-11e5-970f-74a4f48e651e.png) and ![uploads](images/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png) at other places (e.g. toolbar) opens a ```Selection Window``` which provides a more detailed configuration for multiple searches.
 
 ![image](images/index0.png)
 ![image](images/search0.png)
@@ -101,7 +101,7 @@ Open IDA Pro and disassemble the target ```zlib-1.2.7.dll``` binary file as usua
 
 ![image](images/search.png)
 
-An embedded chromium browser will pop up and show the progress of searching and it will be redirected to the result page after it completes. Similar to Kam1n0 Web UI, for each retrieved function, you can see the similarity, flow graph comparison, full text alignment, clone group alignment by clicking the corresponding icon. You can also see the clone graph by clicking the it from the right side. It has the same set of UI as Kam1n0 Web interface except we have an additional flow graph linking function here.
+An embedded chromium browser will pop up and show the progress of searching and it will be redirected to the result page after it completes. Similar to Kam1n0 Web UI, for each retrieved function, you can see the similarity, flow graph comparison, full text alignment, clone group alignment by clicking the corresponding icon. You can also see the clone graph by clicking it from the right side. It has the same set of UI as Kam1n0 Web interface except we have an additional flow graph linking function here.
 
 ![image](images/search_result.png)
 
@@ -116,7 +116,7 @@ In any Flow Graph related view, if you double-click a specific basic block in th
 
 ### Composition analysis
 
- To search all the functions of the binary file and keep the result in a file which will be shown on your homepage of server, click on the ```Composition Analysis``` in the toolbar ![image](images/comp_ana.png). An embedded chromium browser will pop up and show the progress of analysis. You can leave the page or monitor the progress with it.
+ To search all the functions of the binary file and keep the result in a file which will be shown on your homepage of the server, click on the ```Composition Analysis``` in the toolbar ![image](images/comp_ana.png). An embedded chromium browser will pop up and show the progress of analysis. You can leave the page or monitor the progress with it.
 
 ![image](images/comp_pro.png)
 
@@ -144,18 +144,26 @@ There is a search box to help you quickly locate the wanted information on the w
 
 # How does the Plug-in Work
 
-The plug-in is written in Python using ```idaapi```. The root of this repository is the Windows installer. The source code of the plug-in can be found [here](images/https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/tree/master/Kam1n0WinSetupProject/bin_release/plugins).
+The plug-in is written in Python using ```idaapi```. 
+
+## Client-IDA Two-way Communication
+
+In the original Kam1n0 IDA Plug-in, the communication is one-way between IDA Pro and the clone search result rendering windows. After the user sends a clone search request in the IDA Views, the plug-in creates a new IDA form to handle the request and a new process for result rendering windows. If the query contains multiple assembly functions, the IDA form will search each of them and merge the search results. In this process, the IDA Pro Window is frozen and the user cannot use it until the search finishes (as shown in Figure~\ref{fig:plg}). 
+
+In the updated Kam1n0 v2.x IDA Plug-in, we remove the original IDA form for searching and adopt a web-based interface for progressively searching and merging the clone results. The searching operations are conducted using the plug-in process. Therefore, the main IDA Pro process will not be blocked. The user can still use other IDA window while the clone search is in progress. 
+
+In the original IDA Pro plug-in, calling IDA SDK functions in the rendering windows is impossible.  We introduce a two-way messaging communication channel between the IDA Pro process and the Plug-in process. In the plug-in process, one can execute any IDA commands using JavaScript or Python. The commands are pushed to a shared messaging queue between these two processes. In the IDA Pro process, we create a message listener that monitors the queue and execute any requested commands. We implemented a simple communication channel since the original `multiprocessing` module in Python does not work in IDA Pro or other Python-embedded applications. Such a design enables the interaction between clone search result rendering process and the IDA Pro UI process. 
 
 ## User Interface
 
 The user interface consists of two parts:
-* The native ```idaapi``` forms and controls: the Connection Management Form, the Search Progress Form, the Index Progress Form, the Select Function to Search Form, and the Select Function to Index Form.
-* The local webpages: the Clone Graph View, the Clone List View, the Text-Diff View, the Flow View, and the Clones View. These local webpages are rendered using the embeded Chromium shipped with cefpython, and the frame used to hold Chromium is wxpython. We tried cefpython with the build-in pyside of IDA Pro. Unfortunately, pages cannot be rendered, so we switch to wxpython.
+* The native ```idaapi``` forms and controls: the Connection Management Form, the Select Function to Search Form, and the Select Function to Index Form.
+* Unlike the Kam1n0 v1.x plug-in for IDA Por, the new plugin directly uses the web page from Kam1n0 server. They share the same set of UI for better code maintainability. 
 
 ## Synchronization
 
-We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```. If a thread other than the main thread updates the interface while the user interacts with (e.g. clicks on) the interface, IDA Pro will freeze/crash.
+We find it difficult to update the IDA Pro UI asynchronously using ```idaapi```. If a thread other than the main thread updates the interface while the user interacts with (e.g. clicks on) the interface, IDA Pro will freeze/crash. Instead, we create a new process to render the clone search results. Backward communication is realized by a inter-process communication. The user can still use IDA Pro throughout the process of searching and rendering. 
 
 ## Communication
 
-To interact with the Kam1n0 web services, we use the built-in ```urllib``` in Python to send requests and the ```json``` lib to parse the json results. After that, the json results are passed to javascripts using ```cefpython```.
+To interact with the Kam1n0 web services, we build our own network wrapper use the built-in ```urllib``` in Python to send requests and the ```json``` lib to parse the json results. The [connection utitly](https://github.com/McGill-DMaS/Kam1n0/tree/master2.x/kam1n0-clients/ida-plugin/Kam1n0/utilities) itself can be a standalone client for plugins of other disassemblers. One only needs to implement disassembly extraction utils in [IDAUtils](https://github.com/McGill-DMaS/Kam1n0/blob/master2.x/kam1n0-clients/ida-plugin/Kam1n0/IDAUtils.py) for the other disassemblers. 
