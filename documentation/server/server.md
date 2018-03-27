@@ -20,7 +20,7 @@
 
 
 ## Configure and start engine
-After you start Kam1n0 workbench, you will see a control panel. In this step, you need to set the appropriate values for all properties. If you installed kam1n0 in a system boot disk, you need to run the workbench as administrator to edit the properties. The main property to edit is kam1n0.data.path. If you use kam1n0 server in Windows operating systems, the kam1n0.ida.home will be automatically recognized; If you use kam1n0 server in Linux, you need to correctly set the value of kam1n0.ida.home. Then you can start the engine.
+After you start Kam1n0 workbench, you will see a control panel. In this step, you need to set the appropriate values for all properties. If you installed kam1n0 on a system boot disk, you need to run the workbench as administrator to edit the properties. The main property to edit is kam1n0.data.path. If you use kam1n0 server in Windows operating systems, the kam1n0.ida.home will be automatically recognized; If you use kam1n0 server in Linux, you need to correctly set the value of kam1n0.ida.home. Then you can start the engine.
 
 ![](images/KkM76hw.png)
 
@@ -34,7 +34,7 @@ By clicking `LOGIN`->`Sign Up Here`, you will enter the register page.
 
 ![](images/7VVppC3.png)
 
-After you register an account, you can login using the username and password and be directed to your user homepage. You can see all your Apps, Apps shared to you by other users, running jobs, result files on your homepage.
+After you register an account, you can login using the username and password and be directed to your user homepage. You can see all your Apps, Apps shared with you by other users, running jobs, result files on your homepage.
 
 ![](images/IuunWz5.png)
 
@@ -60,7 +60,7 @@ Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```z
 
 ## Get the application URL for IDA Pro Plugin
 
-Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right click it and choose "copy link address".
+Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
 
 ![](images/plugin_link.png)
 
@@ -88,7 +88,7 @@ A new page will pop up. If this is the first time you search with an assembly fu
 
  ![](images/pop.png)
 
-After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in json form.
+After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in JSON form.
 
  ![](images/functionsearchresult.png)
 
@@ -127,7 +127,7 @@ This process may take a while. And you can leave the page and check the progress
 
 ## Browse a clone search result
 
-After Kam1n0 completes a search query with a binary file, you can see it from the result file list on your user homepage. The `.kam` file contains all the details about the query and the search results. The `.kam` file can be found at %repository_directory%/UserFiles/. Specifically, the file contains serveral B-Tree which indexes the following information:
+After Kam1n0 completes a search query with a binary file, you can see it from the result file list on your user homepage. The `.kam` file contains all the details about the query and the search results. The `.kam` file can be found at %repository_directory%/UserFiles/. Specifically, the file contains several B-Tree which indexes the following information:
 
 * the assembly functions of the query
 * the assembly functions of all the involved assembly functions in the repository
@@ -143,7 +143,7 @@ You can see the result by clicking `OPEN`.
 
 ### The summary boxes
 
-In `SUMMARY` section of result page, you can see the boxes statistics about clones between the query and a binary file in the repository. In this example, we can see that for libpng we find 441 (99%) clones with similarity more than 0.6. For zlib, we find 63 clones (17%) with similarity more than 0.6. We know that the query is exactly the same binary as the binary file libpng-1.7.0b54.dll in the repository. Kam1n0 skips assembly functions with a length less than 2 lines; therefore, we do not get a 100% similarity here.
+In `SUMMARY` section of the result page, you can see the boxes statistics about clones between the query and a binary file in the repository. In this example, we can see that for libpng we find 441 (99%) clones with similarity more than 0.6. For zlib, we find 63 clones (17%) with similarity more than 0.6. We know that the query is exactly the same binary as the binary file libpng-1.7.0b54.dll in the repository. Kam1n0 skips assembly functions with a length less than 2 lines; therefore, we do not get a 100% similarity here.
 
 ![](images/summary.png)
 
