@@ -44,21 +44,19 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 ## Sym1n0
 
-Application Type: Sym1n0 (v2 only)
-Clone search by symbolic execution and concrete execution. 
-Differentiate functions based on their different I/O behavior.
-Clone search conducted on the abstract syntax graph constructed from IR. 
-* \+ Clone search across different assembly code families.
-  * For example, indexed x86 binaries but the query is ARM code. 
-* \+ Subgraph clone search.
-* \+ Support a wide range of families .
-  * x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
-* \+ An efficient dynamic-static hybrid approach.
-* \+ Ideal for analyzing firmware compiled for different processors.
-* \- Sensitive to heavy graph manipulation (such as a full flattening).
-* \- Sensitive to large scale breakdown of basic block integrity. 
-
-
+* Application Type: Sym1n0 (v2 only)
+* Clone search by symbolic execution and concrete execution. 
+* Differentiate functions based on their different I/O behavior.
+* Clone search conducted on the abstract syntax graph constructed from Vex IR (powered by LibVex). 
+  * \+ Clone search across different assembly code families.
+    * For example, indexed x86 binaries but the query is ARM code. 
+  * \+ Subgraph clone search.
+  * \+ Support a wide range of families .
+    * x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
+  * \+ An efficient dynamic-static hybrid approach.
+  * \+ Ideal for analyzing firmware compiled for different processors.
+  * \- Sensitive to heavy graph manipulation (such as a full flattening).
+  * \- Sensitive to large scale breakdown of basic block integrity. 
 
 
 
@@ -69,17 +67,17 @@ Clone search conducted on the abstract syntax graph constructed from IR.
 
 ## Ams2Vec
 
-
-Leverage representation learning to understand the semantic relationship of assembly code.
-* \+ State-of-the-art for clone search against heavy code obfuscation techniques.
-  * (>0.8 accuracy for all options applied in O-LLVM, multple iterations).
-* \+ State-of-the-art for clone search against code optimization.
-  * (>0.8 accuracy between O0 and O3, >0.94 accuracy between O2 and O3)
-* \+ Even better result than the most recent dynamic approach.
-* \+ It is much more efficient than recent dynamic approaches. 
-* \+ Do not need to define the architecture. It learns by reading any code.
-* \- No subgraphs.
-* \- Assumes that all assembly code belongs to the same processor family.
+* Leverage representation learning.
+* Understand the lexical semantic relationship of assembly code.
+  * \+ State-of-the-art for clone search against heavy code obfuscation techniques.
+    * (>0.8 accuracy for all options applied in O-LLVM, multple iterations).
+  * \+ State-of-the-art for clone search against code optimization.
+    * (>0.8 accuracy between O0 and O3, >0.94 accuracy between O2 and O3)
+  * \+ Even better result than the most recent dynamic approach.
+  * \+ It is much more efficient than recent dynamic approaches. 
+  * \+ Do not need to define the architecture. It learns by reading any code.
+  * \- No subgraphs.
+  * \- Assumes that all assembly code belongs to the same processor family.
 
 
 <p align="center">
