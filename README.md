@@ -8,32 +8,14 @@
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
 
 
-**_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It supports multi-tenancy access and management of assembly repositories by introducing the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service, such as assembly clone search. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: Asm-Clone, Sym1n0, and Asm2Vec. New application type can be further added to the platform. A user can create applications instance of any chosen application type. 
-
-
-
-
-
-One user can own unlimited number of applications. An application can be shared among a specific group of users. Application repository read-write access can be controlled by the application owner. Kam1n0 v2.x server will serve the applications concurrently using a resource pool. 
+**_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It allows a user to first index a (large) collection of binaries into different repositories and provide different analytic services such as clone search. It supports multi-tenancy access and management of assembly repositories by introducing the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: **_Asm-Clone_**, **_Sym1n0_**, and **_Asm2Vec_**. New application type can be further added to the platform. 
 
 <p align="center">
   <img src="documentation/others/stack.png"/> 
 </p>
 
-we optimize and refactor the original solution stack into a binary analysis platform, namely Kam1n0 v2.x. The resulting new architecture supports multi-tenancy access and management of repositories by introducing the concept of \emph{Application}. 
+A user can create applications instance of any chosen application type ann own unlimited number of applications. An application can be shared among a specific group of users. Application repository read-write access and on-off status can be controlled by the application owner. Kam1n0 v2.x server will serve the applications concurrently using a resource pool. 
 
-
-
-
-Assembly code analysis is a time-consuming process. 
-
-An effective and efficient assembly code clone search engine can greatly reduce the effort of this process, since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. 
-
-It allows a user to first index a (large) collection of binaries and then search for the code clones of a given target function or binary file. We created a promotional video on YouTube to illustrate assembly code clone search:
-
-
-
-Kam1n0 tries to 
 
 Kam1n0 was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung of the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. It won the second prize at the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
 
