@@ -19,6 +19,22 @@ Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M
 
 * S. H. H. Ding, B. C. M. Fung, and P. Charland. [Kam1n0: MapReduce-based Assembly Clone Search for Reverse Engineering](https://drive.google.com/file/d/0BzRSjM7kjy-rZWUtRnFXR0ZpSjg/view?usp=sharing). In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (SIGKDD)</i>, pages 461-470, San Francisco, CA: ACM Press, August 2016.
 
+## Asm-Clone
+
+![image](documentation/others/asm-clone.png)
+
+
+## Sym1n0
+
+![image](documentation/others/sym1n0.png)
+
+
+## Ams2Vec
+
+![image](documentation/others/asm2vec.png)
+
+## Platform
+
 ![image](documentation/others/pic2.png)
 
 In this repository, we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server and provides a clone search service through RESTful web services. Users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
