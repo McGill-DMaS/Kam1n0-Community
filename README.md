@@ -91,15 +91,12 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
 
 ## The Overall Platform
 
-The figure below shows the major UI components and functionalities of Kam1n0 v2.x.
+The figure below shows the major UI components and functionalities of Kam1n0 v2.x. In general, each user has an application list, a running-job list, and a result file list. Application list shows the applications owned by the user and shared by the others. Running-job list shows the running progress for large query (such as chrome.dll) and indexing procedure. Result file list displayes the saved results. More details can be found on our [tutorial](#documentation). 
 
 <p align="center">
   <img src="documentation/others/pic2.png"/> 
 </p>
 
-## Backward Compatibility
-
-* The assembly code repositories and configuration files used in previous versions (<2.0.0) are no longer supported by the latest version. 
 
 #  Installation Instruction
 
@@ -161,9 +158,9 @@ The Kam1n0 IDA Pro plug-in is written in Python for the logic and in HTML/JavaSc
 
 Next, download the ```Kam1n0-client-idaplugin.msi``` installer from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins folder which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.95/plugins```. The installer will validate the path. 
 
-## Configuring the Kam1n0 Engine
+## Backward Compatibility
 
-In the previous version of Kam1n0, only a single repository was supported on a workstation and the configuration files for Kam1n0 were in the same folder than the engine executable file. Starting from 1.x.x version, Kam1n0 supports multiple repositories on a workstation and each repository can support different processor architectures. Each repository is given a data folder where you can find its configuration files. More details can be found in the Kam1n0 workbench tutorial.
+* The assembly code repositories and configuration files used in previous versions (<2.0.0) are no longer supported by the latest version. Please contact us if you need to migrate your old repositories.
 
 # Documentation
 * [Kam1n0 Server Tutorial](documentation/server/server.md#tutorial)
