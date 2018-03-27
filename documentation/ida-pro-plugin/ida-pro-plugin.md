@@ -148,7 +148,11 @@ The plug-in is written in Python using ```idaapi```.
 
 ## Client-IDA Two-way Communication
 
-In the original Kam1n0 IDA Plug-in, the communication is one-way between IDA Pro and the clone search result rendering windows. After the user sends a clone search request in the IDA Views, the plug-in creates a new IDA form to handle the request and a new process for result rendering windows. If the query contains multiple assembly functions, the IDA form will search each of them and merge the search results. In this process, the IDA Pro Window is frozen and the user cannot use it until the search finishes (as shown in Figure~\ref{fig:plg}). 
+In the original Kam1n0 IDA Plug-in, the communication is one-way between IDA Pro and the clone search result rendering windows. After the user sends a clone search request in the IDA Views, the plug-in creates a new IDA form to handle the request and a new process for result rendering windows. If the query contains multiple assembly functions, the IDA form will search each of them and merge the search results. In this process, the IDA Pro Window is frozen and the user cannot use it until the search finishes (as shown in the figure below). 
+
+<p align="center">
+ <img src= "../others/plg.png" width="80%" />
+</p>
 
 In the updated Kam1n0 v2.x IDA Plug-in, we remove the original IDA form for searching and adopt a web-based interface for progressively searching and merging the clone results. The searching operations are conducted using the plug-in process. Therefore, the main IDA Pro process will not be blocked. The user can still use other IDA window while the clone search is in progress. 
 
