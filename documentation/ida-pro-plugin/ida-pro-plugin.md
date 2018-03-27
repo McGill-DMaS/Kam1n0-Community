@@ -144,11 +144,7 @@ There is a search box to help you quickly locate the wanted information on the w
 
 # How does the Plug-in Work
 
-The plug-in is written in Python using ```idaapi```. 
-
-## Client-IDA Two-way Communication
-
-In the original Kam1n0 IDA Plug-in, the communication is one-way between IDA Pro and the clone search result rendering windows. After the user sends a clone search request in the IDA Views, the plug-in creates a new IDA form to handle the request and a new process for result rendering windows. If the query contains multiple assembly functions, the IDA form will search each of them and merge the search results. In this process, the IDA Pro Window is frozen and the user cannot use it until the search finishes (as shown in the figure below). 
+The plug-in is written in Python using ```idaapi```. In the original Kam1n0 IDA Plug-in, the communication is one-way between IDA Pro and the clone search result rendering windows. After the user sends a clone search request in the IDA Views, the plug-in creates a new IDA form to handle the request and a new process for result rendering windows. If the query contains multiple assembly functions, the IDA form will search each of them and merge the search results. In this process, the IDA Pro Window is frozen and the user cannot use it until the search finishes (as shown in the figure below). 
 
 <p align="center">
  <img src= "../others/plg.png" width="80%" />
