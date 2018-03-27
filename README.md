@@ -3,7 +3,7 @@
 <h1> <img src="documentation/others/kam1n0.png" width="45" />   What Is Kam1n0? </h1>
 
 ![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square) 
-![GitHub (pre-)release](https://img.shields.io/github/release/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/all.svg?style=flat-square)
+![GitHub (pre-)release](https://img.shields.io/badge/kam1n0%20release-v2.0.0-orange.svg?style=flat-square)
 ![Github All Releases](https://img.shields.io/github/downloads/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/total.svg?style=flat-square)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
 
