@@ -135,8 +135,8 @@ The current release of Kam1n0 consists of two installers: The core server and ID
      <td>Rendering engine for the user interface.</td>
   </tr>
 <tr>
-     <td>Wxpython</td>
-     <td>Rendering engine for Cefpython.</td>
+     <td>PyPI</td>
+     <td>Package management for Python. Included for IDA < 7.0. </td>
   </tr>
 </table>
 
