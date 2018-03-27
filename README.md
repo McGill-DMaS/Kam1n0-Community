@@ -92,7 +92,7 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
 
 ## Platform Overview
 
-The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a materialize design. In general, each user has an application list, a running-job list, and a result file list. 
+The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a material design. In general, each user has an application list, a running-job list, and a result file list. 
 * Application list shows the applications owned by the user and shared by the others. 
 * Running-job list shows the running progress for a large query (such as chrome.dll) and indexing procedure.
 * Result file list displays the saved results. 
@@ -141,7 +141,7 @@ The current release of Kam1n0 consists of two installers: The core server and ID
   </tr>
    <tr>
      <td>PyPI and dependent wheels</td>
-     <td>Package management for Python. Included for IDA < 7.0. </td>
+     <td>Package management for Python. Included for IDA 6.8 &6.9. </td>
   </tr>
 </table>
 
