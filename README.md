@@ -8,34 +8,66 @@
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
 
 
+**_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It supports multi-tenancy access and management of assembly repositories by introducing the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service, such as assembly clone search. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: Asm-Clone, Sym1n0, and Asm2Vec. New application type can be further added to the platform. A user can create applications instance of any chosen application type. 
 
-Assembly code analysis is a time-consuming process. An effective and efficient assembly code clone search engine can greatly reduce the effort of this process, since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. It allows a user to first index a (large) collection of binaries and then search for the code clones of a given target function or binary file. We created a promotional video on YouTube to illustrate assembly code clone search:
 
-* [Kam1n0 on YouTube](https://youtu.be/31Ty1tYh1tw)
 
-Kam1n0 tries to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the ones on the left and right as shown below). Kam1n0 supports rich comment format and has an IDA Pro plug-in to use its indexing and searching capabilities via IDA Pro. 
 
-Kam1n0 was developed by Steven H. H. Ding under the supervision of Benjamin C. M. Fung of the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. It won the second prize at the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
+
+One user can own unlimited number of applications. An application can be shared among a specific group of users. Application repository read-write access can be controlled by the application owner. Kam1n0 v2.x server will serve the applications concurrently using a resource pool. 
+
+<p align="center">
+  <img src="documentation/others/stack.png"/> 
+</p>
+
+we optimize and refactor the original solution stack into a binary analysis platform, namely Kam1n0 v2.x. The resulting new architecture supports multi-tenancy access and management of repositories by introducing the concept of \emph{Application}. 
+
+
+
+
+Assembly code analysis is a time-consuming process. 
+
+An effective and efficient assembly code clone search engine can greatly reduce the effort of this process, since it can identify the cloned parts that have been previously analyzed. Kam1n0 is a scalable system that supports assembly code clone search. 
+
+It allows a user to first index a (large) collection of binaries and then search for the code clones of a given target function or binary file. We created a promotional video on YouTube to illustrate assembly code clone search:
+
+
+
+Kam1n0 tries to 
+
+Kam1n0 was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung of the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. It won the second prize at the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
 
 * S. H. H. Ding, B. C. M. Fung, and P. Charland. [Kam1n0: MapReduce-based Assembly Clone Search for Reverse Engineering](https://drive.google.com/file/d/0BzRSjM7kjy-rZWUtRnFXR0ZpSjg/view?usp=sharing). In <i>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (SIGKDD)</i>, pages 461-470, San Francisco, CA: ACM Press, August 2016.
 
 ## Asm-Clone
 
-![image](documentation/others/asm-clone.png)
+
+Asm-Clone applications try to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the ones on the left and right as shown below). Kam1n0 supports rich comment format and has an IDA Pro plug-in to use its indexing and searching capabilities via IDA Pro. 
+
+
+<p align="center">
+  <img src="documentation/others/asm-clone.png"/> 
+</p>
 
 
 ## Sym1n0
 
-![image](documentation/others/sym1n0.png)
+<p align="center">
+  <img src="documentation/others/sym1n0.png"/> 
+</p>
 
 
 ## Ams2Vec
 
-![image](documentation/others/asm2vec.png)
+<p align="center">
+  <img src="documentation/others/asm2vec.png"/> 
+</p>
 
 ## Platform
 
-![image](documentation/others/pic2.png)
+<p align="center">
+  <img src="documentation/others/pic2.png"/> 
+</p>
 
 In this repository, we release the initial version of Kam1n0 and its IDA Pro plug-in. It can run on a single workstation/server and provides a clone search service through RESTful web services. Users can connect to the server through IDA Pro. Alternatively, it can be deployed on a distributed cluster (next major release).
 
