@@ -23,8 +23,18 @@ Kam1n0 was developed by Steven H. H. Ding and Miles Q. Li under the supervision 
 
 ## Asm-Clone
 
+Asm-Clone applications try to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the one on the left as shown below), it can identity the cloned subgraphs among other functions in the repository (the one on the  right as shown below).
 
-Asm-Clone applications try to solve the efficient subgraph search problem (i.e. graph isomorphism problem) for assembly functions. Given a target function (the middle one in the figure below) it can identity the cloned subgraphs among other functions in the repository (the ones on the left and right as shown below). Kam1n0 supports rich comment format and has an IDA Pro plug-in to use its indexing and searching capabilities via IDA Pro. 
+* Application Type: Asm-Clone
+* The original clone search service used in Kam1n0 v1.x.
+* Currently support Meta-PC, ARM, PowerPC, and TMS320c6 (experimental).
+* Support subgraph clone search within a certain assembly code family.
+  * \+ Good interpretability of the result: breaks down to subgraphs.
+  * \+ Accurate for searching within the given code family.
+  * \+ Good for differing various patches or versions for big binaries.
+  * \- Relatively more sensitive to instruction set changes, optimizations, and obfuscation.
+  * \- Need to pre-define the syntax of the assembly code language.
+  * \- Need to have assembly code of the same chosen family in the repository.
 
 
 <p align="center">
@@ -34,12 +44,43 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 ## Sym1n0
 
+Application Type: Sym1n0 (v2 only)
+Clone search by symbolic execution and concrete execution. 
+Differentiate functions based on their different I/O behavior.
+Clone search conducted on the abstract syntax graph constructed from IR. 
+* \+ Clone search across different assembly code families.
+  * For example, indexed x86 binaries but the query is ARM code. 
+* \+ Subgraph clone search.
+* \+ Support a wide range of families .
+  * x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
+* \+ An efficient dynamic-static hybrid approach.
+* \+ Ideal for analyzing firmware compiled for different processors.
+* \- Sensitive to heavy graph manipulation (such as a full flattening).
+* \- Sensitive to large scale breakdown of basic block integrity. 
+
+
+
+
+
 <p align="center">
   <img src="documentation/others/sym1n0.png"/> 
 </p>
 
 
 ## Ams2Vec
+
+
+Leverage representation learning to understand the semantic relationship of assembly code.
+* \+ State-of-the-art for clone search against heavy code obfuscation techniques.
+  * (>0.8 accuracy for all options applied in O-LLVM, multple iterations).
+* \+ State-of-the-art for clone search against code optimization.
+  * (>0.8 accuracy between O0 and O3, >0.94 accuracy between O2 and O3)
+* \+ Even better result than the most recent dynamic approach.
+* \+ It is much more efficient than recent dynamic approaches. 
+* \+ Do not need to define the architecture. It learns by reading any code.
+* \- No subgraphs.
+* \- Assumes that all assembly code belongs to the same processor family.
+
 
 <p align="center">
   <img src="documentation/others/asm2vec.png"/> 
