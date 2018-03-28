@@ -78,12 +78,12 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
   * \+ State-of-the-art for clone search against code optimization.
     * (>0.8 accuracy between O0 and O3, >0.94 accuracy between O2 and O3)
   * \+ Even better result than the most recent dynamic approach.
-  * \+ It is much more efficient than recent dynamic approaches. 
-  * \+ Do not need to define the architecture. It learns by reading any code.
+  * \+ Much more efficient than recent dynamic approaches. 
+  * \+ Do not need to define the architecture. It self-learns by reading large volume of code.
   * \+ Static approach: efficient and scalable.
   * \- No subgraphs.
-  * \- Assumes that all assembly code belongs to the same processor family.
-  * \- Static approach: cannot recognize jump table etc.
+  * \- Assume the assembly code come from the same processor family.
+  * \- Static approach: cannot recognize jump table, etc.
 
 
 <p align="center">
