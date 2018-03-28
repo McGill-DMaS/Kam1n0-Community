@@ -208,15 +208,15 @@ In progress.
 
 ## Licensing
 
-The software was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to [LICENSE.txt](LICENSE.txt) for details.
+The software was developed by [Steven H. H. Ding](http://stevending.net/) and [Miles Q. Li](http://milesqli.github.io/) under the supervision of [Benjamin C. M. Fung](http://dmas.lab.mcgill.ca/fung/) in the Data Mining and Security Lab at McGill University, Canada. It is distributed under the Apache License Version 2.0. Please refer to [LICENSE.txt](LICENSE.txt) for details.
 
 Copyright 2018 McGill University. 
 All rights reserved.
 
 ## Acknowledgement
 
-![image](https://img.shields.io/badge/Proudly%20Funded%20by-DRDC%20CANADA-orange.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Proudly%20Funded%20by-Defence Research & Development Canada (DRDC)-orange.svg?style=for-the-badge)
 
-![image](https://img.shields.io/badge/Proudly%20Funded%20by-Canada%20Research%20%20Chairs%20Program-blue.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Proudly%20Funded%20by-NSERC Canada%20Research%20%20Chairs%20Program-blue.svg?style=for-the-badge)
 
-![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20U.%20McGill-red.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill Univrsity-red.svg?style=for-the-badge)
