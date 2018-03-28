@@ -215,8 +215,8 @@ All rights reserved.
 
 ## Acknowledgement
 
-![image](https://img.shields.io/badge/Proudly%20Funded%20by-Defence Research & Development Canada (DRDC)-orange.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Proudly%20Funded%20by-Defence%20Research%20&%20Development%20Canada%20(DRDC)-orange.svg?style=for-the-badge)
 
-![image](https://img.shields.io/badge/Proudly%20Funded%20by-NSERC Canada%20Research%20%20Chairs%20Program-blue.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Proudly%20Funded%20by-NSERC%20Canada%20Research%20%20Chairs%20Program-blue.svg?style=for-the-badge)
 
-![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill Univrsity-red.svg?style=for-the-badge)
+![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill%20Univrsity-red.svg?style=for-the-badge)
