@@ -28,6 +28,7 @@ Icon | Functionality | Description | Hot key
 ![searchs](images/c69949c0-56e4-11e5-970f-74a4f48e651e.png)| Select functions to search | Select functions to search | Ctrl+Shift+A
 ![upload](images/17aa5e76-56e5-11e5-8293-9e72357431f1.png)| Index current function | Index the function at current address | Ctrl+Shift+K
 ![uploads](images/420cccf8-56e5-11e5-8c2b-b0dbdc19de3c.png)| Select functions to index | Select functions to index | Ctrl+Shift+J
+![setting-cnn](images/components.png)| Composition Analysis | Search with a binary file | NA
 ![setting-cnn](images/711b3f98-56e5-11e5-8797-3952bf9c0916.png)| Manage connections | Manage connections to different repositories | NA
 ![setting](images/8a598906-56e5-11e5-8fce-722c49665e89.png) | Manage storage | Mange local/remote accounts and storage | NA
 ![page_edit](images/679c2a60-1204-11e6-8c91-e964581fc04c.png) | Fragment search (new) | Search with the selected assembly fragment | NA
