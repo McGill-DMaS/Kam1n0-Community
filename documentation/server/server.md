@@ -143,7 +143,7 @@ You can see the result by clicking `OPEN`.
 
 ### The summary boxes
 
-In `SUMMARY` section of the result page, you can see the boxes statistics about clones between the query and a binary file in the repository. In this example, we can see that for libpng we find 441 (99%) clones with similarity more than 0.6. For zlib, we find 63 clones (17%) with similarity more than 0.6. We know that the query is exactly the same binary as the binary file libpng-1.7.0b54.dll in the repository. Kam1n0 skips assembly functions with a length less than 2 lines; therefore, we do not get a 100% similarity here.
+In `SUMMARY` section of the result page, you can see the boxes which provide statistics about clones between the query and a binary file in the repository. In this example, we can see that for libpng we find 441 (99%) clones with similarity more than 0.6. For ```zlib-1.2.7.dll```, we find 63 clones (17%) with similarity more than 0.6. We know that the query is exactly the same binary as the binary file ```libpng-1.7.0b54.dll``` in the repository. Kam1n0 skips assembly functions with a length less than 2 lines; therefore, we do not get a 100% similarity here.
 
 ![](images/summary.png)
 
@@ -154,6 +154,6 @@ By clicking `DETAILS`, you can see an address bar on the left which displays a l
 
 ![](images/details.png)
 
- The background color of a specific function in the address bar indicates that Kam1n0 finds that a clone in the repository belongs to a specific binary file. By licking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
+ The background color of a specific function in the address bar indicates that Kam1n0 finds a clone in the repository belongs to a specific binary file. By licking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
 
 ![](images/filters.png)
