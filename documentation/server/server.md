@@ -55,7 +55,7 @@ If you want to share your APP with another user, you can edit it and grant read/
 
 ## Preparing the data
 
-Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the second one ```zlib-1.2.7.dll``` against it.
+Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the first one ```libpng-1.7.0b54.dll``` against it.
 
 
 ## Get the application URL for IDA Pro Plugin
