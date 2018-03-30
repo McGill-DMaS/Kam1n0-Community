@@ -1,2 +1,0 @@
-E:\GitRepo\Kam1n0-Plugin-IDA-Pro\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.msi
-E:\GitRepo\Kam1n0-Plugin-IDA-Pro\Kam1n0WinSetupProject\bin\Debug\Kam1n0WinSetupProject.wixpdb
