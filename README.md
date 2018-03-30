@@ -15,7 +15,7 @@
   <img src="documentation/others/stack.png"/> 
 </p>
 
-A user can create applications instance of any chosen application type and own an unlimited number of applications. An application can be shared among a specific group of users. Application repository read-write access and on-off status can be controlled by the application owner. Kam1n0 v2.x server will serve the applications concurrently using several shared resource pools. 
+A user can create multiple application instances. An application instance can be shared among a specific group of users. The application repository read-write access and on-off status can be controlled by the application owner. Kam1n0 v2.x server can serve the applications concurrently using several shared resource pools. 
 
 
 Kam1n0 was developed by [Steven H. H. Ding](http://stevending.net/) and [Miles Q. Li](http://milesqli.github.io/) under the supervision of [Benjamin C. M. Fung](http://dmas.lab.mcgill.ca/fung/) of the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. It won the second prize at the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
@@ -93,7 +93,7 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
 ## Platform Overview
 
 The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a material design. In general, each user has an application list, a running-job list, and a result file list. 
-* Application list shows the applications owned by the user and shared by the others. 
+* Application list shows the application instances owned by the user and shared by the others. 
 * Running-job list shows the running progress for a large query (such as chrome.dll) and indexing procedure.
 * Result file list displays the saved results. 
 More details of the UI design can be found in our detailed [tutorial](#documentation). 
@@ -105,7 +105,7 @@ More details of the UI design can be found in our detailed [tutorial](#documenta
 
 #  Installation Instruction
 
-The current release of Kam1n0 consists of two installers: The core server and IDA Pro plug-in. 
+The current release of Kam1n0 consists of two installers: the core server and IDA Pro plug-in. 
 
 <table>
   <tr>
