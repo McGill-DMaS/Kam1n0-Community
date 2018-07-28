@@ -1,0 +1,661 @@
+<div class="row" style="height: 100%">
+	<script src="/plugin/jqueryKnob/jquery.knob.js"></script>
+	<script src="/plugin/highlight/jquery.highlight-5.js"></script>
+	<style>
+.form-group {
+	margin-top: 0px;
+}
+
+.slider.slider-horizontal {
+	width: 80%
+}
+
+.tooltip-inner {
+	min-width: 10px;
+}
+
+.slider {
+	background: transparent;
+}
+
+.entry {
+	color: white;
+	overflow: hidden;
+	cursor: crosshair;
+	width: 100%;
+}
+
+.fnspan {
+	font-size: 12pt;
+	padding-left: 15px
+}
+
+.node circle {
+	stroke: #fff;
+}
+
+.link {
+	stroke: #333;
+}
+
+text {
+	font-size: 4pt;
+	color: gray;
+}
+
+.fa {
+	color: gray;
+}
+
+.selected {
+	border: solid red 2px;
+}
+
+.dropdown-menu>li>.row {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.highlight {
+	background-color: yellow;
+	color:black;
+}
+</style>
+	<div class="col-lg-12" style="height: 100%; margin-top: 10px;">
+		<div class="card card-nav-tabs" style="height: 100%; bottom: 20px;">
+			<div class="header header-danger"
+				style="height: auto; border-bottom: none; padding-left: 10px; margin-top: -10px">
+				<div class="nav-tabs-navigation">
+					<div class="nav-tabs-wrapper">
+						<ul class="nav nav-tabs" data-tabs="tabs">
+							<li class="active"><a href="#summary" data-toggle="tab"
+								aria-expanded="false"> <i class="material-icons">chat</i>
+									Summary
+									<div class="ripple-container"></div></a></li>
+							<li class=""><a href="#details" data-toggle="tab"
+								aria-expanded="true"> <i class="material-icons">build</i>
+									Details
+									<div class="ripple-container"></div></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="content" style="height: 100%">
+				<div class="tab-content"
+					style="width: 100%; position: absolute; top: 80px; bottom: 0px; overflow: scroll;">
+					<div class="tab-pane active" id="summary">
+						<div class="row"
+							style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
+							<div class="col-xs-12"
+								style="height: 100%; min-height: 100px; overflow-y: auto; overflow-x: hidden">
+								<div id='summaryList' style="text-align: left;"></div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="details" style="height: 100%">
+						<div class="row" style="height: 100%">
+							<div class="col-xs-2 address-panel" style="height: 100%">
+
+
+								<div class="dropdown" style="position: absolute; top: -16px;">
+									<a href="#" class="btn btn-info btn-xs dropdown-toggle"
+										data-toggle="dropdown"> Filters <b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu" id="address-bar-filter-menu"
+										style='width: 300px;'>
+										<li><div class="row">
+												<h6>Address Range</h6>
+											</div></li>
+										<li>
+											<div class="row">
+												<select id="addrSelector" class="form-control"
+													style="width: 100%; margin-top: 0; position: relative; top: 0;">
+												</select>
+											</div>
+										</li>
+										<li><div class="row">
+												<h6>Zoom Level</h6>
+											</div></li>
+										<li>
+											<div class="row">
+												<input type="text" id="infoListScaler" data-slider-min="3"
+													data-slider-max="20" data-slider-step="1"
+													data-slider-value="20" class="slider form-control"
+													data-slider-id="yellow" style='width: 100%' />
+											</div>
+										</li>
+										<li><div class="row">
+												<h6>Filter Functions</h6>
+											</div></li>
+										<li>
+											<div class="row">
+
+												<div class="input-group">
+
+													<div class="form-group">
+
+														<input id="input-keyword" class="form-control" type="text"
+															placeholder="Keyword"
+															style="width: 200px; margin-top: 0; position: relative; top: 0;">
+														</input>
+														<button class="btn btn-sm btn-info" id="button-keyword">
+															<i class="material-icons" style="color: white">search</i>
+														</button>
+													</div>
+												</div>
+
+
+												<p class="small text-info">WARNING: using this filter
+													will disable address pagination and it may be slow to
+													search through all the functions.</p>
+											</div>
+										</li>
+										<li><div class="row">
+												<h6>Filter Binaries</h6>
+											</div></li>
+										<li>
+											<div class="row" id='filters-div'></div>
+										</li>
+
+									</ul>
+								</div>
+
+								<div
+									style="padding-top: 30px; height: 100%; padding-bottom: 15px;">
+									<div id="infoContainer"
+										style="overflow-y: auto; overflow-x: auto; background-color: lightgrey; height: 100%;">
+									</div>
+								</div>
+
+							</div>
+
+							<div class="col-xs-7" style="height: 100%">
+								<div id="cloneList" style="overflow: auto; height: 100%"></div>
+							</div>
+
+							<div class="col-xs-3" style="height: 100%;">
+								<div id="chart0"
+									style="height: 100%; margin-left: 10px; overflow: hidden"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var QueryString = function() {
+			// This function is anonymous, is executed immediately
+			var query_string = {};
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				// If first entry with this name
+				if (typeof query_string[pair[0]] === "undefined") {
+					query_string[pair[0]] = pair[1];
+					// If second entry with this name
+				} else if (typeof query_string[pair[0]] === "string") {
+					var arr = [ query_string[pair[0]], pair[1] ];
+					query_string[pair[0]] = arr;
+					// If third or later entry with this name
+				} else {
+					query_string[pair[0]].push(pair[1]);
+				}
+			}
+			return query_string;
+		}();
+
+		var currentSelectedData = undefined;
+		var fileName = undefined;
+		var colorF = undefined;
+		var fin_result = undefined;
+
+		function formatString(val) {
+
+			if (val == undefined)
+				return val;
+
+			var residue = 0;
+			var rel = val;
+			var result = "";
+
+			do {
+				residue = rel % 1000;
+				rel = Math.floor(rel / 1000);
+				if (rel != 0) {
+					if (result.length != 0)
+						result = "," + result;
+					if (residue < 10)
+						result = "00" + residue.toString() + result;
+					else if (residue < 100)
+						result = "0" + residue.toString() + result;
+					else
+						result = residue.toString() + result;
+				} else {
+					break;
+				}
+			} while (true);
+			if (result.length != 0)
+				result = residue.toString() + "," + result;
+			else
+				result = residue.toString();
+			return result;
+		}
+
+		function createInfoAtAddress(info) {
+			
+			var max_id = undefined;
+			var max_score = 0;
+			$.each(info.mxs, function(a,b){
+				if(b>max_score) {max_score = b; max_id = a};
+			})
+			
+			var $div = $("<div>", {
+				'class' : 'entry'
+			});
+			var $divp = $("<div>", {
+				'class' : 'prg'
+			});
+			$divp.css({
+				"background-color" : colorF(max_id)
+			});
+			$divp.css({
+				width : (max_score * 100) + "%"
+			});
+			$divp.css({
+				overflow : "none"
+			});
+			var $span = $("<span>", {
+				'class' : 'fnspan'
+			});
+			$span.append(info.fn);
+			$divp.append($span);
+			$div.prop('title', info.add + " " + info.fn);
+			$div.append($divp);
+
+			$div
+					.click(function() {
+						$('div.entry').removeClass('selected');
+						$div.addClass('selected');
+
+						$
+								.ajax({
+									type : 'POST',
+									dataType : 'json',
+									url : "BinaryComposition",
+									data : {
+										cloneDetail : info.fid,
+										fileName : fileName
+									},
+									success : function(data) {
+										if (data.error) {
+											dmas_alert(data.error);
+											return;
+										}
+										data = data.object;
+										fin_result = data;
+
+										$('#chart0').empty();
+										$listParent = $('#cloneList').parent();
+										$listParent.empty();
+										$listParent
+												.append($(
+														'<div>',
+														{
+															'id' : 'cloneList',
+															'style' : 'overflow:auto; height:100%;'
+														}))
+
+										var views = [ "func_diff_flow",
+												"func_diff_text",
+												"func_diff_text_group" ];
+										var viewIcons = [
+												"<i class='fa fa-fw  fa-object-ungroup lnk'></i>",
+												"<i class='fa fa-fw  fa-clone lnk'></i>",
+												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
+										var viewNames = [
+												"Flow graph comparison.",
+												"Full text alignment.",
+												"Clone group alignment." ];
+												
+										if(/*[[${model.applicationType.toString().equals("/sym1n0-clone")}]]*/false){
+										views = [ "func_diff_flow", "func_diff_flow_vex", "func_diff_flow_logic", "func_diff_text", "func_diff_text_vex",
+												"func_diff_text_group" ];
+										viewIcons = [
+												"<i class='fa fa-fw  fa-object-ungroup'></i>",
+												"<i class='fa fa-fw  fa-code'></i>",
+												"<i class='fa fa-fw  fa-codepen'></i>",
+												"<i class='fa fa-fw  fa-clone lnk'></i>",
+												"<i class='fa fa-fw  fa-file-code-o'></i>",
+												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
+										viewNames = [ "Flow graph comparison.",  "Flow graph comparison (VEX).", 
+												"Flow graph comparison (syntax tree).", "Full text alignment (ASM).", "Full text alignment (VEX).",
+												"Clone group alignment." ];
+										}
+
+										CreateCloneList($('#cloneList'), data,
+												function(arg) {
+													console.log(arg);
+												}, viewIcons, views, viewNames,
+												/*[[${!model.applicationType.toString().equals("/sym1n0-clone")}]]*/true, true, 0);
+
+										CreateCloneGraph(data.cloneGraph,
+												"chart0", function(svg, arg) {
+													console.log(arg);
+													$('#cloneList').jstree(
+															'select_node',
+															arg.index);
+													$('#cloneList').jstree(
+															'open_node',
+															arg.index);
+												});
+
+									}
+								}); // end ajax
+
+					});
+
+			return $div;
+		}
+		
+		var not_selected = new Set(); 
+		function createFilters(smy) {
+			var $holder = $('#filters-div');
+			onchanged = function(){
+				$holder.find("input").each(function(){
+					 var input = $(this);
+					 if(!input.context.checked){
+						 not_selected.add(input.val());
+					 }else{
+						 not_selected.delete(input.val());
+					 }
+				});
+				console.log(not_selected);
+				 $('#addrSelector').change();
+			}
+			
+			$.each(smy.summaryInfo.binaryCloneCounterSource, function(k, v) {
+				var clr = colorF(k) ;
+				$div = $('<div>', {
+					'class' : 'togglebutton'
+				}).append(
+						$('<label>', {
+							'style' : 'color:grey'
+						}).append($('<input>', {
+							'class' : "checkbox",
+							'type' : "checkbox",
+							'checked' : 'true',
+							'value' : k
+						}).change(onchanged)).append(
+								document.createTextNode( smy.binaryIdToNameMap[k])))
+								.css('background-color', clr+ "20")
+								.css('border-left', 'solid 3px '+clr)
+				$holder.append($div);
+			});
+			$.material.init();
+		}
+
+		function createCompositionBox(data) {
+			var $summaryList = $('#summaryList');
+			var smy = data.summaryInfo;
+			$summaryList.empty();
+			$
+					.each(
+							smy.binaryCloneCounterSource,
+							function(k, v) {
+								var $divCont = $("<div>", {
+									'class' : 'col-lg-3 col-xs-6'
+								});
+								var $divBox = $("<div>", {
+									'class' : 'card card'
+								});
+								var $divHeader = $("<div>", {
+									'class' : 'card-header',
+									'data-background-color' : 'orange'
+								});
+								var $divInner = $("<div>", {
+									'class' : 'card-content'
+								});
+								//var $divFooter = $("<div>", {'class':'card-footer'});
+
+								$divBox.append($divHeader);
+								$divBox.append($divInner);
+								//$divBox.append($divFooter);
+
+								$divHeader
+										.append($("<h3>")
+												.append(
+														formatString(v)
+																+ "/"
+																+ formatString(smy.binarySize[k]))
+												.addClass("pull-right"))
+								$divInner
+										.append(
+												$("<p>").append(data.binaryIdToNameMap[k]).addClass(
+														"pull-left"))
+										.append(
+												$("<i>")
+														.append("help")
+														.addClass(
+																"material-icons")
+														.addClass("pull-right")
+														.prop(
+																'title',
+																'The percentage of assembly functions that can be matched from this binary with a similarity value above the user-defined threshold.')
+														.css('cursor',
+																'default')
+														.css("color", "gray"));
+
+								var $divHolder = $("<div>", {
+									'class' : 'knobholder'
+								});
+								var $input = $("<input>", {
+									'class' : 'knob'
+								});
+								$input.prop("type", "text");
+								$input.prop("value", v);
+								$input.prop("val", v);
+								$input.data("max", smy.binarySize[k]);
+								$input.prop("max", smy.binarySize[k]);
+								$input.data("min", 0);
+								$input.prop('readonly', true);
+								$divHolder.append($input);
+								$divHeader.append($divHolder);
+								$divCont.append($divBox);
+								$summaryList.append($divCont);
+							});
+			$(".knob").knob({
+				'width' : 80,
+				'height' : 80,
+				'fgColor' : "white",
+				'bgColor' : "transparent",
+				'readonly' : 'true',
+				'tooltip' : 'true'
+			});
+			$('.knob').each(function(a, b) {
+				b.value = Math.round(b.val * 100 / b.max) + "%";
+				b.disabled = true;
+				b.readonly = true;
+				$(b).css("color", "white");
+				$(b).css("font-size", "15px");
+			});
+		}
+
+		$(function() {
+			$(".slider").slider();
+
+			$('#address-bar-filter-menu').click(function(e) {
+				e.stopPropagation();
+			});
+
+			var scaler = $("#infoListScaler").slider();
+			function scale(){
+				var height = scaler.val();
+				$('.entry').height(height);
+				if (height > 15) {
+					$('.fnspan').css({
+						'font-size' : height
+					});
+					$('.fnspan').css({
+						'color' : 'white'
+					});
+				} else {
+					$('.fnspan').css({
+						'color' : 'transparent'
+					});
+				}
+			}
+			scaler.on('slide', function(slideEvt) {
+				scale();
+			});
+
+			var bin_comp = /*[[${model.calculatePrefix() + 'BinaryComposition'}]]*/"";
+			var func_diff_text = /*[[${model.calculatePrefix() + 'func_diff_text'}]]*/"";
+			var func_diff_flow = /*[[${model.calculatePrefix() + 'func_diff_flow'}]]*/"";
+			var func_diff_text_group = /*[[${model.calculatePrefix() + 'func_diff_text_group'}]]*/"";
+
+			fileName = QueryString['fileName'];
+			colorF = d3.scale.category10();
+			console.log(fileName);
+			if (fileName) {
+
+				window
+						.setTimeout(
+								function() {
+
+									$
+											.ajax({
+												url : bin_comp,
+												type : 'POST',
+												data : $.param({
+													addRange : "a",
+													fileName : fileName
+												}),
+												success : function(data) {
+													if (data.error) {
+														dmas_alert(data.error);
+														return;
+													}
+													var ls = data.object;
+													var $selector = $('#addrSelector');
+													$selector.empty();
+													for (var i = 0; i < ls.length; i++) {
+														var $option = $('<option>');
+														$option.text('0x'+ls[i].toString(16));
+														$option.value=ls[i];
+														$selector
+																.append($option);
+													}
+
+													$selector
+															.change(function() {
+
+																$(
+																		"select option:selected")
+																		.each(
+																				function() {
+																					var str_s = $(
+																							this)
+																							.value;
+																						var str_e = $(
+																							this).next()
+																							.value;
+																						
+																					$
+																							.ajax({
+																								url : bin_comp,
+																								type : 'post',
+																								data :  $.param({
+																									list : "a",
+																									addrStart : str_s,
+																									addrEnd: str_e,
+																									fileName : fileName,
+																									not_selected: Array.from(not_selected),
+																									keyword: $('#input-keyword').val().trim(),
+																								}),
+																								success : function(
+																										data) {
+																									if (data.error) {
+																										dmas_alert(data.error);
+																										return;
+																									}
+																									var struct = data.object;
+																									var parent = $('#infoContainer');
+																									parent
+																											.empty();
+																									struct.list
+																											.sort(function(
+																													a,
+																													b) {
+																												return parseInt(a.add)
+																														- parseInt(b.add);
+																											});
+																									for ( var info in struct.list) {
+																										var item = createInfoAtAddress(struct.list[info]);
+																										parent
+																												.append(item);
+																									}
+																									scale();
+																									
+																									if($('#input-keyword').val().trim().length > 0){
+																										parent.highlight($('#input-keyword').val().trim());
+																									}
+																								}
+																							});
+																				});
+
+															});
+
+													$selector.change();
+
+												}
+											});
+								}, 2000);
+
+				$.ajax({
+					url : bin_comp,
+					type : 'POST',
+					data : {
+						summary : "",
+						fileName : fileName
+					},
+					success : function(data) {
+						if (data.error) {
+							dmas_alert(data.error);
+						}
+
+						createCompositionBox(data.object);
+						createFilters(data.object);
+						return;
+					}
+				});
+			}
+			
+			var inKeyWordSearch = false;
+			$('#button-keyword').click(function(){
+				if(inKeyWordSearch){
+					$('#button-keyword > i').text('search');
+					$('#addrSelector').prop('disabled', false);
+					$('#input-keyword').val('');
+					$('#addrSelector').change();
+					inKeyWordSearch = false;
+				}else{
+					$('#button-keyword > i').text('cancel');
+					$('#addrSelector').prop('disabled', true);
+					inKeyWordSearch = true;
+					$('#addrSelector').change();
+				}
+			});
+		});
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

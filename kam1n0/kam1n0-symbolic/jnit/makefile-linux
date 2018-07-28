@@ -1,0 +1,27 @@
+CLASS_PATH = "../target/classes:../../kam1n0-commons/target/classes:../../kam1n0-resources/target/classes"
+VEX_PATH=./vex-master/
+
+rebuild: clean copy2core
+
+all : copy2core ${VEX_PATH}/libvex.a
+
+copy2core: VEXIRBB.so
+	cp VEXIRBB.so ../../kam1n0-resources/bin/lib/libVEXIRBB.so
+
+VEXIRBB.so : ca_mcgill_sis_dmas_kam1n0_vex_VEXIRBB.c ca_mcgill_sis_dmas_kam1n0_vex_VEXIRBB.h ${VEX_PATH}/libvex.a
+	gcc -m64 -fPIC -I"$(JAVA_HOME)/include/" -I"$(JAVA_HOME)/include/linux/" -I"${VEX_PATH}/pub"  --std=c99 -shared -static ca_mcgill_sis_dmas_kam1n0_vex_VEXIRBB.c -Lvex-master -lvex -o VEXIRBB.so 
+
+ca_mcgill_sis_dmas_kam1n0_vex_VEXIRBB.h : 
+	javah -classpath $(CLASS_PATH) ca.mcgill.sis.dmas.kam1n0.vex.VEXIRBB
+
+${VEX_PATH}/libvex.a :
+	(cd ${VEX_PATH}; make)
+
+clean :
+	(rm VEXIRBB.so ca_mcgill_sis_dmas_kam1n0_vex_VEXIRBB.h; cd ${VEX_PATH}; make clean)
+	
+# workaround for crtbeginT error
+# $ cd /usr/lib/gcc/x86_64-linux-gnu/4.4
+# $ sudo cp crtbeginT.o crtbeginT.orig.o
+# $ sudo cp crtbeginS.o crtbeginT.o
+	

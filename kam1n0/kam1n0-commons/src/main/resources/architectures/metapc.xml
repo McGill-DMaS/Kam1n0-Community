@@ -1,0 +1,1180 @@
+<!--
+    Copyright 2017 McGill University All rights reserved.
+   
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+   
+        http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
+<Kam1n0-Architecture>
+  <processor>metapc</processor>
+  <operations>
+    <operation identifier="MOV"/>
+    <operation identifier="MOVZX"/>
+    <operation identifier="MOVSX"/>
+    <operation identifier="MOVSS"/>
+    <operation identifier="XCHG"/>
+    <operation identifier="STC"/>
+    <operation identifier="CLC"/>
+    <operation identifier="CMC"/>
+    <operation identifier="STD"/>
+    <operation identifier="CLD"/>
+    <operation identifier="STI"/>
+    <operation identifier="CLI"/>
+    <operation identifier="PUSH"/>
+    <operation identifier="PUSHF"/>
+    <operation identifier="PUSHA"/>
+    <operation identifier="POP"/>
+    <operation identifier="POPF"/>
+    <operation identifier="POPA"/>
+    <operation identifier="CBW"/>
+    <operation identifier="CWD"/>
+    <operation identifier="CWDE"/>
+    <operation identifier="CSQ"/>
+    <operation identifier="IN"/>
+    <operation identifier="OUT"/>
+    <operation identifier="ADD"/>
+    <operation identifier="ADC"/>
+    <operation identifier="SUB"/>
+    <operation identifier="SBB"/>
+    <operation identifier="DIV"/>
+    <operation identifier="IDIV"/>
+    <operation identifier="MUL"/>
+    <operation identifier="IMUL"/>
+    <operation identifier="INC"/>
+    <operation identifier="DEC"/>
+    <operation identifier="CMP"/>
+    <operation identifier="SAL"/>
+    <operation identifier="SAR"/>
+    <operation identifier="RCL"/>
+    <operation identifier="RCR"/>
+    <operation identifier="ROL"/>
+    <operation identifier="ROR"/>
+    <operation identifier="NEG"/>
+    <operation identifier="NOT"/>
+    <operation identifier="AND"/>
+    <operation identifier="OR"/>
+    <operation identifier="XOR"/>
+    <operation identifier="SHL"/>
+    <operation identifier="SHR"/>
+    <operation identifier="NOP"/>
+    <operation identifier="LEA"/>
+    <operation identifier="INT"/>
+    <operation identifier="TEST"/>
+    <operation identifier="CMPXCHG"/>
+    <operation identifier="BSWAP"/>
+    <operation identifier="XADD"/>
+    <operation identifier="INVD"/>
+    <operation identifier="WBINVD"/>
+    <operation identifier="INVLPG"/>
+    <operation identifier="RDMSR"/>
+    <operation identifier="WRMSR"/>
+    <operation identifier="CPUID"/>
+    <operation identifier="CMPXCHG8B"/>
+    <operation identifier="RDTSC"/>
+    <operation identifier="RSM"/>
+    <operation identifier="CMOVA"/>
+    <operation identifier="CMOVB"/>
+    <operation identifier="CMOVBE"/>
+    <operation identifier="CMOVG"/>
+    <operation identifier="CMOVGE"/>
+    <operation identifier="CMOVL"/>
+    <operation identifier="CMOVLE"/>
+    <operation identifier="CMOVNB"/>
+    <operation identifier="CMOVNO"/>
+    <operation identifier="CMOVNP"/>
+    <operation identifier="CMOVNS"/>
+    <operation identifier="CMOVNZ"/>
+    <operation identifier="CMOVO"/>
+    <operation identifier="CMOVP"/>
+    <operation identifier="CMOVS"/>
+    <operation identifier="CMOVZ"/>
+    <operation identifier="FCMOVB"/>
+    <operation identifier="FCMOVE"/>
+    <operation identifier="FCMOVBE"/>
+    <operation identifier="FCMOVU"/>
+    <operation identifier="FCMOVNB"/>
+    <operation identifier="FCMOVNE"/>
+    <operation identifier="FCMOVNBE"/>
+    <operation identifier="FCMOVNU"/>
+    <operation identifier="FCOMI"/>
+    <operation identifier="FUCOMI"/>
+    <operation identifier="FCOMIP"/>
+    <operation identifier="FUCOMIP"/>
+    <operation identifier="RDPMC"/>
+    <operation identifier="FLD"/>
+    <operation identifier="FST"/>
+    <operation identifier="FSTP"/>
+    <operation identifier="FXCH"/>
+    <operation identifier="FILD"/>
+    <operation identifier="FIST"/>
+    <operation identifier="FISTP"/>
+    <operation identifier="FBLD"/>
+    <operation identifier="FBSTP"/>
+    <operation identifier="FADD"/>
+    <operation identifier="FADDP"/>
+    <operation identifier="FIADD"/>
+    <operation identifier="FSUB"/>
+    <operation identifier="FSUBP"/>
+    <operation identifier="FISUB"/>
+    <operation identifier="FSUBR"/>
+    <operation identifier="FSUBRP"/>
+    <operation identifier="FISUBR"/>
+    <operation identifier="FMUL"/>
+    <operation identifier="FMULP"/>
+    <operation identifier="FIMUL"/>
+    <operation identifier="FDIV"/>
+    <operation identifier="FDIVP"/>
+    <operation identifier="FIDIV"/>
+    <operation identifier="FDIVR"/>
+    <operation identifier="FDIVRP"/>
+    <operation identifier="FIDIVR"/>
+    <operation identifier="FSQRT"/>
+    <operation identifier="FSCALE"/>
+    <operation identifier="FPREM"/>
+    <operation identifier="FRNDINT"/>
+    <operation identifier="FXTRACT"/>
+    <operation identifier="FABS"/>
+    <operation identifier="FCHS"/>
+    <operation identifier="FCOM"/>
+    <operation identifier="FCOMP"/>
+    <operation identifier="FCOMPP"/>
+    <operation identifier="FICOM"/>
+    <operation identifier="FICOMP"/>
+    <operation identifier="FTST"/>
+    <operation identifier="FXAM"/>
+    <operation identifier="FPTAN"/>
+    <operation identifier="FPATAN"/>
+    <operation identifier="F2XM1"/>
+    <operation identifier="FYL2X"/>
+    <operation identifier="FYL2XP1"/>
+    <operation identifier="FLDZ"/>
+    <operation identifier="FLD1"/>
+    <operation identifier="FLDPI"/>
+    <operation identifier="FLDL2T"/>
+    <operation identifier="FLDL2E"/>
+    <operation identifier="FLDLG2"/>
+    <operation identifier="FLDLN2"/>
+    <operation identifier="FINIT"/>
+    <operation identifier="FNINIT"/>
+    <operation identifier="FSETPM"/>
+    <operation identifier="FLDCW"/>
+    <operation identifier="FSTCW"/>
+    <operation identifier="FNSTCW"/>
+    <operation identifier="FSTSW"/>
+    <operation identifier="FNSTSW"/>
+    <operation identifier="FCLEX"/>
+    <operation identifier="FNCLEX"/>
+    <operation identifier="FSTENV"/>
+    <operation identifier="FNSTENV"/>
+    <operation identifier="FLDENV"/>
+    <operation identifier="FSAVE"/>
+    <operation identifier="FNSAVE"/>
+    <operation identifier="FRSTOR"/>
+    <operation identifier="FINCSTP"/>
+    <operation identifier="FDECSTP"/>
+    <operation identifier="FFREE"/>
+    <operation identifier="FNOP"/>
+    <operation identifier="FENI"/>
+    <operation identifier="FNENI"/>
+    <operation identifier="FDISI"/>
+    <operation identifier="FNDISI"/>
+    <operation identifier="FPREM1"/>
+    <operation identifier="FSINCOS"/>
+    <operation identifier="FSIN"/>
+    <operation identifier="FCOS"/>
+    <operation identifier="FUCOM"/>
+    <operation identifier="FUCOMP"/>
+    <operation identifier="FUCOMPP"/>
+    <operation identifier="SETALC"/>
+    <operation identifier="SVDC"/>
+    <operation identifier="RSDC"/>
+    <operation identifier="SVLDT"/>
+    <operation identifier="RSLDT"/>
+    <operation identifier="SVTS"/>
+    <operation identifier="RSTS"/>
+    <operation identifier="ICEBP"/>
+    <operation identifier="LOADALL"/>
+    <operation identifier="EMMS"/>
+    <operation identifier="MOVD"/>
+    <operation identifier="MOVQ"/>
+    <operation identifier="PACKSSWB"/>
+    <operation identifier="PACKSSDW"/>
+    <operation identifier="PACKUSWB"/>
+    <operation identifier="PADDB"/>
+    <operation identifier="PADDW"/>
+    <operation identifier="PADDD"/>
+    <operation identifier="PADDSB"/>
+    <operation identifier="PADDSW"/>
+    <operation identifier="PADDUSB"/>
+    <operation identifier="PADDUSW"/>
+    <operation identifier="PAND"/>
+    <operation identifier="PANDN"/>
+    <operation identifier="PCMPEQB"/>
+    <operation identifier="PCMPEQW"/>
+    <operation identifier="PCMPEQD"/>
+    <operation identifier="PCMPGTB"/>
+    <operation identifier="PCMPGTW"/>
+    <operation identifier="PCMPGTD"/>
+    <operation identifier="PMADDWD"/>
+    <operation identifier="PMULHW"/>
+    <operation identifier="PMULLW"/>
+    <operation identifier="POR"/>
+    <operation identifier="PSLLW"/>
+    <operation identifier="PSLLD"/>
+    <operation identifier="PSLLQ"/>
+    <operation identifier="PSRAW"/>
+    <operation identifier="PSRAD"/>
+    <operation identifier="PSRLW"/>
+    <operation identifier="PSRLD"/>
+    <operation identifier="PSRLQ"/>
+    <operation identifier="PSUBB"/>
+    <operation identifier="PSUBW"/>
+    <operation identifier="PSUBD"/>
+    <operation identifier="PSUBSB"/>
+    <operation identifier="PSUBSW"/>
+    <operation identifier="PSUBUSB"/>
+    <operation identifier="PSUBUSW"/>
+    <operation identifier="PUNPCKHBW"/>
+    <operation identifier="PUNPCKHWD"/>
+    <operation identifier="PUNPCKHDQ"/>
+    <operation identifier="PUNPCKLBW"/>
+    <operation identifier="PUNPCKLWD"/>
+    <operation identifier="PUNPCKLDQ"/>
+    <operation identifier="PXOR"/>
+    <operation identifier="FXSAVE"/>
+    <operation identifier="FXRSTOR"/>
+    <operation identifier="SYSENTER"/>
+    <operation identifier="SYSEXIT"/>
+    <operation identifier="PAVGUSB"/>
+    <operation identifier="PFADD"/>
+    <operation identifier="PFSUB"/>
+    <operation identifier="PFSUBR"/>
+    <operation identifier="PFACC"/>
+    <operation identifier="PFCMPGE"/>
+    <operation identifier="PFCMPGT"/>
+    <operation identifier="PFCMPEQ"/>
+    <operation identifier="PFMIN"/>
+    <operation identifier="PFMAX"/>
+    <operation identifier="PI2FD"/>
+    <operation identifier="PF2ID"/>
+    <operation identifier="PFRCP"/>
+    <operation identifier="PFRSQRT"/>
+    <operation identifier="PFMUL"/>
+    <operation identifier="PFRCPIT1"/>
+    <operation identifier="PFRSQIT1"/>
+    <operation identifier="PFRCPIT2"/>
+    <operation identifier="PMULHRW"/>
+    <operation identifier="FEMMS"/>
+    <operation identifier="PREFETCH"/>
+    <operation identifier="PREFETCHW"/>
+    <operation identifier="ADDPS"/>
+    <operation identifier="ADDSS"/>
+    <operation identifier="ANDNPS"/>
+    <operation identifier="ANDPS"/>
+    <operation identifier="CMPPS"/>
+    <operation identifier="CMPSS"/>
+    <operation identifier="COMISS"/>
+    <operation identifier="CVTPI2PS"/>
+    <operation identifier="CVTPS2PI"/>
+    <operation identifier="CVTSI2SS"/>
+    <operation identifier="CVTSS2SI"/>
+    <operation identifier="CVTTPS2PI"/>
+    <operation identifier="CVTTSS2SI"/>
+    <operation identifier="DIVPS"/>
+    <operation identifier="DIVSS"/>
+    <operation identifier="LDMXCSR"/>
+    <operation identifier="MAXPS"/>
+    <operation identifier="MAXSS"/>
+    <operation identifier="MINPS"/>
+    <operation identifier="MINSS"/>
+    <operation identifier="MOVAPS"/>
+    <operation identifier="MOVHLPS"/>
+    <operation identifier="MOVHPS"/>
+    <operation identifier="MOVLHPS"/>
+    <operation identifier="MOVLPS"/>
+    <operation identifier="MOVMSKPS"/>
+    <operation identifier="MOVUPS"/>
+    <operation identifier="MULPS"/>
+    <operation identifier="MULSS"/>
+    <operation identifier="ORPS"/>
+    <operation identifier="RCPPS"/>
+    <operation identifier="RCPSS"/>
+    <operation identifier="RSQRTPS"/>
+    <operation identifier="RSQRTSS"/>
+    <operation identifier="SHUFPS"/>
+    <operation identifier="SQRTPS"/>
+    <operation identifier="SQRTSS"/>
+    <operation identifier="STMXCSR"/>
+    <operation identifier="SUBPS"/>
+    <operation identifier="SUBSS"/>
+    <operation identifier="UCOMISS"/>
+    <operation identifier="UNPCKHPS"/>
+    <operation identifier="UNPCKLPS"/>
+    <operation identifier="XORPS"/>
+    <operation identifier="PAVGB"/>
+    <operation identifier="PAVGW"/>
+    <operation identifier="PEXTRW"/>
+    <operation identifier="PINSRW"/>
+    <operation identifier="PMAXSW"/>
+    <operation identifier="PMAXUB"/>
+    <operation identifier="PMINSW"/>
+    <operation identifier="PMINUB"/>
+    <operation identifier="PMOVMSKB"/>
+    <operation identifier="PMULHUW"/>
+    <operation identifier="PSADBW"/>
+    <operation identifier="PSHUFW"/>
+    <operation identifier="MASKMOVQ"/>
+    <operation identifier="MOVNTPS"/>
+    <operation identifier="MOVNTQ"/>
+    <operation identifier="PREFETCHT0"/>
+    <operation identifier="PREFETCHT1"/>
+    <operation identifier="PREFETCHT2"/>
+    <operation identifier="PREFETCHNTA"/>
+    <operation identifier="SFENCE"/>
+    <operation identifier="CMPEQPS"/>
+    <operation identifier="CMPLTPS"/>
+    <operation identifier="CMPLEPS"/>
+    <operation identifier="CMPUNORDPS"/>
+    <operation identifier="CMPNEQPS"/>
+    <operation identifier="CMPNLTPS"/>
+    <operation identifier="CMPNLEPS"/>
+    <operation identifier="CMPORDPS"/>
+    <operation identifier="CMPEQSS"/>
+    <operation identifier="CMPLTSS"/>
+    <operation identifier="CMPLESS"/>
+    <operation identifier="CMPUNORDSS"/>
+    <operation identifier="CMPNEQSS"/>
+    <operation identifier="CMPNLTSS"/>
+    <operation identifier="CMPNLESS"/>
+    <operation identifier="CMPORDSS"/>
+    <operation identifier="PF2IW"/>
+    <operation identifier="PFNACC"/>
+    <operation identifier="PFPNACC"/>
+    <operation identifier="PI2FW"/>
+    <operation identifier="PSWAPD"/>
+    <operation identifier="FSTP1"/>
+    <operation identifier="FCOM2"/>
+    <operation identifier="FCOMP3"/>
+    <operation identifier="FXCH4"/>
+    <operation identifier="FCOMP5"/>
+    <operation identifier="FFREEP"/>
+    <operation identifier="FXCH7"/>
+    <operation identifier="FSTP8"/>
+    <operation identifier="FSTP9"/>
+    <operation identifier="ADDPD"/>
+    <operation identifier="ADDSD"/>
+    <operation identifier="ANDNPD"/>
+    <operation identifier="ANDPD"/>
+    <operation identifier="CLFLUSH"/>
+    <operation identifier="CMPPD"/>
+    <operation identifier="CMPSD"/>
+    <operation identifier="COMISD"/>
+    <operation identifier="CVTDQ2PD"/>
+    <operation identifier="CVTDQ2PS"/>
+    <operation identifier="CVTPD2DQ"/>
+    <operation identifier="CVTPD2PI"/>
+    <operation identifier="CVTPD2PS"/>
+    <operation identifier="CVTPI2PD"/>
+    <operation identifier="CVTPS2DQ"/>
+    <operation identifier="CVTPS2PD"/>
+    <operation identifier="CVTSD2SI"/>
+    <operation identifier="CVTSD2SS"/>
+    <operation identifier="CVTSI2SD"/>
+    <operation identifier="CVTSS2SD"/>
+    <operation identifier="CVTTPD2DQ"/>
+    <operation identifier="CVTTPD2PI"/>
+    <operation identifier="CVTTPS2DQ"/>
+    <operation identifier="CVTTSD2SI"/>
+    <operation identifier="DIVPD"/>
+    <operation identifier="DIVSD"/>
+    <operation identifier="LFENCE"/>
+    <operation identifier="MASKMOVDQU"/>
+    <operation identifier="MAXPD"/>
+    <operation identifier="MAXSD"/>
+    <operation identifier="MFENCE"/>
+    <operation identifier="MINPD"/>
+    <operation identifier="MINSD"/>
+    <operation identifier="MOVAPD"/>
+    <operation identifier="MOVDQ2Q"/>
+    <operation identifier="MOVDQA"/>
+    <operation identifier="MOVDQU"/>
+    <operation identifier="MOVHPD"/>
+    <operation identifier="MOVLPD"/>
+    <operation identifier="MOVMSKPD"/>
+    <operation identifier="MOVNTDQ"/>
+    <operation identifier="MOVNTI"/>
+    <operation identifier="MOVNTPD"/>
+    <operation identifier="MOVQ2DQ"/>
+    <operation identifier="MOVSD"/>
+    <operation identifier="MOVUPD"/>
+    <operation identifier="MULPD"/>
+    <operation identifier="MULSD"/>
+    <operation identifier="ORPD"/>
+    <operation identifier="PADDQ"/>
+    <operation identifier="PAUSE"/>
+    <operation identifier="PMULUDQ"/>
+    <operation identifier="PSHUFD"/>
+    <operation identifier="PSHUFHW"/>
+    <operation identifier="PSHUFLW"/>
+    <operation identifier="PSLLDQ"/>
+    <operation identifier="PSRLDQ"/>
+    <operation identifier="PSUBQ"/>
+    <operation identifier="PUNPCKHQDQ"/>
+    <operation identifier="PUNPCKLQDQ"/>
+    <operation identifier="SHUFPD"/>
+    <operation identifier="SQRTPD"/>
+    <operation identifier="SQRTSD"/>
+    <operation identifier="SUBPD"/>
+    <operation identifier="SUBSD"/>
+    <operation identifier="UCOMISD"/>
+    <operation identifier="UNPCKHPD"/>
+    <operation identifier="UNPCKLPD"/>
+    <operation identifier="XORPD"/>
+    <operation identifier="SYSCALL"/>
+    <operation identifier="SYSRET"/>
+    <operation identifier="SWAPGS"/>
+    <operation identifier="MOVDDUP"/>
+    <operation identifier="MOVSHDUP"/>
+    <operation identifier="MOVSLDUP"/>
+    <operation identifier="MOVSXD"/>
+    <operation identifier="CMPXCHG16B"/>
+    <operation identifier="ADDSUBPD"/>
+    <operation identifier="ADDSUBPS"/>
+    <operation identifier="HADDPD"/>
+    <operation identifier="HADDPS"/>
+    <operation identifier="HSUBPD"/>
+    <operation identifier="HSUBPS"/>
+    <operation identifier="MONITOR"/>
+    <operation identifier="MWAIT"/>
+    <operation identifier="FISTTP"/>
+    <operation identifier="LDDQU"/>
+    <operation identifier="PSIGNB"/>
+    <operation identifier="PSIGNW"/>
+    <operation identifier="PSIGND"/>
+    <operation identifier="PSHUFB"/>
+    <operation identifier="PMULHRSW"/>
+    <operation identifier="PMADDUBSW"/>
+    <operation identifier="PHSUBSW"/>
+    <operation identifier="PHADDSW"/>
+    <operation identifier="PHADDW"/>
+    <operation identifier="PHADDD"/>
+    <operation identifier="PHSUBW"/>
+    <operation identifier="PHSUBD"/>
+    <operation identifier="PALIGNR"/>
+    <operation identifier="PABSB"/>
+    <operation identifier="PABSW"/>
+    <operation identifier="PABSD"/>
+    <operation identifier="VMCALL"/>
+    <operation identifier="VMCLEAR"/>
+    <operation identifier="VMLAUNCH"/>
+    <operation identifier="VMRESUME"/>
+    <operation identifier="VMPTRLD"/>
+    <operation identifier="VMPTRST"/>
+    <operation identifier="VMREAD"/>
+    <operation identifier="VMWRITE"/>
+    <operation identifier="VMXOFF"/>
+    <operation identifier="VMXON"/>
+    <operation identifier="UD2"/>
+    <operation identifier="RDTSCP"/>
+    <operation identifier="PFRCPV"/>
+    <operation identifier="PFRSQRTV"/>
+    <operation identifier="CMPEQPD"/>
+    <operation identifier="CMPLTPD"/>
+    <operation identifier="CMPLEPD"/>
+    <operation identifier="CMPUNORDPD"/>
+    <operation identifier="CMPNEQPD"/>
+    <operation identifier="CMPNLTPD"/>
+    <operation identifier="CMPNLEPD"/>
+    <operation identifier="CMPORDPD"/>
+    <operation identifier="CMPEQSD"/>
+    <operation identifier="CMPLTSD"/>
+    <operation identifier="CMPLESD"/>
+    <operation identifier="CMPUNORDSD"/>
+    <operation identifier="CMPNEQSD"/>
+    <operation identifier="CMPNLTSD"/>
+    <operation identifier="CMPNLESD"/>
+    <operation identifier="CMPORDSD"/>
+    <operation identifier="BLENDPD"/>
+    <operation identifier="BLENDPS"/>
+    <operation identifier="BLENDVPD"/>
+    <operation identifier="BLENDVPS"/>
+    <operation identifier="DPPD"/>
+    <operation identifier="DPPS"/>
+    <operation identifier="EXTRACTPS"/>
+    <operation identifier="INSERTPS"/>
+    <operation identifier="MOVNTDQA"/>
+    <operation identifier="MPSADBW"/>
+    <operation identifier="PACKUSDW"/>
+    <operation identifier="PBLENDVB"/>
+    <operation identifier="PBLENDW"/>
+    <operation identifier="PCMPEQQ"/>
+    <operation identifier="PEXTRB"/>
+    <operation identifier="PEXTRD"/>
+    <operation identifier="PEXTRQ"/>
+    <operation identifier="PHMINPOSUW"/>
+    <operation identifier="PINSRB"/>
+    <operation identifier="PINSRD"/>
+    <operation identifier="PINSRQ"/>
+    <operation identifier="PMAXSB"/>
+    <operation identifier="PMAXSD"/>
+    <operation identifier="PMAXUD"/>
+    <operation identifier="PMAXUW"/>
+    <operation identifier="PMINSB"/>
+    <operation identifier="PMINSD"/>
+    <operation identifier="PMINUD"/>
+    <operation identifier="PMINUW"/>
+    <operation identifier="PMOVSXBW"/>
+    <operation identifier="PMOVSXBD"/>
+    <operation identifier="PMOVSXBQ"/>
+    <operation identifier="PMOVSXWD"/>
+    <operation identifier="PMOVSXWQ"/>
+    <operation identifier="PMOVSXDQ"/>
+    <operation identifier="PMOVZXBW"/>
+    <operation identifier="PMOVZXBD"/>
+    <operation identifier="PMOVZXBQ"/>
+    <operation identifier="PMOVZXWD"/>
+    <operation identifier="PMOVZXWQ"/>
+    <operation identifier="PMOVZXDQ"/>
+    <operation identifier="PMULDQ"/>
+    <operation identifier="PMULLD"/>
+    <operation identifier="PTEST"/>
+    <operation identifier="ROUNDPD"/>
+    <operation identifier="ROUNDPS"/>
+    <operation identifier="ROUNDSD"/>
+    <operation identifier="ROUNDSS"/>
+    <operation identifier="CRC32"/>
+    <operation identifier="PCMPESTRI"/>
+    <operation identifier="PCMPESTRM"/>
+    <operation identifier="PCMPISTRI"/>
+    <operation identifier="PCMPISTRM"/>
+    <operation identifier="PCMPGTQ"/>
+    <operation identifier="POPCNT"/>
+    <operation identifier="EXTRQ"/>
+    <operation identifier="INSERTQ"/>
+    <operation identifier="MOVNTSD"/>
+    <operation identifier="MOVNTSS"/>
+    <operation identifier="LZCNT"/>
+    <operation identifier="XGETBV"/>
+    <operation identifier="XRSTOR"/>
+    <operation identifier="XSAVE"/>
+    <operation identifier="XSETBV"/>
+    <operation identifier="GETSEC"/>
+    <operation identifier="CLGI"/>
+    <operation identifier="INVLPGA"/>
+    <operation identifier="SKINIT"/>
+    <operation identifier="STGI"/>
+    <operation identifier="VMEXIT"/>
+    <operation identifier="VMLOAD"/>
+    <operation identifier="VMMCALL"/>
+    <operation identifier="VMRUN"/>
+    <operation identifier="VMSAVE"/>
+    <operation identifier="INVEPT"/>
+    <operation identifier="INVVPID"/>
+    <operation identifier="MOVBE"/>
+    <operation identifier="AESENC"/>
+    <operation identifier="AESENCLAST"/>
+    <operation identifier="AESDEC"/>
+    <operation identifier="AESDECLAST"/>
+    <operation identifier="AESIMC"/>
+    <operation identifier="AESKEYGENASSIST"/>
+    <operation identifier="PCLMULQDQ"/>
+    <operation identifier="RETNW"/>
+    <operation identifier="RETND"/>
+    <operation identifier="RETNQ"/>
+    <operation identifier="RETFW"/>
+    <operation identifier="RETFD"/>
+    <operation identifier="RETFQ"/>
+    <operation identifier="RDRAND"/>
+    <operation identifier="ADCX"/>
+    <operation identifier="ADOX"/>
+    <operation identifier="ANDN"/>
+    <operation identifier="BEXTR"/>
+    <operation identifier="BLSI"/>
+    <operation identifier="BLSMSK"/>
+    <operation identifier="BLSR"/>
+    <operation identifier="BZHI"/>
+    <operation identifier="CLAC"/>
+    <operation identifier="MULX"/>
+    <operation identifier="PDEP"/>
+    <operation identifier="PEXT"/>
+    <operation identifier="RORX"/>
+    <operation identifier="SARX"/>
+    <operation identifier="SHLX"/>
+    <operation identifier="SHRX"/>
+    <operation identifier="STAC"/>
+    <operation identifier="TZCNT"/>
+    <operation identifier="XSAVEOPT"/>
+    <operation identifier="INVPCID"/>
+    <operation identifier="RDSEED"/>
+    <operation identifier="RDFSBASE"/>
+    <operation identifier="RDGSBASE"/>
+    <operation identifier="WRFSBASE"/>
+    <operation identifier="WRGSBASE"/>
+    <operation identifier="VADDPD"/>
+    <operation identifier="VADDPS"/>
+    <operation identifier="VADDSD"/>
+    <operation identifier="VADDSS"/>
+    <operation identifier="VADDSUBPD"/>
+    <operation identifier="VADDSUBPS"/>
+    <operation identifier="VAESDEC"/>
+    <operation identifier="VAESDECLAST"/>
+    <operation identifier="VAESENC"/>
+    <operation identifier="VAESENCLAST"/>
+    <operation identifier="VAESIMC"/>
+    <operation identifier="VAESKEYGENASSIST"/>
+    <operation identifier="VANDNPD"/>
+    <operation identifier="VANDNPS"/>
+    <operation identifier="VANDPD"/>
+    <operation identifier="VANDPS"/>
+    <operation identifier="VBLENDPD"/>
+    <operation identifier="VBLENDPS"/>
+    <operation identifier="VBLENDVPD"/>
+    <operation identifier="VBLENDVPS"/>
+    <operation identifier="VBROADCASTF128"/>
+    <operation identifier="VBROADCASTI128"/>
+    <operation identifier="VBROADCASTSD"/>
+    <operation identifier="VBROADCASTSS"/>
+    <operation identifier="VCMPPD"/>
+    <operation identifier="VCMPPS"/>
+    <operation identifier="VCMPSD"/>
+    <operation identifier="VCMPSS"/>
+    <operation identifier="VCOMISD"/>
+    <operation identifier="VCOMISS"/>
+    <operation identifier="VCVTDQ2PD"/>
+    <operation identifier="VCVTDQ2PS"/>
+    <operation identifier="VCVTPD2DQ"/>
+    <operation identifier="VCVTPD2PS"/>
+    <operation identifier="VCVTPH2PS"/>
+    <operation identifier="VCVTPS2DQ"/>
+    <operation identifier="VCVTPS2PD"/>
+    <operation identifier="VCVTPS2PH"/>
+    <operation identifier="VCVTSD2SI"/>
+    <operation identifier="VCVTSD2SS"/>
+    <operation identifier="VCVTSI2SD"/>
+    <operation identifier="VCVTSI2SS"/>
+    <operation identifier="VCVTSS2SD"/>
+    <operation identifier="VCVTSS2SI"/>
+    <operation identifier="VCVTTPD2DQ"/>
+    <operation identifier="VCVTTPS2DQ"/>
+    <operation identifier="VCVTTSD2SI"/>
+    <operation identifier="VCVTTSS2SI"/>
+    <operation identifier="VDIVPD"/>
+    <operation identifier="VDIVPS"/>
+    <operation identifier="VDIVSD"/>
+    <operation identifier="VDIVSS"/>
+    <operation identifier="VDPPD"/>
+    <operation identifier="VDPPS"/>
+    <operation identifier="VEXTRACTF128"/>
+    <operation identifier="VEXTRACTI128"/>
+    <operation identifier="VEXTRACTPS"/>
+    <operation identifier="VFMADD132PD"/>
+    <operation identifier="VFMADD132PS"/>
+    <operation identifier="VFMADD132SD"/>
+    <operation identifier="VFMADD132SS"/>
+    <operation identifier="VFMADD213PD"/>
+    <operation identifier="VFMADD213PS"/>
+    <operation identifier="VFMADD213SD"/>
+    <operation identifier="VFMADD213SS"/>
+    <operation identifier="VFMADD231PD"/>
+    <operation identifier="VFMADD231PS"/>
+    <operation identifier="VFMADD231SD"/>
+    <operation identifier="VFMADD231SS"/>
+    <operation identifier="VFMADDSUB132PD"/>
+    <operation identifier="VFMADDSUB132PS"/>
+    <operation identifier="VFMADDSUB213PD"/>
+    <operation identifier="VFMADDSUB213PS"/>
+    <operation identifier="VFMADDSUB231PD"/>
+    <operation identifier="VFMADDSUB231PS"/>
+    <operation identifier="VFMSUB132PD"/>
+    <operation identifier="VFMSUB132PS"/>
+    <operation identifier="VFMSUB132SD"/>
+    <operation identifier="VFMSUB132SS"/>
+    <operation identifier="VFMSUB213PD"/>
+    <operation identifier="VFMSUB213PS"/>
+    <operation identifier="VFMSUB213SD"/>
+    <operation identifier="VFMSUB213SS"/>
+    <operation identifier="VFMSUB231PD"/>
+    <operation identifier="VFMSUB231PS"/>
+    <operation identifier="VFMSUB231SD"/>
+    <operation identifier="VFMSUB231SS"/>
+    <operation identifier="VFMSUBADD132PD"/>
+    <operation identifier="VFMSUBADD132PS"/>
+    <operation identifier="VFMSUBADD213PD"/>
+    <operation identifier="VFMSUBADD213PS"/>
+    <operation identifier="VFMSUBADD231PD"/>
+    <operation identifier="VFMSUBADD231PS"/>
+    <operation identifier="VFNMADD132PD"/>
+    <operation identifier="VFNMADD132PS"/>
+    <operation identifier="VFNMADD132SD"/>
+    <operation identifier="VFNMADD132SS"/>
+    <operation identifier="VFNMADD213PD"/>
+    <operation identifier="VFNMADD213PS"/>
+    <operation identifier="VFNMADD213SD"/>
+    <operation identifier="VFNMADD213SS"/>
+    <operation identifier="VFNMADD231PD"/>
+    <operation identifier="VFNMADD231PS"/>
+    <operation identifier="VFNMADD231SD"/>
+    <operation identifier="VFNMADD231SS"/>
+    <operation identifier="VFNMSUB132PD"/>
+    <operation identifier="VFNMSUB132PS"/>
+    <operation identifier="VFNMSUB132SD"/>
+    <operation identifier="VFNMSUB132SS"/>
+    <operation identifier="VFNMSUB213PD"/>
+    <operation identifier="VFNMSUB213PS"/>
+    <operation identifier="VFNMSUB213SD"/>
+    <operation identifier="VFNMSUB213SS"/>
+    <operation identifier="VFNMSUB231PD"/>
+    <operation identifier="VFNMSUB231PS"/>
+    <operation identifier="VFNMSUB231SD"/>
+    <operation identifier="VFNMSUB231SS"/>
+    <operation identifier="VGATHERDPS"/>
+    <operation identifier="VGATHERDPD"/>
+    <operation identifier="VGATHERQPS"/>
+    <operation identifier="VGATHERQPD"/>
+    <operation identifier="VHADDPD"/>
+    <operation identifier="VHADDPS"/>
+    <operation identifier="VHSUBPD"/>
+    <operation identifier="VHSUBPS"/>
+    <operation identifier="VINSERTF128"/>
+    <operation identifier="VINSERTI128"/>
+    <operation identifier="VINSERTPS"/>
+    <operation identifier="VLDDQU"/>
+    <operation identifier="VLDMXCSR"/>
+    <operation identifier="VMASKMOVDQU"/>
+    <operation identifier="VMASKMOVPD"/>
+    <operation identifier="VMASKMOVPS"/>
+    <operation identifier="VMAXPD"/>
+    <operation identifier="VMAXPS"/>
+    <operation identifier="VMAXSD"/>
+    <operation identifier="VMAXSS"/>
+    <operation identifier="VMINPD"/>
+    <operation identifier="VMINPS"/>
+    <operation identifier="VMINSD"/>
+    <operation identifier="VMINSS"/>
+    <operation identifier="VMOVAPD"/>
+    <operation identifier="VMOVAPS"/>
+    <operation identifier="VMOVD"/>
+    <operation identifier="VMOVDDUP"/>
+    <operation identifier="VMOVDQA"/>
+    <operation identifier="VMOVDQU"/>
+    <operation identifier="VMOVHLPS"/>
+    <operation identifier="VMOVHPD"/>
+    <operation identifier="VMOVHPS"/>
+    <operation identifier="VMOVLHPS"/>
+    <operation identifier="VMOVLPD"/>
+    <operation identifier="VMOVLPS"/>
+    <operation identifier="VMOVMSKPD"/>
+    <operation identifier="VMOVMSKPS"/>
+    <operation identifier="VMOVNTDQ"/>
+    <operation identifier="VMOVNTDQA"/>
+    <operation identifier="VMOVNTPD"/>
+    <operation identifier="VMOVNTPS"/>
+    <operation identifier="VMOVNTSD"/>
+    <operation identifier="VMOVNTSS"/>
+    <operation identifier="VMOVQ"/>
+    <operation identifier="VMOVSD"/>
+    <operation identifier="VMOVSHDUP"/>
+    <operation identifier="VMOVSLDUP"/>
+    <operation identifier="VMOVSS"/>
+    <operation identifier="VMOVUPD"/>
+    <operation identifier="VMOVUPS"/>
+    <operation identifier="VMPSADBW"/>
+    <operation identifier="VMULPD"/>
+    <operation identifier="VMULPS"/>
+    <operation identifier="VMULSD"/>
+    <operation identifier="VMULSS"/>
+    <operation identifier="VORPD"/>
+    <operation identifier="VORPS"/>
+    <operation identifier="VPABSB"/>
+    <operation identifier="VPABSD"/>
+    <operation identifier="VPABSW"/>
+    <operation identifier="VPACKSSDW"/>
+    <operation identifier="VPACKSSWB"/>
+    <operation identifier="VPACKUSDW"/>
+    <operation identifier="VPACKUSWB"/>
+    <operation identifier="VPADDB"/>
+    <operation identifier="VPADDD"/>
+    <operation identifier="VPADDQ"/>
+    <operation identifier="VPADDSB"/>
+    <operation identifier="VPADDSW"/>
+    <operation identifier="VPADDUSB"/>
+    <operation identifier="VPADDUSW"/>
+    <operation identifier="VPADDW"/>
+    <operation identifier="VPALIGNR"/>
+    <operation identifier="VPAND"/>
+    <operation identifier="VPANDN"/>
+    <operation identifier="VPAVGB"/>
+    <operation identifier="VPAVGW"/>
+    <operation identifier="VPBLENDD"/>
+    <operation identifier="VPBLENDVB"/>
+    <operation identifier="VPBLENDW"/>
+    <operation identifier="VPBROADCASTB"/>
+    <operation identifier="VPBROADCASTD"/>
+    <operation identifier="VPBROADCASTQ"/>
+    <operation identifier="VPBROADCASTW"/>
+    <operation identifier="VPCLMULQDQ"/>
+    <operation identifier="VPCMPEQB"/>
+    <operation identifier="VPCMPEQD"/>
+    <operation identifier="VPCMPEQQ"/>
+    <operation identifier="VPCMPEQW"/>
+    <operation identifier="VPCMPESTRI"/>
+    <operation identifier="VPCMPESTRM"/>
+    <operation identifier="VPCMPGTB"/>
+    <operation identifier="VPCMPGTD"/>
+    <operation identifier="VPCMPGTQ"/>
+    <operation identifier="VPCMPGTW"/>
+    <operation identifier="VPCMPISTRI"/>
+    <operation identifier="VPCMPISTRM"/>
+    <operation identifier="VPERM2F128"/>
+    <operation identifier="VPERM2I128"/>
+    <operation identifier="VPERMD"/>
+    <operation identifier="VPERMILPD"/>
+    <operation identifier="VPERMILPS"/>
+    <operation identifier="VPERMPD"/>
+    <operation identifier="VPERMPS"/>
+    <operation identifier="VPERMQ"/>
+    <operation identifier="VPEXTRB"/>
+    <operation identifier="VPEXTRD"/>
+    <operation identifier="VPEXTRQ"/>
+    <operation identifier="VPEXTRW"/>
+    <operation identifier="VPGATHERDD"/>
+    <operation identifier="VPGATHERDQ"/>
+    <operation identifier="VPGATHERQD"/>
+    <operation identifier="VPGATHERQQ"/>
+    <operation identifier="VPHADDD"/>
+    <operation identifier="VPHADDSW"/>
+    <operation identifier="VPHADDW"/>
+    <operation identifier="VPHMINPOSUW"/>
+    <operation identifier="VPHSUBD"/>
+    <operation identifier="VPHSUBSW"/>
+    <operation identifier="VPHSUBW"/>
+    <operation identifier="VPINSRB"/>
+    <operation identifier="VPINSRD"/>
+    <operation identifier="VPINSRQ"/>
+    <operation identifier="VPINSRW"/>
+    <operation identifier="VPMADDUBSW"/>
+    <operation identifier="VPMADDWD"/>
+    <operation identifier="VPMASKMOVD"/>
+    <operation identifier="VPMASKMOVQ"/>
+    <operation identifier="VPMAXSB"/>
+    <operation identifier="VPMAXSD"/>
+    <operation identifier="VPMAXSW"/>
+    <operation identifier="VPMAXUB"/>
+    <operation identifier="VPMAXUD"/>
+    <operation identifier="VPMAXUW"/>
+    <operation identifier="VPMINSB"/>
+    <operation identifier="VPMINSD"/>
+    <operation identifier="VPMINSW"/>
+    <operation identifier="VPMINUB"/>
+    <operation identifier="VPMINUD"/>
+    <operation identifier="VPMINUW"/>
+    <operation identifier="VPMOVMSKB"/>
+    <operation identifier="VPMOVSXBD"/>
+    <operation identifier="VPMOVSXBQ"/>
+    <operation identifier="VPMOVSXBW"/>
+    <operation identifier="VPMOVSXDQ"/>
+    <operation identifier="VPMOVSXWD"/>
+    <operation identifier="VPMOVSXWQ"/>
+    <operation identifier="VPMOVZXBD"/>
+    <operation identifier="VPMOVZXBQ"/>
+    <operation identifier="VPMOVZXBW"/>
+    <operation identifier="VPMOVZXDQ"/>
+    <operation identifier="VPMOVZXWD"/>
+    <operation identifier="VPMOVZXWQ"/>
+    <operation identifier="VPMULDQ"/>
+    <operation identifier="VPMULHRSW"/>
+    <operation identifier="VPMULHUW"/>
+    <operation identifier="VPMULHW"/>
+    <operation identifier="VPMULLD"/>
+    <operation identifier="VPMULLW"/>
+    <operation identifier="VPMULUDQ"/>
+    <operation identifier="VPOR"/>
+    <operation identifier="VPSADBW"/>
+    <operation identifier="VPSHUFB"/>
+    <operation identifier="VPSHUFD"/>
+    <operation identifier="VPSHUFHW"/>
+    <operation identifier="VPSHUFLW"/>
+    <operation identifier="VPSIGNB"/>
+    <operation identifier="VPSIGND"/>
+    <operation identifier="VPSIGNW"/>
+    <operation identifier="VPSLLD"/>
+    <operation identifier="VPSLLDQ"/>
+    <operation identifier="VPSLLQ"/>
+    <operation identifier="VPSLLVD"/>
+    <operation identifier="VPSLLVQ"/>
+    <operation identifier="VPSLLW"/>
+    <operation identifier="VPSRAD"/>
+    <operation identifier="VPSRAVD"/>
+    <operation identifier="VPSRAW"/>
+    <operation identifier="VPSRLD"/>
+    <operation identifier="VPSRLDQ"/>
+    <operation identifier="VPSRLQ"/>
+    <operation identifier="VPSRLVD"/>
+    <operation identifier="VPSRLVQ"/>
+    <operation identifier="VPSRLW"/>
+    <operation identifier="VPSUBB"/>
+    <operation identifier="VPSUBD"/>
+    <operation identifier="VPSUBQ"/>
+    <operation identifier="VPSUBSB"/>
+    <operation identifier="VPSUBSW"/>
+    <operation identifier="VPSUBUSB"/>
+    <operation identifier="VPSUBUSW"/>
+    <operation identifier="VPSUBW"/>
+    <operation identifier="VPTEST"/>
+    <operation identifier="VPUNPCKHBW"/>
+    <operation identifier="VPUNPCKHDQ"/>
+    <operation identifier="VPUNPCKHQDQ"/>
+    <operation identifier="VPUNPCKHWD"/>
+    <operation identifier="VPUNPCKLBW"/>
+    <operation identifier="VPUNPCKLDQ"/>
+    <operation identifier="VPUNPCKLQDQ"/>
+    <operation identifier="VPUNPCKLWD"/>
+    <operation identifier="VPXOR"/>
+    <operation identifier="VRCPPS"/>
+    <operation identifier="VRCPSS"/>
+    <operation identifier="VROUNDPD"/>
+    <operation identifier="VROUNDPS"/>
+    <operation identifier="VROUNDSD"/>
+    <operation identifier="VROUNDSS"/>
+    <operation identifier="VRSQRTPS"/>
+    <operation identifier="VRSQRTSS"/>
+    <operation identifier="VSHUFPD"/>
+    <operation identifier="VSHUFPS"/>
+    <operation identifier="VSQRTPD"/>
+    <operation identifier="VSQRTPS"/>
+    <operation identifier="VSQRTSD"/>
+    <operation identifier="VSQRTSS"/>
+    <operation identifier="VSTMXCSR"/>
+    <operation identifier="VSUBPD"/>
+    <operation identifier="VSUBPS"/>
+    <operation identifier="VSUBSD"/>
+    <operation identifier="VSUBSS"/>
+    <operation identifier="VTESTPD"/>
+    <operation identifier="VTESTPS"/>
+    <operation identifier="VUCOMISD"/>
+    <operation identifier="VUCOMISS"/>
+    <operation identifier="VUNPCKHPD"/>
+    <operation identifier="VUNPCKHPS"/>
+    <operation identifier="VUNPCKLPD"/>
+    <operation identifier="VUNPCKLPS"/>
+    <operation identifier="VXORPD"/>
+    <operation identifier="VXORPS"/>
+    <operation identifier="VZEROALL"/>
+    <operation identifier="VZEROUPPER"/>
+    <operation identifier="XABORT"/>
+    <operation identifier="XBEGIN"/>
+    <operation identifier="XEND"/>
+    <operation identifier="XTEST"/>
+    <operation identifier="VMGETINFO"/>
+    <operation identifier="VMSETINFO"/>
+    <operation identifier="VMDXDSBL"/>
+    <operation identifier="VMDXENBL"/>
+    <operation identifier="VMCPUID"/>
+    <operation identifier="VMHLT"/>
+    <operation identifier="VMSPLAF"/>
+    <operation identifier="VMPUSHFD"/>
+    <operation identifier="VMPOPFD"/>
+    <operation identifier="VMCLI"/>
+    <operation identifier="VMSTI"/>
+    <operation identifier="VMIRETD"/>
+    <operation identifier="VMSGDT"/>
+    <operation identifier="VMSIDT"/>
+    <operation identifier="VMSLDT"/>
+    <operation identifier="VMSTR"/>
+    <operation identifier="VMSDTE"/>
+    <operation identifier="VPCEXT"/>
+    <operation identifier="VFMADDSUBPS"/>
+    <operation identifier="VFMADDSUBPD"/>
+    <operation identifier="VFMSUBADDPS"/>
+    <operation identifier="VFMSUBADDPD"/>
+    <operation identifier="VFMADDPS"/>
+    <operation identifier="VFMADDPD"/>
+    <operation identifier="VFMADDSS"/>
+    <operation identifier="VFMADDSD"/>
+    <operation identifier="VFMSUBPS"/>
+    <operation identifier="VFMSUBPD"/>
+    <operation identifier="VFMSUBSS"/>
+    <operation identifier="VFMSUBSD"/>
+    <operation identifier="VFNMADDPS"/>
+    <operation identifier="VFNMADDPD"/>
+    <operation identifier="VFNMADDSS"/>
+    <operation identifier="VFNMADDSD"/>
+    <operation identifier="VFNMSUBPS"/>
+    <operation identifier="VFNMSUBPD"/>
+    <operation identifier="VFNMSUBSS"/>
+    <operation identifier="VFNMSUBSD"/>
+  </operations>
+  <operationJmps>
+    <operation identifier="JE"/>
+    <operation identifier="JNE"/>
+    <operation identifier="JG"/>
+    <operation identifier="JGE"/>
+    <operation identifier="JL"/>
+    <operation identifier="JLE"/>
+    <operation identifier="JA"/>
+    <operation identifier="JAE"/>
+    <operation identifier="JB"/>
+    <operation identifier="JBE"/>
+    <operation identifier="JNB"/>
+    <operation identifier="JO"/>
+    <operation identifier="JNO"/>
+    <operation identifier="JC"/>
+    <operation identifier="JNC"/>
+    <operation identifier="JS"/>
+    <operation identifier="JNS"/>
+    <operation identifier="JZ"/>
+    <operation identifier="JNZ"/>
+    <operation identifier="CALL"/>
+    <operation identifier="JMP"/>
+    <operation identifier="JCXZ"/>
+    <operation identifier="JP"/>
+    <operation identifier="JECXZ"/>
+    <operation identifier="JNP"/>
+    <operation identifier="JPO"/>
+    <operation identifier="RET"/>
+    <operation identifier="RETN"/>
+  </operationJmps>
+  <registers>
+    <register identifier="AH" category="GEN" length="8"/>
+    <register identifier="BH" category="GEN" length="8"/>
+    <register identifier="CH" category="GEN" length="8"/>
+    <register identifier="DH" category="GEN" length="8"/>
+    <register identifier="AL" category="GEN" length="8"/>
+    <register identifier="BL" category="GEN" length="8"/>
+    <register identifier="CL" category="GEN" length="8"/>
+    <register identifier="DL" category="GEN" length="8"/>
+    <register identifier="R8B" category="GEN" length="8"/>
+    <register identifier="R9B" category="GEN" length="8"/>
+    <register identifier="R10B" category="GEN" length="8"/>
+    <register identifier="R11B" category="GEN" length="8"/>
+    <register identifier="R12B" category="GEN" length="8"/>
+    <register identifier="R13B" category="GEN" length="8"/>
+    <register identifier="R14B" category="GEN" length="8"/>
+    <register identifier="R15B" category="GEN" length="8"/>
+    <register identifier="AX" category="GEN" length="16"/>
+    <register identifier="BX" category="GEN" length="16"/>
+    <register identifier="CX" category="GEN" length="16"/>
+    <register identifier="DX" category="GEN" length="16"/>
+    <register identifier="R8W" category="GEN" length="16"/>
+    <register identifier="R9W" category="GEN" length="16"/>
+    <register identifier="R10W" category="GEN" length="16"/>
+    <register identifier="R11W" category="GEN" length="16"/>
+    <register identifier="R12W" category="GEN" length="16"/>
+    <register identifier="R13W" category="GEN" length="16"/>
+    <register identifier="R14W" category="GEN" length="16"/>
+    <register identifier="R15W" category="GEN" length="16"/>
+    <register identifier="EAX" category="GEN" length="32"/>
+    <register identifier="EBX" category="GEN" length="32"/>
+    <register identifier="ECX" category="GEN" length="32"/>
+    <register identifier="EDX" category="GEN" length="32"/>
+    <register identifier="R8D" category="GEN" length="32"/>
+    <register identifier="R9D" category="GEN" length="32"/>
+    <register identifier="R10D" category="GEN" length="32"/>
+    <register identifier="R11D" category="GEN" length="32"/>
+    <register identifier="R12D" category="GEN" length="32"/>
+    <register identifier="R13D" category="GEN" length="32"/>
+    <register identifier="R14D" category="GEN" length="32"/>
+    <register identifier="R15D" category="GEN" length="32"/>
+    <register identifier="RAX" category="GEN" length="64"/>
+    <register identifier="RBX" category="GEN" length="64"/>
+    <register identifier="RCX" category="GEN" length="64"/>
+    <register identifier="RDX" category="GEN" length="64"/>
+    <register identifier="RSI" category="GEN" length="64"/>
+    <register identifier="RDI" category="GEN" length="64"/>
+    <register identifier="RBP" category="GEN" length="64"/>
+    <register identifier="RSP" category="GEN" length="64"/>
+    <register identifier="R8" category="GEN" length="64"/>
+    <register identifier="R9" category="GEN" length="64"/>
+    <register identifier="R10" category="GEN" length="64"/>
+    <register identifier="R11" category="GEN" length="64"/>
+    <register identifier="R12" category="GEN" length="64"/>
+    <register identifier="R13" category="GEN" length="64"/>
+    <register identifier="R14" category="GEN" length="64"/>
+    <register identifier="R15" category="GEN" length="64"/>
+    <register identifier="MM0" category="GEN" length="64"/>
+    <register identifier="MM1" category="GEN" length="64"/>
+    <register identifier="MM2" category="GEN" length="64"/>
+    <register identifier="MM3" category="GEN" length="64"/>
+    <register identifier="MM4" category="GEN" length="64"/>
+    <register identifier="MM5" category="GEN" length="64"/>
+    <register identifier="MM6" category="GEN" length="64"/>
+    <register identifier="MM7" category="GEN" length="64"/>
+    <register identifier="XMM0" category="GEN" length="128"/>
+    <register identifier="XMM1" category="GEN" length="128"/>
+    <register identifier="XMM2" category="GEN" length="128"/>
+    <register identifier="XMM3" category="GEN" length="128"/>
+    <register identifier="XMM4" category="GEN" length="128"/>
+    <register identifier="XMM5" category="GEN" length="128"/>
+    <register identifier="XMM6" category="GEN" length="128"/>
+    <register identifier="XMM7" category="GEN" length="128"/>
+    <register identifier="CS" category="SEG" length="16"/>
+    <register identifier="DS" category="SEG" length="16"/>
+    <register identifier="ES" category="SEG" length="16"/>
+    <register identifier="FS" category="SEG" length="16"/>
+    <register identifier="GS" category="SEG" length="16"/>
+    <register identifier="SS" category="SEG" length="16"/>
+    <register identifier="EDI" category="IND" length="16"/>
+    <register identifier="DI" category="IND" length="16"/>
+    <register identifier="ESI" category="IND" length="16"/>
+    <register identifier="SI" category="IND" length="16"/>
+    <register identifier="EBP" category="PTR" length="16"/>
+    <register identifier="BP" category="PTR" length="16"/>
+    <register identifier="ESP" category="PTR" length="16"/>
+    <register identifier="SP" category="PTR" length="16"/>
+    <register identifier="EIP" category="PTR" length="16"/>
+    <register identifier="IP" category="PTR" length="16"/>
+    <register identifier="CF" category="FLG" length="1"/>
+    <register identifier="PF" category="FLG" length="1"/>
+    <register identifier="AF" category="FLG" length="1"/>
+    <register identifier="ZF" category="FLG" length="1"/>
+    <register identifier="SF" category="FLG" length="1"/>
+    <register identifier="TF" category="FLG" length="1"/>
+    <register identifier="IF" category="FLG" length="1"/>
+    <register identifier="DF" category="FLG" length="1"/>
+    <register identifier="OF" category="FLG" length="1"/>
+    <register identifier="IOPL" category="FLG" length="1"/>
+    <register identifier="NT" category="FLG" length="1"/>
+    <register identifier="RF" category="FLG" length="1"/>
+    <register identifier="VM" category="FLG" length="1"/>
+    <register identifier="AC" category="FLG" length="1"/>
+    <register identifier="VIF" category="FLG" length="1"/>
+    <register identifier="VIP" category="FLG" length="1"/>
+    <register identifier="ID" category="FLG" length="1"/>
+  </registers>
+  <lengthKeywords>
+    <lengthKeyWord identifier="BYTE" length="8"/>
+    <lengthKeyWord identifier="WORD" length="16"/>
+    <lengthKeyWord identifier="DWORD" length="32"/>
+    <lengthKeyWord identifier="QWORD" length="64"/>
+    <lengthKeyWord identifier="XMMWORD" length="128"/>
+  </lengthKeywords>
+  <jmpKeywords>
+    <string>large</string>
+    <string>short</string>
+    <string>far</string>
+  </jmpKeywords>
+  <lineFormats>
+    <syntax numberOfOperand="3">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)[\s]*,[\s]*(?&lt;OPN2&gt;[\S\s]+),[\s]*(?&lt;OPN3&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="2">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)[\s]*,[\s]*(?&lt;OPN2&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="1">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="0">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+</lineRegex>
+    </syntax>
+  </lineFormats>
+  <constantVariableRegex>([0-9A-Fa-f]{3,10}(h|H)$)</constantVariableRegex>
+  <memoryVariableRegex>(^DS:)|(^ds:)|([\s\S]*\[[\s\S]+\])</memoryVariableRegex>
+</Kam1n0-Architecture>

@@ -1,0 +1,122 @@
+<div class="row" style="height: 100%">
+	<style>
+.slider.slider-vertical {
+	height: 100%;
+}
+
+/* slider color*/
+#GC .slider-handle {
+	border-radius: 0%;
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 10px;
+}
+
+.node rect {
+	stroke: #333;
+	fill: #fff;
+}
+
+.edgePath path {
+	fill: #333;
+	stroke-width: 1.5px;
+}
+
+/* This styles the body of the tooltip */
+.tipsy {
+	font-size: 1.1em;
+	test-align: left;
+}
+
+.form-group {
+	height: 100%;
+}
+
+.slider {
+	background-color: transparent;
+}
+</style>
+	<div class="col-xs-12" style="height: 100%">
+		<div class="card" id="flowGraphSource" style="height: 100%">
+			<div class="card-header" data-background-color="green"
+				id="headerSource">
+				<h4 class="title" style="font-size: 15px">
+					<i class="fa fa-cloud"></i> Text View: <span id="diff-title"></span>
+				</h4>
+			</div>
+			<div class="card-content" style="height: 100%; padding-bottom: 50px">
+				<div
+					style="margin-left: 30px; margin-right: 20px; overflow-y: scroll; position: fixed; bottom: 60px; top: 80px; left: 10px; right: 10px;">
+					<table id="diff-table"
+						style="border-color: gray; display: table; width: 100%; border-spacing: 2px; border-right: solid 1px #eee; border-bottom: solid 1px #eee;">
+						<colgroup>
+							<col width="44" />
+							<col />
+						</colgroup>
+						<tbody>
+							<tr>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var QueryString = function() {
+			// This function is anonymous, is executed immediately
+			var query_string = {};
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				// If first entry with this name
+				if (typeof query_string[pair[0]] === "undefined") {
+					query_string[pair[0]] = pair[1];
+					// If second entry with this name
+				} else if (typeof query_string[pair[0]] === "string") {
+					var arr = [ query_string[pair[0]], pair[1] ];
+					query_string[pair[0]] = arr;
+					// If third or later entry with this name
+				} else {
+					query_string[pair[0]].push(pair[1]);
+				}
+			}
+			return query_string;
+		}();
+
+		function draw(functionId, placeholderId) {
+			$.ajax({
+				type : 'GET',
+				dataType : 'json',
+				url : /*[[${model.prefix + 'func_flow'}]]*/"/",
+				data : {
+					id : functionId
+				},
+				success : function(data) {
+					var pb_fun = data;
+					var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
+					drawText(pb_fun, 'diff-title', 'diff-table');
+					plotCommentSingle(cm_url, pb_fun)
+					initForm(cm_url);
+				}
+			});
+		}
+
+		$(function() {
+			var id = QueryString['id'];
+			console.log(id);
+			if (id)
+				draw(id, 'flowGraph');
+		})
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

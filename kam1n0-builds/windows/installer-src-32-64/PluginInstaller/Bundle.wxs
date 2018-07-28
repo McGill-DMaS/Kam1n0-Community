@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Bundle Name="Kam1n0-IDA-Plugin" Version="2.0.0" Manufacturer="DMaS" UpgradeCode="99cc2888-d246-41ed-8be8-0e0f0c2d9f03"  IconSourceFile="K2.ico">
+    <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
+      <Payload SourceFile="..\PluginInstallerUI\BootstrapperCore.config"/>
+      <Payload SourceFile="..\PluginInstallerUI\bin\Release\PluginInstallerUI.dll"/>
+      <Payload SourceFile="..\PluginInstallerUI\bin\Release\Microsoft.Deployment.WindowsInstaller.dll"/>
+    </BootstrapperApplicationRef>
+
+    <WixVariable Id="WixMbaPrereqPackageId" Value="Netfx35" />
+    <WixVariable Id="WixMbaPrereqLicenseUrl" Value="NetfxLicense.rtf" />
+
+    <Chain>
+      <MsiPackage Compressed="yes" InstallCondition="NOT VersionNT64" SourceFile="..\PluginDistributionX86\bin\Release\Kam1n0-Client-IDA-x86.msi" Id="Kam1n0_Plugin_IDA_Pro_x86" Cache="yes" Visible="no">
+        <MsiProperty Name="PLUGINSDIR" Value="[BVAR_IDA_HOME_PATH]\plugins"/>
+      </MsiPackage>
+      <MsiPackage Compressed="yes"  InstallCondition="VersionNT64"  SourceFile="..\PluginDistributionX64\bin\Release\Kam1n0-Client-IDA-x64.msi" Id="Kam1n0_Plugin_IDA_Pro_x64" Cache="yes" Visible="no">
+        <MsiProperty Name="PLUGINSDIR" Value="[BVAR_IDA_HOME_PATH]\plugins"/>
+      </MsiPackage>
+      <PackageGroupRef Id="pipy_cefpython"/>
+    </Chain>
+
+	</Bundle>
+
+
+  <Fragment>
+    <!-- Managed bootstrapper requires .NET as a dependency, since it was written in .NET.
+       WiX provides a Bootstrapper for the bootstrapper. The fragment below includes .NET.
+       For more information or examples see Heath Stewart's blog or the WiX source:
+       http://blogs.msdn.com/b/heaths/archive/2011/10/28/introducing-managed-bootstrapper-applications.aspx
+       -->
+
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v3.5" Value="Version" Variable="Netfx35Version" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx40FullVersion" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Client" Value="Version" Variable="Netfx40ClientVersion" />
+
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\WOW6432Node\Python\PythonCore\2.7\InstallPath"  Variable="PY27PATH32" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Python\PythonCore\2.7\InstallPath" Win64="yes"  Variable="PY27PATH64" />
+
+    <WixVariable Id="PY_ENV_DEFAULT" Value="PY_ENV_DEFAULT" />
+    
+    <util:FileSearch Variable="IDA6X" Path="[BVAR_IDA_HOME_PATH]\idaw.exe" Result="exists"/>
+    <util:FileSearch Variable="IDA7X" Path="[BVAR_IDA_HOME_PATH]\idat.exe" Result="exists"/>
+
+
+    <PackageGroup Id="Netfx35">
+      <ExePackage Id="Netfx35" Cache="no" Compressed="no" PerMachine="yes" Permanent="yes" Vital="yes"
+                  SourceFile="..\libs-server\dotNetFx40_Full_x86_x64.exe"
+                  DownloadUrl="http://go.microsoft.com/fwlink/?LinkId=164193"
+                  DetectCondition="Netfx35Version OR Netfx40FullVersion OR Netfx40ClientVersion" />
+
+    </PackageGroup>
+    <PackageGroup Id="pipy_cefpython">
+      <ExePackage Id="pipy_cefpython" Cache="no" Compressed="yes" PerMachine="yes" Permanent="yes" Vital="yes"
+            SourceFile="..\libs-client\install.pip.bat" >
+        <CommandLine Condition="IDA6X AND NOT IDA7X AND PY27PATH32" InstallArgument="[PY27PATH32]"/>
+        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY27PATH64" InstallArgument="[PY27PATH64]"/>
+        <!--Defaults (when no path is found in registry, we use what is presented in env):-->
+        <CommandLine Condition="NOT PY27PATH32 AND NOT PY27PATH64" InstallArgument="[PY_ENV_DEFAULT]"/>
+
+        <!--All necessary wheels for x86 and amd64-->
+        <Payload Name="get-pip.py" Compressed="yes" SourceFile="..\libs-client\get-pip.py"/>
+        <Payload Name="cefpython3-57.0-py2.py3-none-win_amd64.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-57.0-py2.py3-none-win_amd64.whl"/>
+        <Payload Name="cefpython3-57.0-py2.py3-none-win32.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-57.0-py2.py3-none-win32.whl"/>
+        <Payload Name="setuptools-38.2.3-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\setuptools-38.2.3-py2.py3-none-any.whl"/>
+        <Payload Name="pip-9.0.1-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\pip-9.0.1-py2.py3-none-any.whl"/>
+        <Payload Name="wheel-0.30.0-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\wheel-0.30.0-py2.py3-none-any.whl"/>
+
+      </ExePackage>
+    </PackageGroup>
+  
+  </Fragment>
+
+</Wix>

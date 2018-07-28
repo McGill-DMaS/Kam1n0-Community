@@ -1,0 +1,53 @@
+<form class="form-horizontal" action="/login" id="loginform"
+	method="post">
+
+	<div th:if="${param.logout}" class="alert alert-success">
+		<strong>Success</strong> You have been logged out.
+	</div>
+
+
+	<div th:if="${param.error}" class="alert alert-warning">
+		<strong>Error</strong> Invalid name and password.
+	</div>
+
+	<div th:if="${param.new}" class="alert alert-success">
+		<strong>Success</strong> Account created. Please login with your user
+		name and password.
+	</div>
+
+
+	<div class="input-group">
+		<span class="input-group-addon"> <i
+			class="glyphicon glyphicon-user"></i>
+		</span> <input id="username" type="text" class="form-control" name="username"
+			value="" placeholder="User name" />
+	</div>
+
+	<div class="input-group">
+		<span class="input-group-addon"> <i
+			class="glyphicon glyphicon-lock"></i>
+		</span> <input id="password" type="password" class="form-control"
+			name="password" placeholder="Password" />
+	</div>
+
+	<div class="form-group">
+		<!-- Button -->
+		<div class="col-sm-12 controls">
+			<button type="submit" class="btn btn-info btn-block center-block">
+				<i class="glyphicon glyphicon-log-in"></i> Sign in
+			</button>
+		</div>
+	</div>
+
+    <div class="form-group">
+        <div class="col-md-12 control">
+            <div >
+                Don't have an account.
+                <a href="/register">
+                    Sign Up Here
+                </a>
+            </div>
+        </div>
+    </div>
+
+</form>

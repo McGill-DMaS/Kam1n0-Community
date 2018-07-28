@@ -1,0 +1,787 @@
+/*******************************************************************************
+ * Copyright 2017 McGill University All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+package ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra;
+
+import java.io.File;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.cassandra.thrift.Cassandra;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import scala.Function1;
+
+import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
+import static com.datastax.spark.connector.japi.CassandraJavaUtil.*;
+
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.KeyspaceMetadata;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.spark.connector.cql.CassandraConnector;
+import com.datastax.spark.connector.japi.CassandraJavaUtil;
+import com.datastax.spark.connector.japi.CassandraRow;
+import com.datastax.spark.connector.japi.GenericJavaRowReaderFactory;
+import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.mcgill.sis.dmas.env.DmasApplication;
+import ca.mcgill.sis.dmas.env.Environment;
+import ca.mcgill.sis.dmas.env.StringResources;
+import ca.mcgill.sis.dmas.io.collection.EntryPair;
+import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
+import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.DisassemblyFactory;
+import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate.FunctionSurrogate;
+import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate.FunctionSurrogate.BlockSurrogate;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Block;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Comment;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactory;
+import ca.mcgill.sis.dmas.kam1n0.graph.LogicGraph;
+import ca.mcgill.sis.dmas.kam1n0.impl.disassembly.DisassemblyFactoryIDA;
+import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
+import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
+
+public class ObjectFactoryCassandraDB extends ObjectFactory {
+
+	private static Logger logger = LoggerFactory.getLogger(ObjectFactoryCassandraDB.class);
+
+	private static ObjectMapper mapper = new ObjectMapper();
+
+	private CassandraInstance cassandra_instance = null;
+	private SparkInstance spark_instance = null;
+
+	// classes:
+	public static final String _CODEDB_BIN = "CODEDB_BIN".toLowerCase();
+	public static final String _CODEDB_FUN = "CODEDB_FUN".toLowerCase();
+	public static final String _CODEDB_BLO = "CODEDB_BLO".toLowerCase();
+	public static final String _CODEDB_COUNT = "CODEDB_COUNT".toLowerCase();
+	public static final String _CODEDB_COMMENT = "CODEDB_COMMENT".toLowerCase();
+	public static final String _CODEDB_LOGIC = "CODEDB_LOGIC".toLowerCase();
+
+	// properties:
+	public static final String _CODEDB_BIN_ID = "binary_id";
+	public static final String _CODEDB_BIN_NAME = "binary_name";
+	public static final String _CODEDB_BIN_FUNCTIONS = "function_ids";
+
+	public static final String _CODEDB_FUN_ID = "function_id";
+	public static final String _CODEDB_FUN_NAME = "function_name";
+	public static final String _CODEDB_FUN_BIN = "binary_id";
+	public static final String _CODEDB_FUN_BIN_NAME = "binary_name";
+	public static final String _CODEDB_FUN_NEXT = "calling_function_ids";
+	public static final String _CODEDB_FUN_BLOCKS = "block_ids";
+	public static final String _CODEDB_FUN_START = "start_address";
+
+	public static final String _CODEDB_BLO_ID = "block_id";
+	public static final String _CODEDB_BLO_FUN = "function_id";
+	public static final String _CODEDB_BLO_FUN_NAME = "function_name";
+	public static final String _CODEDB_BLO_BIN = "binary_id";
+	public static final String _CODEDB_BLO_BIN_NAME = "binary_name";
+	public static final String _CODEDB_BLO_NEXT = "calling_blocks";
+	public static final String _CODEDB_BLO_PEER = "peer_size";
+	public static final String _CODEDB_BLO_SRC = "codes";
+	public static final String _CODEDB_BLO_NAME = "block_name";
+
+	public static final String _CODEDB_COUNT_ID = "id";
+	public static final String _CODEDB_COUNT_BIN = "bin";
+	public static final String _CODEDB_COUNT_FUN = "fun";
+	public static final String _CODEDB_COUNT_BLO = "blo";
+
+	public static final String _CODEDB_COMMENT_FUN_ID = "function_id";
+	public static final String _CODEDB_COMMENT_FUN_OFFSET = "function_offset";
+	public static final String _CODEDB_COMMENT_USER_NAME = "user_name";
+	public static final String _CODEDB_COMMENT_DATE = "date";
+	public static final String _CODEDB_COMMENT_COMMENT = "comment";
+
+	public static final String _CODEDB_LOGIC_ID = "lg_id";
+	public static final String _CODEDB_LOGCI_CONTENT = "lg_cnt";
+
+	public void createSchema() {
+
+		if (!cassandra_instance.checkColumnFamilies(spark_instance.getConf(), databaseName, _CODEDB_BIN, _CODEDB_FUN,
+				_CODEDB_BLO, _CODEDB_COUNT, _CODEDB_COMMENT, _CODEDB_LOGIC)) {
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_BIN);
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_FUN);
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_BLO);
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_COUNT);
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_COMMENT);
+			logger.info("Creating table: {}.{}", databaseName, _CODEDB_LOGIC);
+			cassandra_instance.doWithSession(spark_instance.getConf(), session -> {
+				session.execute("CREATE KEYSPACE if not exists " + databaseName + " WITH "
+						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
+						+ " AND durable_writes = true;");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_COUNT + " (" //
+						+ _CODEDB_COUNT_ID + " int primary key," //
+						+ _CODEDB_COUNT_BIN + " counter," //
+						+ _CODEDB_COUNT_FUN + " counter," //
+						+ _CODEDB_COUNT_BLO + " counter" //
+						+ ");");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_BIN + " (" //
+						+ _CODEDB_BIN_ID + " bigint primary key," //
+						+ _CODEDB_BIN_NAME + " text," //
+						+ _CODEDB_BIN_FUNCTIONS + " list<bigint>" //
+						+ ");");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_FUN + " (" //
+						+ _CODEDB_FUN_ID + " bigint primary key," //
+						+ _CODEDB_FUN_NAME + " text," //
+						+ _CODEDB_FUN_BIN + " bigint," //
+						+ _CODEDB_FUN_BIN_NAME + " text," //
+						+ _CODEDB_FUN_NEXT + " list<bigint>," //
+						+ _CODEDB_FUN_BLOCKS + " list<bigint>," //
+						+ _CODEDB_FUN_START + " bigint" //
+						+ ");");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_BLO + " (" //
+						+ _CODEDB_BLO_ID + " bigint," //
+						+ _CODEDB_BLO_FUN + " bigint," //
+						+ _CODEDB_BLO_FUN_NAME + " text," //
+						+ _CODEDB_BLO_BIN + " bigint," //
+						+ _CODEDB_BLO_BIN_NAME + " text," //
+						+ _CODEDB_BLO_NEXT + " list<bigint>," //
+						+ _CODEDB_BLO_PEER + " int," //
+						+ _CODEDB_BLO_SRC + " text," //
+						+ _CODEDB_BLO_NAME + " text," + "PRIMARY KEY ((" + _CODEDB_BLO_ID + "), " + _CODEDB_BLO_PEER
+						+ ")" //
+						+ ");");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_COMMENT + " (" //
+						+ _CODEDB_COMMENT_FUN_ID + " bigint," //
+						+ _CODEDB_COMMENT_FUN_OFFSET + " text," //
+						+ _CODEDB_COMMENT_USER_NAME + " text," //
+						+ _CODEDB_COMMENT_DATE + " bigint," //
+						+ _CODEDB_COMMENT_COMMENT + " text," //
+						+ "PRIMARY KEY ((" + _CODEDB_COMMENT_FUN_ID + "), " + _CODEDB_COMMENT_FUN_OFFSET + ", "
+						+ _CODEDB_COMMENT_DATE + ")" //
+						+ "); ");
+
+				session.execute("create table if not exists " + databaseName + "." + _CODEDB_LOGIC + " (" //
+						+ _CODEDB_LOGIC_ID + " bigint  primary key," //
+						+ _CODEDB_LOGCI_CONTENT + " blob" //
+						+ "); ");
+			});
+		} else {
+			logger.info("Found table: {}.{}", databaseName, _CODEDB_BIN);
+			logger.info("Found table: {}.{}", databaseName, _CODEDB_FUN);
+			logger.info("Found table: {}.{}", databaseName, _CODEDB_BLO);
+			logger.info("Found table: {}.{}", databaseName, _CODEDB_COUNT);
+			logger.info("Found table: {}.{}", databaseName, _CODEDB_COMMENT);
+		}
+	}
+
+	public String databaseName = StringResources.STR_EMPTY;
+
+	public ObjectFactoryCassandraDB(CassandraInstance c_instance, SparkInstance s_instance, String databaseName) {
+		this.cassandra_instance = c_instance;
+		this.spark_instance = s_instance;
+		this.databaseName = databaseName;
+	}
+
+	@Override
+	public void init() {
+		this.createSchema();
+	}
+
+	@Override
+	public void close() {
+		return;
+	}
+
+	@Override
+	public Iterable<Binary> browse() {
+		JavaSparkContext sc = spark_instance.getContext();
+		CassandraJavaRDD<Binary> rdd2 = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_BIN,
+				mapRowTo(Binary.class));
+		return rdd2.collect();
+
+	}
+
+	@Override
+	public List<Binary> getBinaries(HashSet<Long> ids) {
+		JavaSparkContext sc = spark_instance.getContext();
+		CassandraJavaRDD<Binary> rdd2 = javaFunctions(sc)
+				.cassandraTable(databaseName, _CODEDB_BIN, mapRowTo(Binary.class))
+				.where(_CODEDB_BIN_ID + " in ? ", ids);
+		return rdd2.collect();
+
+	}
+
+	@Override
+	public boolean addFunctions(List<Function> funcs) {
+		for (int i = 0; i < funcs.size(); i += 1000) {
+			JavaRDD<Function> functionRDD = this.spark_instance.getContext()
+					.parallelize(funcs.subList(i, i + 1000 > funcs.size() ? funcs.size() : i + 1000));
+			javaFunctions(functionRDD).writerBuilder(databaseName, _CODEDB_FUN, mapToRow(Function.class))
+					.saveToCassandra();
+		}
+		return true;
+	}
+
+	@Override
+	public List<Function> getFunctions(HashSet<Long> ids) {
+		JavaSparkContext sc = spark_instance.getContext();
+		CassandraJavaRDD<Function> rdd2 = javaFunctions(sc)
+				.cassandraTable(databaseName, _CODEDB_FUN, mapRowTo(Function.class))
+				.where(_CODEDB_FUN_ID + " in ? ", ids);
+		return rdd2.collect();
+	}
+
+	@Override
+	public List<Function> getFunctionInfos(HashSet<Long> ids) {
+		JavaSparkContext sc = spark_instance.getContext();
+		CassandraJavaRDD<Function> rdd2 = javaFunctions(sc)
+				.cassandraTable(databaseName, _CODEDB_FUN, mapRowTo(Function.class))
+				.where(_CODEDB_FUN_ID + " in ? ", ids);
+		return rdd2.collect();
+	}
+
+	@Override
+	public List<Block> getBlocks(HashSet<Long> ids) {
+		return this.getBlocksAsRDD(ids).collect();
+	}
+
+	@Override
+	public JavaRDD<Block> getBlocksAsRDD(HashSet<Long> ids) {
+		JavaRDD<BlockIdWrapper> idRdds = spark_instance.getContext()
+				.parallelize(ids.stream().map(id -> new BlockIdWrapper(id)).collect(Collectors.toList()));
+
+		return javaFunctions(idRdds)
+				.joinWithCassandraTable(databaseName, _CODEDB_BLO,
+						CassandraJavaUtil.someColumns(//
+								_CODEDB_BLO_ID, //
+								_CODEDB_BLO_FUN, //
+								_CODEDB_BLO_FUN_NAME, //
+								_CODEDB_BLO_BIN, //
+								_CODEDB_BLO_BIN_NAME, //
+								_CODEDB_BLO_NEXT, //
+								_CODEDB_BLO_PEER, //
+								_CODEDB_BLO_SRC),
+						CassandraJavaUtil.someColumns(_CODEDB_BLO_ID), GenericJavaRowReaderFactory.instance,
+						CassandraJavaUtil.mapToRow(BlockIdWrapper.class))
+				//
+				.map(tp -> {
+					CassandraRow row = tp._2;
+					Block block = new Block();
+					block.binaryId = row.getLong(_CODEDB_BLO_BIN);
+					block.binaryName = row.getString(_CODEDB_BLO_BIN_NAME);
+					block.blockId = row.getLong(_CODEDB_BLO_ID);
+					block.callingBlocks = new ArrayList<>(
+							row.getList(_CODEDB_BLO_NEXT, CassandraJavaUtil.<Long>typeConverter(Long.class)));
+					block.functionId = row.getLong(_CODEDB_BLO_FUN);
+					block.functionName = row.getString(_CODEDB_BLO_FUN_NAME);
+					block.peerSize = row.getInt(_CODEDB_BLO_PEER);
+					block.loadCode(row.getString(_CODEDB_BLO_SRC));
+					return block;
+				});
+
+	}
+
+	@Override
+	public List<Block> getBlocksInfo(HashSet<Long> ids) {
+		return this.getBlocksInfoAsRDD(ids).collect();
+	}
+
+	public static class BlockIdWrapper implements Serializable {
+
+		private static final long serialVersionUID = -1676399510140028916L;
+
+		public BlockIdWrapper(long blockId) {
+			this.blockId = blockId;
+		}
+
+		public long getBlockId() {
+			return blockId;
+		}
+
+		public long blockId;
+	}
+
+	@Override
+	public JavaRDD<Block> getBlocksInfoAsRDD(HashSet<Long> ids) {
+
+		JavaRDD<BlockIdWrapper> idRdds = spark_instance.getContext()
+				.parallelize(ids.stream().map(id -> new BlockIdWrapper(id)).collect(Collectors.toList()));
+
+		return javaFunctions(idRdds)
+				.joinWithCassandraTable(databaseName, _CODEDB_BLO,
+						CassandraJavaUtil.someColumns(//
+								_CODEDB_BLO_ID, //
+								_CODEDB_BLO_FUN, //
+								_CODEDB_BLO_FUN_NAME, //
+								_CODEDB_BLO_BIN, //
+								_CODEDB_BLO_BIN_NAME, //
+								_CODEDB_BLO_NEXT, //
+								_CODEDB_BLO_PEER),
+						CassandraJavaUtil.someColumns(_CODEDB_BLO_ID), GenericJavaRowReaderFactory.instance,
+						CassandraJavaUtil.mapToRow(BlockIdWrapper.class))
+				//
+				.map(tp -> {
+					CassandraRow row = tp._2;
+					Block block = new Block();
+					block.binaryId = row.getLong(_CODEDB_BLO_BIN);
+					block.binaryName = row.getString(_CODEDB_BLO_BIN_NAME);
+					block.blockId = row.getLong(_CODEDB_BLO_ID);
+					block.callingBlocks = new ArrayList<>(
+							row.getList(_CODEDB_BLO_NEXT, CassandraJavaUtil.<Long>typeConverter(Long.class)));
+					block.functionId = row.getLong(_CODEDB_BLO_FUN);
+					block.functionName = row.getString(_CODEDB_BLO_FUN_NAME);
+					block.peerSize = row.getInt(_CODEDB_BLO_PEER);
+					return block;
+				});
+
+		// return
+		// javaFunctions(spark_instance.getContext()).cassandraTable(databaseName,
+		// _CODEDB_BLO)
+		// .select(_CODEDB_BLO_ID, _CODEDB_BLO_FUN, _CODEDB_BLO_FUN_NAME,
+		// _CODEDB_BLO_BIN, _CODEDB_BLO_BIN_NAME,
+		// _CODEDB_BLO_NEXT, _CODEDB_BLO_PEER)
+		// .where(_CODEDB_BLO_ID + " in ? ", ids)
+		// .map(row -> {
+		// Block block = new Block();
+		// block.binaryId = row.getLong(_CODEDB_BLO_BIN);
+		// block.binaryName = row.getString(_CODEDB_BLO_BIN_NAME);
+		// block.blockId = row.getLong(_CODEDB_BLO_ID);
+		// block.callingBlocks = new ArrayList<>(
+		// row.getList(_CODEDB_BLO_NEXT, CassandraJavaUtil.<Long>
+		// typeConverter(Long.class)));
+		// block.functionId = row.getLong(_CODEDB_BLO_FUN);
+		// block.functionName = row.getString(_CODEDB_BLO_FUN_NAME);
+		// block.peerSize = row.getInt(_CODEDB_BLO_PEER);
+		// return block;
+		// });
+	}
+
+	@Override
+	public List<Comment> getComment(Long functionId, String functionOffset) {
+		JavaSparkContext sc = spark_instance.getContext();
+		List<Comment> coms = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COMMENT, mapRowTo(Comment.class))
+				.where(_CODEDB_COMMENT_FUN_ID + " = ? AND " + _CODEDB_COMMENT_FUN_OFFSET + " = '?'", functionId,
+						functionOffset)
+				.collect();
+		return coms;
+	}
+
+	@Override
+	public Comment getComment(Long functionId, String functionOffset, Long date) {
+		JavaSparkContext sc = spark_instance.getContext();
+
+		List<Comment> coms = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COMMENT, mapRowTo(Comment.class))
+				.where(_CODEDB_COMMENT_FUN_ID + " = ? AND " + _CODEDB_COMMENT_FUN_OFFSET + " = '?' AND "
+						+ _CODEDB_COMMENT_DATE + " = ?", functionId, functionOffset, date)
+				.collect();
+		if (coms.size() > 0)
+			return coms.get(0);
+		else
+			return null;
+	}
+
+	@Override
+	public List<Comment> getComments(Long functionId) {
+		JavaSparkContext sc = spark_instance.getContext();
+		List<Comment> coms = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COMMENT, mapRowTo(Comment.class))
+				.where(_CODEDB_COMMENT_FUN_ID + " = ? ", functionId).collect();
+		return coms;
+	}
+
+	@Override
+	public boolean setComment(Comment comment) {
+		try {
+			JavaSparkContext sc = spark_instance.getContext();
+			javaFunctions(sc.parallelize(Arrays.asList(comment)))
+					.writerBuilder(databaseName, _CODEDB_COMMENT, mapToRow(Comment.class)).saveToCassandra();
+			return true;
+		} catch (Exception e) {
+			logger.error("Failed to persist comment. {}", e);
+			return false;
+		}
+	}
+
+	@Override
+	public boolean addBinary(Binary binary) {
+
+		JavaSparkContext sc = this.spark_instance.getContext();
+
+		// check existance
+		List<Binary> eBinary = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_BIN, mapRowTo(Binary.class))
+				.where(_CODEDB_BIN_ID + " = ? ", binary.binaryId).collect();
+
+		Binary obinary = null;
+		boolean alreadyExisted = false;
+		if (eBinary != null && eBinary.size() > 0) {
+			obinary = eBinary.get(0);
+			alreadyExisted = true;
+		} else {
+			obinary = binary;
+			// clean its function Ids; will check later on.
+			obinary.setFunctionIds(new ArrayList<>());
+		}
+		final Binary foBinary = obinary;
+		ArrayList<Function> oFunctions = new ArrayList<>();
+		ArrayList<Long> nfids = new ArrayList<>();
+		ArrayList<Block> oBlocks = new ArrayList<>();
+		binary.forEach(ofunction -> {
+			if (!foBinary.getFunctionIds().contains(ofunction.functionId))
+				nfids.add(ofunction.functionId);
+			oBlocks.addAll(ofunction.blocks);
+			oFunctions.add(ofunction);
+		});
+
+		if (!alreadyExisted) {
+			JavaRDD<Binary> binaryRDD = sc.parallelize(Arrays.asList(obinary));
+			javaFunctions(binaryRDD).writerBuilder(databaseName, _CODEDB_BIN, mapToRow(Binary.class)).saveToCassandra();
+		}
+
+		for (int i = 0; i < oFunctions.size(); i += 1000) {
+			JavaRDD<Function> functionRDD = sc
+					.parallelize(oFunctions.subList(i, i + 1000 > oFunctions.size() ? oFunctions.size() : i + 1000));
+			javaFunctions(functionRDD).writerBuilder(databaseName, _CODEDB_FUN, mapToRow(Function.class))
+					.saveToCassandra();
+		}
+
+		cassandra_instance.doWithSession(spark_instance.getConf(), session -> {
+			for (Block blk : oBlocks)
+				session.executeAsync(new QueryBuilder(session.getCluster()).insertInto(databaseName, _CODEDB_BLO)
+						.value(_CODEDB_BLO_BIN, blk.binaryId).value(_CODEDB_BLO_BIN_NAME, blk.binaryName)
+						.value(_CODEDB_BLO_FUN, blk.functionId).value(_CODEDB_BLO_FUN_NAME, blk.functionName)
+						.value(_CODEDB_BLO_ID, blk.blockId).value(_CODEDB_BLO_NAME, blk.blockName)
+						.value(_CODEDB_BLO_NEXT, blk.callingBlocks).value(_CODEDB_BLO_PEER, blk.peerSize)
+						.value(_CODEDB_BLO_SRC, blk.mergeCode()));
+		});
+
+		// for (int i = 0; i < oBlocks.size(); i += 1000) {
+		// JavaRDD<Block> blockRDD = sc.parallelize(oBlocks.subList(i,
+		// i + 1000 > oBlocks.size() ? oBlocks.size() : i + 1000));
+		// javaFunctions(blockRDD).writerBuilder(databaseName, _CODEDB_BLO,
+		// mapToRow(Block.class)).saveToCassandra();
+		// }
+
+		// update logic:
+		if (Environment.inSymbolicMode) {
+			binary.functions.forEach(func -> func.blocks.forEach(blk -> {
+				setLogicGraph(blk.blockId, blk.getLogic());
+			}));
+		}
+
+		// updat counter
+		int binc = 0;
+		int finc = 0;
+		int blinc = 0;
+		if (!alreadyExisted) {
+			binc = 1;
+		}
+		if (nfids.size() > 0) {
+			finc = nfids.size();
+			blinc = oBlocks.size();
+		}
+		if (binc != 0 || finc != 0) {
+			IncCounter(binc, finc, blinc);
+		}
+
+		// update fids for given bianry (if necessary)
+		if (nfids.size() > 0) {
+			this.cassandra_instance.doWithSessionWithReturn(spark_instance.getConf(), session -> {
+				try {
+					session.execute(
+							"UPDATE " + databaseName + "." + _CODEDB_BIN + " SET " + _CODEDB_BIN_FUNCTIONS + " = "
+									+ _CODEDB_BIN_FUNCTIONS + " + ? WHERE " + _CODEDB_BIN_ID + " = ? ",
+							nfids, binary.binaryId);
+					return true;
+				} catch (Exception e) {
+					logger.error("Failed to increase counter ", e);
+					return false;
+				}
+			});
+		}
+
+		return true;
+	}
+
+	private boolean IncCounter(long bc, long fc, long blc) {
+		return cassandra_instance.doWithSessionWithReturn(spark_instance.getConf(), session -> {
+			try {
+
+				session.execute("UPDATE " + databaseName + "." + _CODEDB_COUNT + " SET " + _CODEDB_COUNT_BIN + " = "
+						+ _CODEDB_COUNT_BIN + " + " + bc + ", " //
+						+ _CODEDB_COUNT_FUN + " = " + _CODEDB_COUNT_FUN + " + " + fc + ", " //
+						+ _CODEDB_COUNT_BLO + " = " + _CODEDB_COUNT_BLO + " + " + blc + " WHERE " + _CODEDB_COUNT_ID
+						+ " = 0");
+				return true;
+			} catch (Exception e) {
+				logger.error("Failed to increase counter ", e);
+				return false;
+			}
+		});
+	}
+
+	@Override
+	public boolean drop(long binaryID) {
+		List<Binary> binaries = getBinaries(binaryID);
+		if (binaries.size() < 1)
+			return false;
+
+		long fc = 0, bc = 0;
+
+		Binary binary = binaries.get(0);
+		HashSet<Long> fids = new HashSet<>();
+		fids.addAll(binary.functionIds);
+		fc = fids.size();
+
+		CassandraConnector connector = CassandraConnector.apply(spark_instance.getConf());
+
+		try (Session session = connector.openSession()) {
+
+			PreparedStatement blo_statement = session
+					.prepare("DELETE FROM " + databaseName + "." + _CODEDB_BLO + " where " + _CODEDB_BLO_ID + " in ?");
+			PreparedStatement fun_statement = session
+					.prepare("DELETE FROM " + databaseName + "." + _CODEDB_FUN + " where " + _CODEDB_FUN_ID + " in ?");
+			PreparedStatement cmt_statement = session.prepare("DELETE FROM " + databaseName + "." + _CODEDB_COMMENT
+					+ " where " + _CODEDB_COMMENT_FUN_ID + " in ?");
+
+			List<Function> funcs = getFunctions(fids);
+
+			for (Function function : funcs) {
+
+				session.execute(blo_statement.bind(function.blockIds));
+				bc += function.blockIds.size();
+
+			}
+
+			session.execute(fun_statement.bind(binary.functionIds));
+
+			session.execute(cmt_statement.bind(binary.functionIds));
+
+			session.execute(
+					"DELETE FROM " + databaseName + "." + _CODEDB_BIN + " where " + _CODEDB_BIN_ID + " = " + binaryID);
+
+			this.IncCounter(-1, -1 * fc, -1 * bc);
+
+			return true;
+		} catch (Exception e) {
+			logger.error("Failed to drop binary: " + binaryID, e);
+			return false;
+		}
+	}
+
+	@Override
+	public long countBinaries() {
+
+		JavaSparkContext sc = this.spark_instance.getContext();
+
+		List<Long> counts = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COUNT, mapColumnTo(Long.class))
+				.select(_CODEDB_COUNT_BIN).collect();
+		if (counts == null) {
+			logger.error("The counter row does not exists.");
+			return 0;
+		}
+		if (counts.size() > 1) {
+			logger.error("The counter table has more than one counter row.");
+		}
+		if (counts.size() == 1) {
+			return counts.get(0);
+		}
+		return 0;
+		// CassandraConnector connector =
+		// CassandraConnector.apply(spark_instance
+		// .getConf());
+		// try (Session session = connector.openSession()) {
+		//
+		// ResultSet re = session.execute("SELECT count(*) from "
+		// + databaseName + "." + _CODEDB_BIN + " limit 1000000");
+		//
+		// return re.one().getLong(0);
+		// } catch (Exception e) {
+		// logger.error("Failed to count binaries ", e);
+		// return -1;
+		// }
+	}
+
+	@Override
+	public long countFunctions() {
+		JavaSparkContext sc = this.spark_instance.getContext();
+
+		List<Long> counts = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COUNT, mapColumnTo(Long.class))
+				.select(_CODEDB_COUNT_FUN).collect();
+		if (counts == null) {
+			logger.error("The counter row does not exists.");
+			return 0;
+		}
+		if (counts.size() > 1) {
+			logger.error("The counter table has more than one counter row.");
+		}
+		if (counts.size() == 1) {
+			return counts.get(0);
+		}
+		return 0;
+		// CassandraConnector connector =
+		// CassandraConnector.apply(spark_instance
+		// .getConf());
+		// try (Session session = connector.openSession()) {
+		//
+		// ResultSet re = session.execute("SELECT count(*) from "
+		// + databaseName + "." + _CODEDB_FUN + " limit 1000000");
+		//
+		// return re.one().getLong(0);
+		// } catch (Exception e) {
+		// logger.error("Failed to count functions ", e);
+		// return -1;
+		// }
+	}
+
+	@Override
+	public long countBlocks() {
+		JavaSparkContext sc = this.spark_instance.getContext();
+
+		List<Long> counts = javaFunctions(sc).cassandraTable(databaseName, _CODEDB_COUNT, mapColumnTo(Long.class))
+				.select(_CODEDB_COUNT_BLO).collect();
+		if (counts == null) {
+			logger.error("The counter row does not exists.");
+			return 0;
+		}
+		if (counts.size() > 1) {
+			logger.error("The counter table has more than one counter row.");
+		}
+		if (counts.size() == 1) {
+			return counts.get(0);
+		}
+		return 0;
+		// CassandraConnector connector =
+		// CassandraConnector.apply(spark_instance
+		// .getConf());
+		// try (Session session = connector.openSession()) {
+		//
+		// ResultSet re = session.execute("SELECT count(*) from "
+		// + databaseName + "." + _CODEDB_BLO + " limit 1000000");
+		//
+		// return re.one().getLong(0);
+		// } catch (Exception e) {
+		// logger.error("Failed to count functions ", e);
+		// return -1;
+		// }
+	}
+
+	@Override
+	public boolean dropComment(Long functionId, String functionOffset, Long date) {
+		CassandraConnector connector = CassandraConnector.apply(spark_instance.getConf());
+		try (Session session = connector.openSession()) {
+			session.execute("DELETE FROM " + databaseName + "." + _CODEDB_COMMENT + " where " + _CODEDB_COMMENT_FUN_ID
+					+ " = " + functionId + " and " + _CODEDB_COMMENT_FUN_OFFSET + " = '" + functionOffset + "' and "
+					+ _CODEDB_COMMENT_DATE + " = " + date);
+			return true;
+		} catch (Exception e) {
+			logger.error("Failed to remove comment", e);
+		}
+		return false;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Environment.init();
+
+		CassandraInstance cassandraInstance = CassandraInstance.createEmbeddedInstance("Kam1n0 test", false, false);
+
+		SparkInstance sparkInstance = SparkInstance.createLocalInstance(cassandraInstance.getSparkConfiguration());
+
+		sparkInstance.init();
+		cassandraInstance.init();
+
+		ObjectFactoryCassandraDB objectFactory = new ObjectFactoryCassandraDB(cassandraInstance, sparkInstance,
+				"objects");
+		objectFactory.init();
+
+		DisassemblyFactory disassemblyFactory = new DisassemblyFactoryIDA(ca.mcgill.sis.dmas.env.IDA.idaHome);
+
+		long start = System.currentTimeMillis();
+
+		ObjectMapper mapper = new ObjectMapper();
+		JavaType listType = mapper.getTypeFactory().constructCollectionType(List.class, Long.class);
+		List<Long> vids = mapper.readValue(new File(DmasApplication.applyDataContext("vids.txt")), listType);
+
+		logger.info("started");
+
+		List<Block> blocks = objectFactory.getBlocks(new HashSet<Long>(vids));
+		logger.info("total blocks: {}", blocks.size());
+
+		logger.info("ended; taken {} ms;", System.currentTimeMillis() - start);
+
+		objectFactory.close();
+
+		sparkInstance.close();
+		cassandraInstance.close();
+
+	}
+
+	@Override
+	public LogicGraph getLogicGraph(long id) {
+		try {
+
+			ByteBuffer bytes = this.cassandra_instance.doWithSessionWithReturn(spark_instance.getConf(), session -> {
+				Row row = session.execute(new QueryBuilder(session.getCluster()).select(_CODEDB_LOGCI_CONTENT)
+						.from(databaseName, _CODEDB_LOGIC).where(eq(_CODEDB_LOGIC_ID, id))).one();
+
+				// not existed
+				if (row == null)
+					return null;
+				// existed
+				if (row.isNull(0))
+					return null;
+
+				return row.getBytes(0);
+			});
+
+			if (bytes == null)
+				return null;
+
+			return new ObjectMapper().readValue(bytes.array(), LogicGraph.class);
+
+		} catch (Exception e) {
+			logger.error("Failed to get logic graph for bb " + id, e);
+			return null;
+		}
+	}
+
+	@Override
+	public void setLogicGraph(long id, LogicGraph graph) {
+		try {
+
+			byte[] bytes = (new ObjectMapper()).writeValueAsBytes(graph);
+
+			this.cassandra_instance.doWithSession(spark_instance.getConf(), session -> {
+				session.executeAsync(new QueryBuilder(session.getCluster())//
+						.insertInto(databaseName, _CODEDB_LOGIC)//
+						.value(_CODEDB_LOGIC_ID, id) //
+						.value(_CODEDB_LOGCI_CONTENT, ByteBuffer.wrap(bytes)));
+			});
+
+		} catch (Exception e) {
+			logger.error("Failed to index logic graph for bb " + graph.blockName, e);
+		}
+	}
+
+}

@@ -1,0 +1,211 @@
+<div>
+	<style>
+.linedwrap .codelines .lineno {
+	color: white;
+	background-color: #ab47bc;
+}
+
+.linedwrap {
+	overflow: hidden;
+	width: 100%;
+}
+
+.linedwrap .lines {
+	background-color: #ab47bc;
+}
+
+.linedtextarea {
+	overflow: hidden;
+}
+
+textarea : :-webkit-input-placeholder {
+	text-align: center;
+}
+
+textarea:-moz-placeholder {
+	/* Firefox 18- */
+	text-align: center;
+}
+
+textarea::-moz-placeholder {
+	/* Firefox 19+ */
+	text-align: center;
+}
+
+textarea:-ms-input-placeholder {
+	text-align: center;
+}
+</style>
+
+	<h4>Search for Assembly Functions</h4>
+
+	<div class="row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-10">
+			<form class="form-horizontal" id="func-search-form">
+
+				<div class="row">
+					<div class="col-md-4">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">keyboard_arrow_right
+							</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">Examples</label> <select
+									id="clone-func-example" class="form-control">
+									<option selected="true"></option>
+									<option th:each="example:${model.examples}"
+										th:text="${example}" th:value="${example}">zlib-adler32</option>
+								</select> <span class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">settings</i>
+							</span>
+							<div class="form-group  label-floating">
+								<label class="control-label">Top-K</label> <input type="text"
+									class="form-control" value="10" name="topk" /> <span
+									class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">vertical_align_bottom</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">Threshold</label> <input
+									type="text" class="form-control" value="-1" name="threshold" />
+								<span class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">keyboard_arrow_right
+							</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">Instruction Set</label> <select
+									class="form-control" name="archType">
+									<option value="metapc">x86</option>
+									<option value="arm" selected="selected">ARM</option>
+									<option value="ppc">PowerPC</option>
+									<option value="mips">MIPS</option>
+								</select> <span class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">keyboard_arrow_right
+							</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">Architecture Type</label> <select
+									class="form-control" name="bit">
+									<option value="b32" selected="selected">32-bit</option>
+									<option value="b64">64-bit</option>
+								</select> <span class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">keyboard_arrow_right
+							</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">Endianness of Target
+									Platform</label> <select class="form-control" name="endian">
+									<option value="be">Big-endian</option>
+									<option value="le" selected="selected">Little-endian</option>
+								</select> <span class="material-input"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="input-group">
+							<div class="form-group label-floating">
+								<div class="checkbox">
+									<label style="font-size:9pt; margin-left:10px"> <input type="checkbox" 
+										name="avoidSameBinary" /> Avoid Same Binary
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="input-group">
+							<span class="input-group-addon"> <i class="material-icons">keyboard_arrow_right</i>
+							</span>
+							<div class="form-group label-floating">
+								<label class="control-label">The Starting Address. For
+									ARM instructions, the least significant bit of the address
+									indicates that it is in Thumb mode or not.</label> <input type="text"
+									class="form-control" value="0x1BFD" name="addr" /> <span
+									class="material-input"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+				<div class="form-group">
+					<textarea id="inputboxSymbolic" type="text" name="func"
+						title="Enter/parse the binary data of your assembly function/fragment here."
+						placeholder="Enter/parse the binary data of your assembly function/fragment here."
+						rows="21" wrap="hard" autocomplete="off" spellcheck="false"></textarea>
+				</div>
+				<button class='btn btn-primary pull-right' id="func-clone-btn ">
+					<i class="material-icons">search</i> Search
+				</button>
+			</form>
+		</div>
+		<div class="col-sm-1"></div>
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			// function clone search:
+			var func_cl_url = /*[[${model.summary.basicInfo.applicationType + '/' + model.summary.basicInfo.appId + '/search_func/'}]]*/'/';
+			// this will be read by the new open window.
+			var func_queries = [];
+			var other_params = {};
+
+			$(function() {
+				$("#inputboxSymbolic").linedtextarea();
+				$("#inputboxSymbolic").attr("wrap", "hard");
+				$(".linedwrap").css("width", "100%");
+				$("#inputboxSymbolic").css("width", "100%");
+			});
+
+			$(function() {
+				$("#func-search-form").attr("target", "_blank").attr("action",
+						func_cl_url).attr("method", "post").submit(function() {
+					func_queries = [ $('#inputboxSymbolic').val() ];
+					other_params = formToJson('func-search-form');
+					delete other_params['func']
+				});
+
+				$('#clone-func-example').change(function() {
+					var selected = $('#clone-func-example').val();
+					if (selected.length > 1)
+						$.ajax({
+							url : '/data/' + selected,
+							type : 'get',
+							success : function(data) {
+								$('textarea#inputboxSymbolic').val(data);
+							}
+						});
+					else
+
+						$('textarea#inputboxSymbolic').val("");
+				});
+			});
+
+			/*]]>*/
+		</script>
+	</div>
+</div>

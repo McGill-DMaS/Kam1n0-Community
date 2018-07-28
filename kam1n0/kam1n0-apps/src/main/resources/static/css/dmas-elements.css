@@ -1,0 +1,214 @@
+.slider.slider-vertical {
+	height: 800px;
+}
+
+/* slider color*/
+#GC .slider-handle {
+	border-radius: 0%;
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 10px;
+}
+
+/* flow graph tooltip */
+.tipsy-inner {
+	white-space: pre
+}
+
+/* This styles the body of the tooltip */
+.tipsy {
+	font-size: 1.1em;
+	test-align: left;
+}
+
+.tipsy-inner {
+	width: 250px;
+}
+
+/* text diff */
+td.diff-line-content {
+	padding-left: 20px;
+	padding-right: 10px;
+	vertical-align: top;
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 12px;
+}
+
+td.diff-line-content.remove {
+	background-color: #ffecec;
+}
+
+td.diff-line-content.add {
+	background-color: #eaffea;
+}
+
+td.diff-line-content.empty {
+	background-color: #fafafa;
+	min-height: 20px;
+	width: 44%;
+}
+
+td.diff-line-num {
+	width: 6%;
+	min-width: 50px;
+	white-space: nowrap;
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 12px;
+	line-height: 18px;
+	color: rgba(0, 0, 0, 0.3);
+	vertical-align: top;
+	text-align: right;
+	border: solid #eee;
+	border-width: 0 1px 0 0;
+	cursor: pointer;
+	border-left-width: 1px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+td.diff-line-num.selected {
+	background-color: rgba(255, 165, 0, 0.1);
+}
+
+td.diff-line-num.empty.selected {
+	background-color: rgba(255, 165, 0, 0.1);
+}
+
+td.diff-line-num:hover {
+	color: rgba(0, 0, 0, 0.67);
+}
+
+td.diff-line-num.empty {
+	background-color: #fafafa;
+	height: 20px;
+}
+
+span.m {
+	color: #a71d5d;
+	display: inline-block;
+	width: 50px;
+}
+
+table.block {
+	border-color: gray;
+	display: table;
+	width: 100%;
+	border-spacing: 2px;
+	border-right: solid 1px #eee;
+}
+
+div.sep {
+	background-color: #fafafa;
+	color: rgba(0, 0, 0, 0.53);
+	padding-left: 10px;
+	line-height: 18px;
+	font-size: 12px;
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	border-right: solid 1px #eee;
+	border-left: solid 3px #837979;
+}
+
+span.commenter {
+	position: relative;
+	z-index: 5;
+	float: right;
+	font-size: 16px;
+	width: 20px;
+	height: 20px;
+	margin: -1px -25px -1px -10px;
+	line-height: 20px;
+	color: #fff;
+	text-align: center;
+	text-indent: 0;
+	cursor: pointer;
+	background-color: orange;
+	border-radius: 3px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	opacity: 0;
+	-webkit-transform: scale(0.8, 0.8);
+	-ms-transform: scale(0.8, 0.8);
+	transform: scale(0.8, 0.8);
+	-webkit-transition: -webkit-transform 0.1s ease-in-out;
+	transition: transform 0.1s ease-in-out;
+}
+
+span.commenter.selected {
+	opacity: 1.0;
+	transform: scale(1.0, 1.0);
+}
+
+
+
+div.cmbox {
+	color: rgba(0, 145, 22, 1);
+	padding-left: 10px;
+	line-height: 18px;
+	font-size: 12px;
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	border-left: solid 2px rgba(0, 141, 15, 0.44);
+}
+
+div.cmbox-anterior {
+	background-color: #ffa5002b;
+	border-left: solid 2px #ffa500;
+}
+
+div.cmbox-posterior {
+	    background-color: #a2f8ff2b;
+	    border-left: solid 2px #a2f8ff;
+}
+
+div.cmbox-regular {
+	    background-color: white;
+	    border-left: solid 2px gray;
+}
+
+div.cmbox-repeatable {
+	 background-color: #daffd52b;
+	 border-left: solid 2px #daffd5;
+}
+
+
+div.cmbox>p {
+	margin-bottom: 0px;
+}
+
+tr.comrow {
+	
+}
+
+span.delete {
+	font-size: 13px;
+	margin-left: 4px;
+	cursor: pointer;
+	color: rgb(188, 188, 188);
+}
+
+.header {
+	background-color: rgba(255, 255, 255, 0.95);
+	/* remove the gradient */
+	background-image: none;
+	border-bottom: 2px solid dodgerblue;
+	line-height: 40px;
+	box-shadow: 0 9px 6px -6px rgba(0, 0, 0, 0.2);
+}
+
+.triangle-down {
+	opacity: 0.4;
+}
+
+.triangle-down:hover {
+	opacity: 0.8;
+}
+
+.triangle-down p {
+	color: white;
+}
+
+.triangle-down p:hover {
+	color: rgba(0, 0, 0, 0.4);
+}
+
+li.dropdown{
+	list-style-type: none;
+}

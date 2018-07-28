@@ -1,0 +1,514 @@
+<Kam1n0-Architecture>
+  <processor>tms320c6</processor>
+  <operations>
+    <operation identifier="ABS">
+      <suffixGroup>ABS_g</suffixGroup>
+    </operation>
+    <operation identifier="ADD">
+      <suffixGroup>ADD_g</suffixGroup>
+    </operation>
+    <operation identifier="AND">
+      <suffixGroup>AND_g</suffixGroup>
+    </operation>
+    <operation identifier="AVG">
+      <suffixGroup>AVG_g</suffixGroup>
+    </operation>
+    <operation identifier="BIT">
+      <suffixGroup>BIT_g</suffixGroup>
+    </operation>
+    <operation identifier="CLR"/>
+    <operation identifier="CMP">
+      <suffixGroup>CMP_g</suffixGroup>
+    </operation>
+    <operation identifier="DDOT">
+      <suffixGroup>DDOT_g</suffixGroup>
+    </operation>
+    <operation identifier="DEAL"/>
+    <operation identifier="DINT"/>
+    <operation identifier="DMV"/>
+    <operation identifier="DOTP">
+      <suffixGroup>DOTP_g</suffixGroup>
+    </operation>
+    <operation identifier="DP">
+      <suffixGroup>DP_g</suffixGroup>
+    </operation>
+    <operation identifier="EXT">
+      <suffixGroup>EXT_g</suffixGroup>
+    </operation>
+    <operation identifier="GMPY">
+      <suffixGroup>GMPY_g</suffixGroup>
+    </operation>
+    <operation identifier="INT">
+      <suffixGroup>INT_g</suffixGroup>
+    </operation>
+    <operation identifier="LD">
+      <suffixGroup>LD_g</suffixGroup>
+    </operation>
+    <operation identifier="MAX">
+      <suffixGroup>MAX_g</suffixGroup>
+    </operation>
+    <operation identifier="MIN">
+      <suffixGroup>MIN_g</suffixGroup>
+    </operation>
+    <operation identifier="MPY">
+      <suffixGroup>MPY_g</suffixGroup>
+    </operation>
+    <operation identifier="MV">
+      <suffixGroup>MV_g</suffixGroup>
+    </operation>
+    <operation identifier="NEG"/>
+    <operation identifier="NOP"/>
+    <operation identifier="NORM"/>
+    <operation identifier="NOT"/>
+    <operation identifier="PACK">
+      <suffixGroup>PACK_g</suffixGroup>
+    </operation>
+    <operation identifier="RCP">
+      <suffixGroup>RCP_g</suffixGroup>
+    </operation>
+    <operation identifier="RINT"/>
+    <operation identifier="ROTL"/>
+    <operation identifier="RPACK2"/>
+    <operation identifier="RSQR">
+      <suffixGroup>RSQR_g</suffixGroup>
+    </operation>
+    <operation identifier="SAD">
+      <suffixGroup>SAD_g</suffixGroup>
+    </operation>
+    <operation identifier="SAT"/>
+    <operation identifier="SET"/>
+    <operation identifier="SH">
+      <suffixGroup>SH_g</suffixGroup>
+    </operation>
+    <operation identifier="SMPY">
+      <suffixGroup>SMPY_g</suffixGroup>
+    </operation>
+    <operation identifier="SP">
+      <suffixGroup>SP_g</suffixGroup>
+    </operation>
+    <operation identifier="SS">
+      <suffixGroup>SS_g</suffixGroup>
+    </operation>
+    <operation identifier="ST">
+      <suffixGroup>ST_g</suffixGroup>
+    </operation>
+    <operation identifier="SUB">
+      <suffixGroup>SUB_g</suffixGroup>
+    </operation>
+    <operation identifier="SW">
+      <suffixGroup>SW_g</suffixGroup>
+    </operation>
+    <operation identifier="UNPK">
+      <suffixGroup>UNPK_g</suffixGroup>
+    </operation>
+    <operation identifier="XOR">
+      <suffixGroup>XOR_g</suffixGroup>
+    </operation>
+    <operation identifier="XPND">
+      <suffixGroup>XPND_g</suffixGroup>
+    </operation>
+    <operation identifier="ZERO"/>
+  </operations>
+  <operationJmps>
+    <operation identifier="B">
+      <suffixGroup>B_g</suffixGroup>
+    </operation>
+    <operation identifier="CALLP"/>
+  </operationJmps>
+  <suffixGroups>
+    <suffixGroup identifier="ABS_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>DP</suffix>
+      <suffix>SP</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ADD_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>4</suffix>
+      <suffix>AB</suffix>
+      <suffix>AD</suffix>
+      <suffix>AH</suffix>
+      <suffix>AW</suffix>
+      <suffix>DP</suffix>
+      <suffix>K</suffix>
+      <suffix>KPC</suffix>
+      <suffix>SP</suffix>
+      <suffix>SUB</suffix>
+      <suffix>SUB2</suffix>
+      <suffix>U</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="AND_g">
+      <suffix></suffix>
+      <suffix>N</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="AVG_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>U4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BIT_g">
+      <suffix></suffix>
+      <suffix>C</suffix>
+      <suffix>R</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="CMP_g">
+      <suffix></suffix>
+      <suffix>EQ</suffix>
+      <suffix>EQ2</suffix>
+      <suffix>EQ4</suffix>
+      <suffix>EQDP</suffix>
+      <suffix>EQSP</suffix>
+      <suffix>GT</suffix>
+      <suffix>GT2</suffix>
+      <suffix>GTDP</suffix>
+      <suffix>GTSP</suffix>
+      <suffix>GTU</suffix>
+      <suffix>GTU4</suffix>
+      <suffix>LT</suffix>
+      <suffix>LT2</suffix>
+      <suffix>LTDP</suffix>
+      <suffix>LTSP</suffix>
+      <suffix>LTU</suffix>
+      <suffix>LTU4</suffix>
+      <suffix>Y</suffix>
+      <suffix>YR</suffix>
+      <suffix>YR1</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="DDOT_g">
+      <suffix>P4</suffix>
+      <suffix>PH2</suffix>
+      <suffix>PH2R</suffix>
+      <suffix>PL2</suffix>
+      <suffix>PL2R</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="DOTP_g">
+      <suffix>2</suffix>
+      <suffix>N2</suffix>
+      <suffix>NRSU2</suffix>
+      <suffix>NRUS2</suffix>
+      <suffix>RSU2</suffix>
+      <suffix>RUS2</suffix>
+      <suffix>SU4</suffix>
+      <suffix>U4</suffix>
+      <suffix>US4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="DP_g">
+      <suffix>ACK2</suffix>
+      <suffix>ACKX2</suffix>
+      <suffix>INT</suffix>
+      <suffix>SP</suffix>
+      <suffix>TRUNC</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="EXT_g">
+      <suffix></suffix>
+      <suffix>U</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="GMPY_g">
+      <suffix></suffix>
+      <suffix>4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="INT_g">
+      <suffix>DP</suffix>
+      <suffix>DPU</suffix>
+      <suffix>SP</suffix>
+      <suffix>SPU</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="LD_g">
+      <suffix>B</suffix>
+      <suffix>BU</suffix>
+      <suffix>DW</suffix>
+      <suffix>H</suffix>
+      <suffix>HU</suffix>
+      <suffix>NDW</suffix>
+      <suffix>NW</suffix>
+      <suffix>W</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="MAX_g">
+      <suffix>2</suffix>
+      <suffix>U4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="MIN_g">
+      <suffix>2</suffix>
+      <suffix>U4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="MPY_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>2IR</suffix>
+      <suffix>32</suffix>
+      <suffix>32SU</suffix>
+      <suffix>32U</suffix>
+      <suffix>32US</suffix>
+      <suffix>DP</suffix>
+      <suffix>H</suffix>
+      <suffix>HI</suffix>
+      <suffix>HIR</suffix>
+      <suffix>HL</suffix>
+      <suffix>HLU</suffix>
+      <suffix>HSLU</suffix>
+      <suffix>HSU</suffix>
+      <suffix>HU</suffix>
+      <suffix>HULS</suffix>
+      <suffix>HUS</suffix>
+      <suffix>I</suffix>
+      <suffix>ID</suffix>
+      <suffix>IH</suffix>
+      <suffix>IHR</suffix>
+      <suffix>IL</suffix>
+      <suffix>ILR</suffix>
+      <suffix>LH</suffix>
+      <suffix>LHU</suffix>
+      <suffix>LI</suffix>
+      <suffix>LIR</suffix>
+      <suffix>LSHU</suffix>
+      <suffix>LUHS</suffix>
+      <suffix>SP</suffix>
+      <suffix>SP2DP</suffix>
+      <suffix>SPDP</suffix>
+      <suffix>SU</suffix>
+      <suffix>SU4</suffix>
+      <suffix>U</suffix>
+      <suffix>U4</suffix>
+      <suffix>US</suffix>
+      <suffix>US4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="MV_g">
+      <suffix></suffix>
+      <suffix>C</suffix>
+      <suffix>D</suffix>
+      <suffix>K</suffix>
+      <suffix>KH</suffix>
+      <suffix>KL</suffix>
+      <suffix>KLH</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="PACK_g">
+      <suffix>2</suffix>
+      <suffix>H2</suffix>
+      <suffix>H4</suffix>
+      <suffix>HL2</suffix>
+      <suffix>L4</suffix>
+      <suffix>LH2</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="RCP_g">
+      <suffix>DP</suffix>
+      <suffix>SP</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="RSQR_g">
+      <suffix>DP</suffix>
+      <suffix>SP</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SAD_g">
+      <suffix>D</suffix>
+      <suffix>D2</suffix>
+      <suffix>DSU2</suffix>
+      <suffix>DSUB</suffix>
+      <suffix>DSUB2</suffix>
+      <suffix>DU4</suffix>
+      <suffix>DUS2</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SH_g">
+      <suffix>FL</suffix>
+      <suffix>FL3</suffix>
+      <suffix>L</suffix>
+      <suffix>LMB</suffix>
+      <suffix>R</suffix>
+      <suffix>R2</suffix>
+      <suffix>RMB</suffix>
+      <suffix>RU</suffix>
+      <suffix>RU2</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SMPY_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>32</suffix>
+      <suffix>H</suffix>
+      <suffix>HL</suffix>
+      <suffix>LH</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SP_g">
+      <suffix>ACK2</suffix>
+      <suffix>ACKU4</suffix>
+      <suffix>DP</suffix>
+      <suffix>INT</suffix>
+      <suffix>KERNEL</suffix>
+      <suffix>KERNELR</suffix>
+      <suffix>LOOP</suffix>
+      <suffix>LOOPD</suffix>
+      <suffix>LOOPW</suffix>
+      <suffix>MASK</suffix>
+      <suffix>MASKR</suffix>
+      <suffix>TRUNC</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SS_g">
+      <suffix>HL</suffix>
+      <suffix>HVL</suffix>
+      <suffix>HVR</suffix>
+      <suffix>UB</suffix>
+      <suffix>UB2</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ST_g">
+      <suffix>B</suffix>
+      <suffix>BU</suffix>
+      <suffix>DW</suffix>
+      <suffix>H</suffix>
+      <suffix>HU</suffix>
+      <suffix>NDW</suffix>
+      <suffix>NW</suffix>
+      <suffix>W</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SUB_g">
+      <suffix></suffix>
+      <suffix>2</suffix>
+      <suffix>4</suffix>
+      <suffix>AB</suffix>
+      <suffix>ABS4</suffix>
+      <suffix>AH</suffix>
+      <suffix>AW</suffix>
+      <suffix>C</suffix>
+      <suffix>DP</suffix>
+      <suffix>SP</suffix>
+      <suffix>U</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="SW_g">
+      <suffix>AP2</suffix>
+      <suffix>AP4</suffix>
+      <suffix>E</suffix>
+      <suffix>ENR</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="UNPK_g">
+      <suffix>HU4</suffix>
+      <suffix>LU4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="XOR_g">
+      <suffix></suffix>
+      <suffix>MPY</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="XPND_g">
+      <suffix>2</suffix>
+      <suffix>4</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="B_g">
+      <suffix></suffix>
+      <suffix>DEC</suffix>
+      <suffix>NOP</suffix>
+      <suffix>POS</suffix>
+    </suffixGroup>
+  </suffixGroups>
+  <registers>
+    <register identifier="AMR" category="AMR" length="32"/>
+    <register identifier="CSR" category="CSR" length="32"/>
+    <register identifier="ACR" category="ACR" length="32"/>
+    <register identifier="ADR" category="ADR" length="32"/>
+    <register identifier="PCE1" category="PCE1" length="32"/>
+    <register identifier="REP" category="REP" length="32"/>
+    <register identifier="DNUM" category="DNUM" length="32"/>
+    <register identifier="SSR" category="SSR" length="32"/>
+    <register identifier="CS" category="CS" length="32"/>
+    <register identifier="DS" category="DS" length="32"/>
+    <register identifier="A0" category="GEN" length="32"/>
+    <register identifier="A1" category="GEN" length="32"/>
+    <register identifier="A2" category="GEN" length="32"/>
+    <register identifier="A3" category="GEN" length="32"/>
+    <register identifier="A4" category="GEN" length="32"/>
+    <register identifier="A5" category="GEN" length="32"/>
+    <register identifier="A6" category="GEN" length="32"/>
+    <register identifier="A7" category="GEN" length="32"/>
+    <register identifier="A8" category="GEN" length="32"/>
+    <register identifier="A9" category="GEN" length="32"/>
+    <register identifier="A10" category="GEN" length="32"/>
+    <register identifier="A11" category="GEN" length="32"/>
+    <register identifier="A12" category="GEN" length="32"/>
+    <register identifier="A13" category="GEN" length="32"/>
+    <register identifier="A14" category="GEN" length="32"/>
+    <register identifier="A15" category="GEN" length="32"/>
+    <register identifier="A16" category="GEN" length="32"/>
+    <register identifier="A17" category="GEN" length="32"/>
+    <register identifier="A18" category="GEN" length="32"/>
+    <register identifier="A19" category="GEN" length="32"/>
+    <register identifier="A20" category="GEN" length="32"/>
+    <register identifier="A21" category="GEN" length="32"/>
+    <register identifier="A22" category="GEN" length="32"/>
+    <register identifier="A23" category="GEN" length="32"/>
+    <register identifier="A24" category="GEN" length="32"/>
+    <register identifier="A25" category="GEN" length="32"/>
+    <register identifier="A26" category="GEN" length="32"/>
+    <register identifier="A27" category="GEN" length="32"/>
+    <register identifier="A28" category="GEN" length="32"/>
+    <register identifier="A29" category="GEN" length="32"/>
+    <register identifier="A30" category="GEN" length="32"/>
+    <register identifier="A31" category="GEN" length="32"/>
+    <register identifier="B0" category="GEN" length="32"/>
+    <register identifier="B1" category="GEN" length="32"/>
+    <register identifier="B2" category="GEN" length="32"/>
+    <register identifier="B3" category="GEN" length="32"/>
+    <register identifier="B4" category="GEN" length="32"/>
+    <register identifier="B5" category="GEN" length="32"/>
+    <register identifier="B6" category="GEN" length="32"/>
+    <register identifier="B7" category="GEN" length="32"/>
+    <register identifier="B8" category="GEN" length="32"/>
+    <register identifier="B9" category="GEN" length="32"/>
+    <register identifier="B10" category="GEN" length="32"/>
+    <register identifier="B11" category="GEN" length="32"/>
+    <register identifier="B12" category="GEN" length="32"/>
+    <register identifier="B13" category="GEN" length="32"/>
+    <register identifier="B14" category="GEN" length="32"/>
+    <register identifier="B15" category="GEN" length="32"/>
+    <register identifier="B16" category="GEN" length="32"/>
+    <register identifier="B17" category="GEN" length="32"/>
+    <register identifier="B18" category="GEN" length="32"/>
+    <register identifier="B19" category="GEN" length="32"/>
+    <register identifier="B20" category="GEN" length="32"/>
+    <register identifier="B21" category="GEN" length="32"/>
+    <register identifier="B22" category="GEN" length="32"/>
+    <register identifier="B23" category="GEN" length="32"/>
+    <register identifier="B24" category="GEN" length="32"/>
+    <register identifier="B25" category="GEN" length="32"/>
+    <register identifier="B26" category="GEN" length="32"/>
+    <register identifier="B27" category="GEN" length="32"/>
+    <register identifier="B28" category="GEN" length="32"/>
+    <register identifier="B29" category="GEN" length="32"/>
+    <register identifier="B30" category="GEN" length="32"/>
+    <register identifier="B31" category="GEN" length="32"/>
+    <register identifier="IFR" category="INT" length="32"/>
+    <register identifier="ISR" category="INT" length="32"/>
+    <register identifier="ICR" category="INT" length="32"/>
+    <register identifier="IER" category="INT" length="32"/>
+    <register identifier="ISTP" category="INT" length="32"/>
+    <register identifier="IRP" category="INT" length="32"/>
+    <register identifier="TSCL" category="TIM" length="32"/>
+    <register identifier="TSCH" category="TIM" length="32"/>
+    <register identifier="ILC" category="LOP" length="32"/>
+    <register identifier="RILC" category="LOP" length="32"/>
+    <register identifier="GPLYA" category="POL" length="32"/>
+    <register identifier="GPLYB" category="POL" length="32"/>
+    <register identifier="GFPGFR" category="POL" length="32"/>
+    <register identifier="TSR" category="STA" length="32"/>
+    <register identifier="ITSR" category="STA" length="32"/>
+    <register identifier="NTSR" category="STA" length="32"/>
+    <register identifier="ECR" category="STA" length="32"/>
+    <register identifier="EFR" category="STA" length="32"/>
+    <register identifier="IERR" category="STA" length="32"/>
+  </registers>
+  <lengthKeywords/>
+  <jmpKeywords/>
+  <lineFormats>
+    <syntax numberOfOperand="4">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*),[\s]*(?&lt;OPN4&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="3">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="2">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="1">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="0">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+</lineRegex>
+    </syntax>
+  </lineFormats>
+  <constantVariableRegex>(^[0-9]+)|(^=)|#+|(LOC_+)|(loc_+)</constantVariableRegex>
+  <memoryVariableRegex>(\[[\s\S]+\])|(\{[\s\S]+\})</memoryVariableRegex>
+</Kam1n0-Architecture>

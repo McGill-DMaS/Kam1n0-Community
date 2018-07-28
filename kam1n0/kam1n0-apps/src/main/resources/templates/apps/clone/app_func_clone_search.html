@@ -1,0 +1,101 @@
+<div class="card" style="height: 100%;">
+	<div class="card-header" data-background-color="green">
+		<h4 class="title">test1</h4>
+	</div>
+	<div class="card-content" style="height: 100%;">
+		<div class="row" style="height: 100%;">
+			<div class="col-sm-12" style="margin-top: 80px;">
+				<div class="discription text-center"
+					style="font-size: 20pt; margin-top: 100px;">Searching in
+					Progress...</div>
+				<div class="progress progress-striped middle active"
+					style="width: 80%; margin-top: 20px; height: 20px">
+					<div class="progress-bar" style="width: 0%" id="bar"></div>
+				</div>
+				<div class="discription text-center"
+					style="font-size: 15pt; margin-top: 20px;" id="div-error"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+		var fin_result = {}
+
+		/*<![CDATA[*/
+		$(function() {
+			var queries, other_params;
+			if (window.opener){
+				queries = window.opener.func_queries;
+				other_params = window.opener.other_params;
+			}
+			if (external && external.func_queries && external.other_params){
+				queries = external.func_queries;
+				other_params = external.other_params;
+			}
+
+			var topk = /*[[${model.topk}]]*/20;
+			var threshold = /*[[${model.threshold}]]*/-1;
+			var url = /*[[${model.query_url}]]*/'/';
+			var render_url = /*[[${model.render_url}]]*/'/';
+
+			var res = []
+			var hasError = false;
+
+			var percent = (1) / queries.length * 100.0;
+			percent = percent > 100 ? 100 : percent;
+			var bar = $('#bar');
+			bar.css({
+				width : percent + '%'
+			});
+			
+			var data = {
+				topk : topk,
+				threshold : threshold,
+				
+			}
+			if (typeof other_params != 'undefined')
+				data = Object.assign({}, data, other_params);
+
+			function step(indx) {
+				var query = queries[indx];
+				console.log(query)
+				$.post(url, 
+						Object.assign({}, data, {func : query}), 
+						function(data) {
+					console.log(data)
+					if (data.error) {
+						$('#div-error').text(data.error);
+						hasError = true;
+						return;
+					}
+					var percent = (indx + 2) / queries.length * 100.0;
+					percent = percent > 100 ? 100 : percent;
+					var bar = $('#bar');
+					bar.css({
+						width : percent + '%'
+					});
+					res.push(data.result);
+					var next_indx = indx + 1;
+					if (next_indx < queries.length)
+						step(next_indx);
+					else {
+						if (!hasError) {
+							$('#div-error').text("Preparing data...");
+							fin_result = mergeCloneResult(res);
+							window.open(render_url);
+						}
+					}
+				}).fail(function(error) { 
+					$('#div-error').text(data.error);
+					hasError = true;
+					return;
+				})
+			}
+			if (queries.length > 0)
+				step(0);
+		})
+
+		/*]]>*/
+	</script>
+</div>

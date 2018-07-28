@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ca.mcgill.sis.dmas</groupId>
+	<artifactId>kam1n0</artifactId>
+	<version>${kam1n0.version}</version>
+	<packaging>pom</packaging>
+	<properties>
+		<kam1n0.version>2.0.0</kam1n0.version>
+		<java.version>1.8</java.version>
+		<kam1n0.jar.name>kam1n0-server</kam1n0.jar.name>
+		<output.dir>${user.dir}/build-bins/</output.dir>
+		<local.repo>${user.dir}/local-m2-repo</local.repo>
+		<!-- dependency versions in one place: TBA -->
+	</properties>
+	<modules>
+		<module>kam1n0-apps</module>
+		<module>kam1n0-commons</module>
+		<module>kam1n0-symbolic</module>
+		<module>kam1n0-rep</module>
+		<module>kam1n0-cli</module>
+		<module>kam1n0-resources</module>
+		<module>kam1n0-workbench</module>
+		<module>kam1n0-clone</module>
+		<module>kam1n0-postbuild</module>
+	</modules>
+	<repositories>
+		<repository>
+			<id>Local repository</id>
+			<url>file://${user.dir}/local-m2-repo/</url>
+		</repository>
+	</repositories>
+</project>

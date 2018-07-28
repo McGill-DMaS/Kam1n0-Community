@@ -1,0 +1,191 @@
+<div>
+	<style>
+.tab-pane {
+	min-height: 800px;
+}
+
+/* layout.css Style */
+.upload-drop-zone {
+	height: 200px;
+	border-width: 2px;
+	margin-bottom: 20px;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+	margin-top: 20px;
+	color: #ccc;
+	border-style: dashed;
+	border-color: #ccc;
+	line-height: 200px;
+	text-align: center;
+	color: #ccc;
+}
+
+.upload-drop-zone.drop {
+	color: #222;
+	border-color: #222;
+}
+
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	outline: none;
+	background: white;
+	cursor: inherit;
+	display: block;
+}
+</style>
+	<h4>Index Binary Files</h4>
+
+	<div class="row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-10">
+			<form class="form-horizontal" id="appForm">
+				<div class="row">
+					<div class="col-md-12">
+						<h5>Select Multiple Files from Your Computer</h5>
+						<form id="index-upload-form">
+							<span class="btn btn-default btn-file"> Browse <input
+								type="file" multiple="" id="index-upload-input" />
+							</span>
+						</form>
+						<div class="upload-drop-zone" id="index-drop-zone">Or drag
+							and drop files here</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12" style="min-height: 100px">
+						<table class="table" id='index-file-table'>
+							<thead>
+								<tr>
+									<th class="text-center">#</th>
+									<th>Name</th>
+									<th>Type</th>
+									<th>Size</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<p class="description pull-right">You can leave this page and track all your jobs on your home page.</p>
+				<div class="row"></div>
+				<div class="row">
+					<button class='btn btn-primary pull-right' id="index-btn">
+						<i class="material-icons">cloud_upload</i> Index
+					</button>
+				</div>
+				<div class="row" id="index-progress-holder"></div>
+			</form>
+		</div>
+		<div class="col-sm-1"></div>
+	</div>
+
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+
+		// indexing:
+		var files_to_index;
+		$(function() {
+			var dropZone = document.getElementById('index-drop-zone');
+			var uploadForm = document.getElementById('index-upload-input');
+
+			var startUpload = function(files) {
+				console.log(files)
+				files_to_index = files;
+
+				$("#index-file-table").find("tr:gt(0)").remove();
+				for (var i = 0; i < files.length; i++) {
+					var file = files[i];
+					var row = $('<tr>');
+					row.append($('<td>').append(i));
+					row.append($('<td>').append(file.name));
+					row.append($('<td>').append(file.type));
+					row.append($('<td>').append(
+							Math.round(file.size / 1024) + ' KB'));
+					$('#index-file-table > tbody').append(row);
+				}
+			}
+
+			$("#index-upload-input").change(
+					function() {
+						var uploadFiles = document
+								.getElementById('index-upload-input').files;
+						startUpload(uploadFiles)
+					});
+
+			dropZone.ondrop = function(e) {
+				e.preventDefault();
+				this.className = 'upload-drop-zone';
+				startUpload(e.dataTransfer.files);
+			}
+
+			dropZone.ondragover = function() {
+				this.className = 'upload-drop-zone drop';
+				return false;
+			}
+
+			dropZone.ondragleave = function() {
+				this.className = 'upload-drop-zone';
+				return false;
+			}
+
+			$("#index-btn")
+					.click(
+							function() {
+								document.getElementById('index-upload-input').files = files_to_index;
+								var formData = new FormData();
+								$.each($('#index-upload-input')[0].files,
+										function(i, file) {
+											formData.append('files', file);
+										});
+
+								$
+										.ajax({
+											url : /*[[${model.summary.basicInfo.applicationType + '/' + model.summary.basicInfo.appId + '/push_bin/'}]]*/'/',
+											type : 'post',
+											data : formData,
+											contentType : false,
+											processData : false,
+											cache : false,
+											success : function(data) {
+												if (data['error']) {
+													dmas_alert(data['error']);
+												} else {
+													$('#index-progress-holder')
+															.empty();
+													queryBinaryIndexJobProgress(
+															'BinaryIndexProcedure',
+															'#index-progress-holder',
+															function(progress) {
+																// location.reload();
+															});
+												}
+											},
+											statusCode : {
+												500 : function() {
+													dmas_alert("The input file exceeds the maximum file size (1MB).")
+												}
+											}
+										});
+								return false;
+							});
+		});
+		/*]]>*/
+	</script>
+</div>

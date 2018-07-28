@@ -1,0 +1,168 @@
+<div class="row" style="height: 100%">
+	<style>
+.slider.slider-vertical {
+	height: 100%;
+}
+
+/* slider color*/
+#GC .slider-handle {
+	border-radius: 0%;
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 10px;
+}
+
+.node rect {
+	stroke: #333;
+	fill: #fff;
+}
+
+.edgePath path {
+	fill: #333;
+	stroke-width: 1.5px;
+}
+
+/* This styles the body of the tooltip */
+.tipsy {
+	font-size: 1.1em;
+	test-align: left;
+}
+
+.form-group {
+	height: 100%;
+}
+
+.slider {
+	background-color: transparent;
+}
+</style>
+	<div class="col-xs-12" style="height: 100%">
+		<div class="card" id="flowGraphSource" style="height: 100%">
+			<div class="card-header" data-background-color="green"
+				id="headerSource">
+				<h4 class="title" style="font-size: 15px" id='page_title'>
+					<i class="fa fa-cloud"></i> Text Diff View <span id="diff-title-menu" class='pull-right'></span><span id="diff-title" class='pull-right'></span>
+				</h4>
+			</div>
+			<div class="card-content" style="height: 100%; padding-bottom: 50px">
+
+				<div
+					style="margin-left: 30px; margin-right: 20px; overflow-y: scroll; position: fixed; bottom: 60px; top: 80px; left: 10px; right: 10px;">
+					<table id="diff-table"
+						style="border-color: gray; display: table; width: 100%; border-spacing: 2px; border-right: solid 1px #eee; border-top: solid 1px #eee; border-bottom: solid 1px #eee;">
+						<colgroup>
+							<col width="44" />
+							<col />
+							<col width="44" />
+							<col />
+						</colgroup>
+						<tbody>
+							<tr>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var QueryString = function() {
+			// This function is anonymous, is executed immediately
+			var query_string = {};
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				// If first entry with this name
+				if (typeof query_string[pair[0]] === "undefined") {
+					query_string[pair[0]] = pair[1];
+					// If second entry with this name
+				} else if (typeof query_string[pair[0]] === "string") {
+					var arr = [ query_string[pair[0]], pair[1] ];
+					query_string[pair[0]] = arr;
+					// If third or later entry with this name
+				} else {
+					query_string[pair[0]].push(pair[1]);
+				}
+			}
+			return query_string;
+		}();
+
+		function retrieve(functionId, callback) {
+			$.ajax({
+				type : 'GET',
+				dataType : 'json',
+				url : /*[[${model.prefix + 'func_flow'}]]*/"/",
+				data : {
+					id : functionId
+				},
+				success : function(data) {
+					callback(data);
+				}
+			});
+		}
+		
+		function draw(pa, pb, normalize){
+			$('#diff-title').html(
+		            "[ " + pa.functionName + " @ " + pa.binaryName
+		            + " ]            compares to              [ " +
+		            pb.functionName + " @ " + pb.binaryName + "]"
+		    );
+		    
+		    
+			var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
+			drawTextDiff(pa, pb, 'diff-title', 'diff-table', 'l-', 'r-', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
+			plotCommentsWithPrefix(cm_url, pa, 'l-')
+			plotCommentsWithPrefix(cm_url, pb, 'r-')
+			initForm(cm_url);
+		}
+		
+		function build(normalize=false, arch='metapc'){
+			console.log(normalize)
+			console.log(arch)
+			// createNormalizer(/*[[${model.prefix+ 'arch_rest/'}]]*/ '/', arch);
+			var data = window.opener.fin_result;
+			var fid1 = QueryString['id1'];
+			var fid2 = QueryString['id2'];
+			var ind1 = QueryString['in1'];
+			var ind2 = QueryString['in2'];
+
+			if (ind1 && ind2) {
+				pa = data.results[ind1].function;
+				fid2 = data.results[ind1].clones[ind2].functionId;
+				retrieve(fid2, function(pb){
+					draw(pa, pb, normalize);
+				});
+			} else if (fid1 && fid2) {
+				retrieve(fid1, function(pa){
+					retrieve(fid2, function(pb){
+						draw(pa, pb, normalize);
+					});
+				});
+			}
+		}
+
+		$(function() {
+			
+			
+			$menu = createDropDownMenu($('#diff-title-menu'));
+			tp = createCommentDropDownMenu(true);
+			$menu.add_menu_item('Show Comments', tp.items)
+			// $menu.add_menu_item('Normalization', createNormalizationSettingMenu(build))
+			$menu.complete()
+			build()
+			
+			
+			
+		})
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

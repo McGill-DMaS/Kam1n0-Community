@@ -1,0 +1,1018 @@
+<!--
+    Copyright 2017 McGill University All rights reserved.
+   
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+   
+        http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
+<Kam1n0-Architecture>
+  <processor>arm</processor>
+  <operations>
+    <operation identifier="ADRL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="ALIGN">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="AST">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="BX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="BXJ">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="CDP">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="CPS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="CPY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="DCB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="DCD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="DCS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="DCW">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="EQUB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="EQUD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="EQUS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="EQUW">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="LDC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="LDREX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MCR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MCRR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MRC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MRRC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MRS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="MSR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="PKHBT">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="PKHTB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="PLD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QADD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QDADD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QDSUB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QSAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QSUB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QSUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QSUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="QSUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="REV">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="REV16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="REVSH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="RFE">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SEL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SETEND">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHSAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHSUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHSUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SHSUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLAD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLALD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLALXY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLAWY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLAXY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLSD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLSDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLSLD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMLSLDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMMLA">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMMLAR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMMLS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMMLSR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMUAD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMUADX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMULWY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMULXY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMUSD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SMUSDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SRS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSAT">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSAT16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SSUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="STC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="STREX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SUBW">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SWI">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SXTAB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SXTAH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="SXTB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADCS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADD">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADDS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADDW">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBADR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBAND">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBANDS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBASR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBASRS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBIC">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBICS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBKPT">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBLX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBCMN">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBCMP">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBCPS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBCPY">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBEOR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBEORS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLDMIA">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLSL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLSLS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLSR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLSRS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBMOV">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBMOVS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBMUL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBMULS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBMVNS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBNEG">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBNEGS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBNOP">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBORR">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBORRS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBPOP">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBPUSH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBREV">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBREV16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBREVSH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBRORS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSBCS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSETEND">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSTMIA">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSUB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSUBS">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSWI">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSXTB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSXTH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBTST">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBUXTB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="THUMBUXTH">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHSAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHSUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHSUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UHSUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UMAAL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQADD16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQADD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQADDSUBX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQASX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQSAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQSUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQSUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UQSUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USAD8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USADA8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USAT">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USAT16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USAX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USUB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USUB8">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="USUBADDX">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UXTAB">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UXTAB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="UXTB16">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="ADC">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="ADD">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeNoDotAndDot</suffixGroup>
+    </operation>
+    <operation identifier="ADR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="AND">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="ASR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="BFC">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="BFI">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="BIC">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="CLZ">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="CMN">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="CMP">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="EOR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LDM">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>multiInstruction</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LDRHT">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LDRSHT">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LSL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LSR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="MLA">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="MLS">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="MOV">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeNoDotAndDot</suffixGroup>
+    </operation>
+    <operation identifier="MOVT">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="MUL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="MVN">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="ORN">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="ORR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="RBIT">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="ROR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="RRX">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="RSB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="RSC">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SBC">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SBFX">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SDIV">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SMLAL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SMMUL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SMMULR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="STM">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>multiInstruction</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="STRHT">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SUB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SWP">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>additionalSWP</suffixGroup>
+    </operation>
+    <operation identifier="SXTAB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SXTB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SXTH">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="TBB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="TBH">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="TEQ">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="THUMBLDR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>size</suffixGroup>
+    </operation>
+    <operation identifier="THUMBSTR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>size</suffixGroup>
+    </operation>
+    <operation identifier="TST">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UBFX">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UDIV">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UMLAL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UMULL">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UXTAH">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UXTB">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="UXTH">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="LDR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>size</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+      <suffixGroup>additionalLDSTR</suffixGroup>
+    </operation>
+    <operation identifier="STR">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>size</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+      <suffixGroup>additionalLDSTR</suffixGroup>
+    </operation>
+    <operation identifier="NEG">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>updateFlag</suffixGroup>
+    </operation>
+    <operation identifier="POP">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="PUSH">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SVC"/>
+    <operation identifier="NOP">
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="SMULL"/>
+    <operation identifier="IMPORT"/>
+    <operation identifier="IT">
+      <suffixGroup>ITIfElseThen</suffixGroup>
+      <suffixGroup>ITIfElseThen</suffixGroup>
+      <suffixGroup>ITIfElseThen</suffixGroup>
+    </operation>
+  </operations>
+  <operationJmps>
+    <operation identifier="B">
+      <suffixGroup>condition</suffixGroup>
+      <suffixGroup>sizeDot</suffixGroup>
+    </operation>
+    <operation identifier="BL">
+      <suffixGroup>condition</suffixGroup>
+    </operation>
+    <operation identifier="CBZ"/>
+    <operation identifier="CBNZ"/>
+    <operation identifier="BLX"/>
+    <operation identifier="RET"/>
+  </operationJmps>
+  <suffixGroups>
+    <suffixGroup identifier="condition">
+      <suffix></suffix>
+      <suffix>EQ</suffix>
+      <suffix>NE</suffix>
+      <suffix>CS</suffix>
+      <suffix>HS</suffix>
+      <suffix>CC</suffix>
+      <suffix>LO</suffix>
+      <suffix>MI</suffix>
+      <suffix>PL</suffix>
+      <suffix>VS</suffix>
+      <suffix>VC</suffix>
+      <suffix>HI</suffix>
+      <suffix>LS</suffix>
+      <suffix>GE</suffix>
+      <suffix>LT</suffix>
+      <suffix>GT</suffix>
+      <suffix>LE</suffix>
+      <suffix>AL</suffix>
+      <suffix>NV</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="updateFlag">
+      <suffix></suffix>
+      <suffix>S</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="size">
+      <suffix></suffix>
+      <suffix>B</suffix>
+      <suffix>SB</suffix>
+      <suffix>H</suffix>
+      <suffix>SH</suffix>
+      <suffix>D</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sizeDot">
+      <suffix></suffix>
+      <suffix>.W</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="multiInstruction">
+      <suffix></suffix>
+      <suffix>DA</suffix>
+      <suffix>DB</suffix>
+      <suffix>IA</suffix>
+      <suffix>IB</suffix>
+      <suffix>EA</suffix>
+      <suffix>FA</suffix>
+      <suffix>FD</suffix>
+      <suffix>ED</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="additionalSWP">
+      <suffix></suffix>
+      <suffix>B</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ITIfElseThen">
+      <suffix></suffix>
+      <suffix>T</suffix>
+      <suffix>E</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sizeNoDot">
+      <suffix></suffix>
+      <suffix>W</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sizeNoDotAndDot">
+      <suffix></suffix>
+      <suffix>.W</suffix>
+      <suffix>W</suffix>
+    </suffixGroup>
+  </suffixGroups>
+  <registers>
+    <register identifier="R0" category="GEN" length="32"/>
+    <register identifier="R1" category="GEN" length="32"/>
+    <register identifier="R2" category="GEN" length="32"/>
+    <register identifier="R3" category="GEN" length="32"/>
+    <register identifier="R4" category="GEN" length="32"/>
+    <register identifier="R5" category="GEN" length="32"/>
+    <register identifier="R6" category="GEN" length="32"/>
+    <register identifier="R7" category="GEN" length="32"/>
+    <register identifier="R8" category="GEN" length="32"/>
+    <register identifier="R9" category="GEN" length="32"/>
+    <register identifier="R10" category="GEN" length="32"/>
+    <register identifier="R11" category="GEN" length="32"/>
+    <register identifier="R12" category="GEN" length="32"/>
+    <register identifier="R13" category="GEN" length="32"/>
+    <register identifier="R14" category="GEN" length="32"/>
+    <register identifier="R15" category="GEN" length="32"/>
+    <register identifier="R0!" category="GEN" length="32"/>
+    <register identifier="R1!" category="GEN" length="32"/>
+    <register identifier="R2!" category="GEN" length="32"/>
+    <register identifier="R3!" category="GEN" length="32"/>
+    <register identifier="R4!" category="GEN" length="32"/>
+    <register identifier="R5!" category="GEN" length="32"/>
+    <register identifier="R6!" category="GEN" length="32"/>
+    <register identifier="R7!" category="GEN" length="32"/>
+    <register identifier="R8!" category="GEN" length="32"/>
+    <register identifier="R9!" category="GEN" length="32"/>
+    <register identifier="R10!" category="GEN" length="32"/>
+    <register identifier="R11!" category="GEN" length="32"/>
+    <register identifier="R12!" category="GEN" length="32"/>
+    <register identifier="R13!" category="GEN" length="32"/>
+    <register identifier="R14!" category="GEN" length="32"/>
+    <register identifier="R15!" category="GEN" length="32"/>
+    <register identifier="SP" category="STA" length="32"/>
+    <register identifier="SP!" category="STA" length="32"/>
+    <register identifier="IP" category="OIP" length="32"/>
+    <register identifier="IP!" category="OIP" length="32"/>
+    <register identifier="OP" category="OIP" length="32"/>
+    <register identifier="OP!" category="OIP" length="32"/>
+    <register identifier="LR" category="LNK" length="32"/>
+    <register identifier="LR!" category="LNK" length="32"/>
+    <register identifier="PC" category="PCN" length="32"/>
+    <register identifier="PC!" category="PCN" length="32"/>
+    <register identifier="CPSR" category="PSR" length="32"/>
+    <register identifier="SPSR" category="PSR" length="32"/>
+    <register identifier="CPSR_GE" category="PSR" length="32"/>
+    <register identifier="CPSR_M" category="PSR" length="32"/>
+    <register identifier="CPSR!" category="PSR" length="32"/>
+    <register identifier="SPSR!" category="PSR" length="32"/>
+    <register identifier="CPSR_GE!" category="PSR" length="32"/>
+    <register identifier="CPSR_M!" category="PSR" length="32"/>
+    <register identifier="Z" category="FLG" length="1"/>
+    <register identifier="C" category="FLG" length="1"/>
+    <register identifier="V" category="FLG" length="1"/>
+    <register identifier="Q" category="FLG" length="1"/>
+    <register identifier="E" category="FLG" length="1"/>
+    <register identifier="T" category="FLG" length="1"/>
+    <register identifier="J" category="FLG" length="1"/>
+    <register identifier="A" category="FLG" length="1"/>
+    <register identifier="I" category="FLG" length="1"/>
+    <register identifier="F" category="FLG" length="1"/>
+    <register identifier="CPSR_GE_0" category="FLG" length="1"/>
+    <register identifier="CPSR_GE_1" category="FLG" length="1"/>
+    <register identifier="CPSR_GE_2" category="FLG" length="1"/>
+    <register identifier="CPSR_GE_3" category="FLG" length="1"/>
+  </registers>
+  <lengthKeywords>
+    <lengthKeyWord identifier=".W" length="16"/>
+  </lengthKeywords>
+  <jmpKeywords/>
+  <lineFormats>
+    <syntax numberOfOperand="4">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*),[\s]*(?&lt;OPN4&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="3">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="2">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="1">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="0">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+</lineRegex>
+    </syntax>
+  </lineFormats>
+  <constantVariableRegex>(^[0-9]+)|(^=)|#+|(LOC_+)|(loc_+)</constantVariableRegex>
+  <memoryVariableRegex>(\[[\s\S]+\])|(\{[\s\S]+\})</memoryVariableRegex>
+</Kam1n0-Architecture>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="PLUGINSDIR">
+            <Component Id="cmp252A61525CB481B7E52E0A534888486D" Guid="{9DD031C1-1564-4738-9686-293B6662E434}" KeyPath="yes">
+                <CreateFolder />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="GroupPlugin">
+            <ComponentRef Id="cmp252A61525CB481B7E52E0A534888486D" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

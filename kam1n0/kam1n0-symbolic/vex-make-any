@@ -1,0 +1,10 @@
+# All Reuquired: JAVA_HOME, python, maven
+# Windows_Required: VS command prompt with C++ tools (for z3)
+# For VEX (we didnt test other gcc):
+#	Windws: MinGW64 gcc/g++ 4.8
+#   Linux: gcc/g++ 4.8
+
+all: vex
+
+vex: 
+	make -C jnit/ all 

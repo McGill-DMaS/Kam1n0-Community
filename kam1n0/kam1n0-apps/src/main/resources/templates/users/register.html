@@ -1,0 +1,53 @@
+<div class="main-login main-center">
+	<form action="/register" th:object="${user}" method="POST"
+		enctype="utf8">
+		<div class="form-group">
+			<label for="username">User name</label> <input type="text"
+				th:field="*{userName}" class="form-control" id="username"
+				aria-describedby="emailHelp"
+				placeholder="Enter user name (will be used to login)" /> <small
+				id="emailHelp" class="form-text text-muted">Please use
+				between 6 and 48 characters.</small>
+			<div th:each="error : ${#fields.errors('userName')}"
+				class="alert alert-warning">
+				<p th:text="${error}">Validation error</p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="email">Email address</label> <input th:field="*{email}"
+				type="email" class="form-control" id="email"
+				aria-describedby="emailHelp" placeholder="Enter email" /> <small
+				id="emailHelp" class="form-text text-muted">We'll never
+				share your email with anyone else.</small>
+			<div th:each="error : ${#fields.errors('email')}"
+				class="alert alert-warning">
+				<p th:text="${error}">Validation error</p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="pw">Password</label> <input th:field="*{credential}"
+				type="password" class="form-control" id="pw" placeholder="Password" />
+			<div th:each="error : ${#fields.errors('credential')}"
+				class="alert alert-warning">
+				<p th:text="${error}">Validation error</p>
+			</div>
+		</div>
+		<div class="form-check">
+			<label class="form-check-label"> <input type="checkbox"
+				th:field="*{aggreeTLicense}" class="form-check-input" /> By
+				checking this box, you agree to the <a href="https://github.com/McGill-DMaS/Kam1n0-Community/blob/master/LICENSE.txt"> Terms and Conditions </a>.
+			</label>
+			<div th:each="error : ${#fields.errors('aggreeTLicense')}"
+				class="alert alert-warning">
+				<p th:text="${error}">Validation error</p>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-info btn-block center-block">
+			<i class="glyphicon glyphicon-log-in"></i> Submit
+		</button>
+	</form>
+
+</div>
+
+
+

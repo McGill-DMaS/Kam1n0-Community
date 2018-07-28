@@ -1,0 +1,6 @@
+def check(val):
+    print('ar.addOperation("{}",'.format(val))
+    for s in a:
+        if s.startswith(val):
+            print('"{}",'.format(s.replace(val, '')))
+    print(');')

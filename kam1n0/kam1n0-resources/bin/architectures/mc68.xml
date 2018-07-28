@@ -1,0 +1,2490 @@
+<Kam1n0-Architecture>
+  <processor>mc68</processor>
+  <operations>
+    <operation identifier="abcd">
+      <suffixGroup>abcd_g</suffixGroup>
+    </operation>
+    <operation identifier="sbcd">
+      <suffixGroup>sbcd_g</suffixGroup>
+    </operation>
+    <operation identifier="add">
+      <suffixGroup>add_g</suffixGroup>
+    </operation>
+    <operation identifier="and">
+      <suffixGroup>and_g</suffixGroup>
+    </operation>
+    <operation identifier="as">
+      <suffixGroup>as_g</suffixGroup>
+    </operation>
+    <operation identifier="bchg">
+      <suffixGroup>bchg_g</suffixGroup>
+    </operation>
+    <operation identifier="bfchg">
+      <suffixGroup>bfchg_g</suffixGroup>
+    </operation>
+    <operation identifier="bclr">
+      <suffixGroup>bclr_g</suffixGroup>
+    </operation>
+    <operation identifier="bfclr">
+      <suffixGroup>bfclr_g</suffixGroup>
+    </operation>
+    <operation identifier="bset">
+      <suffixGroup>bset_g</suffixGroup>
+    </operation>
+    <operation identifier="bfset">
+      <suffixGroup>bfset_g</suffixGroup>
+    </operation>
+    <operation identifier="btst">
+      <suffixGroup>btst_g</suffixGroup>
+    </operation>
+    <operation identifier="bftst">
+      <suffixGroup>bftst_g</suffixGroup>
+    </operation>
+    <operation identifier="bitrev">
+      <suffixGroup>bitrev_g</suffixGroup>
+    </operation>
+    <operation identifier="byterev">
+      <suffixGroup>byterev_g</suffixGroup>
+    </operation>
+    <operation identifier="bfext">
+      <suffixGroup>bfext_g</suffixGroup>
+    </operation>
+    <operation identifier="bfffo">
+      <suffixGroup>bfffo_g</suffixGroup>
+    </operation>
+    <operation identifier="bfins">
+      <suffixGroup>bfins_g</suffixGroup>
+    </operation>
+    <operation identifier="bgnd">
+      <suffixGroup>bgnd_g</suffixGroup>
+    </operation>
+    <operation identifier="bkpt">
+      <suffixGroup>bkpt_g</suffixGroup>
+    </operation>
+    <operation identifier="cas">
+      <suffixGroup>cas_g</suffixGroup>
+    </operation>
+    <operation identifier="chk">
+      <suffixGroup>chk_g</suffixGroup>
+    </operation>
+    <operation identifier="cin">
+      <suffixGroup>cin_g</suffixGroup>
+    </operation>
+    <operation identifier="clr">
+      <suffixGroup>clr_g</suffixGroup>
+    </operation>
+    <operation identifier="cmp">
+      <suffixGroup>cmp_g</suffixGroup>
+    </operation>
+    <operation identifier="cpush">
+      <suffixGroup>cpush_g</suffixGroup>
+    </operation>
+    <operation identifier="div">
+      <suffixGroup>div_g</suffixGroup>
+    </operation>
+    <operation identifier="eor">
+      <suffixGroup>eor_g</suffixGroup>
+    </operation>
+    <operation identifier="exg">
+      <suffixGroup>exg_g</suffixGroup>
+    </operation>
+    <operation identifier="exi"/>
+    <operation identifier="ext">
+      <suffixGroup>ext_g</suffixGroup>
+    </operation>
+    <operation identifier="fabs">
+      <suffixGroup>fabs_g</suffixGroup>
+    </operation>
+    <operation identifier="fdabs">
+      <suffixGroup>fdabs_g</suffixGroup>
+    </operation>
+    <operation identifier="fsabs">
+      <suffixGroup>fsabs_g</suffixGroup>
+    </operation>
+    <operation identifier="facos">
+      <suffixGroup>facos_g</suffixGroup>
+    </operation>
+    <operation identifier="fcos">
+      <suffixGroup>fcos_g</suffixGroup>
+    </operation>
+    <operation identifier="fadd">
+      <suffixGroup>fadd_g</suffixGroup>
+    </operation>
+    <operation identifier="fdadd">
+      <suffixGroup>fdadd_g</suffixGroup>
+    </operation>
+    <operation identifier="fsadd">
+      <suffixGroup>fsadd_g</suffixGroup>
+    </operation>
+    <operation identifier="fasin">
+      <suffixGroup>fasin_g</suffixGroup>
+    </operation>
+    <operation identifier="fsin">
+      <suffixGroup>fsin_g</suffixGroup>
+    </operation>
+    <operation identifier="fssub">
+      <suffixGroup>fssub_g</suffixGroup>
+    </operation>
+    <operation identifier="fsub">
+      <suffixGroup>fsub_g</suffixGroup>
+    </operation>
+    <operation identifier="fdsub">
+      <suffixGroup>fdsub_g</suffixGroup>
+    </operation>
+    <operation identifier="fatan">
+      <suffixGroup>fatan_g</suffixGroup>
+    </operation>
+    <operation identifier="ftan">
+      <suffixGroup>ftan_g</suffixGroup>
+    </operation>
+    <operation identifier="fsincos"/>
+    <operation identifier="ftentox">
+      <suffixGroup>ftentox_g</suffixGroup>
+    </operation>
+    <operation identifier="fcmp">
+      <suffixGroup>fcmp_g</suffixGroup>
+    </operation>
+    <operation identifier="ftst">
+      <suffixGroup>ftst_g</suffixGroup>
+    </operation>
+    <operation identifier="fddiv">
+      <suffixGroup>fddiv_g</suffixGroup>
+    </operation>
+    <operation identifier="fdiv">
+      <suffixGroup>fdiv_g</suffixGroup>
+    </operation>
+    <operation identifier="fsdiv"/>
+    <operation identifier="fsgldiv">
+      <suffixGroup>fsgldiv_g</suffixGroup>
+    </operation>
+    <operation identifier="fdmove">
+      <suffixGroup>fdmove_g</suffixGroup>
+    </operation>
+    <operation identifier="fmove">
+      <suffixGroup>fmove_g</suffixGroup>
+    </operation>
+    <operation identifier="fsmove">
+      <suffixGroup>fsmove_g</suffixGroup>
+    </operation>
+    <operation identifier="fdmul">
+      <suffixGroup>fdmul_g</suffixGroup>
+    </operation>
+    <operation identifier="fmul">
+      <suffixGroup>fmul_g</suffixGroup>
+    </operation>
+    <operation identifier="fsglmul">
+      <suffixGroup>fsglmul_g</suffixGroup>
+    </operation>
+    <operation identifier="fsmul">
+      <suffixGroup>fsmul_g</suffixGroup>
+    </operation>
+    <operation identifier="fdneg">
+      <suffixGroup>fdneg_g</suffixGroup>
+    </operation>
+    <operation identifier="fneg">
+      <suffixGroup>fneg_g</suffixGroup>
+    </operation>
+    <operation identifier="fsneg">
+      <suffixGroup>fsneg_g</suffixGroup>
+    </operation>
+    <operation identifier="fsqrt">
+      <suffixGroup>fsqrt_g</suffixGroup>
+    </operation>
+    <operation identifier="fssqrt">
+      <suffixGroup>fssqrt_g</suffixGroup>
+    </operation>
+    <operation identifier="fdsqrt">
+      <suffixGroup>fdsqrt_g</suffixGroup>
+    </operation>
+    <operation identifier="flog2">
+      <suffixGroup>flog2_g</suffixGroup>
+    </operation>
+    <operation identifier="flog10">
+      <suffixGroup>flog10_g</suffixGroup>
+    </operation>
+    <operation identifier="flogn">
+      <suffixGroup>flogn_g</suffixGroup>
+    </operation>
+    <operation identifier="fmod">
+      <suffixGroup>fmod_g</suffixGroup>
+    </operation>
+    <operation identifier="fnop">
+      <suffixGroup>fnop_g</suffixGroup>
+    </operation>
+    <operation identifier="nop">
+      <suffixGroup>nop_g</suffixGroup>
+    </operation>
+    <operation identifier="frem">
+      <suffixGroup>frem_g</suffixGroup>
+    </operation>
+    <operation identifier="frestore">
+      <suffixGroup>frestore_g</suffixGroup>
+    </operation>
+    <operation identifier="fs">
+      <suffixGroup>fs_g</suffixGroup>
+    </operation>
+    <operation identifier="ftrap">
+      <suffixGroup>ftrap_g</suffixGroup>
+    </operation>
+    <operation identifier="ftwotox">
+      <suffixGroup>ftwotox_g</suffixGroup>
+    </operation>
+    <operation identifier="fsave"/>
+    <operation identifier="fetox">
+      <suffixGroup>fetox_g</suffixGroup>
+    </operation>
+    <operation identifier="ff1">
+      <suffixGroup>ff1_g</suffixGroup>
+    </operation>
+    <operation identifier="fgetexp">
+      <suffixGroup>fgetexp_g</suffixGroup>
+    </operation>
+    <operation identifier="fgetman">
+      <suffixGroup>fgetman_g</suffixGroup>
+    </operation>
+    <operation identifier="fint">
+      <suffixGroup>fint_g</suffixGroup>
+    </operation>
+    <operation identifier="halt">
+      <suffixGroup>halt_g</suffixGroup>
+    </operation>
+    <operation identifier="illegal">
+      <suffixGroup>illegal_g</suffixGroup>
+    </operation>
+    <operation identifier="intouch">
+      <suffixGroup>intouch_g</suffixGroup>
+    </operation>
+    <operation identifier="move">
+      <suffixGroup>move_g</suffixGroup>
+    </operation>
+    <operation identifier="mv">
+      <suffixGroup>mv_g</suffixGroup>
+    </operation>
+    <operation identifier="mov">
+      <suffixGroup>mov_g</suffixGroup>
+    </operation>
+    <operation identifier="pmov">
+      <suffixGroup>pmov_g</suffixGroup>
+    </operation>
+    <operation identifier="ms">
+      <suffixGroup>ms_g</suffixGroup>
+    </operation>
+    <operation identifier="masac">
+      <suffixGroup>masac_g</suffixGroup>
+    </operation>
+    <operation identifier="maaac">
+      <suffixGroup>maaac_g</suffixGroup>
+    </operation>
+    <operation identifier="mac">
+      <suffixGroup>mac_g</suffixGroup>
+    </operation>
+    <operation identifier="mul">
+      <suffixGroup>mul_g</suffixGroup>
+    </operation>
+    <operation identifier="nbcd">
+      <suffixGroup>nbcd_g</suffixGroup>
+    </operation>
+    <operation identifier="lea">
+      <suffixGroup>lea_g</suffixGroup>
+    </operation>
+    <operation identifier="link">
+      <suffixGroup>link_g</suffixGroup>
+    </operation>
+    <operation identifier="lpstop">
+      <suffixGroup>lpstop_g</suffixGroup>
+    </operation>
+    <operation identifier="ls">
+      <suffixGroup>ls_g</suffixGroup>
+    </operation>
+    <operation identifier="neg">
+      <suffixGroup>neg_g</suffixGroup>
+    </operation>
+    <operation identifier="not">
+      <suffixGroup>not_g</suffixGroup>
+    </operation>
+    <operation identifier="or">
+      <suffixGroup>or_g</suffixGroup>
+    </operation>
+    <operation identifier="pack">
+      <suffixGroup>pack_g</suffixGroup>
+    </operation>
+    <operation identifier="ptest">
+      <suffixGroup>ptest_g</suffixGroup>
+    </operation>
+    <operation identifier="ptrap">
+      <suffixGroup>ptrap_g</suffixGroup>
+    </operation>
+    <operation identifier="trap">
+      <suffixGroup>trap_g</suffixGroup>
+    </operation>
+    <operation identifier="pulse">
+      <suffixGroup>pulse_g</suffixGroup>
+    </operation>
+    <operation identifier="pvalid">
+      <suffixGroup>pvalid_g</suffixGroup>
+    </operation>
+    <operation identifier="remsl">
+      <suffixGroup>remsl_g</suffixGroup>
+    </operation>
+    <operation identifier="remul">
+      <suffixGroup>remul_g</suffixGroup>
+    </operation>
+    <operation identifier="reset">
+      <suffixGroup>reset_g</suffixGroup>
+    </operation>
+    <operation identifier="sub">
+      <suffixGroup>sub_g</suffixGroup>
+    </operation>
+    <operation identifier="swap">
+      <suffixGroup>swap_g</suffixGroup>
+    </operation>
+    <operation identifier="tas">
+      <suffixGroup>tas_g</suffixGroup>
+    </operation>
+    <operation identifier="tbl">
+      <suffixGroup>tbl_g</suffixGroup>
+    </operation>
+    <operation identifier="tst">
+      <suffixGroup>tst_g</suffixGroup>
+    </operation>
+    <operation identifier="unlk">
+      <suffixGroup>unlk_g</suffixGroup>
+    </operation>
+    <operation identifier="unpk">
+      <suffixGroup>unpk_g</suffixGroup>
+    </operation>
+    <operation identifier="wddata">
+      <suffixGroup>wddata_g</suffixGroup>
+    </operation>
+    <operation identifier="wdebug">
+      <suffixGroup>wdebug_g</suffixGroup>
+    </operation>
+    <operation identifier="pea">
+      <suffixGroup>pea_g</suffixGroup>
+    </operation>
+    <operation identifier="pflush">
+      <suffixGroup>pflush_g</suffixGroup>
+    </operation>
+    <operation identifier="pload">
+      <suffixGroup>pload_g</suffixGroup>
+    </operation>
+    <operation identifier="prestore">
+      <suffixGroup>prestore_g</suffixGroup>
+    </operation>
+    <operation identifier="ps">
+      <suffixGroup>ps_g</suffixGroup>
+    </operation>
+    <operation identifier="ror">
+      <suffixGroup>ror_g</suffixGroup>
+    </operation>
+    <operation identifier="rol">
+      <suffixGroup>rol_g</suffixGroup>
+    </operation>
+    <operation identifier="roxl">
+      <suffixGroup>roxl_g</suffixGroup>
+    </operation>
+    <operation identifier="roxr">
+      <suffixGroup>roxr_g</suffixGroup>
+    </operation>
+    <operation identifier="stop">
+      <suffixGroup>stop_g</suffixGroup>
+    </operation>
+    <operation identifier="sats">
+      <suffixGroup>sats_g</suffixGroup>
+    </operation>
+    <operation identifier="bra">
+      <suffixGroup>bra_g</suffixGroup>
+    </operation>
+    <operation identifier="s">
+      <suffixGroup>s_g</suffixGroup>
+    </operation>
+  </operations>
+  <operationJmps>
+    <operation identifier="bsr"/>
+    <operation identifier="call">
+      <suffixGroup>call_g</suffixGroup>
+    </operation>
+    <operation identifier="b">
+      <suffixGroup>b_g</suffixGroup>
+    </operation>
+    <operation identifier="bcc"/>
+    <operation identifier="fbcc"/>
+    <operation identifier="fb">
+      <suffixGroup>fb_g</suffixGroup>
+    </operation>
+    <operation identifier="db">
+      <suffixGroup>db_g</suffixGroup>
+    </operation>
+    <operation identifier="dbcc"/>
+    <operation identifier="fdb">
+      <suffixGroup>fdb_g</suffixGroup>
+    </operation>
+    <operation identifier="fdbcc"/>
+    <operation identifier="scc"/>
+    <operation identifier="fscc"/>
+    <operation identifier="jsr">
+      <suffixGroup>jsr_g</suffixGroup>
+    </operation>
+    <operation identifier="jmp">
+      <suffixGroup>jmp_g</suffixGroup>
+    </operation>
+    <operation identifier="rt">
+      <suffixGroup>rt_g</suffixGroup>
+    </operation>
+    <operation identifier="pdb">
+      <suffixGroup>pdb_g</suffixGroup>
+    </operation>
+    <operation identifier="pb">
+      <suffixGroup>pb_g</suffixGroup>
+    </operation>
+  </operationJmps>
+  <suffixGroups>
+    <suffixGroup identifier="abcd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sbcd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="add_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>a</suffix>
+      <suffix>a.b</suffix>
+      <suffix>a.d</suffix>
+      <suffix>a.l</suffix>
+      <suffix>a.p</suffix>
+      <suffix>a.s</suffix>
+      <suffix>a.w</suffix>
+      <suffix>a.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+      <suffix>q</suffix>
+      <suffix>q.b</suffix>
+      <suffix>q.d</suffix>
+      <suffix>q.l</suffix>
+      <suffix>q.p</suffix>
+      <suffix>q.s</suffix>
+      <suffix>q.w</suffix>
+      <suffix>q.x</suffix>
+      <suffix>x</suffix>
+      <suffix>x.b</suffix>
+      <suffix>x.d</suffix>
+      <suffix>x.l</suffix>
+      <suffix>x.p</suffix>
+      <suffix>x.s</suffix>
+      <suffix>x.w</suffix>
+      <suffix>x.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="and_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="as_g">
+      <suffix>l</suffix>
+      <suffix>l.b</suffix>
+      <suffix>l.d</suffix>
+      <suffix>l.l</suffix>
+      <suffix>l.p</suffix>
+      <suffix>l.s</suffix>
+      <suffix>l.w</suffix>
+      <suffix>l.x</suffix>
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bchg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfchg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bclr_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfclr_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bset_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfset_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="btst_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bftst_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bitrev_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="byterev_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfext_g">
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+      <suffix>u</suffix>
+      <suffix>u.b</suffix>
+      <suffix>u.d</suffix>
+      <suffix>u.l</suffix>
+      <suffix>u.p</suffix>
+      <suffix>u.s</suffix>
+      <suffix>u.w</suffix>
+      <suffix>u.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfffo_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bfins_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bgnd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bkpt_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="cas_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>2</suffix>
+      <suffix>2.b</suffix>
+      <suffix>2.d</suffix>
+      <suffix>2.l</suffix>
+      <suffix>2.p</suffix>
+      <suffix>2.s</suffix>
+      <suffix>2.w</suffix>
+      <suffix>2.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="chk_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>2</suffix>
+      <suffix>2.b</suffix>
+      <suffix>2.d</suffix>
+      <suffix>2.l</suffix>
+      <suffix>2.p</suffix>
+      <suffix>2.s</suffix>
+      <suffix>2.w</suffix>
+      <suffix>2.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="cin_g">
+      <suffix>v</suffix>
+      <suffix>v.b</suffix>
+      <suffix>v.d</suffix>
+      <suffix>v.l</suffix>
+      <suffix>v.p</suffix>
+      <suffix>v.s</suffix>
+      <suffix>v.w</suffix>
+      <suffix>v.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="clr_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="cmp_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>2</suffix>
+      <suffix>2.b</suffix>
+      <suffix>2.d</suffix>
+      <suffix>2.l</suffix>
+      <suffix>2.p</suffix>
+      <suffix>2.s</suffix>
+      <suffix>2.w</suffix>
+      <suffix>2.x</suffix>
+      <suffix>a</suffix>
+      <suffix>a.b</suffix>
+      <suffix>a.d</suffix>
+      <suffix>a.l</suffix>
+      <suffix>a.p</suffix>
+      <suffix>a.s</suffix>
+      <suffix>a.w</suffix>
+      <suffix>a.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+      <suffix>m</suffix>
+      <suffix>m.b</suffix>
+      <suffix>m.d</suffix>
+      <suffix>m.l</suffix>
+      <suffix>m.p</suffix>
+      <suffix>m.s</suffix>
+      <suffix>m.w</suffix>
+      <suffix>m.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="cpush_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="div_g">
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+      <suffix>sl</suffix>
+      <suffix>sl.b</suffix>
+      <suffix>sl.d</suffix>
+      <suffix>sl.l</suffix>
+      <suffix>sl.p</suffix>
+      <suffix>sl.s</suffix>
+      <suffix>sl.w</suffix>
+      <suffix>sl.x</suffix>
+      <suffix>u</suffix>
+      <suffix>u.b</suffix>
+      <suffix>u.d</suffix>
+      <suffix>u.l</suffix>
+      <suffix>u.p</suffix>
+      <suffix>u.s</suffix>
+      <suffix>u.w</suffix>
+      <suffix>u.x</suffix>
+      <suffix>ul</suffix>
+      <suffix>ul.b</suffix>
+      <suffix>ul.d</suffix>
+      <suffix>ul.l</suffix>
+      <suffix>ul.p</suffix>
+      <suffix>ul.s</suffix>
+      <suffix>ul.w</suffix>
+      <suffix>ul.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="eor_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="exg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ext_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>b</suffix>
+      <suffix>b.b</suffix>
+      <suffix>b.d</suffix>
+      <suffix>b.l</suffix>
+      <suffix>b.p</suffix>
+      <suffix>b.s</suffix>
+      <suffix>b.w</suffix>
+      <suffix>b.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fabs_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdabs_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsabs_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="facos_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fcos_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>h</suffix>
+      <suffix>h.b</suffix>
+      <suffix>h.d</suffix>
+      <suffix>h.l</suffix>
+      <suffix>h.p</suffix>
+      <suffix>h.s</suffix>
+      <suffix>h.w</suffix>
+      <suffix>h.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fadd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdadd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsadd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fasin_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsin_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>h</suffix>
+      <suffix>h.b</suffix>
+      <suffix>h.d</suffix>
+      <suffix>h.l</suffix>
+      <suffix>h.p</suffix>
+      <suffix>h.s</suffix>
+      <suffix>h.w</suffix>
+      <suffix>h.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fssub_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsub_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdsub_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fatan_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>h</suffix>
+      <suffix>h.b</suffix>
+      <suffix>h.d</suffix>
+      <suffix>h.l</suffix>
+      <suffix>h.p</suffix>
+      <suffix>h.s</suffix>
+      <suffix>h.w</suffix>
+      <suffix>h.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ftan_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>h</suffix>
+      <suffix>h.b</suffix>
+      <suffix>h.d</suffix>
+      <suffix>h.l</suffix>
+      <suffix>h.p</suffix>
+      <suffix>h.s</suffix>
+      <suffix>h.w</suffix>
+      <suffix>h.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ftentox_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fcmp_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ftst_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fddiv_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdiv_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsgldiv_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdmove_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fmove_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>cr</suffix>
+      <suffix>cr.b</suffix>
+      <suffix>cr.d</suffix>
+      <suffix>cr.l</suffix>
+      <suffix>cr.p</suffix>
+      <suffix>cr.s</suffix>
+      <suffix>cr.w</suffix>
+      <suffix>cr.x</suffix>
+      <suffix>m</suffix>
+      <suffix>m.b</suffix>
+      <suffix>m.d</suffix>
+      <suffix>m.l</suffix>
+      <suffix>m.p</suffix>
+      <suffix>m.s</suffix>
+      <suffix>m.w</suffix>
+      <suffix>m.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsmove_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdmul_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fmul_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsglmul_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsmul_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdneg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fneg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsneg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fsqrt_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fssqrt_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdsqrt_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="flog2_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="flog10_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="flogn_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>p1</suffix>
+      <suffix>p1.b</suffix>
+      <suffix>p1.d</suffix>
+      <suffix>p1.l</suffix>
+      <suffix>p1.p</suffix>
+      <suffix>p1.s</suffix>
+      <suffix>p1.w</suffix>
+      <suffix>p1.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fmod_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fnop_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="nop_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="frem_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="frestore_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fs_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>cale</suffix>
+      <suffix>cale.b</suffix>
+      <suffix>cale.d</suffix>
+      <suffix>cale.l</suffix>
+      <suffix>cale.p</suffix>
+      <suffix>cale.s</suffix>
+      <suffix>cale.w</suffix>
+      <suffix>cale.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ftrap_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ftwotox_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fetox_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>m1</suffix>
+      <suffix>m1.b</suffix>
+      <suffix>m1.d</suffix>
+      <suffix>m1.l</suffix>
+      <suffix>m1.p</suffix>
+      <suffix>m1.s</suffix>
+      <suffix>m1.w</suffix>
+      <suffix>m1.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ff1_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fgetexp_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fgetman_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fint_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>rz</suffix>
+      <suffix>rz.b</suffix>
+      <suffix>rz.d</suffix>
+      <suffix>rz.l</suffix>
+      <suffix>rz.p</suffix>
+      <suffix>rz.s</suffix>
+      <suffix>rz.w</suffix>
+      <suffix>rz.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="halt_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="illegal_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="intouch_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="move_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>16</suffix>
+      <suffix>16.b</suffix>
+      <suffix>16.d</suffix>
+      <suffix>16.l</suffix>
+      <suffix>16.p</suffix>
+      <suffix>16.s</suffix>
+      <suffix>16.w</suffix>
+      <suffix>16.x</suffix>
+      <suffix>a</suffix>
+      <suffix>a.b</suffix>
+      <suffix>a.d</suffix>
+      <suffix>a.l</suffix>
+      <suffix>a.p</suffix>
+      <suffix>a.s</suffix>
+      <suffix>a.w</suffix>
+      <suffix>a.x</suffix>
+      <suffix>c</suffix>
+      <suffix>c.b</suffix>
+      <suffix>c.d</suffix>
+      <suffix>c.l</suffix>
+      <suffix>c.p</suffix>
+      <suffix>c.s</suffix>
+      <suffix>c.w</suffix>
+      <suffix>c.x</suffix>
+      <suffix>m</suffix>
+      <suffix>m.b</suffix>
+      <suffix>m.d</suffix>
+      <suffix>m.l</suffix>
+      <suffix>m.p</suffix>
+      <suffix>m.s</suffix>
+      <suffix>m.w</suffix>
+      <suffix>m.x</suffix>
+      <suffix>p</suffix>
+      <suffix>p.b</suffix>
+      <suffix>p.d</suffix>
+      <suffix>p.l</suffix>
+      <suffix>p.p</suffix>
+      <suffix>p.s</suffix>
+      <suffix>p.w</suffix>
+      <suffix>p.x</suffix>
+      <suffix>q</suffix>
+      <suffix>q.b</suffix>
+      <suffix>q.d</suffix>
+      <suffix>q.l</suffix>
+      <suffix>q.p</suffix>
+      <suffix>q.s</suffix>
+      <suffix>q.w</suffix>
+      <suffix>q.x</suffix>
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="mv_g">
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+      <suffix>z</suffix>
+      <suffix>z.b</suffix>
+      <suffix>z.d</suffix>
+      <suffix>z.l</suffix>
+      <suffix>z.p</suffix>
+      <suffix>z.s</suffix>
+      <suffix>z.w</suffix>
+      <suffix>z.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="mov_g">
+      <suffix>3q</suffix>
+      <suffix>3q.b</suffix>
+      <suffix>3q.d</suffix>
+      <suffix>3q.l</suffix>
+      <suffix>3q.p</suffix>
+      <suffix>3q.s</suffix>
+      <suffix>3q.w</suffix>
+      <suffix>3q.x</suffix>
+      <suffix>clr</suffix>
+      <suffix>clr.b</suffix>
+      <suffix>clr.d</suffix>
+      <suffix>clr.l</suffix>
+      <suffix>clr.p</suffix>
+      <suffix>clr.s</suffix>
+      <suffix>clr.w</suffix>
+      <suffix>clr.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pmov_g">
+      <suffix>e</suffix>
+      <suffix>e.b</suffix>
+      <suffix>e.d</suffix>
+      <suffix>e.l</suffix>
+      <suffix>e.p</suffix>
+      <suffix>e.s</suffix>
+      <suffix>e.w</suffix>
+      <suffix>e.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ms_g">
+      <suffix>aac</suffix>
+      <suffix>aac.b</suffix>
+      <suffix>aac.d</suffix>
+      <suffix>aac.l</suffix>
+      <suffix>aac.p</suffix>
+      <suffix>aac.s</suffix>
+      <suffix>aac.w</suffix>
+      <suffix>aac.x</suffix>
+      <suffix>ac</suffix>
+      <suffix>ac.b</suffix>
+      <suffix>ac.d</suffix>
+      <suffix>ac.l</suffix>
+      <suffix>ac.p</suffix>
+      <suffix>ac.s</suffix>
+      <suffix>ac.w</suffix>
+      <suffix>ac.x</suffix>
+      <suffix>acl</suffix>
+      <suffix>acl.b</suffix>
+      <suffix>acl.d</suffix>
+      <suffix>acl.l</suffix>
+      <suffix>acl.p</suffix>
+      <suffix>acl.s</suffix>
+      <suffix>acl.w</suffix>
+      <suffix>acl.x</suffix>
+      <suffix>sac</suffix>
+      <suffix>sac.b</suffix>
+      <suffix>sac.d</suffix>
+      <suffix>sac.l</suffix>
+      <suffix>sac.p</suffix>
+      <suffix>sac.s</suffix>
+      <suffix>sac.w</suffix>
+      <suffix>sac.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="masac_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="maaac_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="mac_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>l</suffix>
+      <suffix>l.b</suffix>
+      <suffix>l.d</suffix>
+      <suffix>l.l</suffix>
+      <suffix>l.p</suffix>
+      <suffix>l.s</suffix>
+      <suffix>l.w</suffix>
+      <suffix>l.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="mul_g">
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+      <suffix>u</suffix>
+      <suffix>u.b</suffix>
+      <suffix>u.d</suffix>
+      <suffix>u.l</suffix>
+      <suffix>u.p</suffix>
+      <suffix>u.s</suffix>
+      <suffix>u.w</suffix>
+      <suffix>u.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="nbcd_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="lea_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="link_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="lpstop_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ls_g">
+      <suffix>l</suffix>
+      <suffix>l.b</suffix>
+      <suffix>l.d</suffix>
+      <suffix>l.l</suffix>
+      <suffix>l.p</suffix>
+      <suffix>l.s</suffix>
+      <suffix>l.w</suffix>
+      <suffix>l.x</suffix>
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="neg_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>x</suffix>
+      <suffix>x.b</suffix>
+      <suffix>x.d</suffix>
+      <suffix>x.l</suffix>
+      <suffix>x.p</suffix>
+      <suffix>x.s</suffix>
+      <suffix>x.w</suffix>
+      <suffix>x.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="not_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="or_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pack_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ptest_g">
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+      <suffix>w</suffix>
+      <suffix>w.b</suffix>
+      <suffix>w.d</suffix>
+      <suffix>w.l</suffix>
+      <suffix>w.p</suffix>
+      <suffix>w.s</suffix>
+      <suffix>w.w</suffix>
+      <suffix>w.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ptrap_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="trap_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>v</suffix>
+      <suffix>v.b</suffix>
+      <suffix>v.d</suffix>
+      <suffix>v.l</suffix>
+      <suffix>v.p</suffix>
+      <suffix>v.s</suffix>
+      <suffix>v.w</suffix>
+      <suffix>v.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pulse_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pvalid_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="remsl_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="remul_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="reset_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sub_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>a</suffix>
+      <suffix>a.b</suffix>
+      <suffix>a.d</suffix>
+      <suffix>a.l</suffix>
+      <suffix>a.p</suffix>
+      <suffix>a.s</suffix>
+      <suffix>a.w</suffix>
+      <suffix>a.x</suffix>
+      <suffix>i</suffix>
+      <suffix>i.b</suffix>
+      <suffix>i.d</suffix>
+      <suffix>i.l</suffix>
+      <suffix>i.p</suffix>
+      <suffix>i.s</suffix>
+      <suffix>i.w</suffix>
+      <suffix>i.x</suffix>
+      <suffix>q</suffix>
+      <suffix>q.b</suffix>
+      <suffix>q.d</suffix>
+      <suffix>q.l</suffix>
+      <suffix>q.p</suffix>
+      <suffix>q.s</suffix>
+      <suffix>q.w</suffix>
+      <suffix>q.x</suffix>
+      <suffix>x</suffix>
+      <suffix>x.b</suffix>
+      <suffix>x.d</suffix>
+      <suffix>x.l</suffix>
+      <suffix>x.p</suffix>
+      <suffix>x.s</suffix>
+      <suffix>x.w</suffix>
+      <suffix>x.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="swap_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="tas_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="tbl_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="tst_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="unlk_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="unpk_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="wddata_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="wdebug_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pea_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pflush_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pload_g">
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+      <suffix>w</suffix>
+      <suffix>w.b</suffix>
+      <suffix>w.d</suffix>
+      <suffix>w.l</suffix>
+      <suffix>w.p</suffix>
+      <suffix>w.s</suffix>
+      <suffix>w.w</suffix>
+      <suffix>w.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="prestore_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ps_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+      <suffix>ave</suffix>
+      <suffix>ave.b</suffix>
+      <suffix>ave.d</suffix>
+      <suffix>ave.l</suffix>
+      <suffix>ave.p</suffix>
+      <suffix>ave.s</suffix>
+      <suffix>ave.w</suffix>
+      <suffix>ave.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ror_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="rol_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="roxl_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="roxr_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="stop_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="sats_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="bra_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="s_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="call_g">
+      <suffix>m</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="b_g">
+      <suffix></suffix>
+      <suffix>.</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fb_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="db_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="fdb_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="jsr_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="jmp_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="rt_g">
+      <suffix>d</suffix>
+      <suffix>d.b</suffix>
+      <suffix>d.d</suffix>
+      <suffix>d.l</suffix>
+      <suffix>d.p</suffix>
+      <suffix>d.s</suffix>
+      <suffix>d.w</suffix>
+      <suffix>d.x</suffix>
+      <suffix>e</suffix>
+      <suffix>e.b</suffix>
+      <suffix>e.d</suffix>
+      <suffix>e.l</suffix>
+      <suffix>e.p</suffix>
+      <suffix>e.s</suffix>
+      <suffix>e.w</suffix>
+      <suffix>e.x</suffix>
+      <suffix>m</suffix>
+      <suffix>m.b</suffix>
+      <suffix>m.d</suffix>
+      <suffix>m.l</suffix>
+      <suffix>m.p</suffix>
+      <suffix>m.s</suffix>
+      <suffix>m.w</suffix>
+      <suffix>m.x</suffix>
+      <suffix>r</suffix>
+      <suffix>r.b</suffix>
+      <suffix>r.d</suffix>
+      <suffix>r.l</suffix>
+      <suffix>r.p</suffix>
+      <suffix>r.s</suffix>
+      <suffix>r.w</suffix>
+      <suffix>r.x</suffix>
+      <suffix>s</suffix>
+      <suffix>s.b</suffix>
+      <suffix>s.d</suffix>
+      <suffix>s.l</suffix>
+      <suffix>s.p</suffix>
+      <suffix>s.s</suffix>
+      <suffix>s.w</suffix>
+      <suffix>s.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pdb_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pb_g">
+      <suffix></suffix>
+      <suffix>.b</suffix>
+      <suffix>.d</suffix>
+      <suffix>.l</suffix>
+      <suffix>.p</suffix>
+      <suffix>.s</suffix>
+      <suffix>.w</suffix>
+      <suffix>.x</suffix>
+    </suffixGroup>
+  </suffixGroups>
+  <oprGroups>
+    <oprGroup identifier="b[f]chg">
+      <opr>bchg</opr>
+      <opr>bfchg</opr>
+    </oprGroup>
+    <oprGroup identifier="b[f]clr">
+      <opr>bclr</opr>
+      <opr>bfclr</opr>
+    </oprGroup>
+    <oprGroup identifier="bset_bfset">
+      <opr>bset</opr>
+      <opr>bfset</opr>
+    </oprGroup>
+    <oprGroup identifier="b[f]tst">
+      <opr>btst</opr>
+      <opr>bftst</opr>
+    </oprGroup>
+    <oprGroup identifier="bit/byte_rev">
+      <opr>bitrev</opr>
+      <opr>byterev</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]abs">
+      <opr>fabs</opr>
+      <opr>fdabs</opr>
+      <opr>fsabs</opr>
+    </oprGroup>
+    <oprGroup identifier="f[a]cos">
+      <opr>facos</opr>
+      <opr>fcos</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]fadd">
+      <opr>fadd</opr>
+      <opr>fdadd</opr>
+      <opr>fsadd</opr>
+    </oprGroup>
+    <oprGroup identifier="f[a]sin">
+      <opr>fsin</opr>
+      <opr>fasin</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]sub">
+      <opr>fssub</opr>
+      <opr>fsub</opr>
+      <opr>fdsub</opr>
+    </oprGroup>
+    <oprGroup identifier="f[a]tan">
+      <opr>fatan</opr>
+      <opr>ftan</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s/sgl]div">
+      <opr>fddiv</opr>
+      <opr>fdiv</opr>
+      <opr>fsgldiv</opr>
+      <opr>fsdiv</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]move">
+      <opr>fdmove</opr>
+      <opr>fmove</opr>
+      <opr>fsmove</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s/sgl]mul">
+      <opr>fdmul</opr>
+      <opr>fmul</opr>
+      <opr>fsglmul</opr>
+      <opr>fsmul</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]neg">
+      <opr>fdneg</opr>
+      <opr>fneg</opr>
+      <opr>fsneg</opr>
+    </oprGroup>
+    <oprGroup identifier="f[d/s]sqrt">
+      <opr>fsqrt</opr>
+      <opr>fssqrt</opr>
+      <opr>fdsqrt</opr>
+    </oprGroup>
+  </oprGroups>
+  <registers>
+    <register identifier="d0" category="GEN" length="32"/>
+    <register identifier="d1" category="GEN" length="32"/>
+    <register identifier="d2" category="GEN" length="32"/>
+    <register identifier="d3" category="GEN" length="32"/>
+    <register identifier="d4" category="GEN" length="32"/>
+    <register identifier="d5" category="GEN" length="32"/>
+    <register identifier="d6" category="GEN" length="32"/>
+    <register identifier="d7" category="GEN" length="32"/>
+    <register identifier="a0" category="ADR" length="32"/>
+    <register identifier="a1" category="ADR" length="32"/>
+    <register identifier="a2" category="ADR" length="32"/>
+    <register identifier="a3" category="ADR" length="32"/>
+    <register identifier="a4" category="ADR" length="32"/>
+    <register identifier="a5" category="ADR" length="32"/>
+    <register identifier="a6" category="ADR" length="32"/>
+    <register identifier="a7" category="ADR" length="32"/>
+    <register identifier="fp0" category="FLT" length="80"/>
+    <register identifier="fp1" category="FLT" length="80"/>
+    <register identifier="fp2" category="FLT" length="80"/>
+    <register identifier="fp3" category="FLT" length="80"/>
+    <register identifier="fp4" category="FLT" length="80"/>
+    <register identifier="fp5" category="FLT" length="80"/>
+    <register identifier="fp6" category="FLT" length="80"/>
+    <register identifier="fp7" category="FLT" length="80"/>
+    <register identifier="bad0" category="BAX" length="16"/>
+    <register identifier="bad1" category="BAX" length="16"/>
+    <register identifier="bad2" category="BAX" length="16"/>
+    <register identifier="bad3" category="BAX" length="16"/>
+    <register identifier="bad4" category="BAX" length="16"/>
+    <register identifier="bad5" category="BAX" length="16"/>
+    <register identifier="bad6" category="BAX" length="16"/>
+    <register identifier="bad7" category="BAX" length="16"/>
+    <register identifier="bac0" category="BAX" length="16"/>
+    <register identifier="bac1" category="BAX" length="16"/>
+    <register identifier="bac2" category="BAX" length="16"/>
+    <register identifier="bac3" category="BAX" length="16"/>
+    <register identifier="bac4" category="BAX" length="16"/>
+    <register identifier="bac5" category="BAX" length="16"/>
+    <register identifier="bac6" category="BAX" length="16"/>
+    <register identifier="bac7" category="BAX" length="16"/>
+    <register identifier="usp" category="STP" length="32"/>
+    <register identifier="sp" category="STP" length="32"/>
+    <register identifier="msp" category="STP" length="32"/>
+    <register identifier="isp" category="STP" length="32"/>
+    <register identifier="sfc" category="AFCR" length="32"/>
+    <register identifier="dfc" category="AFCR" length="32"/>
+    <register identifier="caar" category="CAH" length="32"/>
+    <register identifier="cacr" category="CAH" length="32"/>
+    <register identifier="tc" category="TRN" length="32"/>
+    <register identifier="itt0" category="TRN" length="32"/>
+    <register identifier="itt1" category="TRN" length="32"/>
+    <register identifier="dtt0" category="TRN" length="32"/>
+    <register identifier="dtt1" category="TRN" length="32"/>
+    <register identifier="tt0" category="TRN" length="32"/>
+    <register identifier="tt1" category="TRN" length="32"/>
+    <register identifier="urp" category="TRN" length="32"/>
+    <register identifier="srp" category="TRN" length="32"/>
+    <register identifier="drp" category="TRN" length="32"/>
+    <register identifier="crp" category="TRN" length="32"/>
+    <register identifier="cal" category="LVL" length="32"/>
+    <register identifier="val" category="LVL" length="32"/>
+    <register identifier="acc0" category="CTL" length="32"/>
+    <register identifier="acc1" category="CTL" length="32"/>
+    <register identifier="ac" category="CTL" length="32"/>
+    <register identifier="scc" category="CTL" length="32"/>
+    <register identifier="pcsr" category="CTL" length="32"/>
+    <register identifier="acusr" category="CTL" length="32"/>
+    <register identifier="accext01" category="CTL" length="32"/>
+    <register identifier="accext23" category="CTL" length="32"/>
+    <register identifier="fpcr" category="fpcr" length="16"/>
+    <register identifier="fpsr" category="fpsr" length="32"/>
+    <register identifier="fpiar" category="fpiar" length="32"/>
+    <register identifier="pc" category="pc" length="32"/>
+    <register identifier="ccr" category="ccr" length="8"/>
+    <register identifier="sr" category="sr" length="5"/>
+    <register identifier="mmusr" category="mmusr" length="32"/>
+    <register identifier="vbr" category="vbr" length="32"/>
+    <register identifier="macsr" category="macsr" length="32"/>
+    <register identifier="mask" category="mask" length="32"/>
+    <register identifier="cs" category="cs" length="32"/>
+    <register identifier="ds" category="ds" length="32"/>
+  </registers>
+  <lengthKeywords/>
+  <jmpKeywords/>
+  <lineFormats>
+    <syntax numberOfOperand="4">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*),[\s]*(?&lt;OPN4&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="3">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*),[\s]*(?&lt;OPN3&gt;\[*\{*[^\{\[\]\}]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="2">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)[\s]*,[\s]*(?&lt;OPN2&gt;\{*\[*[^\{\}\[\]]+\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="1">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;\{*\[*([^\{\}\]\[]+)\}*\]*!*)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="0">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+</lineRegex>
+    </syntax>
+  </lineFormats>
+  <constantVariableRegex>(^[0-9]+)|(^=)|#+|(LOC_+)|(loc_+)</constantVariableRegex>
+  <memoryVariableRegex>(\[[\s\S]+\])|(\{[\s\S]+\})</memoryVariableRegex>
+</Kam1n0-Architecture>

@@ -1,0 +1,1014 @@
+<div class="row" style="height: 100%">
+	<style>
+.slider.slider-vertical {
+	height: 100%;
+}
+
+/* slider color*/
+#GC .slider-handle {
+	border-radius: 0%;
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 10px;
+}
+
+.node rect {
+	stroke: #333;
+	fill: #fff;
+}
+
+.edgePath path {
+	fill: #333;
+	stroke-width: 1.5px;
+}
+
+/* This styles the body of the tooltip */
+.tipsy {
+	font-size: 1.1em;
+	test-align: left;
+}
+
+.form-group {
+	height: 100%;
+}
+
+.slider {
+	background-color: transparent;
+}
+
+span.lselected {
+	background-color: lightyellow;
+}
+
+#split-bar {
+	background-color: lightgrey;
+	width: 100%;
+	height: 6px;
+	cursor: row-resize;
+}
+
+textarea {
+	width: 100%;
+}
+</style>
+	<div class="col-xs-12" style="height: 100%">
+		<div class="card" id="flowGraphSource" style="height: 100%">
+			<div class="card-header" data-background-color="green"
+				id="headerSource">
+				<h4 class="title" style="font-size: 15px">
+				
+					<i class="fa fa-cloud"></i> Clone Group View <span id="clone-title" style="margin-left: 50px"></span><span id="clone-title-menu" style="margin-left: 50px"></span>
+					
+				</h4>
+			</div>
+			<div class="card-content" id="card-body"
+				style="height: 100%; padding-bottom: 50px">
+
+				<div id="bbody" class="row"
+					style="padding: 0; margin-left: 10px; margin-right: 10px; height: 100%">
+					<div id="clone-text-left-scroller" style="overflow-y: scroll;"
+						class="col-xs-6 no-padding">
+						<div id="clone-text-left"></div>
+					</div>
+					<div id="clone-text-right-scroller" style="overflow-y: scroll;"
+						class="col-xs-6 no-padding">
+						<div id="clone-text-right"></div>
+					</div>
+				</div>
+				<div id="split-bar"></div>
+				<div id="clone-group-list"
+					style="height: 200px; overflow-y: scroll; margin-left: 10px; margin-right: 10px;">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		
+
+    function resize(){
+        var docHeight = $('#card-body').height();
+
+        var div3Height = $('#clone-group-list').height();
+        var div2Height = docHeight  - div3Height - 15;
+        $('#bbody').css('height', div2Height);
+        $('#clone-text-left-scroller').css('height', div2Height);
+        $('#clone-text-right-scroller').css('height', div2Height);
+    }
+
+    $(document).ready(function() {
+        resize();
+    });
+
+    $(window).on("resize", function () {
+       resize();
+    }).trigger("resize");
+
+    var clonePartColors = d3.scale.category20c().range();
+
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    var QueryString = function () {
+        // This function is anonymous, is executed immediately
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            // If first entry with this name
+            if (typeof query_string[pair[0]] === "undefined") {
+                query_string[pair[0]] = pair[1];
+                // If second entry with this name
+            } else if (typeof query_string[pair[0]] === "string") {
+                var arr = [query_string[pair[0]], pair[1]];
+                query_string[pair[0]] = arr;
+                // If third or later entry with this name
+            } else {
+                query_string[pair[0]].push(pair[1]);
+            }
+        }
+        return query_string;
+    }();
+
+    function normalize(line){
+        return line.replace(/^0x[0-9a-fA-F]+\s/g, "").replace(/\s{2,}/g, ' ').replace(/;[\s\S]*/g, '') + "\r\n";
+    }
+
+    function drawBlockText(fun, $holder) {
+    	var fun_isVex = isVexCode(fun);
+        $holder.html('');
+        for (var i = 0; i < fun.nodes.length; ++i) {
+            $holder.append($('<div class="sep">').html("#" + fun.nodes[i].name));
+            var tbl = $('<table class=\'block\' id=\'' + fun.nodes[i].blockID + '\'>');
+            var tblb = tbl.append('<tbody>');
+            tbl.data('block', fun.nodes[i]);
+            for (var j = 0; j < fun.nodes[i].srcCodes.length; ++j) {
+                var line = fun.nodes[i].srcCodes[j];
+                var parts = line.split(' ');
+                var $newRow = $('<tr id=\''+parts[0].trim()+'\'>');
+                $newRow.append($('<td class=\'diff-line-num\'>').append(parts[0]).append($('<span class=\'commenter\'>').append('+')));
+                if(!fun_isVex){
+	                $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+	                                $('<span class="m">').append(parts[1])
+	                        ).append(' ').append(
+	                                $('<span class="o">').append(parts.slice(2, parts.length).join(' '))
+	                        )
+	                );
+	            } else {
+	              $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+                        )
+                );
+	            }
+                $newRow.hover(
+                        function () {
+                            $(this).find('span.commenter').addClass('selected');
+                        }, function () {
+                            $(this).find('span.commenter').removeClass('selected');
+                        }
+                );
+                tblb.append($newRow);
+            }
+            $holder.append(tbl);
+            tbl.data('top', tbl.position().top);
+        }
+
+    }
+
+    function drawCommentForTable($left, $right){
+        var both = [$left, $right];
+        var cms = {};
+        var cm_left = $left.data('comments');
+        var cm_right = $right.data('comments');
+        if(cm_left != null) {
+            for (var i = 0; i < cm_left.length; ++i) {
+                var $row = $('tr#' + cm_left[i][0]);
+                if (not_selected.has(cm_left[i][1].type))
+                	continue;
+                var $cmr = createCommentRow(cm_left[i][1]);
+                if (cms[$row.index()] == null) {
+                    cms[$row.index()] = [[], []];
+                }
+                cms[$row.index()][0].push($cmr);
+            }
+        }
+        if(cm_right != null) {
+            for (var i = 0; i < cm_right.length; ++i) {
+                var $row = $('tr#' + cm_right[i][0]);
+                if (not_selected.has(cm_right[i][1].type))
+                	continue;
+                var $cmr = createCommentRow(cm_right[i][1]);
+                if (cms[$row.index()] == null) {
+                    cms[$row.index()] = [[], []];
+                }
+                cms[$row.index()][1].push($cmr);
+            }
+        }
+        var offSet = 0;
+        $.each(cms, function(key,val){
+            var leftComp = val[1].length - val[0].length;
+            var rightComp = val[0].length - val[1].length;
+            var ind = parseInt(key) + offSet;
+            var leftTarget = $left.find('tr:eq('+ind+')');
+            var rightTarget = $right.find('tr:eq('+ind+')');
+            for(var i = 0; i < leftComp; ++i){
+                createEmptyRowSelected().insertAfter(leftTarget);
+            }
+            for(var i = 0; i < rightComp; ++i){
+                createEmptyRowSelected().insertAfter(rightTarget);
+            }
+            for(var i = 0; i < val[0].length; ++i){
+                val[0][i].insertAfter(leftTarget);
+            }
+            for(var i = 0; i < val[1].length; ++i){
+                val[1][i].insertAfter(rightTarget);
+            }
+            offSet += val[1].length > val[0].length ? val[1].length : val[0].length;
+        });
+        alignHeight($left, $right);
+    }
+
+    function alignHeight($left, $right){
+        var offset = 0; // ignoring the comment forms
+        $.each($left.find('tr'), function(ind, ent){
+            var $ent = $(ent);
+            if($ent.hasClass('comForm')){
+                offset++;
+                return;
+            }
+            var $oent = $right.find('tr:eq('+($ent.index() - offset)+')');
+            var maxHeight = $ent.height() > $oent.height() ? $ent.height() : $oent.height();
+            $ent.height(maxHeight);
+            $oent.height(maxHeight);
+        });
+
+    }
+    
+    function isVexCode(p_func){
+		if(p_func.nodes.length > 0 && p_func.nodes[0].srcCodes.length > 0)
+			return p_func.nodes[0].srcCodes[0].includes('SIMPLIFIED VEX CODE');
+		return false;
+	}
+
+    function drawCloneTextList(p_a, p_b, cloneParts, holder) {
+    
+    	var a_isVex = isVexCode(p_a);
+		var b_isVex = isVexCode(p_b);
+	
+    	// build name dict:
+    	d_a = {}
+    	for(var i = 0; i < p_a.nodes.length; ++i)
+    		d_a[p_a.nodes[i].blockID] = p_a.nodes[i].name;
+    	d_b = {}
+    	for(var i = 0; i < p_b.nodes.length; ++i)
+    		d_b[p_b.nodes[i].blockID] = p_b.nodes[i].name;
+    	
+    	
+        holder.html('');
+        var divlist = $('<div class=\'tree\'>');
+        var ulp = $('<ul>');
+        divlist.append(ulp);
+        var ulc = $('<ul>');
+        ulp.append(
+                $('<li>').append(
+                        $('<span>').append(
+                                $('<i class=\'fa fa-inbox\'>')).append('  Clone Groups')
+                ).append(ulc)
+        );
+        for (var i = 0; i < cloneParts.length; ++i) {
+            var cloneSet = cloneParts[i];
+            var lip = $('<li>');
+            var ulip = $('<ul>');
+            lip.append(
+                    $('<span>').append(
+                            $('<i class=\'fa fa-folder\'>')).append('  Group #' + i)
+            ).append(ulip);
+            for (var j = 0; j < cloneSet.length; ++j) {
+                var $li = $('<li style=\'cursor:pointer;\'>').append(
+                        $('<span>').append(
+                                $('<i class=\'fa fa-flash\'>')).append("  block " + d_a[cloneSet[j]._1] + " - block " + d_b[cloneSet[j]._2])
+                );
+                ulip.append($li);
+                $li.data('clone', cloneSet[j]);
+
+
+                var block_left, block_right;
+
+
+                $li.click(function (ev) {
+
+                    // update & compare blocks:
+                    var $target = $(ev.target);
+                    holder.find('span').removeClass('lselected');
+                    $target.addClass('lselected');
+
+                    // clear previous marks
+                    if (block_left != null) {
+                        block_left.find('td.diff-line-num').removeClass('selected');
+                        block_left.find('td.diff-line-num.empty').each(function(ind, tdc){
+                            $(tdc).parent().remove();
+                        });
+                        block_left.find('td.diff-line-content').each(function (ind, tdc) {
+                            var $tdc = $(tdc);
+                            $tdc.removeClass('add').removeClass('remove');
+                            var $tdchtml = $tdc.html();
+                            if ($tdchtml.startsWith('+') || $tdchtml.startsWith('-')) {
+                                $tdc.html($tdchtml.replace('+', '&nbsp;').replace('-', '&nbsp;'));
+                            }
+                        });
+                    }
+                    if (block_right != null) {
+                        block_right.find('td.diff-line-num').removeClass('selected');
+                        block_right.find('td.diff-line-num.empty').each(function(ind, tdc){
+                            $(tdc).parent().remove();
+                        });
+                        block_right.find('td.diff-line-content').each(function (ind, tdc) {
+                            var $tdc = $(tdc);
+                            $tdc.removeClass('add').removeClass('remove');
+                            var $tdchtml = $tdc.html();
+                            if ($tdchtml.startsWith('+') || $tdchtml.startsWith('-')) {
+                                $tdc.html($tdchtml.replace('+', '&nbsp;').replace('-', '&nbsp;'));
+                            }
+                        });
+                    }
+
+
+                    var clone = $(this).data('clone');
+                    block_left = $('#' + clone._1);
+                    block_right = $('#' + clone._2);
+                    block_left.find("tr").remove();
+                    block_right.find("tr").remove();
+
+                    //scroll to block
+                    var compleft = 18 - block_left.parent().find('table:first').position().top;
+                    var compright = 18 - block_right.parent().find('table:first').position().top;
+                    scrolling = true;
+                    $('#clone-text-left-scroller').animate({scrollTop: block_left.position().top + compleft - 20}, 500);
+                    $('#clone-text-right-scroller').animate({scrollTop: block_right.position().top + compright - 20}, 500);
+                    scrolling = false;
+
+                    var p_a = block_left.data('block');
+                    var p_b = block_right.data('block');
+
+                    var code_a = "", code_b = "";
+                    var addr_a = [], addr_b = [];
+                    var addr_ind_a = 0, addr_ind_b = 0;
+
+                    for (var j = 0; j < p_a.srcCodes.length; ++j) {
+                        var parts = p_a.srcCodes[j].split(' ');
+                        addr_a.push(parts[0]);
+                        if(normalize_opr && !a_isVex)
+                        	normalizer.normalize_opr(parts[1]);
+                        code_a += normalize(p_a.srcCodes[j]) + "\r\n";
+                    }
+
+                    for (var j = 0; j < p_b.srcCodes.length; ++j) {
+                        var parts = p_b.srcCodes[j].split(' ');
+                        addr_b.push(parts[0]);
+                        if(normalize_opr && !b_isVex)
+                        	normalizer.normalize_opr(parts[1]);
+                        code_b += normalize(p_b.srcCodes[j]) + "\r\n";
+                    }
+
+                    var cache = [];
+                    var index = -1;
+                    var diff = JsDiff.diffTrimmedLines(code_a, code_b);
+
+                    var tbl_left, tbl_right;
+                    tbl_left = $('#' + clone._1 + ' > tbody:last');
+                    tbl_right = $('#' + clone._2 + ' > tbody:last');
+
+                    for (var i = 0; i < diff.length; i++) {
+                        // put remove ahead e.g.
+                        // rm add rm add rm add ->
+                        // rm rm rm rm add add add ...
+                        if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                            var swap = diff[i];
+                            diff[i] = diff[i + 1];
+                            diff[i + 1] = swap;
+                        }
+                        var lines = diff[i].value.match(/[^\r\n]+/g);
+                        if (lines == null)
+                            continue;
+
+                        for (var j = 0; j < lines.length; ++j) {
+                            var line = lines[j];
+                            if (diff[i].removed) {
+                                var $newRowLeft = $('<tr id=\'' + addr_a[addr_ind_a]+ '\'>');
+                                $newRowLeft.append($('<td class=\'diff-line-num\'>').append(addr_a[addr_ind_a]).append($('<span class=\'commenter\'>').append('+')));
+                                var parts = line.split(' ');
+                                if(!a_isVex){
+	                                $newRowLeft.append($('<td class=\'diff-line-content remove\'>').append('-').append(
+	                                                $('<span class="m">').append(parts[0])
+	                                        ).append(' ').append(
+	                                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+	                                        )
+                                );
+                                }else{
+	                                $newRowLeft.append($('<td class=\'diff-line-content remove\'>').append('-').append(
+	                                                $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
+	                                        ))
+                                }
+                                $newRowLeft.hover(
+                                        function () {
+                                            $(this).find('span.commenter').addClass('selected');
+                                        }, function () {
+                                            $(this).find('span.commenter').removeClass('selected');
+                                        }
+                                );
+                                cache.push([$newRowLeft]);
+                                addr_ind_a++;
+                                if (index == -1)
+                                    index = 0;
+                            } else if (diff[i].added) {
+                                if (index != -1 && index < cache.length) {
+
+                                    var $newRowRight = $('<tr id=\'' + addr_b[addr_ind_b]+ '\'>');
+                                    $newRowRight.append($('<td class=\'diff-line-num\'>').append(addr_b[addr_ind_b]).append($('<span class=\'commenter\'>').append('+')));
+                                    var parts = line.split(' ');
+                                    if(!b_isVex){
+	                                    $newRowRight.append($('<td class=\'diff-line-content add\'>').append('+').append(
+	                                                    $('<span class="m">').append(parts[0])
+	                                            ).append(' ').append(
+	                                                    $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+	                                            )
+	                                    );
+                                    }else{
+                                     	$newRowRight.append($('<td class=\'diff-line-content add\'>').append('+').append(
+	                                                    $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
+	                                            )
+	                                    );
+                                    }
+                                    $newRowRight.hover(
+                                            function () {
+                                                $(this).find('span.commenter').addClass('selected');
+                                            }, function () {
+                                                $(this).find('span.commenter').removeClass('selected');
+                                            }
+                                    );
+                                    addr_ind_b++;
+                                    cache[index].push($newRowRight);
+                                    index++;
+                                } else {
+                                    if (cache.length > 0) {
+                                        for (var k = 0; k < cache.length; ++k) {
+                                            tbl_left.append(cache[k][0]);
+                                            tbl_right.append(cache[k][1]);
+                                        }
+                                        cache = [];
+                                        index = -1;
+                                    }
+                                    var $newRowRight = $('<tr id=\'' + addr_b[addr_ind_b]+ '\'>');
+                                    var $newRowLeft = createEmptyRowSelected();
+                                    $newRowRight.append($('<td class=\'diff-line-num\'>').append(addr_b[addr_ind_b++]).append($('<span class=\'commenter\'>').append('+')));
+                                    var parts = line.split(' ');
+                                    if(!b_isVex){
+	                                    $newRowRight.append($('<td class=\'diff-line-content add\'>').append('+').append(
+	                                                    $('<span class="m">').append(parts[0])
+	                                            ).append(' ').append(
+	                                                    $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+	                                            )
+	                                    );
+                                    }else{
+                                     	$newRowRight.append($('<td class=\'diff-line-content add\'>').append('+').append(
+	                                                    $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
+	                                            )
+	                                    );
+                                    }
+                                    $newRowLeft.hover(
+                                            function () {
+                                                $(this).find('span.commenter').addClass('selected');
+                                            }, function () {
+                                                $(this).find('span.commenter').removeClass('selected');
+                                            }
+                                    );
+                                    tbl_left.append($newRowLeft);
+                                    $newRowRight.hover(
+                                            function () {
+                                                $(this).find('span.commenter').addClass('selected');
+                                            }, function () {
+                                                $(this).find('span.commenter').removeClass('selected');
+                                            }
+                                    );
+                                    tbl_right.append($newRowRight);
+                                }
+                            } else {
+                                if (cache.length > 0) {
+                                    for (var k = 0; k < cache.length; ++k) {
+                                        if (cache[k].length == 1) {
+                                            var $newRowRight = createEmptyRowSelected();
+                                            cache[k].push($newRowRight);
+                                        }
+                                        tbl_left.append(cache[k][0]);
+                                        tbl_right.append(cache[k][1]);
+                                    }
+                                    cache = [];
+                                    index = -1;
+                                }
+                                var $newRowRight = $('<tr id=\'' + addr_b[addr_ind_b]+ '\'>');
+                                var $newRowLeft = $('<tr id=\'' + addr_a[addr_ind_a]+ '\'>');
+                                var parts = line.split(' ');
+                                $newRowLeft.append($('<td class=\'diff-line-num\'>').append(addr_a[addr_ind_a++]).append($('<span class=\'commenter\'>').append('+')));
+                                if(!a_isVex){
+	                                $newRowLeft.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+	                                                $('<span class="m">').append(parts[0])
+	                                        ).append(' ').append(
+	                                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+	                                        )
+	                                );
+                                }else{
+                                	$newRowLeft.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+	                                                $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
+	                                        )
+	                                );
+                                }
+                                $newRowRight.append($('<td class=\'diff-line-num\'>').append(addr_b[addr_ind_b++]).append($('<span class=\'commenter\'>').append('+')));
+                                if(!b_isVex){
+	                                $newRowRight.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+	                                                $('<span class="m">').append(parts[0])
+	                                        ).append(' ').append(
+	                                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
+	                                        )
+	                                );
+                                }else{
+                                	 $newRowRight.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+	                                                $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
+	                                        )
+	                                );
+                                }
+                                $newRowLeft.hover(
+                                        function () {
+                                            $(this).find('span.commenter').addClass('selected');
+                                        }, function () {
+                                            $(this).find('span.commenter').removeClass('selected');
+                                        }
+                                );
+                                tbl_left.append($newRowLeft);
+                                $newRowRight.hover(
+                                        function () {
+                                            $(this).find('span.commenter').addClass('selected');
+                                        }, function () {
+                                            $(this).find('span.commenter').removeClass('selected');
+                                        }
+                                );
+                                tbl_right.append($newRowRight);
+
+                            }
+                        }
+                    }// end of for each diff
+
+                    // clear cache
+                    if (cache.length > 0) {
+                        for (var k = 0; k < cache.length; ++k) {
+                            if (cache[k].length == 1) {
+                                var $newRowRight = createEmptyRowSelected();
+                                cache[k].push($newRowRight);
+                            }
+                            tbl_left.append(cache[k][0]);
+                            tbl_right.append(cache[k][1]);
+                        }
+                        cache = [];
+                        index = -1;
+                    }
+
+                    //line number
+                    block_left.find('td.diff-line-num').addClass('selected');
+                    block_right.find('td.diff-line-num').addClass('selected');
+
+                    //comment box
+                    block_left.find('span.commenter').click(function () {
+                        showCommentBox(this);
+                    });
+                    block_right.find('span.commenter').click(function () {
+                        showCommentBox(this);
+                    });
+                    drawCommentForTable(block_left, block_right);
+                });
+                //end of click
+            }
+            ulc.append(lip);
+        }
+
+        holder.append(divlist);
+
+
+        $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+        $('.tree li.parent_li > span').on('click', function (e) {
+            var children = $(this).parent('li.parent_li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+            }
+            e.stopPropagation();
+        });
+    }
+
+    function attachComment($table, comment){
+        var map = $table.data('comments');
+        if(map == null){
+            map = [];
+            $table.data('comments',map);
+        }
+        map.push([comment.functionOffset, comment]);
+    }
+
+    function updateComment($table, comment){
+        var map = $table.data('comments');
+        if(map == null){
+            return;
+        }
+        var indexToRemove = -1;
+        $.each(map, function(ind, ent){
+            if(ent[0] == comment.functionOffset){
+                if(ent[1].functionId == comment.functionId &&
+                        ent[1].date == comment.date) {
+                    ent[1] = comment;
+                }
+            }
+        });
+    }
+
+    function removeComment($table, comment){
+        var map = $table.data('comments');
+        if(map == null){
+            return;
+        }
+        var indexToRemove = -1;
+        $.each(map, function(ind, ent){
+            if(ent[0] == comment.functionOffset){
+                if(ent[1].functionId == comment.functionId &&
+                ent[1].date == comment.date) {
+                    indexToRemove = ind;
+                }
+            }
+        });
+        if(indexToRemove!=-1)
+            map.splice(indexToRemove , 1);
+    }
+
+    // create comment form:
+    function createForm($rowBeforeInsert, currentLine, currentFun, comObj) {
+        var $form = $('<tr class=\"comForm\">').append(
+                $('<td colspan=\"2\">').append(
+                        $('<div>')
+                                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\">'))
+                                .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
+                                    var cm = $form.find('textarea').val();
+                                    var data = {
+                                    		functionId: currentFun,
+                                    		functionOffset: currentLine,
+                                    		date: comObj == null ? "" : comObj.date,
+                                    		comment:cm};
+                                    $.post(
+                                    		/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
+                                            data,
+                                        function (dataParsed) {
+                                            if (dataParsed) {
+                                            	
+                                            	if(dataParsed.error && dataParsed.error.indexOf('Failed') > -1){
+                                            		dmas_alert(dataParsed.error);
+                                            		return;
+                                            	}else if(dataParsed.error){
+                                            		// index new func;
+                                            		if (confirm('Failed to persist this comment. This function is not indexed in the database. Do you want to index it now?')) {
+                                                    	external.IndexFunc(currentFun, function(msg){dmas_alert(msg)});
+                                               		}
+                                            	}
+                                            	dataParsed = dataParsed.result;
+                                            	
+                                                var $row = $form.prev();
+                                                $form.remove();
+                                                createCommentRow(dataParsed).insertAfter($row);
+                                                var tbl = $row.parent().parent();
+                                                if(comObj==null)
+                                                    attachComment(tbl, dataParsed);
+                                                else
+                                                    updateComment(tbl, dataParsed);
+
+                                                // find prev row that has line number (not comment row)
+                                                var $lineNumberRow = $row;
+                                                while($lineNumberRow != null &&
+                                                    $lineNumberRow.find('td.diff-line-num').length == 0){
+                                                    $lineNumberRow = $lineNumberRow.prev();
+                                                }
+                                                if($lineNumberRow == null)
+                                                    return; // should never reach here.
+
+
+                                                // whether it is in the selected area
+                                                if ($lineNumberRow.find('td.diff-line-num').hasClass('selected')) {
+                                                    // if it is in the area for comparison
+                                                    // add empty row on the other side
+
+                                                    //if row existed then we dont need to add an empty row to the other side.
+                                                    if(comObj == null) {
+                                                        var containerId = $row.parent().parent().parent().attr('id');
+                                                        var $opositeContainer = null;
+                                                        if (containerId.indexOf('left') > 0) {
+                                                            $opositeContainer = $('#clone-text-right');
+                                                        } else {
+                                                            $opositeContainer = $('#clone-text-left');
+                                                        }
+                                                        var $opositeElement = $opositeContainer.find('td.selected:eq(' + $row.index() + ')');
+                                                        createEmptyRowSelected().insertAfter($opositeElement.parent());
+                                                    }
+                                                    $form.remove();
+                                                    alignHeight($opositeElement.parent().parent().parent(), tbl);
+                                                }
+                                                else
+                                                    $form.remove();
+                                            }
+                                        }
+                                    );
+                                }).append('submit'))
+                                .append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
+                                    if(comObj!=null){
+                                        var $row = $form.prev();
+                                        createCommentRow(comObj).insertAfter($row);
+                                    }
+                                    $form.remove();
+                                }).append('close'))
+                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown supported'))
+                )
+        );
+        var $editArea = $form.find('textarea');
+        if(comObj != null)
+            $editArea.val(toMarkdown(comObj.comment));
+        $editArea.markdown({autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true});
+        return $form;
+    }
+
+    function createCommentRow(cm){
+        var $tr = $('<tr class=\"cmrow\">').append(
+                $('<td colspan=\"2\">')
+                        .append($('<span class=\"pull-right delete\">')
+                                .append($('<i class=\"fa fa-times-circle\">'))
+                                .click(function() {
+                                    var $sp = $(this);
+                                    var data = {
+                                    		functionId: cm.functionId,
+                                    		functionOffset: cm.functionOffset,
+                                    		date: cm.date,
+                                    		comment:""};
+                                    $.post(
+                                    	/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
+                                        data,
+                                        function (data) {
+                                    		if(data.error){
+                                    			dmas_alert(data.error);
+                                    			return;
+                                    		}
+                                            var $lineNumberRow = $sp.parent().parent().prev();
+                                            while($lineNumberRow != null &&
+                                            $lineNumberRow.find('td.diff-line-num').length == 0){
+                                                $lineNumberRow = $lineNumberRow.prev();
+                                            }
+                                            if($lineNumberRow == null)
+                                                return; // should never reach here.
+
+                                            if ($lineNumberRow.find('td.diff-line-num').hasClass('selected')) {
+                                                var containerId = $sp.parent().parent().parent().parent().parent().attr('id');
+                                                var $opositeContainer = null;
+                                                if (containerId.indexOf('left') > 0) {
+                                                    $opositeContainer = $('#clone-text-right');
+                                                } else {
+                                                    $opositeContainer = $('#clone-text-left');
+                                                }
+                                                var $opositeElement = $opositeContainer.find('td.selected:eq(' + $sp.parent().parent().index() + ')');
+                                                $opositeElement.parent().remove();
+                                            }
+                                            removeComment($sp.parent().parent().parent().parent(), cm);
+                                            $sp.parent().parent().remove();
+                                        }
+                                    );
+                                })
+                )
+                        .append($('<span class=\"pull-right delete\">')
+                                .append($('<i class=\"fa fa-edit\">'))
+                                .click(function() {
+                                    var $crow = $(this).parent().parent();
+                                    var $lineNumberRow = $crow;
+                                    while($lineNumberRow != null &&
+                                    $lineNumberRow.find('td.diff-line-num').length == 0){
+                                        $lineNumberRow = $lineNumberRow.prev();
+                                    }
+                                    if($lineNumberRow == null)
+                                        return; // should never reach here.
+
+                                    var currentLine = $lineNumberRow.attr('id');
+                                    var currentFun = $crow.parent().parent().data('block').functionId;
+                                    createForm($crow.prev(),
+                                            currentLine,
+                                            currentFun,
+                                            cm
+                                    ).insertAfter($crow.prev());
+                                    $crow.remove();
+                                })
+                )
+                        .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
+                                .append(markdown.toHTML( cm.comment ))
+                )
+        );
+        return $tr;
+    }
+
+    function createEmptyRow(){
+        var $erow = $('<tr>');
+        $erow.append($('<td class=\'diff-line-num empty\'>'));
+        $erow.append($('<td class=\'diff-line-content empty\'>'));
+        return $erow;
+    }
+
+    function createEmptyRowSelected(){
+        var $erow = $('<tr>');
+        $erow.append($('<td class=\'diff-line-num empty selected\'>'));
+        $erow.append($('<td class=\'diff-line-content empty\'>'));
+        return $erow;
+    }
+
+    function showCommentBox(tspan) {
+        var $tspan = $(tspan);
+        var row = $tspan.parent().parent();
+        if(row!=null && row.next() != null && row.next().hasClass('comForm')){
+            row.next().remove();
+        }else{
+            var currentLine = $(tspan).parent().text().replace('+', ' ');
+            var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionId;
+            createForm($tspan.parent().parent(),currentLine,currentFun).insertAfter(row);
+        }
+    }
+
+    function plotComments(fun, $holder){
+    	$.get(/*[[${model.prefix + 'func_comment'}]]*/"/", {
+    		fid: fun.functionId
+    	}, function(data){
+    		$.each(data, function(ind, ent){
+    			if(ent.functionOffset.length < 1)
+    				return;
+                var $row = $holder.find('tr#'+ent.functionOffset);
+                var $cmbox = createCommentRow(ent);
+                $cmbox.insertAfter($row);
+                var $tbl = $row.parent().parent();
+                attachComment($tbl, ent);
+            });
+    	});
+    }
+
+    var $divs = $('#clone-text-left-scroller, #clone-text-right-scroller');
+    var scrolling = false;
+    var diff = 0;
+    var sync = function(e){
+        if(! $('#tcloneviewScrollSyn').is(':checked') || scrolling){
+            diff =  $('#clone-text-left-scroller').scrollTop() - $('#clone-text-right-scroller').scrollTop();
+            return;
+        }
+        scrolling = true;
+        var $other = $divs.not(this), other = $other.get(0);
+        var dist = this.scrollTop;
+        if($(this).index()  == 0)
+            other.scrollTop = dist - diff;
+        else
+            other.scrollTop = dist + diff;
+        scrolling = false;
+        diff =  $('#clone-text-left-scroller').scrollTop() - $('#clone-text-right-scroller').scrollTop();
+    }
+    $divs.on( 'scroll', sync);
+
+
+	var not_selected = undefined;
+    function drawCloneTextDiff(p_a, p_b, cloneParts) {
+        $('#clone-title').html(
+        		   "[ " + p_a.functionName + " @ " + p_a.binaryName
+                   + " ]            compares to              [ " +
+                   p_b.functionName + " @ " + p_b.binaryName + "]"
+        );
+        
+
+        drawBlockText(p_a, $('#clone-text-left'));
+        drawBlockText(p_b, $('#clone-text-right'));
+        drawCloneTextList(p_a, p_b, cloneParts, $('#clone-group-list'));
+
+        plotComments(p_a, $('#clone-text-left'));
+        plotComments(p_b, $('#clone-text-right'));
+        // div->ul
+        //      ->li (span (i, title), ul);
+
+        $('span.commenter').click(function () {
+            showCommentBox(this);
+        });
+
+    }
+
+
+    function retrieve(functionId, callback) {
+		$.ajax({
+			type : 'GET',
+			dataType : 'json',
+			url : /*[[${model.prefix + 'func_flow'}]]*/"/",
+			data : {
+				id : functionId
+			},
+			success : function(data) {
+				callback(data);
+			}
+		});
+	}
+
+	 var normalize_opr = false;
+	 var arch = 'metapc'
+     window.onload = function(){
+        if (typeof String.prototype.startsWith != 'function') {
+            // see below for better implementation!
+            String.prototype.startsWith = function (str){
+                return this.indexOf(str) === 0;
+            };
+        }
+        
+        $synbarchk = $('<div>', {'class':'checkbox'}).append(
+				$('<label>').append(
+					$('<input>', {'class':'checkbox', 'type':'checkbox', 'id':'tcloneviewScrollSyn'})
+				).append(document.createTextNode('Synchronize Scroll Bars'))
+		)
+        
+        createNormalizer(/*[[${model.prefix+ 'arch_rest/'}]]*/ '/', 'arm');
+		
+
+        var data = window.opener.fin_result;
+		var ind1 = QueryString['in1'];
+		var ind2 = QueryString['in2'];
+		
+        pa = data.results[ind1].function;
+		fid2 = data.results[ind1].clones[ind2].functionId;
+		retrieve(fid2, function(pb){
+			
+			function onchange(norm, arc){
+				normalize_opr = norm;
+				arch = arc;
+			}
+			
+			$menu = createDropDownMenu($('#clone-title-menu'));
+			tp = createCommentDropDownMenu(true);
+			not_selected = tp.not_selected
+			$menu.add_menu_item('Show Comments', tp.items)
+			$menu.add_menu_item('View Option', [$synbarchk])
+			// $menu.add_menu_item('Normalization', createNormalizationSettingMenu(onchange))
+			$menu.complete()
+			
+			drawCloneTextDiff(pa, pb, data.results[ind1].clones[ind2].clonedParts);
+		});
+
+     }
+
+
+    var maxH = 3600;
+    var minH = 100;
+
+    $('#split-bar').mousedown(function (e) {
+
+        var docHeight = $('#card-body').height();
+
+        e.preventDefault();
+        $(document).mousemove(function (e) {
+            e.preventDefault();
+            var y = docHeight - e.pageY + 80;
+            if (y > minH && y < maxH) {
+                $('#clone-group-list').css("height", y);
+                var div3Height = $('#clone-group-list').height();
+                var div2Height = docHeight - div3Height - 7.5;
+                $('#bbody').css('height', div2Height);
+                $('#clone-text-left-scroller').css('height', div2Height);
+                $('#clone-text-right-scroller').css('height', div2Height);
+            }
+        })
+    });
+    $(document).mouseup(function (e) {
+        $(document).unbind('mousemove');
+    });
+
+
+
+
+
+
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

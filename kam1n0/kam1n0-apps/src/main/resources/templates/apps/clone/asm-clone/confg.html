@@ -1,0 +1,109 @@
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' ">
+	<label for="kStart" class="col-sm-2 control-label">Starting k
+		value</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.kStart}" id="kStart"
+			placeholder="Starting k value" /> <span
+			th:each="error : ${#fields.errors('configuration.kStart')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' ">
+	<label for="kMax" class="col-sm-2 control-label">Maximum k
+		Value</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.kMax}" id="kMax"
+			placeholder="Maximum k value" /> <span
+			th:each="error : ${#fields.errors('configuration.kMax')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' ">
+	<label for="mSplit" class="col-sm-2 control-label">Splitting
+		Point m</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.mSplit}" id="mSplit"
+			placeholder="Spliting point value" /> <span
+			th:each="error : ${#fields.errors('configuration.mSplit')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' ">
+	<label for="lv" class="col-sm-2 control-label">Number of Trees
+		(l)</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.l}" id="lv" placeholder="L value" />
+		<span th:each="error : ${#fields.errors('configuration.l')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizationLevel')} ?  'form-group has-error' : 'form-group' ">
+	<label for="normlv" class="col-sm-2 control-label">Normalization
+		Level</label>
+	<div class="col-sm-10">
+		<select class="form-control"
+			th:field="${confObj.configuration.normalizationSetting.normalizationLevel}"
+			id="normlv" placeholder="Normalization level">
+			<option value="NORM_NONE">NORM_NONE</option>
+			<option value="NORM_ROOT">NORM_ROOT</option>
+			<option value="NORM_TYPE">NORM_TYPE</option>
+			<option value="NORM_LENGTH">NORM_LENGTH</option>
+			<option value="NORM_TYPE_LENGTH">NORM_TYPE_LENGTH</option>
+		</select> <span
+			th:each="error : ${#fields.errors('configuration.normalizationSetting.normalizationLevel')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeConstant')} ?  'form-group has-error' : 'form-group' ">
+	<div class="col-sm-offset-2 col-sm-10">
+		<div class="checkbox">
+			<label> <input type="checkbox"
+				th:field="${confObj.configuration.normalizationSetting.normalizeConstant}" />
+				Normalize Constant
+			</label> <span
+				th:each="error : ${#fields.errors('configuration.normalizationSetting.normalizeConstant')}"
+				th:text="${error}" class="help-block" />
+		</div>
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeOperation')} ?  'form-group has-error' : 'form-group' ">
+	<div class="col-sm-offset-2 col-sm-10">
+		<div class="checkbox">
+			<label> <input type="checkbox"
+				th:field="${confObj.configuration.normalizationSetting.normalizeOperation}" />
+				Normalize Operation
+			</label> <span
+				th:each="error : ${#fields.errors('configuration.normalizationSetting.normalizeOperation')}"
+				th:text="${error}" class="help-block" />
+		</div>
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' ">
+	<label for="arch" class="col-sm-2 control-label">Instruction
+		Set</label>
+	<div class="col-sm-10">
+		<select class="form-control"
+			th:field="${confObj.configuration.architectureType}" id="arch"
+			placeholder="Instruction Set">
+			<option th:each="state : ${T(ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.ArchitectureType).values()}"
+		          th:value="${state}" 
+		          th:text="${state.toString().toUpperCase()}">
+		   </option>
+		</select> <span
+			th:each="error : ${#fields.errors('configuration.architectureType')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="567.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.mcgill.sis.dmas.kam1n0.workbench.controller.MainWindowController">
+	<children>
+	<AnchorPane fx:id="maskPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="windowBar" prefHeight="35.0" style="-fx-background-color: -fx-background;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <MaterialDesignIconView fx:id="aboutBtn" glyphName="INFORMATION_OUTLINE" size="16" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="9.0" />
+      		<MaterialDesignIconView fx:id="closeBtn" glyphName="CLOSE" size="16" styleClass="delete" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0" />
+      		<MaterialDesignIconView fx:id="maximizeBtn" glyphName="PLUS" size="16" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="8.0" />
+      		<MaterialDesignIconView fx:id="minimizeBtn" glyphName="MINUS" size="16" AnchorPane.rightAnchor="56.0" AnchorPane.topAnchor="8.0" />
+            <Label fx:id="winTitle" layoutX="36.0" layoutY="9.0" prefHeight="17.0" prefWidth="160.0" text="Kam1n0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="9.0" />
+      </AnchorPane>
+		<SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+			<items>
+				<AnchorPane minHeight="50.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+					<children>
+					<Label layoutX="5.0" layoutY="7.0" prefHeight="17.0" prefWidth="506.0" text="Edit Server Properties (double click to edit, press enter to commit and right cilck for options):" AnchorPane.leftAnchor="5.0" />
+					<TableView fx:id="propertyTable" editable="true" layoutX="1.0" layoutY="79.0" prefHeight="235.0" prefWidth="565.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                    
+	                    <columns>
+	                      <TableColumn fx:id="propertyColumn" prefWidth="282.0" text="Property" />
+	                      <TableColumn fx:id="valueColumn" minWidth="0.0" prefWidth="272.0" text="Value" />
+	                    </columns>
+                    </TableView>
+                    <JFXButton fx:id="startButton" layoutX="439.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Start" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="72.0" />
+					<JFXButton fx:id="stopButton" layoutX="505.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Stop" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="6.0" />
+                    <MaterialDesignIconView fx:id="browseBtn" glyphName="FOLDER" size="18" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="6.0" />
+                    <TextField fx:id="propertyFile" layoutX="48.0" layoutY="321.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="28.0" />
+					</children>
+				</AnchorPane>
+				<TabPane fx:id="tabPane">
+					<tabs>
+						<Tab closable="false" text="Connector Log">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+									<children>
+										<TextArea fx:id="logger" editable="false" layoutX="14.0" layoutY="31.0" prefHeight="200.0" prefWidth="200.0" styleClass="cli" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+									</children>
+								</AnchorPane>
+							</content>
+						</Tab>
+						<Tab closable="false" text="Engine Log">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TextArea fx:id="console" editable="false" prefHeight="200.0" prefWidth="200.0" styleClass="cli" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+									</children>
+								</AnchorPane>
+							</content>
+						</Tab>
+					</tabs>
+				</TabPane>
+			</items>
+		</SplitPane>
+	</AnchorPane>
+	</children>
+</AnchorPane>

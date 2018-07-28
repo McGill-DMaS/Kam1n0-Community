@@ -1,0 +1,68 @@
+<div class="row">
+	<div class="col-sm-10 middle">
+		<div class="card">
+			<div class="card-header" data-background-color="orange">
+				<h4 class="title">Binary Browser <small style="color:white">(Click on items to view its content)</small></h4>
+			</div>
+			<div class="card-content">
+				<div id="jstree" style="height: 350px; overflow-y: scroll"></div>
+				<button class="btn btn-xs pull-right" style="margin-top: 10px"
+					onclick="$('#jstree').jstree('close_all');">
+					<i class="fa fa-minus" aria-hidden="true"></i> Collapse all
+				</button>
+
+			</div>
+		</div>
+
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			$(function() {
+				var url_func = /*[[${model.calculatePrefix() + 'func_info/'}]]*/'/';
+				var url_bin =  /*[[${model.calculatePrefix() + 'bin_info/'}]]*/'/';
+				var url_func_flow = /*[[${model.calculatePrefix() + 'func_flow_show/'}]]*/'/';
+				var url_func_text = /*[[${model.calculatePrefix() + 'func_text_show/'}]]*/'/';
+				// 6 create an instance when the DOM is ready
+				$('#jstree').on('changed.jstree', function (e, data) {
+					if(data.selected.length > 0){
+						var node = data.instance.get_node(data.selected[0]);
+						if(!(node.parent == '#')){
+							window.open(url_func_text + "?id=" + node.id);
+							window.open(url_func_flow + "?id=" + node.id);
+						}
+					}
+				  }).jstree({
+					'core' : {
+						'data' : function(obj, cb) {
+							$.get(obj.id === '#' ? url_bin : url_func, {
+								id : obj.id
+							}, function(data) {
+								if (obj.id === '#')
+									cb.call(this, $.map(data, function(val, i) {
+										var label = val.binaryName;
+										var suffix = ' (' + val.numFunctions + ' functions)';
+										return {
+											'id' : val.binaryId,
+											'text' : val.binaryName + suffix,
+											'icon' : 'fa fa-file-o',
+											'children' : true
+										}
+									}));
+								else
+									cb.call(this, $.map(data, function(val, i) {
+										var label = val.binaryName;
+										var suffix = ' (' + val.blockSize + ' blocks)';
+										return {
+											'id' : val.functionId,
+											'text' : val.functionName + suffix,
+											'icon' : 'fa fa-file-o',
+											'children' : false
+										}
+									}));
+							});
+						}
+					}});
+			});
+			/*]]>*/
+		</script>
+	</div>
+</div>

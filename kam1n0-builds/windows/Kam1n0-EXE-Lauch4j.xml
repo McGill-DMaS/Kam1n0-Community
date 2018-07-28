@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>kam1n0-server-workbench.jar</jar>
+  <outfile>bins-additional\Kam1n0.exe</outfile>
+  <errTitle>Kam1n0-Sever Error</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://java.com/en/download/manual.jsp</downloadUrl>
+  <supportUrl>https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro</supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>..\..\kam1n0\logos\logo-server.ico</icon>
+  <singleInstance>
+    <mutexName>Kam1n0-Sever</mutexName>
+    <windowTitle>Kam1n0-Sever</windowTitle>
+  </singleInstance>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>1.8.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64</runtimeBits>
+  </jre>
+</launch4jConfig>

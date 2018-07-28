@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="DISTRIBUTIONDIR">
+            <Component Id="cmpDBF4508BD333DB7309F16D0FA4E80B24" Guid="{7E090A68-2218-49FC-907B-34A1F0A053ED}" KeyPath="yes">
+                <CreateFolder />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="GroupDistribution">
+            <ComponentRef Id="cmpDBF4508BD333DB7309F16D0FA4E80B24" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

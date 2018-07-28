@@ -1,0 +1,159 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
+
+
+namespace Installer
+{
+
+    public enum Operation { Install, Uninstall }
+
+
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+
+        public BootstrapperApplication Bootstrapper { get; set; }
+        private volatile bool running = false;
+        private Operation operation = Operation.Install;
+
+        public MainWindow(BootstrapperApplication bootstrapper)
+        {
+            InitializeComponent();
+            MouseDown += Window_MouseDown;
+            this.Bootstrapper = bootstrapper;
+            this.Bootstrapper.ApplyComplete += this.OnApplyComplete;
+            this.Bootstrapper.DetectPackageComplete += this.OnDetectPackageComplete;
+            this.Bootstrapper.PlanComplete += this.OnPlanComplete;
+            this.installBtn.IsEnabled = false;
+        }
+
+        private void updateMsg(string msg)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() => {
+                this.logger.AppendText(Environment.NewLine);
+                this.logger.AppendText("> " + msg);
+                this.logger.ScrollToEnd();
+            }));
+        }
+
+        private void updateBtn(string msg)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.installBtn.Content = msg;
+            }));
+        }
+
+        private void OnDetectPackageComplete(object sender, DetectPackageCompleteEventArgs e)
+        {
+            updateMsg(e.PackageId + " is " + e.State.ToString().ToLower() +" in your system.");
+
+            if (e.PackageId.Equals("Kam1n0_Server"))
+            {
+                if (e.State == PackageState.Absent)
+                    operation = Operation.Install;
+                else if (e.State == PackageState.Present)
+                    operation = Operation.Uninstall;
+                if (operation == Operation.Install)
+                    updateBtn("Agree and Install All");
+                else
+                    updateBtn("Remove All");
+            }
+            this.Dispatcher.BeginInvoke(new Action(() => { this.installBtn.IsEnabled = true; }));
+        }
+
+        private void OnApplyComplete(object sender, ApplyCompleteEventArgs e)
+        {
+            if (operation.Equals(Operation.Install))
+            {
+                updateBtn("Installation Completed.");
+                updateMsg("Installation Completed.");
+            }
+            else {
+                updateBtn("Application Uninstalled.");
+                updateMsg("Application Uninstalled.");
+            }
+            this.running = false;
+        }
+
+
+        private void OnPlanComplete(object sender, PlanCompleteEventArgs e)
+        {
+            if (operation.Equals(Operation.Install))
+            {
+                updateMsg("Installing...");
+            }
+            else
+            {
+                updateMsg("Removing...");
+            }
+           
+            Bootstrapper.Engine.Apply(System.IntPtr.Zero);
+           
+
+        }
+
+
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (running)
+            {
+                MessageBoxResult ans = MessageBox.Show("The Kam1n0 Server is being installed. Are you sure to terminate intallation and reverse changes?", "Terminating the Installation Procedure.", MessageBoxButton.YesNo);
+                if (ans.Equals(MessageBoxResult.No))
+                    return;
+            }
+            this.Close();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.installBtn.IsEnabled = false;
+            if (operation == Operation.Install)
+            {
+                this.installBtn.Content = "Installing...";
+                Bootstrapper.Engine.Plan(LaunchAction.Install);
+            }
+            else
+            {
+                this.installBtn.Content = "Uninstalling...";
+                Bootstrapper.Engine.Plan(LaunchAction.Uninstall);
+            }
+            this.running = true;
+           
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    this.insLbl.Text = dialog.SelectedPath;
+                }
+            }
+        }
+    }
+
+}

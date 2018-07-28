@@ -1,0 +1,361 @@
+<!--
+    Copyright 2017 McGill University All rights reserved.
+   
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+   
+        http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
+<Kam1n0-Architecture>
+  <processor>ppc</processor>
+  <operations>
+    <operation identifier="lbz">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="lhz">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="lha">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="lwz">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="stb">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="sth">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="stw">
+      <suffixGroup>ux2</suffixGroup>
+      <suffixGroup>ux2</suffixGroup>
+    </operation>
+    <operation identifier="lmw"/>
+    <operation identifier="stmw"/>
+    <operation identifier="add">
+      <suffixGroup>ce1</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="addi">
+      <suffixGroup>scc1</suffixGroup>
+    </operation>
+    <operation identifier="addme">
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="addze">
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="neg">
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="subf">
+      <suffixGroup>ce1</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="subfic"/>
+    <operation identifier="subfme">
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="subfze">
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="and">
+      <suffixGroup>cd2</suffixGroup>
+      <suffixGroup>cd2</suffixGroup>
+    </operation>
+    <operation identifier="andi."/>
+    <operation identifier="andis."/>
+    <operation identifier="cntlzw">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="eqv">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="extsb">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="extsh">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="nand">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="nor">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="or">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="ori"/>
+    <operation identifier="oris"/>
+    <operation identifier="slw">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="srw">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="srawi">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="sraw">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="xor">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="xori"/>
+    <operation identifier="xoris"/>
+    <operation identifier="mulhw"/>
+    <operation identifier="muli"/>
+    <operation identifier="mulw"/>
+    <operation identifier="mr"/>
+    <operation identifier="lis"/>
+    <operation identifier="li"/>
+    <operation identifier="mflr"/>
+    <operation identifier="mtlr"/>
+    <operation identifier="mtctr"/>
+    <operation identifier="ldf"/>
+    <operation identifier="stfd"/>
+    <operation identifier="lfs"/>
+    <operation identifier="clrlwi"/>
+    <operation identifier="divw">
+      <suffixGroup>u1</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+      <suffixGroup>od2</suffixGroup>
+    </operation>
+    <operation identifier="rlwimi">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="rlwinm">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="rlwnm">
+      <suffixGroup>d1</suffixGroup>
+    </operation>
+    <operation identifier="cmp">
+      <suffixGroup>lwi4</suffixGroup>
+      <suffixGroup>lwi4</suffixGroup>
+      <suffixGroup>lwi4</suffixGroup>
+    </operation>
+    <operation identifier="crand"/>
+    <operation identifier="crandc"/>
+    <operation identifier="creqv"/>
+    <operation identifier="crnand"/>
+    <operation identifier="crnor"/>
+    <operation identifier="cror"/>
+    <operation identifier="crorc"/>
+    <operation identifier="crxor"/>
+    <operation identifier="mcrf"/>
+    <operation identifier="crclr"/>
+    <operation identifier="crmove"/>
+    <operation identifier="crnot"/>
+    <operation identifier="crset"/>
+    <operation identifier="tw"/>
+    <operation identifier="twi"/>
+    <operation identifier="fdiv"/>
+    <operation identifier="srwi"/>
+    <operation identifier=".extern"/>
+    <operation identifier="fmr"/>
+    <operation identifier="nop"/>
+    <operation identifier="not"/>
+    <operation identifier="fadd"/>
+    <operation identifier="lwbrx"/>
+    <operation identifier="stfs"/>
+    <operation identifier="rotlw"/>
+    <operation identifier="fcmpu"/>
+    <operation identifier="frsp"/>
+    <operation identifier="fneg"/>
+    <operation identifier="rotlwi"/>
+    <operation identifier="slwi"/>
+    <operation identifier="mulhwu"/>
+    <operation identifier="fctiwz"/>
+    <operation identifier="fabs"/>
+    <operation identifier="fdivs"/>
+    <operation identifier="insrwi"/>
+    <operation identifier="extrwi"/>
+    <operation identifier="fsub"/>
+    <operation identifier="fmadd"/>
+    <operation identifier="lfd"/>
+    <operation identifier="clrrwi"/>
+    <operation identifier="fmul"/>
+    <operation identifier="mulli"/>
+    <operation identifier="mullw"/>
+    <operation identifier="mfcr"/>
+  </operations>
+  <operationJmps>
+    <operation identifier="b">
+      <suffixGroup>test1</suffixGroup>
+      <suffixGroup>lrctr</suffixGroup>
+      <suffixGroup>la2</suffixGroup>
+      <suffixGroup>la2</suffixGroup>
+      <suffixGroup>pl1</suffixGroup>
+    </operation>
+    <operation identifier="sc"/>
+  </operationJmps>
+  <suffixGroups>
+    <suffixGroup identifier="ux2">
+      <suffix></suffix>
+      <suffix>u</suffix>
+      <suffix>x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="ce1">
+      <suffix></suffix>
+      <suffix>c</suffix>
+      <suffix>e</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="od2">
+      <suffix></suffix>
+      <suffix>o</suffix>
+      <suffix>.</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="scc1">
+      <suffix></suffix>
+      <suffix>s</suffix>
+      <suffix>c</suffix>
+      <suffix>c.</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="cd2">
+      <suffix></suffix>
+      <suffix>c</suffix>
+      <suffix>.</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="d1">
+      <suffix></suffix>
+      <suffix>.</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="u1">
+      <suffix></suffix>
+      <suffix>u</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="la2">
+      <suffix></suffix>
+      <suffix>l</suffix>
+      <suffix>a</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="lrctr">
+      <suffix></suffix>
+      <suffix>lr</suffix>
+      <suffix>ctr</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="test1">
+      <suffix></suffix>
+      <suffix>c</suffix>
+      <suffix>dnzf</suffix>
+      <suffix>dzf</suffix>
+      <suffix>f</suffix>
+      <suffix>dnzt</suffix>
+      <suffix>t</suffix>
+      <suffix>dnz</suffix>
+      <suffix>dz</suffix>
+      <suffix>eq</suffix>
+      <suffix>ge</suffix>
+      <suffix>gt</suffix>
+      <suffix>le</suffix>
+      <suffix>lt</suffix>
+      <suffix>ne</suffix>
+      <suffix>ng</suffix>
+      <suffix>nl</suffix>
+      <suffix>ns</suffix>
+      <suffix>so</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="lwi4">
+      <suffix></suffix>
+      <suffix>l</suffix>
+      <suffix>w</suffix>
+      <suffix>i</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="pl1">
+      <suffix></suffix>
+      <suffix>+</suffix>
+    </suffixGroup>
+  </suffixGroups>
+  <registers>
+    <register identifier="R0" category="GEN" length="32"/>
+    <register identifier="R1" category="GEN" length="32"/>
+    <register identifier="R2" category="GEN" length="32"/>
+    <register identifier="R3" category="GEN" length="32"/>
+    <register identifier="R4" category="GEN" length="32"/>
+    <register identifier="R5" category="GEN" length="32"/>
+    <register identifier="R6" category="GEN" length="32"/>
+    <register identifier="R7" category="GEN" length="32"/>
+    <register identifier="R8" category="GEN" length="32"/>
+    <register identifier="R9" category="GEN" length="32"/>
+    <register identifier="R10" category="GEN" length="32"/>
+    <register identifier="R11" category="GEN" length="32"/>
+    <register identifier="R12" category="GEN" length="32"/>
+    <register identifier="R13" category="GEN" length="32"/>
+    <register identifier="R14" category="GEN" length="32"/>
+    <register identifier="R15" category="GEN" length="32"/>
+    <register identifier="R16" category="GEN" length="32"/>
+    <register identifier="R17" category="GEN" length="32"/>
+    <register identifier="R18" category="GEN" length="32"/>
+    <register identifier="R19" category="GEN" length="32"/>
+    <register identifier="R20" category="GEN" length="32"/>
+    <register identifier="R21" category="GEN" length="32"/>
+    <register identifier="R22" category="GEN" length="32"/>
+    <register identifier="R23" category="GEN" length="32"/>
+    <register identifier="R24" category="GEN" length="32"/>
+    <register identifier="R25" category="GEN" length="32"/>
+    <register identifier="R26" category="GEN" length="32"/>
+    <register identifier="R27" category="GEN" length="32"/>
+    <register identifier="R28" category="GEN" length="32"/>
+    <register identifier="R29" category="GEN" length="32"/>
+    <register identifier="R30" category="GEN" length="32"/>
+    <register identifier="R31" category="GEN" length="32"/>
+    <register identifier="CR" category="CND" length="32"/>
+    <register identifier="CTR" category="LOP" length="32"/>
+    <register identifier="XER" category="EXP" length="32"/>
+    <register identifier="LR" category="LNK" length="32"/>
+    <register identifier="CR0" category="FLG" length="1"/>
+    <register identifier="CR1" category="FLG" length="1"/>
+    <register identifier="CR2" category="FLG" length="1"/>
+    <register identifier="CR3" category="FLG" length="1"/>
+    <register identifier="CR4" category="FLG" length="1"/>
+    <register identifier="CR5" category="FLG" length="1"/>
+    <register identifier="CR6" category="FLG" length="1"/>
+    <register identifier="CR7" category="FLG" length="1"/>
+  </registers>
+  <lengthKeywords>
+    <lengthKeyWord identifier="@h" length="16"/>
+    <lengthKeyWord identifier="@ha" length="16"/>
+    <lengthKeyWord identifier="@l" length="16"/>
+  </lengthKeywords>
+  <jmpKeywords/>
+  <lineFormats>
+    <syntax numberOfOperand="3">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)[\s]*,[\s]*(?&lt;OPN2&gt;[\S\s]+),[\s]*(?&lt;OPN3&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="2">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)[\s]*,[\s]*(?&lt;OPN2&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="1">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+(?&lt;OPN1&gt;[\S\s]+)</lineRegex>
+    </syntax>
+    <syntax numberOfOperand="0">
+      <lineRegex>(?&lt;OPT&gt;[\S]+)[\s]+</lineRegex>
+    </syntax>
+  </lineFormats>
+  <constantVariableRegex>(^LOC_+)|(^loc_+)|([0-9x#\-\s])|^[\S]+$</constantVariableRegex>
+  <memoryVariableRegex>(\([\s\S]+\))</memoryVariableRegex>
+</Kam1n0-Architecture>

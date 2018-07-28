@@ -1,0 +1,31 @@
+# required options:
+kam1n0.data.path=E:/testappplatform/
+kam1n0.ida.home=C:/Program Files (x86)/IDA 6.9/
+# support reference
+kam1n0.data.logging.path=${kam1n0.data.path}/logs/
+
+# optional options:
+kam1n0.ida.batch=20000
+kam1n0.web.port=8571
+# session timeout in seconds
+kam1n0.web.session.timeout=3600
+kam1n0.web.request.maxSize=1024MB
+
+# add as many jvm-options as you want
+# batch script/bash script/workbench will read them in sequence
+jvm-option=-Xmx12G
+jvm-option=-Xss4m
+
+# other available options:
+
+# Dynamic switch to enable or disable colored console output:
+# kam1n0.ansi.enable=false 
+
+# CCfinder home and settings for source code clone search
+# kam1n0.ccfinder.home=""
+# kam1n0.ccfinder.python26exe=""
+# kam1n0.ccfinder.b=12
+# kam1n0.ccfinder.t=50
+
+# PDB debug symbol parser path
+# kam1n0.parser.pdb.dia2dump=""

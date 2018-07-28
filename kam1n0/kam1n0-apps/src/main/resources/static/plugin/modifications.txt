@@ -1,0 +1,2 @@
+sparkline£º
+updated tooltip generation: no restricting width and height.

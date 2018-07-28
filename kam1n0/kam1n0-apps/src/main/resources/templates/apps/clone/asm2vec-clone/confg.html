@@ -1,0 +1,129 @@
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' ">
+	<label for="kStart" class="col-sm-2 control-label">Starting k
+		value</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.kStart}" id="kStart"
+			placeholder="Starting k value" /> <span
+			th:each="error : ${#fields.errors('configuration.kStart')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' ">
+	<label for="kMax" class="col-sm-2 control-label">Maximum k
+		Value</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.kMax}" id="kMax"
+			placeholder="Maximum k value" /> <span
+			th:each="error : ${#fields.errors('configuration.kMax')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' ">
+	<label for="mSplit" class="col-sm-2 control-label">Splitting
+		Point m</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.mSplit}" id="mSplit"
+			placeholder="Spliting point value" /> <span
+			th:each="error : ${#fields.errors('configuration.mSplit')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' ">
+	<label for="lv" class="col-sm-2 control-label">Number of Trees
+		(l)</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.l}" id="lv" placeholder="L value" />
+		<span th:each="error : ${#fields.errors('configuration.l')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' ">
+	<label for="arch" class="col-sm-2 control-label">Instruction
+		Set</label>
+	<div class="col-sm-10">
+		<select class="form-control"
+			th:field="${confObj.configuration.architectureType}" id="arch"
+			placeholder="Instruction Set">
+			<option th:each="state : ${T(ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.ArchitectureType).values()}"
+		          th:value="${state}" 
+		          th:text="${state.toString().toUpperCase()}">
+		   </option>
+		</select> <span
+			th:each="error : ${#fields.errors('configuration.architectureType')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.iteration')} ?  'form-group has-error' : 'form-group' ">
+	<label for="iteration" class="col-sm-2 control-label">Number of
+		iterations</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.iteration}" id="iteration"
+			placeholder="Number of iterations" /> <span
+			th:each="error : ${#fields.errors('configuration.iteration')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.negative_samples')} ?  'form-group has-error' : 'form-group' ">
+	<label for="negative_samples" class="col-sm-2 control-label">Number
+		of negative samples</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.negative_samples}"
+			id="negative_samples" placeholder="Number of negative samples" /> <span
+			th:each="error : ${#fields.errors('configuration.negative_samples')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.min_frequeceny')} ?  'form-group has-error' : 'form-group' ">
+	<label for="min_frequeceny" class="col-sm-2 control-label">Minimum
+		token frequency</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.min_frequeceny}"
+			id="min_frequeceny" placeholder="Minimum token frequency" /> <span
+			th:each="error : ${#fields.errors('configuration.min_frequeceny')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.dim')} ?  'form-group has-error' : 'form-group' ">
+	<label for="dim" class="col-sm-2 control-label">Vector size</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.dim}" id="dim"
+			placeholder="Vector size" /> <span
+			th:each="error : ${#fields.errors('configuration.dim')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>
+
+<div class="form-group"
+	th:class="${#fields.hasErrors('configuration.wlk')} ?  'form-group has-error' : 'form-group' ">
+	<label for="wlk" class="col-sm-2 control-label">Random walks</label>
+	<div class="col-sm-10">
+		<input class="form-control" type="text"
+			th:field="${confObj.configuration.wlk}" id="wlk"
+			placeholder="Random walks" /> <span
+			th:each="error : ${#fields.errors('configuration.wlk')}"
+			th:text="${error}" class="help-block" />
+	</div>
+</div>

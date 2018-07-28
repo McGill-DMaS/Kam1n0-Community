@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<allocations>
+	<pool name="prioritize">
+		<schedulingMode>FAIR</schedulingMode>
+		<weight>1000</weight>
+		<minShare>1</minShare>
+	</pool>
+</allocations>

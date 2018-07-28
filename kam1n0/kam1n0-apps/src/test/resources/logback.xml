@@ -1,0 +1,16 @@
+<!-- remove selenium debug logging -->
+<!-- https://stackoverflow.com/questions/34205914/debug-logs-when-using-cucumber-with-selenium-webdriver-in-a-play-framework -->
+<configuration debug="false">
+	<!-- definition of appender STDOUT -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<root level="ERROR">
+		<!-- appender referenced after it is defined -->
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

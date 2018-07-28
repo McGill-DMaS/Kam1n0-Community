@@ -1,0 +1,12 @@
+We need these resources for offline usage.
+
+FontAwesome: (just download the css and fonts)
+https://github.com/FortAwesome/Font-Awesome
+
+Google Materialize Icon:
+https://github.com/google/material-design-icons/
+
+Other fonts from Google:
+https://fonts.googleapis.com/css?family=Roboto:300,400,500,700 
+We download all the font file from google font.
+Save a local copy of the above css file with fonts.

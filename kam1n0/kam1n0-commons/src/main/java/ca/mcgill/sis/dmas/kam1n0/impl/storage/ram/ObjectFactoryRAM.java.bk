@@ -1,0 +1,239 @@
+/*******************************************************************************
+ * Copyright 2017 McGill University All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+package ca.mcgill.sis.dmas.kam1n0.impl.storage.ram;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.spark.api.java.JavaRDD;
+
+import com.google.common.collect.HashBasedTable;
+
+import ca.mcgill.sis.dmas.env.Environment;
+import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Block;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Comment;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactory;
+import ca.mcgill.sis.dmas.kam1n0.graph.LogicGraph;
+import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
+
+public class ObjectFactoryRAM extends ObjectFactory {
+
+	public TLongObjectHashMap<Binary> binaryMap = new TLongObjectHashMap<>();
+	public TLongObjectHashMap<Function> functionMap = new TLongObjectHashMap<>();
+	public TLongObjectHashMap<Block> blockMap = new TLongObjectHashMap<>();
+	public TLongObjectHashMap<LogicGraph> logicMap = new TLongObjectHashMap<>();
+	HashMap<Long, HashMap<String, HashMap<Long, Comment>>> commentMap = new HashMap<>();
+
+	SparkInstance instance;
+
+	public ObjectFactoryRAM(SparkInstance instance) {
+		this.instance = instance;
+	}
+
+	@Override
+	public void init() {
+		binaryMap = new TLongObjectHashMap<>();
+		functionMap = new TLongObjectHashMap<>();
+		blockMap = new TLongObjectHashMap<>();
+		commentMap = new HashMap<>();
+	}
+
+	@Override
+	public void close() {
+		binaryMap = null;
+		functionMap = null;
+		blockMap = null;
+		commentMap = null;
+	}
+
+	@Override
+	public Iterable<Binary> browse() {
+		return binaryMap.valueCollection();
+	}
+
+	@Override
+	public boolean addBinary(Binary obinary) {
+		binaryMap.put(obinary.binaryId, obinary);
+		List<Function> oFunctions = obinary.functions;
+		oFunctions //
+				.forEach(func -> functionMap //
+						.put(func.functionId, func));
+		oFunctions //
+				.stream() //
+				.flatMap(func -> func.blocks.stream()) //
+				.forEach(blk -> {
+					blockMap.put(blk.blockId, blk);
+					if (Environment.inSymbolicMode)
+						logicMap.put(blk.blockId, blk.getLogic());
+				});
+
+		return true;
+	}
+
+	@Override
+	public List<Binary> getBinaries(HashSet<Long> ids) {
+		return ids //
+				.stream() //
+				.map(id -> binaryMap.get(id)) //
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Function> getFunctions(HashSet<Long> ids) {
+		return ids //
+				.stream() //
+				.map(id -> functionMap.get(id)) //
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Block> getBlocks(HashSet<Long> ids) {
+		return ids //
+				.stream() //
+				.map(id -> blockMap.get(id)) //
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public JavaRDD<Block> getBlocksAsRDD(HashSet<Long> ids) {
+		return instance //
+				.getContext() //
+				.parallelize(ids //
+						.stream() //
+						.map(id -> blockMap.get(id)) //
+						.collect(Collectors.toList()));
+	}
+
+	@Override
+	public boolean drop(long binaryID) {
+		binaryMap.remove(binaryID);
+		return true;
+	}
+
+	@Override
+	public long countBinaries() {
+		return binaryMap.size();
+	}
+
+	@Override
+	public long countFunctions() {
+		return functionMap.size();
+	}
+
+	@Override
+	public long countBlocks() {
+		return blockMap.size();
+	}
+
+	@Override
+	public Comment getComment(Long functionId, String functionOffset, Long date) {
+		HashMap<String, HashMap<Long, Comment>> offSetMap = commentMap.get(functionId);
+		if (offSetMap == null)
+			return null;
+		HashMap<Long, Comment> datMap = offSetMap.get(functionOffset);
+		if (datMap == null)
+			return null;
+		return datMap.get(date);
+	}
+
+	@Override
+	public List<Comment> getComment(Long functionId, String functionOffset) {
+		HashMap<String, HashMap<Long, Comment>> offSetMap = commentMap.get(functionId);
+		if (offSetMap == null)
+			return null;
+		HashMap<Long, Comment> datMap = offSetMap.get(functionOffset);
+		if (datMap == null)
+			return null;
+		return new ArrayList<>(datMap.values());
+	}
+
+	@Override
+	public List<Comment> getComments(Long functionId) {
+		HashMap<String, HashMap<Long, Comment>> offSetMap = commentMap.get(functionId);
+		if (offSetMap == null)
+			return null;
+		return offSetMap //
+				.values() //
+				.stream()//
+				.flatMap(datMap -> datMap.values().stream())//
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean setComment(Comment comment) {
+		commentMap.computeIfPresent(comment.functionId, (k, v) -> {
+			v.computeIfPresent(comment.functionOffset, (k2, v2) -> {
+				v2.computeIfPresent(comment.date, (k3, v3) -> comment);
+				return v2;
+			});
+			return v;
+		});
+		return true;
+	}
+
+	@Override
+	public boolean dropComment(Long functionId, String functionOffset, Long date) {
+		HashMap<String, HashMap<Long, Comment>> offSetMap = commentMap.get(functionId);
+		if (offSetMap == null)
+			return false;
+		HashMap<Long, Comment> datMap = offSetMap.get(functionOffset);
+		if (datMap == null)
+			return false;
+		return datMap.remove(date) != null;
+	}
+
+	@Override
+	public boolean addFunctions(List<Function> funcs) {
+		funcs //
+				.forEach(func -> functionMap //
+						.put(func.functionId, func));
+		return true;
+	}
+
+	@Override
+	public List<Function> getFunctionInfos(HashSet<Long> ids) {
+		return getFunctions(ids);
+	}
+
+	@Override
+	public List<Block> getBlocksInfo(HashSet<Long> ids) {
+		return getBlocks(ids);
+	}
+
+	@Override
+	public JavaRDD<Block> getBlocksInfoAsRDD(HashSet<Long> ids) {
+		return getBlocksAsRDD(ids);
+	}
+
+	@Override
+	public LogicGraph getLogicGraph(long id) {
+		return logicMap.get(id);
+	}
+
+	@Override
+	public void setLogicGraph(long id, LogicGraph graph) {
+		logicMap.put(id, graph);
+	}
+
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+# *******************************************************************************
+#  * Copyright 2017 McGill University All rights reserved.
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  *******************************************************************************/
+-->
+
+<?include Definitions.wxi ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util='http://schemas.microsoft.com/wix/UtilExtension'>
+
+  <Product Id="272EB916-014F-4A41-AC49-4DDDFEE4FE65"
+           Name="Kam1n0 Server"
+           Language="1033"
+           Version="2.0.0" Manufacturer="Data Mining and Security Lab, McGill University"
+           UpgradeCode="AF188A05-BE2E-407F-A467-8D8A9A7BD458">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="images\K2.ico"/>
+    <Icon Id="ExeIcon.exe" SourceFile="images\K2.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <Feature Id="Complete" Title="Complete" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="Install the complete set of features.">
+      <Feature Id="FeatureDistribution" Title="Kam1n0 Engine Core" Level="1" AllowAdvertise="no" Absent="disallow" Display="expand" Description="This feature contains the main core Kam1n0 engine libraries to index and search data.">
+        <ComponentGroupRef Id="GroupDistribution" />
+        <ComponentRef Id="CompProgramMenuApplicationDir"/>
+        <ComponentRef Id="CMP_MAIN_EXE"/>
+      </Feature>
+    </Feature>
+
+
+
+    <Property Id="INSTALL_DIR">DISTRIBUTIONDIR</Property>
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="DISTRIBUTIONDIR" Name="Kam1n0">
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuApplicationDir" Name="Kam1n0">
+          <Component Id="CompProgramMenuApplicationDir" Guid="6D42A00F-1396-4521-996B-A1B8966D09E9">
+            <RemoveFolder Id="ProgramMenuApplicationDir" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key='Software\[Manufacturer]\[ProductName]'  Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+    <DirectoryRef Id="DISTRIBUTIONDIR">
+      <Component Id="CMP_MAIN_EXE" Guid="F0006937-031A-4E22-916C-A9D694418127">
+        <File Id="FILE_MAIN_EXE" Source="$(env.KAM_DIST)\Kam1n0.exe" KeyPath="yes">
+          <Shortcut Id="shortcutProgramFilesMenuApplication" Directory="ProgramMenuApplicationDir" Name="Kam1n0" WorkingDirectory='DISTRIBUTIONDIR'  Advertise="yes" Icon="ExeIcon.exe" IconIndex="0" />
+          <Shortcut Id="shortcutDesktopApplication" Directory="DesktopFolder" Name="Kam1n0" WorkingDirectory='DISTRIBUTIONDIR'  Advertise="yes"  Icon="ExeIcon.exe" IconIndex="0" />
+        </File>
+     </Component>
+    </DirectoryRef>
+
+  </Fragment>
+
+</Wix>

@@ -1,0 +1,26 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+
+kam1n0.log.txt
+kam1n0-bin-win/
+
+*.class
+kam1n0-workbench/logs.txt
+kam1n0-workbench/target/
+kam1n0-core/target/
+kam1n0-bin-win/
+/bin/
+.classpath
+.project
+.settings
+

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Bundle Name="Kam1n0-Server"  Version="2.0.0" Manufacturer="DMaS" UpgradeCode="97cfec16-1c6a-4a4e-9987-226b1b475af1" IconSourceFile="K2.ico">
+    <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
+      <Payload SourceFile="..\ServerInstallerUI\BootstrapperCore.config"/>
+      <Payload SourceFile="..\ServerInstallerUI\bin\Release\ServerInstallerUI.dll"/>
+      <Payload SourceFile="..\ServerInstallerUI\bin\Release\Microsoft.Deployment.WindowsInstaller.dll"/>
+    </BootstrapperApplicationRef>
+
+
+    <WixVariable Id="WixMbaPrereqPackageId" Value="Netfx35" />
+    <WixVariable Id="WixMbaPrereqLicenseUrl" Value="NetfxLicense.rtf" />
+
+		<Chain>
+      <MsiPackage Compressed="yes" SourceFile="..\ServerDistribution\bin\Release\Kam1n0-Server.msi" Id="Kam1n0_Server" Cache="yes" Visible="no">
+        <MsiProperty Name="DISTRIBUTIONDIR" Value="[BVAR_INSTALL_DIR]"/>
+      </MsiPackage>
+      <PackageGroupRef Id='VC14Redist64' />
+    </Chain>
+    
+	</Bundle>
+
+  <Fragment>
+    <!-- Managed bootstrapper requires .NET as a dependency, since it was written in .NET.
+       WiX provides a Bootstrapper for the bootstrapper. The fragment below includes .NET.
+       For more information or examples see Heath Stewart's blog or the WiX source:
+       http://blogs.msdn.com/b/heaths/archive/2011/10/28/introducing-managed-bootstrapper-applications.aspx
+       -->
+
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v3" Value="Version" Variable="Netfx35Version" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4" Value="Version" Variable="Netfx40Version" />
+
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" Value="Version" Variable="VC14x64Version" />
+
+
+    <PackageGroup Id="Netfx35">
+      <ExePackage Id="Netfx35" Cache="no" Compressed="no" PerMachine="yes" Permanent="yes" Vital="yes"
+                  SourceFile="..\libs-server\dotNetFx40_Full_x86_x64.exe"
+                  DownloadUrl="http://go.microsoft.com/fwlink/?LinkId=164193"
+                  DetectCondition="Netfx35Version OR Netfx40Version" />
+      
+    </PackageGroup>
+    <PackageGroup Id="VC14Redist64">
+      <ExePackage
+         Cache="no"
+         Compressed="yes"
+         PerMachine="yes"
+         Permanent="yes"
+         Vital="yes"
+         Name="vc_redist.x64.exe"
+         SourceFile="..\libs-server\vc_redist.x64.exe"
+         InstallCommand="/install /quiet /norestart" DetectCondition="VC14x64Version">
+        <!-- -->
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+        <!-- Ignore "Newer version installed" error -->
+        <ExitCode Value="1638" Behavior="success"/>
+      </ExePackage>
+    </PackageGroup>
+  </Fragment>
+
+</Wix>

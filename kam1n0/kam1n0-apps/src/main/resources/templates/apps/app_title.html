@@ -1,0 +1,22 @@
+<div class="row">
+	<div class="col-sm-10 middle">
+		<div class="card">
+			<div class="card-header" data-background-color="green">
+				<h4 class="title" th:text="${model.basicInfo.name}">Employees
+					Stats</h4>
+			</div>
+			<div class="card-content">
+				<p class="category">
+					<span th:text="${model.basicInfo.description}"> 55% </span>
+				</p>
+			</div>
+			<div class="card-footer">
+				<div class="stats">
+					<span><i class="fa fa-plug"></i> Plug-in accessible URL: <a style="bottom:0" th:text="${model.basicInfo.calculatePrefix()}" th:href="${model.basicInfo.calculatePrefix()}"></a></span>
+					<i class="material-icons">access_time</i> created at <span
+						th:text="${#dates.format(model.basicInfo.creationDate, 'dd-MMM-yyyy')}"></span> 
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

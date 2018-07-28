@@ -1,0 +1,165 @@
+<div class="row" style="height: 100%">
+	<style>
+.slider.slider-vertical {
+	height: 100%;
+}
+
+/* slider color*/
+#GC .slider-handle {
+	border-radius: 0%;
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 10px;
+}
+
+.node rect {
+	stroke: #333;
+	fill: #fff;
+}
+
+.edgePath path {
+	fill: #333;
+	stroke-width: 1.5px;
+}
+
+
+.form-group {
+	height: 100%;
+}
+
+.slider {
+	background-color: transparent;
+}
+</style>
+	<div class="col-xs-6" style="height: 100%">
+		<div class="card" id="flowGraphSource" style="height: 100%">
+			<div class="card-header" data-background-color="green"
+				id="headerSource">
+				<h4 class="title" style="font-size: 15px">
+					<i class="fa fa-cloud"></i> Flow Graph (Target)  <span id="chartSource-title" class="small" style="color:white"></span>
+				</h4>
+			</div>
+			<div class="card-content" style="height: 100%; padding-bottom: 50px">
+				<div id="chartSource"
+					style="width: 100%; height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
+					<svg
+						style="width: 100%; height: 100%; background-color: white; padding: 0px;">
+                        <g />
+                    </svg>
+					<div style="position: absolute; top: 30px; right: 0; height: 80%;"
+						id="sliderSource">
+						<input type="text" value="0" class="slider form-control"
+							data-slider-min="0" data-slider-max="100" data-slider-step="1"
+							data-slider-value="-5" data-slider-orientation="vertical"
+							data-slider-selection="after" data-slider-tooltip="hide"
+							data-slider-id="GC" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6" style="height: 100%">
+		<div class="card" id="flowGraphTarget"
+			style="height: 100%; padding-bottom: 50px">
+			<div class="card-header" data-background-color="green"
+				id="headerTarget">
+
+				<h4 class="title" style="font-size: 15px">
+					<i class="fa fa-cloud"></i> Flow Graph (Source) <span id="chartTarget-title" class="small" style="color:white"></span>
+				</h4>
+			</div>
+			<div class="card-content" style="height: 100%">
+				<div id="chartTarget"
+					style="width: 100%; height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
+					<svg
+						style="width: 100%; height: 100%; background-color: white; padding: 0px;">
+                        <g />
+                    </svg>
+					<div style="position: absolute; top: 30px; right: 0; height: 80%;"
+						id="sliderTarget">
+						<input type="text" value="0" class="slider form-control"
+							data-slider-min="0" data-slider-max="100" data-slider-step="1"
+							data-slider-value="-5" data-slider-orientation="vertical"
+							data-slider-selection="after" data-slider-tooltip="hide"
+							data-slider-id="GC" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var QueryString = function() {
+			// This function is anonymous, is executed immediately
+			var query_string = {};
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				// If first entry with this name
+				if (typeof query_string[pair[0]] === "undefined") {
+					query_string[pair[0]] = pair[1];
+					// If second entry with this name
+				} else if (typeof query_string[pair[0]] === "string") {
+					var arr = [ query_string[pair[0]], pair[1] ];
+					query_string[pair[0]] = arr;
+					// If third or later entry with this name
+				} else {
+					query_string[pair[0]].push(pair[1]);
+				}
+			}
+			return query_string;
+		}();
+
+		function draw(functionId, clonedParts, placeholderId) {
+			$.ajax({
+				type : 'GET',
+				dataType : 'json',
+				url : /*[[${model.prefix + 'func_flow'}]]*/"/",
+				data : {
+					id : functionId
+				},
+				success : function(data) {
+					var pb_fun = data;
+					drawFlow(pb_fun, placeholderId, clonedParts, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
+					$('#'+placeholderId+'-title').html(
+			        		   "[ " + pb_fun.functionName + " @ " + pb_fun.binaryName
+			                   + " ]"
+			        );
+				}
+			});
+		}
+
+		$(function() {
+			var data = window.opener.fin_result;
+			var fid1 = QueryString['id1'];
+			var fid2 = QueryString['id2'];
+			var ind1 = QueryString['in1'];
+			var ind2 = QueryString['in2'];
+			var clone_parts = [];
+
+			if (data && ind1 && ind2)
+				clone_parts = data.results[ind1].clones[ind2].clonedParts;
+
+			if (ind1 && ind2) {
+				fid2 = data.results[ind1].clones[ind2].functionId;
+				draw(fid2, clone_parts, 'chartTarget');
+				drawFlow(data.results[ind1].function, 'chartSource', clone_parts, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
+				$('#chartSource-title').html(
+		        		   "[ " + data.results[ind1].function.functionName + " @ " + data.results[ind1].function.binaryName
+		                   + " ]"
+		        );
+			} else if (fid1 && fid2) {
+				draw(fid1, clone_parts, 'chartSource');
+				draw(fid2, clone_parts, 'chartTarget');
+			}
+
+		})
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

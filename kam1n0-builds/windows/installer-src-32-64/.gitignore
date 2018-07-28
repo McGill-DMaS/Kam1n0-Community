@@ -1,0 +1,7 @@
+
+**/bin/Debug/
+**/bin/Release/
+**/obj
+*.dll
+*.pdb
+.vs
