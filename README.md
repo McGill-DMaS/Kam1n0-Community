@@ -223,12 +223,21 @@ All the resources path are dynamically modified when running inside an IDE
 To build the project:
 ```
 cd /kam1n0/kam1n0
-mvn clean package
-mvn package
+mvn -DskipTests clean package
+mvn -DskipTests package
 ```
 The resulting binaries can be found in /kam1n0/build-bins/
 
-This command only compiles java with pre-compiled wheels of libvex and z3. It works out-of-the-box.
+To run the test code, you will need to first download `chromedriver.exe` from http://chromedriver.chromium.org/ and add its *absolute* path into an environment variable named `webdriver.chrome.driver`. It is also required that there is a chrome browser installed in the system. The test code will launch a browser instance to test the UI interfaces. The complete testing procedure will take approximately 3 hours. 
+
+```
+cd /kam1n0/kam1n0
+mvn -DskipTests clean package # you can skip this one if you already built the package
+mvn -DskipTests package       # you can skip this one if you already built the package
+mvn -DforkMode=never test
+```
+
+These commands only compiles java with pre-compiled wheels of libvex and z3. It works out-of-the-box.
 The build of libvex and z3 is platform-dependent. We use a fork of libvex from Angr. 
 More serious build scripts as well as installers for windows/linux can be found under /kam1n0-builds/
 
