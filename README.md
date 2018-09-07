@@ -166,13 +166,26 @@ The Kam1n0 IDA Pro plug-in is written in Python for the logic and in HTML/JavaSc
 
 Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins folder which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.95/plugins```. The installer will detect and validate the path. 
 
+## Setting Up Kam1n0 on Ubuntu/Debian-based systems
+
+* Ensure you have the **Oracle** version of Java 8. (Not default-jdk in apt, and not Java 8 or 9.)
+    * Add Oracle's PPA and then update your package repository: `sudo add-apt-repository ppa:webupd8team/java`
+        * If you encounter any errors (such as `~webupd8team not found`), if you are on a proxy, make sure you set and export your `http_proxy` and `https_proxy` environment variables, and then try again with the `-E` option on sudo. Additionally, if you are getting a 'add-apt repository command not found error, try: `sudo apt install -y software-properties-common`. 
+    * Afterwards: `sudo apt-get update`, and `sudo apt-get install oracle-java8-installer`
+        * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-8-oracle`
+
+* Download the latest release for Linux (the tar.gz) from [Kam1n0-Community](https://github.com/McGill-DMaS/Kam1n0-Community/releases). For this example, we are using PullRequest-169_2018-05-23-21-33-53_Kam1n0-IDA-Plugin.tar.gz
+* Extract the tarball. (eg. `tar -xvzf PullRequest-169_2018-05-23-21-33-53_Kam1n0-IDA-Plugin.tar.gz`)
+* This should result in the extracted directory, `server`, or whatever you want to name it. 
+* Inside the `server` directory, you should see a file called `kam1n0.properties`, which is where you will set various configurations for kam1n0; this is very important. 
+* Set `kam1n0.data.path` to where you would like your kam1n0-related data to be written to. We choose to put it in the same place that we keep our `server`. `kam1n0.ida.home` refers to where your IDA installation is located. Comment this line (and `kam1n0.ida.batch`, the line following) if you do not have IDA and don't plan to use kam1n0 for disassembly. For more (accurate) information about the `kam1n0.properties` file, see the `kam1n0.properties.explained` file.  
+* Run kam1n0-server-workbench: `java -jar kam1n0-server-workbench.jar`. This *should* cause a window to pop up, which prompts you to actually start kam1n0. 
+* To connect and use it, go to `127.0.0.1:8571` (the default port kam1n0 listens on should be 8571, but can be changed in kam1n0.properties) in your browser. You should see the pretty kam1n0 web UI. From there, follow the [tutorial](https://github.com/McGill-DMaS/Kam1n0-Community/blob/master2.x/documentation/server/server.md) on the Kam1n0-Community repo if you do not know how to use kam1n0. 
+
+
 ## Backward Compatibility
 
 The assembly code repositories and configuration files used in previous versions (<2.0.0) are no longer supported by the latest version. Please contact us if you need to migrate your old repositories.
-
-## Installing Kam1n0 on Linux
-
-`*.tar.gz` binaries are built for Linux. You will need to untar the files in `Kam1n0-IDA-Plugin.tar.gz` to your IDA plugin folder. You can run `workbench.jar` to start the Kam1n0 server on Linux. However, Linux binaries are experimental and are not covered by our test cases.
 
 # Documentation
 * [Kam1n0 Server Tutorial](documentation/server/server.md#tutorial)
