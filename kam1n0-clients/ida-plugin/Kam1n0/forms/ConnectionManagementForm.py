@@ -91,6 +91,7 @@ Login Info:
 <Threshold:{txtSim}>
 <Top-K    :{txtTopK}>
 <Avoid Same Binary  :{chkSameBin}>{chkGroup}>
+<Multiple queries saved as .kam file  :{chkKamSave}>{chkGroupp}>
 <Connector:{dpCnn}>
 """, {
                           'fvChooser': Form.EmbeddedChooserControl(
@@ -120,6 +121,8 @@ Login Info:
                                             'default-topk'])),
                           'chkGroup': Form.ChkGroupControl(
                               ("chkSameBin", "")),
+                          'chkGroupp': Form.ChkGroupControl(
+                              ("chkKamSave", "")),
                           'dpCnn': Form.DropdownListControl(
                               swidth=60,
                               width=60,
@@ -182,6 +185,7 @@ Login Info:
             # self.EnableField(self.txtProtocol, False)
             # select the default connection
             self.SetControlValue(self.chkSameBin, self.configuration['default-avoidSameBinary'])
+            self.SetControlValue(self.chkKamSave, self.configuration['default-saveAsKam'])
             apps = self.configuration['apps'].keys()
             default_app = self.configuration['default-app']
             if default_app is not None:
@@ -217,6 +221,9 @@ Login Info:
                 self.GetControlValue(self.txtTopK))
             self.configuration['default-avoidSameBinary'] = bool(
                 self.GetControlValue(self.chkSameBin)
+            )
+            self.configuration['default-saveAsKam'] = bool(
+                self.GetControlValue(self.chkKamSave)
             )
 
         return 1

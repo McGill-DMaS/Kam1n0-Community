@@ -79,6 +79,9 @@ class Kam1n0PluginManager:
 
         if 'default-avoidSameBinary' not in self.configuration:
             self.configuration['default-avoidSameBinary'] = False
+            
+        if 'default-saveAsKam' not in self.configuration:
+            self.configuration['default-saveAsKam'] = False
 
     def get_conf_topk(self):
         return self.configuration['default-topk']
@@ -88,6 +91,9 @@ class Kam1n0PluginManager:
 
     def get_conf_avoidSameBinary(self):
         return self.configuration['default-avoidSameBinary']
+        
+    def get_conf_saveAsKam(self):
+        return self.configuration['default-saveAsKam']
 
     def remove_all_actions(self):
         for action in self.actions:
@@ -276,11 +282,18 @@ class Kam1n0PluginManager:
                 ida_funcs = [idaapi.getn_func(f_idx - 1) for f_idx in
                              ctx.chooser_selection]
             if self._get_connector() is not None:
-                self.connector.search_func(
-                    queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
-                    topk=self.get_conf_topk(),
-                    threshold=self.get_conf_threshold(),
-                    avoid_same_binary=self.get_conf_avoidSameBinary())
+                if not self.get_conf_saveAsKam():
+                    self.connector.search_func(
+                        queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
+                        topk=self.get_conf_topk(),
+                        threshold=self.get_conf_threshold(),
+                        avoid_same_binary=self.get_conf_avoidSameBinary())
+                else:
+                    self.connector.search_binary(
+                        IDAUtils.get_as_single_surrogate(ida_funcs),
+                        self.get_conf_topk(),
+                        self.get_conf_threshold(),
+                        self.get_conf_avoidSameBinary())
         else:
             connector, ida_funcs, threshold, topk, avoidSameBinary = self.select_funcs()
             if ida_funcs is None:
@@ -290,11 +303,18 @@ class Kam1n0PluginManager:
                 connector = self.connector
             if connector is not None and ida_funcs is not None and len(
                     ida_funcs) > 0:
-                connector.search_func(
-                    queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
-                    topk=topk,
-                    threshold=threshold,
-                    avoid_same_binary=avoidSameBinary)
+                if not self.get_conf_saveAsKam():
+                    connector.search_func(
+                        queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
+                        topk=topk,
+                        threshold=threshold,
+                        avoid_same_binary=avoidSameBinary)
+                else:
+                    self.connector.search_binary(
+                        IDAUtils.get_as_single_surrogate(ida_funcs),
+                        topk=topk,
+                        threshold=threshold,
+                        avoid_same_binary=avoid_same_binary)
 
     def query_binary(self, *_):
         print
