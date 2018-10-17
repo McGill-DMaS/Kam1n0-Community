@@ -412,7 +412,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         	var wrapper = {'data':dataParsed, 'view': window.location.href }
         	$("<a />", {
         	    "download": "result.json",
-        	    "href" : "data:application/json," + encodeURIComponent(JSON.stringify(wrapper, null, 2))
+        	    "href" : URL.createObjectURL(new Blob([JSON.stringify(wrapper, null, 2)], {type: "application/octet-stream"}))
         	  }).appendTo("body")
         	  .click(function() {
         	     $(this).remove()
