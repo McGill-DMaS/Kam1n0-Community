@@ -299,7 +299,7 @@ public class UITest {
 	public void testChromium() throws Exception {
 		log("Testing chrome indexing...");
 		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm2vec-clone");
+		WebElement ele = createApp("/asm-clone");
 		indexToApp(ele, "test-cases/chrome-test/", "reindex-btn");
 		searchExampleCode("Flow graph comparison.", "Full text alignment.");
 	}
