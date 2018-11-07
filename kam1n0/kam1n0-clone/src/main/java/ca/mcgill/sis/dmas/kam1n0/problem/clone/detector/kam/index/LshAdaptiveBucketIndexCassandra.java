@@ -193,7 +193,7 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 		try {
 			LineSequenceWriter writer = Lines.getLineWriter(file, false);
 			javaFunctions(this.sparkInstance.getContext()).cassandraTable(databaseName, _ADAPTIVE_BUCK)
-					.select(_ADAPTIVE_BUCK_PKEY, _ADAPTIVE_BUCK_CKEY, _ADAPTIVE_BUCK_DEPTH, _ADAPTIVE_BUCK_HIDS)
+					.select(_APP_ID, _ADAPTIVE_BUCK_PKEY, _ADAPTIVE_BUCK_CKEY, _ADAPTIVE_BUCK_DEPTH, _ADAPTIVE_BUCK_HIDS)
 					.map(row -> {
 						return row.toString();
 					}).collect().forEach(writer::writeLineNoExcept);

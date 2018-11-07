@@ -1,12 +1,12 @@
 <div class="card" style="height: 100%;">
 	<div class="card-header" data-background-color="green">
-		<h4 class="title">test1</h4>
+		<h4 class="title">Searching in Progress</h4>
 	</div>
 	<div class="card-content" style="height: 100%;">
 		<div class="row" style="height: 100%;">
 			<div class="col-sm-12" style="margin-top: 80px;">
 				<div class="discription text-center"
-					style="font-size: 20pt; margin-top: 100px;">Searching in
+					style="font-size: 20pt; margin-top: 100px;" id="titleholder">Searching in
 					Progress...</div>
 				<div class="progress progress-striped middle active"
 					style="width: 80%; margin-top: 20px; height: 20px">
@@ -25,6 +25,7 @@
 		/*<![CDATA[*/
 		$(function() {
 			var queries, other_params;
+			var use_external = false;
 			if (window.opener){
 				queries = window.opener.func_queries;
 				other_params = window.opener.other_params;
@@ -32,6 +33,7 @@
 			if (external && external.func_queries && external.other_params){
 				queries = external.func_queries;
 				other_params = external.other_params;
+				user_external = true;
 			}
 
 			var topk = /*[[${model.topk}]]*/20;
@@ -59,11 +61,15 @@
 
 			function step(indx) {
 				var query = queries[indx];
-				console.log(query)
+				if (use_external){
+				var query_obj = JSON.parse(query);
+				$('#titleholder').text(
+					'Searching ' + query_obj.functions[0].name + ' (' + query_obj.functions[0].blocks.length + ' blks)');
+					}
 				$.post(url, 
 						Object.assign({}, data, {func : query}), 
 						function(data) {
-					console.log(data)
+					// console.log(data)
 					if (data.error) {
 						$('#div-error').text(data.error);
 						hasError = true;
@@ -75,6 +81,7 @@
 					bar.css({
 						width : percent + '%'
 					});
+					
 					res.push(data.result);
 					var next_indx = indx + 1;
 					if (next_indx < queries.length)

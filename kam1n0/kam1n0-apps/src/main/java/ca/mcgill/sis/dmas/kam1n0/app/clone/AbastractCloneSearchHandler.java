@@ -1,6 +1,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,6 +166,8 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 			@RequestParam(value = "threshold", defaultValue = "0.5") double threshold,
 			@RequestParam(value = "avoidSameBinary") final boolean avoidSameBinary,
 			@RequestParam(value = "topk", defaultValue = "15") int topk, //
+			@RequestParam(value = "blk_min", defaultValue = "1") int blk_min, //
+			@RequestParam(value = "blk_max", defaultValue = "1300") int blk_max, //
 			@RequestParam(value = "bin") Object obj) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String name = auth.getName();
@@ -200,10 +203,40 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_THRESHOLD, threshold);
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILTER, avoidSameBinary);
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_TOP, topk);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MAX, blk_max);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MIN, blk_min);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
 			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
 					BinaryAnalysisProcedureCompositionAnalysis.class, params);
+			return ImmutableMap.of("jid", id);
+		} catch (Exception e) {
+			logger.error("Failed submitting job.", e);
+			return ImmutableMap.of("error", e.getMessage());
+		}
+
+	}
+
+	@RequestMapping(value = "/{appId:.+}/search_bin_dump", method = RequestMethod.POST)
+	@Access(AccessMode.READ)
+	public final @ResponseBody Map<String, Object> searchBinaryDump(@PathVariable("appId") long appId,
+			@RequestParam(value = "bin") String file) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
+
+		try {
+			file = URLDecoder.decode(file, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			logger.error("Econding error:" + file, e1);
+			return ImmutableMap.of("error", e1.getMessage());
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		BinarySearchUnit bu = FileServingUtils.getFileRelatedObject(file, BinarySearchUnit.class);
+		params.put(DumpCompositionAnalysis.KEY_FILE, bu);
+		try {
+			ApplicationInfo appInfo = meta.getInfo(appId);
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name, DumpCompositionAnalysis.class,
+					params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {
 			logger.error("Failed submitting job.", e);

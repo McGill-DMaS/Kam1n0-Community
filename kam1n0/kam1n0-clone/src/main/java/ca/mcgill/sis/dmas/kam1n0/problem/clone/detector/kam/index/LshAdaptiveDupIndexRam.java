@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.spark.api.java.JavaRDD;
@@ -28,6 +29,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 import ca.mcgill.sis.dmas.env.DmasApplication;
+import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 
 public class LshAdaptiveDupIndexRam<T extends VecInfo, K extends VecInfoShared> extends LshAdaptiveDupFuncIndex<T, K> {
@@ -39,7 +41,7 @@ public class LshAdaptiveDupIndexRam<T extends VecInfo, K extends VecInfoShared> 
 	public Table<Long, Long, VecEntry<T, K>> data = HashBasedTable.create();
 
 	@Override
-	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs) {
+	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs, StageInfo info) {
 		return vecs.stream().map(vec -> {
 			VecEntry<T, K> tvec = data.get(rid, vec.hashId);
 			if (tvec == null) {
@@ -66,7 +68,8 @@ public class LshAdaptiveDupIndexRam<T extends VecInfo, K extends VecInfoShared> 
 	// }
 
 	@Override
-	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds) {
+	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds,
+			Function<List<T>, List<T>> filter) {
 		return this.sparkInstance.getContext().parallelize(
 				hashIds.stream().map(id -> data.get(rid, id)).filter(ent -> ent != null).collect(Collectors.toList()));
 	}

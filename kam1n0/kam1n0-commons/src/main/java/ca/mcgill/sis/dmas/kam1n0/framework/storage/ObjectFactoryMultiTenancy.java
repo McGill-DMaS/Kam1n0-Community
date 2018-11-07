@@ -79,10 +79,19 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 	 * @param obj
 	 */
 	public abstract void put(long rid, T obj, boolean async);
+	
+	public void update(long rid, T obj, boolean async) {
+		put(rid, obj, async);
+	}
 
 	public void put(long rid, T obj) {
 		put(rid, obj, true);
 	}
+	
+	public void update(long rid, T obj) {
+		update(rid, obj, true);
+	}
+	
 
 	/**
 	 * Get an object with its full key. keys follow (primary key, secondary
@@ -157,8 +166,9 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 	public abstract boolean check(long rid, Object... fullKey);
 
 	public abstract void dump();
-	
-	public void prioritize() {};
+
+	public void prioritize() {
+	};
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -192,6 +202,11 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 	public static @interface InnerAsString {
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface Ignored {
+	}
+
 	public static int checkPrimary(Field field) {
 		KeyedPrimary ann = field.getAnnotation(KeyedPrimary.class);
 		if (ann == null)
@@ -214,6 +229,10 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 
 	public static boolean checkInnerAsString(Field field) {
 		return field.getAnnotation(InnerAsString.class) != null;
+	}
+
+	public static boolean checkIgnored(Field field) {
+		return field.getAnnotation(Ignored.class) != null;
 	}
 
 	public static int checkSecondary(Field field) {
@@ -367,7 +386,8 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 		this.name_cl = app + "_" + clazz.getSimpleName().toLowerCase();
 
 		// collect field information; skip transient field.
-		allAttributes = Arrays.stream(clazz.getFields()).filter(field -> !Modifier.isTransient(field.getModifiers()))
+		allAttributes = Arrays.stream(clazz.getFields())
+				.filter(field -> !Modifier.isTransient(field.getModifiers()) && !checkIgnored(field))
 				.map(field -> new FieldInformation(field)).collect(Collectors.toMap(info -> info.name, info -> info));
 
 		// check attributes and keys

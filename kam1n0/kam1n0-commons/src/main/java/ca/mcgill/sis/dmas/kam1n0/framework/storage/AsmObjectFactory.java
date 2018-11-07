@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
+import ca.mcgill.sis.dmas.io.collection.Counter;
 import ca.mcgill.sis.dmas.io.collection.DmasCollectionOperations;
 import ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra.ObjectFactoryCassandra;
 import ca.mcgill.sis.dmas.kam1n0.impl.storage.ram.ObjectFactoryRAM;
@@ -72,16 +74,22 @@ public class AsmObjectFactory {
 		obj_blocks.init(this.platformName, this.appName, Block.class);
 		obj_comments.init(this.platformName, this.appName, Comment.class);
 	}
-
+	
 	public void addBinary(long rid, Binary binary) {
+		this.addBinary(rid, binary, null);
+	} 
+
+	public void addBinary(long rid, Binary binary, StageInfo stage) {
 
 		Binary old_binary = obj_binaries.querySingle(rid, binary.binaryId);
 		if (old_binary != null) {
 			binary.functionIds.addAll(old_binary.functionIds);
 			binary.numFunctions = binary.functionIds.size();
-		}
-
-		obj_binaries.put(rid, binary);
+			obj_binaries.update(rid, binary);
+		}else
+			obj_binaries.put(rid, binary);
+		
+		Counter counter = new Counter();
 		binary.functions.parallelStream().filter(func -> func != null)
 				.filter(func -> old_binary == null || !old_binary.functionIds.contains(func.functionId))
 				.forEach(func -> {
@@ -92,6 +100,10 @@ public class AsmObjectFactory {
 					func.comments.parallelStream().forEach(cmm -> {
 						obj_comments.put(rid, cmm, false);
 					});
+					if(stage!=null) {
+						counter.inc();
+						stage.progress = counter.percentage(binary.functions.size());
+					}
 				});
 	}
 

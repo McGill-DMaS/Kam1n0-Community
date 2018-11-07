@@ -90,7 +90,7 @@
 									</span>
 									<div class="form-group  label-floating">
 										<label class="control-label">Top-K</label> <input type="text"
-											id="input-topk" class="form-control" value="10" name="topk" />
+											id="input-topk" class="form-control" value="50" name="topk" />
 										<span class="material-input"></span>
 									</div>
 								</div>
@@ -119,6 +119,34 @@
 									</div>
 								</div>
 							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-1"></div>
+							<div class="col-md-4">
+								<div class="input-group">
+									<span class="input-group-addon"> <i
+										class="material-icons">tune</i>
+									</span>
+									<div class="form-group  label-floating">
+										<label class="control-label">Filter: minimum block count</label> <input type="text"
+											id="input-blkmin" class="form-control" value="1" name="blk_min" />
+										<span class="material-input"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="input-group">
+									<span class="input-group-addon"> <i
+										class="material-icons">tune</i>
+									</span>
+									<div class="form-group  label-floating">
+										<label class="control-label">Filter: maximum block count</label> <input type="text"
+											id="input-blkmax" class="form-control" value="1300" name="blk_max" />
+										<span class="material-input"></span>
+									</div>
+								</div>
+							</div>
+							
 						</div>
 
 						<div class="row">
@@ -240,6 +268,10 @@
 									formData.append('threshold', $(
 											'#input-threshold').val());
 									formData.append('topk', $('#input-topk')
+											.val());
+									formData.append('blk_min', $('#input-blkmin')
+											.val());
+									formData.append('blk_max', $('#input-blkmax')
 											.val());
 									formData.append('avoidSameBinary', $(
 											'#input-avoidSameBinary').is(':checked') );

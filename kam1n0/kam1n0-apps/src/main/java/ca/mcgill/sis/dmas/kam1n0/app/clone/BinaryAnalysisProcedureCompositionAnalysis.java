@@ -45,6 +45,8 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 	public final static String KEY_FILE = "file";
 	public final static String KEY_THRESHOLD = "threshold";
 	public final static String KEY_TOP = "top";
+	public final static String KEY_BLK_MAX = "blk_max";
+	public final static String KEY_BLK_MIN = "blk_min";
 	public final static String KEY_FILTER = "avoidSameBinary";
 
 	@Override
@@ -54,6 +56,10 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 
 			double threshold = getDouble(KEY_THRESHOLD, dataMap, 0.5);
 			int top = getInteger(KEY_TOP, dataMap, 10);
+			int blk_min = getInteger(KEY_BLK_MIN, dataMap, 1);
+			int blk_max = getInteger(KEY_BLK_MAX, dataMap, 1300);
+			if (blk_max < 0)
+				blk_max = Integer.MAX_VALUE;
 			boolean avoidSameBinary = getBoolean(KEY_FILTER, dataMap, true);
 			CloneSearchResources ress = (CloneSearchResources) res;
 			if (ress == null) {
@@ -94,6 +100,7 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 			File resultFile = new File(Environment.getUserFolder(userName) + "/"
 					+ FileServingUtils.escapeName("Composition-" + name + "-" + StringResources.timeString() + ".kam"));
 
+			int blk_max_p = blk_max;
 			try (BinarySearchUnit unit = new BinarySearchUnit(appId, resultFile);) {
 
 				FileInfo info = FileInfo.readFileInfo(resultFile);
@@ -106,7 +113,8 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 				int ind = 0;
 				for (BinarySurrogate part : parts) {
 
-					part.functions = part.functions.stream().filter(func -> func.blocks.size() >= 5)
+					part.functions = part.functions.stream()
+							.filter(func -> func.blocks.size() >= blk_min && func.blocks.size() < blk_max_p)
 							.collect(Collectors.toCollection(ArrayList::new));
 
 					if (progress.interrupted)
@@ -118,14 +126,14 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 					stage.msg = "Analysing binary " + name + " part " + (ind) + "/" + parts.size;
 					FunctionCloneDataUnit cloneUnit = ress.detectFunctionClone(appId, part, threshold, top,
 							avoidSameBinary, progress, false);
-					unit.put(cloneUnit, ress.objectFactory, progress, -1);
+					unit.put(cloneUnit, ress.objectFactory, progress);
 					stage.progress = ind * 0.5 / parts.size + 0.5;
 				}
 				stage.complete();
 
 				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
 						"Summarizing clone data..");
-				unit.updateSummary(appId, ress.objectFactory);
+				unit.updateSummary(appId, ress.objectFactory, stage, blk_min, blk_max);
 				stage.complete();
 				// unit.makeOffline(appId, ress.objectFactory, progress);
 				info.preparing = false;

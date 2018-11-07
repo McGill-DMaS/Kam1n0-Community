@@ -17,7 +17,13 @@ public class VecObjectBlock implements VecObject<VecInfoBlock, VecInfoSharedBloc
 	public transient FeatureConstructor featureGenerator;
 
 	public VecObjectBlock(Block block, FeatureConstructor featureGenerator) {
-		this.block = block;
+		this.block = new Block(block);
+		this.block.architecture = null;
+		this.block.bytes = null;
+		this.block.codes = null;
+		this.block.binaryName = "";
+		this.block.dat = null;
+//		this.block.functionName = "";
 		this.tkns = featureGenerator.tokenizeAsmFragment(block);
 		this.featureGenerator = featureGenerator;
 	}
@@ -53,6 +59,12 @@ public class VecObjectBlock implements VecObject<VecInfoBlock, VecInfoSharedBloc
 		if (vec.noEntry())
 			return new byte[] {};
 		return schema.hash(vec);
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return Long.toString(block.blockId) + block.blockName;
 	}
 
 }

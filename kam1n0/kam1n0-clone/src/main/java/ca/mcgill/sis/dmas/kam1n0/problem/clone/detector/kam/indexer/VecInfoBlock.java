@@ -13,7 +13,7 @@ public class VecInfoBlock extends VecInfo {
 	public VecInfoBlock(Block blk) {
 		this.functionId = blk.functionId;
 		this.blockId = blk.blockId;
-		this.blockLength = blk.getAsmLines().size();
+		this.blockLength = (int) blk.codesSize;
 		this.calls = blk.callingBlocks.toArray(new Long[blk.callingBlocks.size()]);
 		this.peerSize = blk.peerSize;
 	}
@@ -23,5 +23,8 @@ public class VecInfoBlock extends VecInfo {
 	public Integer blockLength;
 	public Long[] calls;
 	public int peerSize;
+	public int funcLength;
+	
+	
 
 }

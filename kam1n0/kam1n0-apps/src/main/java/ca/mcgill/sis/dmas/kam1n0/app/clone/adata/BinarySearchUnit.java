@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.slf4j.Logger;
@@ -104,6 +105,7 @@ public class BinarySearchUnit implements AutoCloseable {
 	public List<Long> boundaries = new ArrayList<>();
 
 	public static class SummaryWrapper {
+		public String fileName;
 		public SummaryInfo summaryInfo;
 		public Map<String, String> binaryIdToNameMap;
 		public Map<String, String> binaryNameToIdMap;
@@ -112,6 +114,7 @@ public class BinarySearchUnit implements AutoCloseable {
 	public SummaryWrapper summarize() {
 		SummaryWrapper wrapper = new SummaryWrapper();
 		wrapper.summaryInfo = this.summary;
+		wrapper.fileName = this.file.getName();
 		wrapper.binaryIdToNameMap = binaryIdToNameMap;
 		wrapper.binaryNameToIdMap = binaryNameToIdMap;
 		return wrapper;
@@ -196,7 +199,7 @@ public class BinarySearchUnit implements AutoCloseable {
 	 * @return
 	 */
 	public List<String> getAddressRanges() {
-		return this.boundaries.stream().map(addr -> Long.toString(addr)).collect(Collectors.toList());
+		return this.boundaries.stream().sorted().map(addr -> Long.toString(addr)).collect(Collectors.toList());
 	}
 
 	public static class RenderInfo implements Serializable {
@@ -253,16 +256,19 @@ public class BinarySearchUnit implements AutoCloseable {
 
 	}
 
-	public void put(FunctionCloneDataUnit unit, AsmObjectFactory factory, LocalJobProgress progress, int minBlkLength) {
+	public void put(FunctionCloneDataUnit unit, AsmObjectFactory factory, LocalJobProgress progress) {
 
 		StageInfo stage = progress.nextStage(BinarySearchUnit.class, "Saving clones...");
 		int page_size = 1000; // for now we hard coded that each page has 1000 functions.
 		Queue<Long> boundaries = new ConcurrentLinkedQueue<Long>();
 		AtomicLong counter = new AtomicLong(0);
 		int total = unit.results.size();
-		unit.results.stream().parallel().forEach(result -> {
+		unit.results.stream().forEach(result -> {
 
 			try {
+
+				if (result.clones.size() < 1)
+					logger.warn("Empty result for {} {}", result.function.functionName, result.function.binaryName);
 
 				long currentCount = counter.getAndIncrement();
 				stage.progress = currentCount * 1.0 / total;
@@ -287,14 +293,7 @@ public class BinarySearchUnit implements AutoCloseable {
 			}
 		});
 
-		summary.total += unit.results.stream().filter(func -> {
-			for (BlockDataUnit node : func.function.nodes) {
-				if (node.srcCodes.size() > minBlkLength) {
-					return true;
-				}
-			}
-			return false;
-		}).count();
+		summary.total += unit.results.size();
 
 		this.boundaries.addAll(boundaries);
 
@@ -323,23 +322,36 @@ public class BinarySearchUnit implements AutoCloseable {
 		});
 	}
 
-	public void updateSummary(long rid, AsmObjectFactory factory) {
+	public void updateSummary(long rid, AsmObjectFactory factory, StageInfo stage, int blk_min, int blk_max) {
 		try {
 
 			HashSet<Long> bids = summary.binaryCloneCounterTarget.keySet().stream().map(key -> {
 				if (key != null) {
-					String key_s = StringResources.JOINER_TOKEN_CSV.join(key, Character.toString((char) ('-' - 1)));
-					String key_e = StringResources.JOINER_TOKEN_CSV.join(key, Character.toString((char) ('9' + 1)));
+					String key_s = StringResources.JOINER_TOKEN_CSV.join(key, Character.toString((char) (0)));
+					String key_e = StringResources.JOINER_TOKEN_CSV.join(key, Character.toString((char) (255)));
 					summary.binaryCloneCounterSource.put(key, this.binaryStats.subMap(key_s, key_e).size());
 					Long lkey = Long.parseLong(key);
 					return lkey;
 				} else
 					return null;
 			}).filter(val -> val != null).collect(Collectors.toCollection(HashSet::new));
+			stage.msg += " Total " + bids.size() + " bins.";
+			Counter counter = new Counter();
 			bids.stream().map(bid -> factory.obj_binaries.querySingle(rid, bid)).filter(bin -> bin != null)
 					.forEach(binary -> {
-						long funcs = binary.functionIds.stream().map(fid -> factory.obj_functions.querySingle(rid, fid))
-								.filter(fn -> fn != null).filter(fn -> fn.blockIds.size() >= 5).count();
+						long funcs = 0;
+						counter.inc();
+						// Counter fCounter = new Counter();
+						// if (binary.functionIds.size() > 1e4)
+						funcs = binary.functionIds.size();
+						// else
+						// funcs = binary.functionIds.parallelStream().peek(fn -> {
+						// fCounter.inc();
+						// stage.progress = fCounter.percentage(binary.functionIds.size())
+						// * counter.percentage(bids.size());
+						// }).map(fid -> factory.obj_functions.querySingleBaisc(rid, fid)).filter(fn ->
+						// fn != null)
+						// .filter(fn -> fn.numBlocks >= blk_min && fn.numBlocks < blk_max).count();
 						this.summary.binarySize.put(Long.toString(binary.binaryId), (int) funcs);
 					});
 			String smy = mapper.writeValueAsString(summary);
@@ -390,6 +402,27 @@ public class BinarySearchUnit implements AutoCloseable {
 		});
 		stage2.complete();
 
+	}
+
+	public void dumpAsJson(LocalJobProgress progress) throws Exception {
+
+		Reporter report = new Reporter(this.summary.total, logger);
+		StageInfo stage = progress.nextStage(BinarySearchUnit.class,
+				"Dumping {} clone details...", this.summary.total);
+		LineSequenceWriter writer = Lines.getLineWriter(this.file.getAbsolutePath() + ".json", false);
+		this.cloneDetails.entrySet().stream().forEach(ent -> {
+			try {
+				report.inc();
+				stage.progress = report.prog();
+				FunctionCloneDetectionResultForWeb result = mapper.readValue(ent.getValue(),
+						FunctionCloneDetectionResultForWeb.class);
+				writer.writeLine(mapper.writeValueAsString(result));
+			} catch (Exception e) {
+				stage.msg = e.getMessage();
+			}
+		});
+		writer.close();
+		stage.complete();
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.apache.spark.api.java.JavaPairRDD;
@@ -59,6 +60,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 	private int blockLengthLimit = 1;
 	private int debugLevel = 0;
 	private double basicCloneThreshold = 0.05;
+	private SparkInstance spark = null;
 	public boolean specialSingleBlkFuncSearch = true;
 	public int fixTopK = -1;
 
@@ -70,6 +72,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			debugLevel = 1;
 		}
 		this.indexer = indexer;
+		this.spark = instance;
 	}
 
 	ListMultimap<Long, String> reverse = ArrayListMultimap.create();
@@ -117,6 +120,9 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 		Counter finalFuncLength = Counter.zero();
 		for (Block blk : function) {
 			int blkLength = blk.getAsmLines().size();
+			// if(blkLength != blk.codesSize)
+			// logger.info("Incosistnent size {} vs {}", blkLength, blk.codesSize);
+			// System.out.println(blk.blockName + "," + blk.codesSize);
 			if (blkLength > blockLengthLimit) {
 				vBlks.add(blk);
 				finalFuncLength.inc(blkLength);
@@ -161,24 +167,33 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 					.queryAsRdds(rid, vBlks, links, topK)//
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
-			// (keyed: srcfuncid -> (tar, src, score)
-			JavaPairRDD<Long, Tuple3<HashedLinkedBlock, HashedLinkedBlock, Double>> func_sblks = b_to_b.mapToPair(t -> {
-				return new Tuple2<>(t._1,
-						new Tuple3<>(new HashedLinkedBlock(t._2._1()), new HashedLinkedBlock(t._2._2()), t._2._3()));
-			});
-
+			// logger.info("b_to_b {}", b_to_b.count());
 			int fc = finalFuncLength.count;
-			results = func_sblks.groupByKey().map(tp -> {
-				// tp._2: (tar, src, score)
-				// FunctionCloneEntry entry =
-				// SubgraphBlocks.mergeSinglesOld(tp._2, links, vBlks.size(),
-				// fc);
-				// FunctionCloneEntry entry =
-				// SubgraphBlocks.mergeSingles(vBlkIds, tp._2);
+			if (!spark.localMode) {
+				// (keyed: srcfuncid -> (tar, src, score)
+				JavaPairRDD<Long, Tuple3<Block, Block, Double>> func_sblks = b_to_b.mapToPair(t -> {
+					return new Tuple2<>(t._1, new Tuple3<>(t._2._1(), t._2._2(), t._2._3()));
+				});
+				// data locality
+				results = func_sblks.groupByKey().map(tp -> {
+					FunctionCloneEntry sbi = SubgraphBlocksImpl3.mergeSingles2(fc, null);
+					return sbi;
+				}).collect();
+			} else {
 
-				return SubgraphBlocksImpl3.mergeSingles(tp._2).toFunctionCloneEntry(fc);
-				// return entry;
-			}).collect();
+				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> mp = ArrayListMultimap.create();
+				b_to_b.collect().forEach(tp2 -> mp.put(tp2._1(), tp2._2()));
+
+				// logger.info("started {}", function.functionName);
+				results = mp.keySet().stream().parallel().map(tp -> {
+					return SubgraphBlocksImpl3.mergeSingles2(fc, mp.get(tp));
+				}).collect(Collectors.toList());
+
+				// Warning: may cause OOM
+				// logger.info("Dumping indexs");
+				// indexer.dump("C:\\delivery\\tmp\\");
+				// logger.info("finished {}", function.functionName);
+			}
 		}
 
 		return results.stream().filter(fce -> !avoidSameBinary || (fce.binaryId != function.binaryId))

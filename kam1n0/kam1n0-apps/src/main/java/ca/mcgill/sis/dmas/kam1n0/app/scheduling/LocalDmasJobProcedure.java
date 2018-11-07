@@ -116,6 +116,14 @@ public abstract class LocalDmasJobProcedure implements InterruptableJob {
 			throw new Exception("The required param " + name + " is not filled with correct format. ");
 		}
 	}
+	
+	public String getString(String name, Map<String, Object> map, String deflt) throws Exception {
+		try {
+			return map.containsKey(name) ? (String) map.get(name) : deflt;
+		} catch (Exception e) {
+			throw new Exception("The required param " + name + " is not filled with correct format. ");
+		}
+	}
 
 	public long getLong(String name, Map<String, Object> map, long deflt) throws Exception {
 		try {
