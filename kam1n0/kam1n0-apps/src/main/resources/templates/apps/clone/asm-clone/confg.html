@@ -5,7 +5,7 @@
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.kStart}" id="kStart"
-			placeholder="Starting k value" /> <span
+			placeholder="Starting k value (needs to be a multiplier of 4)." /> <span
 			th:each="error : ${#fields.errors('configuration.kStart')}"
 			th:text="${error}" class="help-block" />
 	</div>

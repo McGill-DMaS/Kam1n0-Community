@@ -22,8 +22,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -112,7 +114,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
 		// get all the valid hids to a list
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), topK)._2
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), topK, null)._2
 				.collect();
 
 		infos.forEach(entry -> {
@@ -189,7 +191,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			set.retainAll(links);
 			long edges = set.stream().filter(tp2 -> !tp2._1.equals(tp2._2)).count();
 			long nodes = set.stream().filter(tp2 -> tp2._1.equals(tp2._2)).count();
-			return new Tuple2<>(tp._1, edges * blkSize + nodes);
+			return new Tuple2<>(tp._1, nodes * blkSize + nodes);
 		}).collect().forEach(tp -> rank.push(tp._2, tp._1));
 
 		Set<Long> fids = rank.getKeys();
@@ -199,13 +201,23 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	}
 
 	// hid->(tblk, info)
-	public JavaPairRDD<Long, Long> collectAndFilter2(JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> hid_tblk_info,
-			Set<Tuple2<Long, Long>> links, int funcLength, int topK) {
+	public JavaPairRDD<Long, Long> collectAndFilter2(Long rid,
+			JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> hid_tblk_info, Set<Tuple2<Long, Long>> links, int funcLength,
+			int topK) {
 
 		List<Tuple2<Long, Tuple2<Block, VecInfoBlock>>> hid_tbid_Map = hid_tblk_info.collect();
 
 		final HashMap<Long, Double> counter = new HashMap<>();
+		// logger.info("{} pairs", hid_tbid_Map.size());
 		hid_tbid_Map.stream().forEach(tp -> counter.compute(tp._2()._2().functionId, (k, v) -> {
+			// Double val = tp._3() * 1.0 / (tp._4() + threshold);
+			// VecInfoBlock info = tp._2()._2;
+			// Double val = info.blockLength * 1.0 * info.blockLength;// * 1.0 /
+			// (info.peerSize) ;//+ funcLength);
+			// if (v == null)
+			// return val;
+			// else
+			// return v + val;
 			// Double val = tp._3() * 1.0 / (tp._4() + threshold);
 			VecInfoBlock info = tp._2()._2;
 			Double val = info.blockLength * 1.0 / (info.peerSize + funcLength);
@@ -214,12 +226,41 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			else
 				return v + val;
 		}));
-		Ranker<Long> filtered = new Ranker<>(topK);
+		Ranker<Long> filtered = new Ranker<>();
 		counter.entrySet().stream().forEach(ent -> filtered.push(ent.getValue(), ent.getKey()));
-		HashSet<Long> valids = filtered.stream().map(ent -> ent.value).collect(Collectors.toCollection(HashSet::new));
-
+		HashSet<Long> valids = filtered.getTopK(topK * 3).stream().map(ent -> ent.value)
+				.collect(Collectors.toCollection(HashSet::new));
+		// List<Entry<Long, Double>> ls =
+		// counter.entrySet().parallelStream().sorted((e1,e2)->e2.getValue().compareTo(e1.getValue())).collect(Collectors.toList());
+		// Set<Long> valids = ls.subList(0, Math.min(topK,
+		// ls.size())).stream().map(ent->ent.getKey()).collect(Collectors.toSet());
 		return hid_tblk_info.filter(tp -> valids.contains(tp._2._2.functionId))
 				.mapToPair(tp -> new Tuple2<>(tp._1, tp._2._2.blockId));
+	}
+
+	public static class VecInfoBlockFilter implements Serializable, Function<List<VecInfoBlock>, List<VecInfoBlock>> {
+
+		private static final long serialVersionUID = -5140694331617864078L;
+		public int blk_size;
+		public int topK;
+
+		public VecInfoBlockFilter(int blk_size, int topK) {
+			this.blk_size = blk_size;
+			this.topK = topK;
+		}
+
+		public VecInfoBlockFilter() {
+		}
+
+		@Override
+		public List<VecInfoBlock> apply(List<VecInfoBlock> ls) {
+			if (ls.size() < this.topK)
+				return ls;
+			Ranker<VecInfoBlock> rk = new Ranker<>();
+			ls.stream().forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - this.blk_size), vb));
+			return rk.getTopK(this.topK).stream().map(ent -> ent.value).collect(Collectors.toList());
+		}
+
 	}
 
 	@Override
@@ -254,11 +295,18 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// tp._1).collect(Collectors.toCollection(HashSet::new));
 
 		// hid->info
+		int blk_size = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
+		// new VecInfoBlockFilter(blk_size, topK)
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 = index
-				.query(rid, objs, topK);
+				// .query(rid, objs, topK, null);
+				.query(rid, objs, topK, new VecInfoBlockFilter(blk_size, topK * 10));
 
-		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(
-				tp2._1.stream().map(tp -> new Tuple2<>(tp._1, tp._2.block)).collect(Collectors.toList()));
+		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(tp2._1.stream().map(tp -> {
+			return new Tuple2<>(tp._1, tp._2.block);
+		}).collect(Collectors.toList()));
+
+		// @SuppressWarnings("unused")
+		// List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> tmp = tp2._2.collect();
 
 		JavaPairRDD<Long, VecInfoBlock> hid_info = tp2._2.flatMapToPair(entry -> entry.vids.stream()
 				.map(info -> new Tuple2<>(entry.hashId, info)).collect(Collectors.toList()).iterator());
@@ -267,15 +315,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// hid->(tblk, info)
 		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info);
 
-		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(jointed, links, length, topK);
+		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(rid, jointed, links, length, topK);
 
 		HashSet<Long> sids = new HashSet<>(hid_sbid.map(tp -> tp._2).collect());
 
 		// if (debug)
 		// logger.info("sids {} func {} size {} blks {}", sids.size(),
 		// blks.get(0).functionName, length, blks.size());
-
-		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultiple(rid, "blockId", sids)
+		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 
 		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid)

@@ -56,8 +56,11 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	private static Logger logger = LoggerFactory.getLogger(ObjectFactoryCassandra.class);
 	private transient CassandraInstance cassandra = null;
 	private transient SparkInstance spark = null;
+	private int binSize = 1000;
 
 	public ObjectFactoryCassandra(CassandraInstance cassandra, SparkInstance spark) {
+		String binSizeStr = System.getProperty("kam1n0.factory.cassandra.client.binsize", "500");
+		binSize = Integer.parseInt(binSizeStr);
 		this.cassandra = cassandra;
 		this.spark = spark;
 	}
@@ -195,9 +198,18 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	public void close() {
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void put(long rid, T obj, boolean async) {
+		this.update(rid, obj, async, true);
+	}
+
+	@Override
+	public void update(long rid, T obj, boolean async) {
+		this.update(rid, obj, async, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void update(long rid, T obj, boolean async, boolean addC) {
 		cassandra.doWithSession(sess -> {
 			Insert query = QueryBuilder.insertInto(name_db, name_cl);
 			query.value(primaryKey_rid, rid);
@@ -250,9 +262,11 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 			} else {
 				sess.execute(query);
 			}
-			PreparedStatement inc_stm = sess
-					.prepare("UPDATE " + name_db + "." + name_cl_meta + " SET counts = counts + 1 WHERE rid = ?");
-			sess.executeAsync(inc_stm.bind(rid));
+			if (addC) {
+				PreparedStatement inc_stm = sess
+						.prepare("UPDATE " + name_db + "." + name_cl_meta + " SET counts = counts + 1 WHERE rid = ?");
+				sess.executeAsync(inc_stm.bind(rid));
+			}
 		});
 	}
 
@@ -341,14 +355,43 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 
 	@Override
 	public JavaRDD<T> queryMultiple(long rid, String fieldName, Collection<? extends Object> keys) {
-		return javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl)
-				.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, keys).map(this::map);
+		List<List<Object>> partitions = new ArrayList<>();
+		partitions.add(new ArrayList<Object>());
+		int c = 0;
+		for (Object sid : keys) {
+			if (++c % binSize == 0)
+				partitions.add(new ArrayList<Object>());
+			partitions.get(partitions.size() - 1).add(sid);
+		}
+		List<JavaRDD<T>> sblks = partitions.parallelStream()
+				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl)
+						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
+				.collect(Collectors.toList());
+		JavaRDD<T> sblk = sblks.get(0);
+		if (sblks.size() > 1)
+			sblk = spark.getContext().union(sblk, sblks.subList(1, sblks.size()));
+		return sblk;
 	}
 
 	@Override
 	public JavaRDD<T> queryMultipleBaisc(long rid, String fieldName, Collection<? extends Object> keys) {
-		return javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl).select(basicAttributes)
-				.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, keys).map(this::map);
+		List<List<Object>> partitions = new ArrayList<>();
+		partitions.add(new ArrayList<Object>());
+		int c = 0;
+		for (Object sid : keys) {
+			if (++c % binSize == 0)
+				partitions.add(new ArrayList<Object>());
+			partitions.get(partitions.size() - 1).add(sid);
+		}
+
+		List<JavaRDD<T>> sblks = partitions.parallelStream()
+				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl).select(basicAttributes)
+						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
+				.collect(Collectors.toList());
+		JavaRDD<T> sblk = sblks.get(0);
+		if (sblks.size() > 1)
+			sblk = spark.getContext().union(sblk, sblks.subList(1, sblks.size()));
+		return sblk;
 	}
 
 	@Override

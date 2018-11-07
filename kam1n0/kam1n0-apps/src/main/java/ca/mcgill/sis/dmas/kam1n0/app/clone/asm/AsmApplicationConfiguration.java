@@ -11,7 +11,7 @@ public class AsmApplicationConfiguration extends ApplicationConfiguration {
 
 	public NormalizationSetting normalizationSetting = new NormalizationSetting();
 	public ArchitectureType architectureType = ArchitectureType.metapc;
-	public int kStart = 18;
+	public int kStart = 16;
 	public int kMax = 1024;
 	public int mSplit = 20;
 	public int l = 1;

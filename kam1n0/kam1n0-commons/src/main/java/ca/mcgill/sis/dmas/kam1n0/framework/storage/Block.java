@@ -35,6 +35,7 @@ import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizer;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsBasic;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsBytes;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsString;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.Ignored;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.KeyedPrimary;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.KeyedSecondary;
 
@@ -60,6 +61,8 @@ public class Block implements AsmFragment, Serializable {
 	public String binaryName = StringResources.STR_EMPTY;
 
 	public String blockName = StringResources.STR_EMPTY;
+
+	public long codesSize = -1;
 
 	@AsBytes
 	public List<List<String>> codes;
@@ -131,24 +134,6 @@ public class Block implements AsmFragment, Serializable {
 		return StringResources.JOINER_TOKEN_CSV_SPACE.join(blockName, functionName, blockId);
 	}
 
-	/**
-	 * Copy constructor. Need to update for every added field. Used by all
-	 * subclasses.
-	 * 
-	 * @param blockId
-	 * @param callingBlocks
-	 * @param peerSize
-	 * @param functionId
-	 * @param functionName
-	 * @param binaryId
-	 * @param binaryName
-	 * @param blockName
-	 * @param codes
-	 * @param sea
-	 * @param bytes
-	 * @param dat
-	 * @param architecture
-	 */
 	public Block(Block blk) {
 		super();
 		this.blockId = blk.blockId;
@@ -164,6 +149,7 @@ public class Block implements AsmFragment, Serializable {
 		this.bytes = blk.bytes;
 		this.dat = blk.dat;
 		this.architecture = blk.architecture;
+		this.codesSize = blk.codesSize;
 	}
 
 	public Block() {

@@ -64,10 +64,10 @@ text {
 	<div class="col-lg-12" style="height: 100%; margin-top: 10px;">
 		<div class="card card-nav-tabs" style="height: 100%; bottom: 20px;">
 			<div class="header header-danger"
-				style="height: auto; border-bottom: none; padding-left: 10px; margin-top: -10px">
+				style="height: 80px; border-bottom: none; padding-left: 10px; margin-top: -10px">
 				<div class="nav-tabs-navigation">
 					<div class="nav-tabs-wrapper">
-						<ul class="nav nav-tabs" data-tabs="tabs">
+						<ul class="nav nav-tabs pull-left" data-tabs="tabs">
 							<li class="active"><a href="#summary" data-toggle="tab"
 								aria-expanded="false"> <i class="material-icons">chat</i>
 									Summary
@@ -77,6 +77,9 @@ text {
 									Details
 									<div class="ripple-container"></div></a></li>
 						</ul>
+						<a href="#" id="btn_dump" class="pull-right"  style="padding-right:10px;color:white" title="Dump all as JSON file.">
+						<i class="material-icons" >move_to_inbox</i>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -414,9 +417,9 @@ text {
 			$summaryList.empty();
 			$
 					.each(
-							smy.binaryCloneCounterSource,
+							smy.binaryCloneCounterTarget,
 							function(k, v) {
-							    v = Math.min(v, smy.binarySize[k]);
+							   // v = Math.min(v, smy.binarySize[k]);
 								var $divCont = $("<div>", {
 									'class' : 'col-lg-3 col-xs-6'
 								});
@@ -441,6 +444,8 @@ text {
 												.append(
 														formatString(v)
 																+ "/"
+																+ formatString(smy.total)
+																+ "/"
 																+ formatString(smy.binarySize[k]))
 												.addClass("pull-right"))
 								$divInner
@@ -455,7 +460,7 @@ text {
 														.addClass("pull-right")
 														.prop(
 																'title',
-																'The percentage of assembly functions that can be matched from this binary with a similarity value above the user-defined threshold.')
+																'Matched target functions/Total valid queries/Source binary\'s function size. \nPercentage: Matched target functions/Total valid queries')
 														.css('cursor',
 																'default')
 														.css("color", "gray"));
@@ -466,11 +471,13 @@ text {
 								var $input = $("<input>", {
 									'class' : 'knob'
 								});
+								var tv = v / smy.binarySize[k];
+								tv = Math.floor(tv*100)/100
 								$input.prop("type", "text");
-								$input.prop("value", v);
-								$input.prop("val", v);
-								$input.data("max", smy.binarySize[k]);
-								$input.prop("max", smy.binarySize[k]);
+								$input.prop("value", tv);
+								$input.prop("val", tv);
+								$input.data("max", 1);
+								$input.prop("max", 1);
 								$input.data("min", 0);
 								$input.prop('readonly', true);
 								$divHolder.append($input);
@@ -557,7 +564,7 @@ text {
 													for (var i = 0; i < ls.length; i++) {
 														var $option = $('<option>');
 														$option.text('0x'+ls[i].toString(16));
-														$option.value=ls[i];
+														$option.val(ls[i]);
 														$selector
 																.append($option);
 													}
@@ -571,10 +578,11 @@ text {
 																				function() {
 																					var str_s = $(
 																							this)
-																							.value;
+																							.val();
 																						var str_e = $(
 																							this).next()
-																							.value;
+																							.val();
+																					console.log('requesting ' + str_s + ' ' + str_e);
 																						
 																					$
 																							.ajax({
@@ -641,6 +649,21 @@ text {
 
 						createCompositionBox(data.object);
 						createFilters(data.object);
+						
+						$('#btn_dump').click(function(){
+							$.ajax({
+									type : 'POST',
+									url : "search_bin_dump",
+									data : {
+										bin : fileName
+									},
+									success : function(data) {
+										if (data.error) {
+											dmas_alert(data.error);
+										}else
+											dmas_alert('Job submitted. Progress can be checked at user home page.\nResult file will be stored in %data_path%/userfile/');
+									}});
+						});
 						return;
 					}
 				});

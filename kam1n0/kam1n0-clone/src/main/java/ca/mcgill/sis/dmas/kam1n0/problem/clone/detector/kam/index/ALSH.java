@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -13,10 +14,13 @@ import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ArrayListMultimap;
+
 import ca.mcgill.sis.dmas.env.LocalJobProgress;
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.binary.DmasByteOperation;
+import ca.mcgill.sis.dmas.io.collection.Counter;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index.LshAdaptiveBucketIndexAbstract.AdaptiveBucket;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
@@ -103,7 +107,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 		stage = progress.nextStage(LshAdaptiveDupFuncIndex.class,
 				"Updating deduplicated database " + vals.size() + " vecs");
 
-		List<VecEntry<T, K>> nonexisted = index_deduplication.update(rid, vals);
+		List<VecEntry<T, K>> nonexisted = index_deduplication.update(rid, vals, stage);
 
 		stage.complete();
 
@@ -114,14 +118,19 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 		List<VecEntry<T, K>> vecs = this.create(rid, targets, this.L, progress);
 
 		StageInfo stage = progress.nextStage(this.getClass(), "Computing/Persisting buckets " + vecs.size() + " vecs");
-		List<AdaptiveBucket> bks_to_split = this.index_bucket.indexVecs(rid, vecs);
+		List<AdaptiveBucket> bks_to_split = this.index_bucket.indexVecs(rid, vecs, stage);
+		HashMap<String, AdaptiveBucket> buckets = new HashMap<>();
+		bks_to_split.forEach(bk -> buckets.compute(bk.pkey + bk.cKey, (k, v) -> v == null ? bk : v));
 		stage.complete();
 
-		StageInfo stage2 = progress.nextStage(this.getClass(), "Spliting " + bks_to_split.size() + " buckets");
-		IntStream.range(0, bks_to_split.size()).forEach(bInd -> {
-			AdaptiveBucket bucket = bks_to_split.get(bInd);
-			splitBucket(rid, bucket);
-			stage2.progress = bInd * 1.0 / bks_to_split.size();
+		StageInfo stage2 = progress.nextStage(this.getClass(), "Spliting " + buckets.size() + " buckets");
+		Counter counter = new Counter();
+		buckets.values().parallelStream().forEach(bucket -> {
+			// AdaptiveBucket bucket = bks_to_split.get(bInd);
+			// splitBucket(rid, bucket);
+			splitBucketRecursive(rid, bucket);
+			counter.inc();
+			stage2.progress = counter.getVal() * 1.0 / bks_to_split.size();
 		});
 		stage2.complete();
 
@@ -133,7 +142,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	}
 
 	private static Integer nextDepth(Integer depth) {
-		return depth + 4;
+		return depth * 2;
 	}
 
 	private void splitBucket(long rid, AdaptiveBucket bucket) {
@@ -144,7 +153,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			partitionKey = bucket.pkey + bucket.cKey;
 		int nextDepth = nextDepth(bucket.depth);
 		List<Tuple3<String, String, Long>> children = this.index_deduplication
-				.getVecEntryInfoAsRDD(rid, bucket.hids, true).map(vec -> {
+				.getVecEntryInfoAsRDD(rid, bucket.hids, true, null).map(vec -> {
 					int ind = vec.ind;
 					String nextKey = StringResources.FORMAT_3R.format(ind) + "-"
 							+ DmasByteOperation.toHexs(vec.fullKey, nextDepth);
@@ -154,12 +163,54 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 		this.index_bucket.splitAdaptiveBucket(rid, bucket, nextDepth, children);
 	}
 
+	private void splitBucketRecursive(long rid, AdaptiveBucket bucket) {
+		if (bucket.depth >= this.index_bucket.maxDepth)
+			return;
+		List<VecEntry<T, K>> children = this.index_deduplication.getVecEntryInfoAsRDD(rid, bucket.hids, true, null)
+				.collect();
+		splitBucketRecursiveHandler(rid, bucket.pkey, bucket.cKey, bucket.depth, children);
+	}
+
+	private void splitBucketRecursiveHandler(long rid, String plk, String clk, int depth,
+			List<VecEntry<T, K>> children) {
+		if (depth >= this.index_bucket.maxDepth) {
+			children.parallelStream().forEach(vec -> this.index_bucket.putHid(rid, plk, clk, depth, vec.hashId));
+			return;
+		}
+		// logger.info("Spliting depth {} with {}::{}", depth, plk, clk);
+		this.index_bucket.clearHid(rid, plk, clk);
+		String partitionKey;
+		if (clk.equals(LshAdaptiveBucketIndexAbstract.rootClusteringKey))
+			partitionKey = plk;
+		else
+			partitionKey = plk + clk;
+		int nextDepth = nextDepth(depth);
+		ArrayListMultimap<String, VecEntry<T, K>> map = ArrayListMultimap.create();
+		children.stream().forEach(vec -> {
+			int ind = vec.ind;
+			String nextKey = StringResources.FORMAT_3R.format(ind) + "-"
+					+ DmasByteOperation.toHexs(vec.fullKey, nextDepth);
+			String clusteringKey = nextKey.replaceAll(partitionKey, "");
+			map.put(clusteringKey, vec);
+		});
+		map.keySet().stream().forEach(k -> {
+			List<VecEntry<T, K>> vecs = map.get(k);
+			if (vecs.size() < this.index_bucket.maxSize) {
+				vecs.parallelStream()
+						.forEach(vec -> this.index_bucket.putHid(rid, partitionKey, k, nextDepth, vec.hashId));
+			} else {
+				splitBucketRecursiveHandler(rid, partitionKey, k, nextDepth, vecs);
+			}
+		});
+	}
+
 	public <E extends VecObject<T, K>> Tuple2<List<Tuple2<Long, E>>, JavaRDD<VecEntry<T, K>>> query(long rid,
-			List<? extends E> objs, int topK) {
+			List<? extends E> objs, int topK, Function<List<T>, List<T>> filter) {
 		List<Tuple2<Long, E>> hid_tbid_l = this.index_bucket.collectHids(rid, objs, this::hash);
 		HashSet<Long> hids = hid_tbid_l.stream().map(tp -> tp._1).collect(Collectors.toCollection(HashSet::new));
+		logger.info("hids {}", hids.size());
 		// hid->info
-		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(rid, hids, false).cache();
+		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(rid, hids, false, filter);// .cache();
 		return new Tuple2<>(hid_tbid_l, hid_info);
 	}
 

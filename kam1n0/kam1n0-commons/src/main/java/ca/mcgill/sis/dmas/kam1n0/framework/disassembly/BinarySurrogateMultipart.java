@@ -67,6 +67,7 @@ public class BinarySurrogateMultipart implements Iterable<BinarySurrogate> {
 				BinarySurrogate binarySurrogate;
 				try {
 					binarySurrogate = BinarySurrogate.load(ite.next());
+					binarySurrogate.processRawBinarySurrogate();
 					return binarySurrogate;
 				} catch (Exception e) {
 					logger.error("Failed to parse the output json file.", e);

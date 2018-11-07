@@ -33,7 +33,7 @@ public class GeneralVectorIndex {
 	public List<Tuple2<Long, Double>> query(long rid, double[] vec, int topK, long identifier) {
 		VecObjectArray obj = new VecObjectArray(vec, identifier);
 		HashMap<Long, double[]> candidates = new HashMap<>();
-		List<VecEntry<VecInfoArray, VecInfoSharedArray>> infos = index.query(rid, Arrays.asList(obj), topK)._2
+		List<VecEntry<VecInfoArray, VecInfoSharedArray>> infos = index.query(rid, Arrays.asList(obj), topK, null)._2
 				.collect();
 		infos.forEach(info -> {
 			info.vids.stream().forEach(vid -> {

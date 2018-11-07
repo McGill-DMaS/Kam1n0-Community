@@ -70,19 +70,20 @@ public abstract class FunctionCloneDetector {
 		int total = Iterables.size(binaries);
 		int binIndx = 1;
 		StageInfo stage_binary = progress.nextStage(this.getClass());
-		for (Iterable<? extends Binary> parts : binaries) {
+		for (BinaryMultiParts parts : binaries) {
 			stage_binary.updateMsg("Indexing [ {} / {} ] binary files.", binIndx, total);
 			stage_binary.progress = (binIndx - 1) * 1.0 / total;
 			StageInfo stage_part = progress.nextStage(this.getClass());
 			stage_part.progress = 0.5;
 			int partIndx = 1;
 			for (Binary part : parts) {
-				stage_part.updateMsg("Indexing part {} for {}", partIndx, part.binaryName);
+				stage_part.updateMsg("Indexing part {}/{} for {}", partIndx, parts.getSize(), part.binaryName);
+				stage_part.progress = partIndx * 1.0 / parts.getSize();
 				StageInfo stage_store = progress.nextStage(this.getClass(),
 						"Storing {} functions into database for {} part {}.", part.functions.size(), part.binaryName,
 						partIndx);
 				if (this.factory != null)
-					this.factory.addBinary(rid, part);
+					this.factory.addBinary(rid, part, stage_store);
 				stage_store.complete();
 				this.indexFuncsToBeImplByChildren(rid, Arrays.asList(part), progress);
 

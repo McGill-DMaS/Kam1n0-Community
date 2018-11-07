@@ -25,14 +25,21 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+
+import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.LineSequenceWriter;
 import ca.mcgill.sis.dmas.io.Lines;
+import ca.mcgill.sis.dmas.io.collection.Counter;
+import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.indexer.VecInfoBlock;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import scala.Tuple2;
@@ -106,8 +113,9 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	}
 
 	@Override
-	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs) {
+	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs, StageInfo info) {
 		return this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(), session -> {
+			Counter counter = new Counter();
 			return vecs.stream().parallel()
 					.map(vec -> new Tuple2<>(vec,
 							session.execute(QueryBuilder.select(_ADAPTIVE_HASH_HASHID)
@@ -115,6 +123,10 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId))).one()))
 					//
 					.map(tp -> {
+						if (info != null) {
+							counter.inc();
+							info.progress = counter.percentage(vecs.size());
+						}
 						VecEntry<T, K> vec = tp._1();
 
 						HashSet<String> vals = vec.vids.stream().map(VecInfo::serialize)
@@ -238,48 +250,83 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			_ADAPTIVE_HASH_IND, _ADAPTIVE_HASH_FULLKEY };
 
 	@Override
-	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds) {
+	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds,
+			Function<List<T>, List<T>> filter) {
 
-		String[] selection = null;
+		String[] selection;
 		if (excludeBlockIds)
 			selection = selectAllInfoButVidsAndSharedInfo;
 		else
 			selection = selectAllInfo;
 
-		return javaFunctions(this.sparkInstance.getContext())
-				//
-				.cassandraTable(databaseName, _ADAPTIVE_HASH_VIEW)
-				//
-				.select(selection)//
-				.where(_APP_ID + " = ? AND " + _ADAPTIVE_HASH_HASHID + " in ?", rid, hashIds)//
-				.filter(row -> !row.isNullAt(0) && !row.isNullAt(1) & !row.isNullAt(2))
-				//
-				.map(row -> {
-					VecEntry<T, K> vec = new VecEntry<T, K>();
-					vec.hashId = row.getLong(0);
-					vec.ind = row.getInt(1);
-					ByteBuffer bb = row.getBytes(2);
-					vec.fullKey = new byte[bb.remaining()];
-					bb.get(vec.fullKey);
+		if (sparkInstance.localMode) {
+			List<VecEntry<T, K>> collected = this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
+					session -> {
+						return hashIds.parallelStream().map(hid -> {
+							return session.execute(QueryBuilder.select(selection)
+									.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
+									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
+						}).filter(row -> row != null).map(row -> {
+							VecEntry<T, K> vec = new VecEntry<T, K>();
+							vec.hashId = row.getLong(0);
+							vec.ind = row.getInt(1);
+							ByteBuffer bb = row.getBytes(2);
+							vec.fullKey = new byte[bb.remaining()];
+							bb.get(vec.fullKey);
+							if (!excludeBlockIds) {
+								Set<String> vids = row.getSet(3, String.class);
+								List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
+								if (filter != null) {
+									ls = filter.apply(ls);
+								}
+								vec.vids = new HashSet<T>(ls);
+								// .collect(Collectors.toCollection(HashSet::new));
+								String shared = row.getString(4);
+								vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
+							}
+							return vec;
+						}).collect(Collectors.toList());
+					});
+			return sparkInstance.getContext().parallelize(collected);
+		} else {
+			return javaFunctions(this.sparkInstance.getContext())
+					//
+					.cassandraTable(databaseName, _ADAPTIVE_HASH_VIEW)
+					//
+					.select(selection)//
+					.where(_APP_ID + " = ? AND " + _ADAPTIVE_HASH_HASHID + " in ?", rid, hashIds)//
+					.filter(row -> !row.isNullAt(0) && !row.isNullAt(1) & !row.isNullAt(2))
+					//
+					.map(row -> {
+						VecEntry<T, K> vec = new VecEntry<T, K>();
+						vec.hashId = row.getLong(0);
+						vec.ind = row.getInt(1);
+						ByteBuffer bb = row.getBytes(2);
+						vec.fullKey = new byte[bb.remaining()];
+						bb.get(vec.fullKey);
 
-					if (!excludeBlockIds) {
-						Set<String> vids = row.getSet(3, typeConverter(String.class));
-						vec.vids = vids.stream().map(VecInfo::<T>deSerialize)
-								.collect(Collectors.toCollection(HashSet::new));
-						String shared = row.getString(4);
-						vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
-					}
+						if (!excludeBlockIds) {
+							Set<String> vids = row.getSet(3, typeConverter(String.class));
+							List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
+							if (filter != null) {
+								ls = filter.apply(ls);
+							}
+							vec.vids = new HashSet<T>(ls);
+							// .collect(Collectors.toCollection(HashSet::new));
+							String shared = row.getString(4);
+							vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
+						}
 
-					return vec;
-				});
+						return vec;
+					});
+		}
 	}
 
 	public void dump(String file) {
 		try {
 			LineSequenceWriter writer = Lines.getLineWriter(file, false);
-			javaFunctions(this.sparkInstance.getContext()).cassandraTable(databaseName, _ADAPTIVE_HASH)
-					.select(_ADAPTIVE_HASH_HASHID, _ADAPTIVE_HASH_IND, _ADAPTIVE_HASH_FULLKEY, _ADAPTIVE_HASH_VIDS)
-					.map(row -> {
+			javaFunctions(this.sparkInstance.getContext()).cassandraTable(databaseName, _ADAPTIVE_HASH).select(_APP_ID,
+					_ADAPTIVE_HASH_HASHID, _ADAPTIVE_HASH_IND, _ADAPTIVE_HASH_FULLKEY, _ADAPTIVE_HASH_VIDS).map(row -> {
 						return row.toString();
 					}).collect().forEach(writer::writeLineNoExcept);
 			writer.close();

@@ -18,6 +18,7 @@ package ca.mcgill.sis.dmas.kam1n0.app.clone;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -35,6 +36,7 @@ import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneDetector;
+import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 
 public class FunctionCloneDetectorForWeb {
 
@@ -55,22 +57,48 @@ public class FunctionCloneDetectorForWeb {
 		ArrayList<FunctionCloneDetectionResultForWeb> fullResults = new ArrayList<>();
 
 		Counter counter = Counter.zero();
-		List<FunctionCloneDetectionResultForWeb> ls = IntStream.range(0, funcs.size()).parallel()
-				.mapToObj(ind -> funcs.get(ind)).map(func -> {
+		long start = System.currentTimeMillis();
+		String omString = stage.msg;
+		Counter gate = new Counter();
+		gate.inc(100);
+//		ForkJoinPool pool = new ForkJoinPool(8);
+//		pool.submit(() -> {
 
-					if (progress.interrupted)
-						return null;
+			List<FunctionCloneDetectionResultForWeb> ls = IntStream.range(0, funcs.size()).parallel()
+					.mapToObj(ind -> {
+						Function func = funcs.get(ind);
 
-					counter.inc();
-					stage.progress = counter.count * 1.0 / funcs.size();
-					logger.info("{} completed {} bks", stage.progress, func.blocks.size());
+						if (progress.interrupted)
+							return null;
+						
+//						try {
+//							SparkInstance.checkAndWait();
+//						} catch (Exception e1) {
+//							logger.warn("Failed to check spark status.", e1);
+//						}
 
-					try {
-						return this.detectClones(rid, func, threashold, topK, avoidSameBinary);
-					} catch (Exception e) {
-						return null;
-					}
-				}).filter(re -> re != null).collect(Collectors.toList());
+						counter.inc();
+						stage.progress = counter.getVal() * 1.0 / funcs.size();
+						logger.info("{} queued {} bks named {}", StringResources.FORMAT_AR4D.format(stage.progress),
+								func.blocks.size(), func.functionName);
+						if(counter.getVal() > gate.getVal()) {
+							gate.inc(100);
+							double eta = (System.currentTimeMillis() - start) / stage.progress / 1000 / 60;
+							double taken =  (System.currentTimeMillis() - start) / 1000 / 60;
+							stage.msg = omString + " Taken " + StringResources.FORMAT_AR2D.format(taken) + " mins. Finishing in " + StringResources.FORMAT_AR2D.format(eta - taken) + " mins.";
+						}
+
+						try {
+							return this.detectClones(rid, func, threashold, topK, avoidSameBinary);
+						} catch (Exception e) {
+							logger.error("Failed to detect clone for " + func.functionName, e);
+							return null;
+						}
+					}).filter(re -> re != null).collect(Collectors.toList());
+			fullResults.addAll(ls);
+//		}).get();
+//		pool.shutdownNow();
+
 		stage.complete();
 
 		if (progress.interrupted)
@@ -85,7 +113,7 @@ public class FunctionCloneDetectorForWeb {
 		// progress.currentProgress = count * 1.0 / total;
 		// count++;
 		// }
-		fullResults.addAll(ls);
+
 		return fullResults;
 	}
 

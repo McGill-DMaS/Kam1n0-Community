@@ -22,9 +22,14 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.spark.api.java.JavaPairRDD;
+
+import ca.mcgill.sis.dmas.env.LocalJobProgress;
 import ca.mcgill.sis.dmas.env.StringResources;
+import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.binary.DmasByteOperation;
+import ca.mcgill.sis.dmas.io.collection.Counter;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
+import ca.mcgill.sis.dmas.kam1n0.utils.hash.HashUtils;
 import scala.Tuple2;
 import scala.Tuple3;
 
@@ -97,7 +102,7 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 	public void splitAdaptiveBucket(long rid, AdaptiveBucket target, int newDepth,
 			List<Tuple3<String, String, Long>> children) {
 		this.clearHid(rid, target.pkey, target.cKey);
-		children.forEach(child -> this.putHid(rid, child._1(), child._2(), newDepth, child._3()));
+		children.parallelStream().forEach(child -> this.putHid(rid, child._1(), child._2(), newDepth, child._3()));
 	}
 
 	public static class AdaptiveBucket {
@@ -185,18 +190,19 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 		HashSet<Long> vals = new HashSet<>(bk.hids);
 
 		// to keep track of the expansion search
-		AdaptiveBucket left = bk;
-		AdaptiveBucket right = bk;
+		// AdaptiveBucket left = bk;
+		// AdaptiveBucket right = bk;
 
-		while (vals.size() <= maxSize && (left != null | right != null)) {
-			AdaptiveBucket[] expansion = this.extendBuckets(rid, left, right);
-			left = expansion[0];
-			right = expansion[1];
-			if (left != null)
-				vals.addAll(left.hids);
-			if (right != null)
-				vals.addAll(right.hids);
-		}
+		// while (vals.size() <= maxSize && (left != null | right != null)) {
+		// AdaptiveBucket[] expansion = this.extendBuckets(rid, left, right);
+		// left = expansion[0];
+		// right = expansion[1];
+		// if (left != null)
+		// vals.addAll(left.hids);
+		// if (right != null)
+		// vals.addAll(right.hids);
+		// }
+		// System.out.println("Collected " + vals.size() + " Depth " + bk.depth);
 
 		return vals;
 	}
@@ -211,18 +217,19 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 		HashSet<Long> vals = new HashSet<>(bk.hids);
 
 		// to keep track of the expansion search
-		AdaptiveBucket left = bk;
-		AdaptiveBucket right = bk;
+		// AdaptiveBucket left = bk;
+		// AdaptiveBucket right = bk;
 
-		while (vals.size() <= maxSize && (left != null | right != null)) {
-			AdaptiveBucket[] expansion = this.extendBuckets(rid, left, right);
-			left = expansion[0];
-			right = expansion[1];
-			if (left != null)
-				vals.addAll(left.hids);
-			if (right != null)
-				vals.addAll(right.hids);
-		}
+		// while (vals.size() <= maxSize && (left != null | right != null)) {
+		// AdaptiveBucket[] expansion = this.extendBuckets(rid, left, right);
+		// left = expansion[0];
+		// right = expansion[1];
+		// if (left != null)
+		// vals.addAll(left.hids);
+		// if (right != null)
+		// vals.addAll(right.hids);
+		// }
+		// System.out.println("Collected " + vals.size());
 
 		return new Tuple2<HashSet<Long>, Integer>(vals, bk.depth);
 	}
@@ -246,7 +253,8 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 	/*
 	 * list of hashId -> inputVectorId
 	 */
-	public <T> List<Tuple2<Long, T>> collectHids(long rid, List<? extends T> blks, Function<T, List<byte[]>> hasher) {
+	public <T extends VecObject<?, ?>> List<Tuple2<Long, T>> collectHids(long rid, List<? extends T> blks,
+			Function<T, List<byte[]>> hasher) {
 		return blks.stream()//
 				.parallel()//
 				.map(blk -> {
@@ -255,10 +263,23 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 
 					// get all the valid hids to a list
 					ArrayList<Tuple2<Long, T>> vals = new ArrayList<>();
-					for (int i = 0; i < bks.size(); ++i)
-						for (Long hid : getHids(rid, i, bks.get(i))) {
-							vals.add(new Tuple2<Long, T>(hid, blk));
+					for (int i = 0; i < bks.size(); ++i) {
+						Tuple2<HashSet<Long>, Integer> hids = getHidsWithDepth(rid, i, bks.get(i));
+						Long bhid = blk.getUniqueHash();
+						Long id = HashUtils.constructID(//
+								DmasByteOperation.getBytes(i), //
+								DmasByteOperation.getBytes(bhid));
+						// System.out.println(
+						// "hids " + hids._1.size() + " contains? " + hids._1.contains(id) + " " +
+						// blk.toString() + " " + id);
+						if (hids._1.size() < this.maxSize)
+							for (Long hid : getHids(rid, i, bks.get(i))) {
+								vals.add(new Tuple2<Long, T>(hid, blk));
+							}
+						else {
+							vals.add(new Tuple2<Long, T>(id, blk));
 						}
+					}
 					return vals;
 
 				}).flatMap(// flat map the list (merge from different thread)
@@ -270,22 +291,26 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 	/*
 	 * PairRDDs of hashId -> inputVectorId
 	 */
-	public <T> JavaPairRDD<Long, T> collectHidsAsRdd(long rid, List<? extends T> vecs,
+	public <T extends VecObject<?, ?>> JavaPairRDD<Long, T> collectHidsAsRdd(long rid, List<? extends T> vecs,
 			Function<T, List<byte[]>> hasher) {
 		return sparkInstance.getContext().parallelizePairs(this.collectHids(rid, vecs, hasher));
 	}
 
 	public List<AdaptiveBucket> indexVecs(long rid,
-			List<? extends VecEntry<? extends VecInfo, ? extends VecInfoShared>> vecs) {
+			List<? extends VecEntry<? extends VecInfo, ? extends VecInfoShared>> vecs, StageInfo stage) {
+		Counter counter = new Counter();
+		int total = vecs.size();
 		List<AdaptiveBucket> ls = vecs
 				//
-				.stream().map(vec -> {
+				.parallelStream().map(vec -> {
 					if (vec.fullKey.length == 0) {
 						return null;
 					}
 					AdaptiveBucket adBk = this.locateBucket(rid, vec.ind, vec.fullKey);
 					this.putHid(rid, adBk.pkey, adBk.cKey, adBk.depth, vec.hashId);
 					adBk.hids.add(vec.hashId);
+					counter.inc();
+					stage.progress = counter.getVal() * 1.0 / total;
 					if (adBk.hids.size() > maxSize && adBk.depth < maxDepth)
 						return adBk;
 					else

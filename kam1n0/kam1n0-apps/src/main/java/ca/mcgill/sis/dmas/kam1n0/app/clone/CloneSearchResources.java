@@ -53,6 +53,7 @@ public class CloneSearchResources extends ApplicationResources {
 			boolean avoidSameBinary, boolean generateCloneGraph) throws Exception {
 
 		long start = System.currentTimeMillis();
+		logger.info("Started {}", function.blockIds.size());
 
 		ArrayList<FunctionCloneDetectionResultForWeb> results = new ArrayList<>();
 

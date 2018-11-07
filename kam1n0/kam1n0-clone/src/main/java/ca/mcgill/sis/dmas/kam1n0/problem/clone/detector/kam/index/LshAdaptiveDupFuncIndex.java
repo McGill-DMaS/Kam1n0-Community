@@ -18,10 +18,14 @@ package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.AsmFragmentNormalized;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 
@@ -64,13 +68,13 @@ public abstract class LshAdaptiveDupFuncIndex<T extends VecInfo, K extends VecIn
 	 * @param vecs
 	 * @return
 	 */
-	public abstract List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs);
+	public abstract List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs, StageInfo info);
 
 	// public abstract JavaPairRDD<Long, Tuple2<T, D>> getVidsAsRDD(HashSet<Long>
 	// hids, int topK);
 
 	public abstract JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds,
-			boolean excludeIndividualInfo);
+			boolean excludeIndividualInfo, Function<List<T>, List<T>> filter);
 
 	public abstract void init();
 

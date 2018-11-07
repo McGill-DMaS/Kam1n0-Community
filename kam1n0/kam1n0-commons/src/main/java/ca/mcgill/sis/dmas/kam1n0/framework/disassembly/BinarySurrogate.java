@@ -134,6 +134,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 			oblk.blockId = blk.id;
 			oblk.callingBlocks = blk.call;
 			oblk.codes = new ArrayList<>(blk.asmLines());
+			oblk.codesSize = oblk.codes.size();
 			oblk.functionId = func.id;
 			oblk.functionName = func.name;
 			oblk.peerSize = func.blocks.size();

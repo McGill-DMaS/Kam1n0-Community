@@ -27,7 +27,11 @@ import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.stringtemplate.v4.compiler.STParser.notConditional_return;
 
+import com.google.common.collect.HashMultimap;
+
+import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Block;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneEntry;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.utils.SubgraphBlocks.HashedLinkedBlock;
@@ -45,8 +49,8 @@ public class SubgraphBlocksImpl3 implements Serializable {
 		public double score;
 
 		public Link(Tuple3<HashedLinkedBlock, HashedLinkedBlock, Double> tp) {
-			this.src = tp._1();
-			this.tar = tp._2();
+			this.src = tp._2();
+			this.tar = tp._1();
 			this.score = tp._3();
 		}
 
@@ -74,6 +78,41 @@ public class SubgraphBlocksImpl3 implements Serializable {
 		}
 	}
 
+	public static class Link2 {
+		public Block src;
+		public Block tar;
+		public double score;
+
+		public Link2(Tuple3<Block, Block, Double> tp) {
+			this.src = tp._2();
+			this.tar = tp._1();
+			this.score = tp._3();
+		}
+
+		public String identifier() {
+			return this.src.blockId + "-" + this.tar.blockId;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.identifier().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Link) {
+				Link lk = (Link) obj;
+				return this.identifier().equals(lk.identifier());
+			}
+			return false;
+		}
+
+		@Override
+		public String toString() {
+			return "(" + this.src.blockName + "," + this.tar.blockName + "," + score + ")";
+		}
+	}
+
 	public static class Subgraph extends HashSet<Link> {
 
 		private static final long serialVersionUID = 2243945120253674275L;
@@ -87,7 +126,7 @@ public class SubgraphBlocksImpl3 implements Serializable {
 		}
 
 		public void cal() {
-			this.score = this.stream().mapToDouble(lk -> lk.score * lk.src.original.getAsmLines().size()).sum();
+			this.score = this.stream().mapToDouble(lk -> lk.score * lk.src.original.codesSize).sum();
 		}
 
 		public void removeSrcAny(Set<Long> srcs) {
@@ -106,6 +145,43 @@ public class SubgraphBlocksImpl3 implements Serializable {
 
 		public Set<Long> srcs() {
 			return this.stream().map(lk -> lk.src.original.blockId).collect(Collectors.toSet());
+		}
+
+		public String toString() {
+			return this.tars() + " / " + this.srcs();
+		}
+	}
+
+	public static class Subgraph2 extends HashSet<Link2> {
+
+		private static final long serialVersionUID = 2243945120253674275L;
+		private double score;
+
+		public Subgraph2() {
+		}
+
+		public Subgraph2(List<Link2> glks) {
+			super(glks);
+		}
+
+		public void cal() {
+			this.score = this.stream().mapToDouble(lk -> lk.score * lk.tar.codesSize).sum();
+		}
+
+		public void removeSrcAny(Set<Long> srcs) {
+			this.removeAll(this.stream().filter(lk -> srcs.contains(lk.src.blockId)).collect(Collectors.toSet()));
+		}
+
+		public void removeTarAny(Set<Long> tars) {
+			this.removeAll(this.stream().filter(lk -> tars.contains(lk.tar.blockId)).collect(Collectors.toSet()));
+		}
+
+		public Set<Long> tars() {
+			return this.stream().map(lk -> lk.tar.blockId).collect(Collectors.toSet());
+		}
+
+		public Set<Long> srcs() {
+			return this.stream().map(lk -> lk.src.blockId).collect(Collectors.toSet());
 		}
 
 		public String toString() {
@@ -154,6 +230,129 @@ public class SubgraphBlocksImpl3 implements Serializable {
 		return result;
 	}
 
+	public static FunctionCloneEntry mergeSingles2(int funcLength, Iterable<Tuple3<Block, Block, Double>> pairs3) {
+
+		ArrayList<Subgraph2> subgraphs = new ArrayList<>();
+
+		// String fname = StreamSupport.stream(pairs3.spliterator(),
+		// false).findAny().get()._2().functionName;
+
+		// System.out.println("preparing map for " + fname);
+		HashMap<String, Link2> links = new HashMap<>();
+		StreamSupport.stream(pairs3.spliterator(), false).map(tp -> new Link2(tp))
+				.forEach(lk -> links.compute(lk.identifier(), (k, v) -> (v == null || lk.score > v.score) ? lk : v));
+		HashMultimap<Long, Long> callers = HashMultimap.create();
+		HashMultimap<Long, Long> callees = HashMultimap.create();
+		// System.out.println("preparing links for " + fname);
+		for (Link2 link : links.values()) {
+			for (Long callee : link.src.callingBlocks) {
+				if (link.src.blockId != callee.longValue()) {
+					callees.put(link.src.blockId, callee);
+					callers.put(callee, link.src.blockId);
+				}
+			}
+			for (Long callee : link.tar.callingBlocks) {
+				if (link.tar.blockId != callee.longValue()) {
+					callees.put(link.tar.blockId, callee);
+					callers.put(callee, link.tar.blockId);
+				}
+			}
+		}
+
+		while (links.size() != 0) {
+			Link2 taken = links.values().stream().findAny().get();
+			links.remove(taken.identifier());
+			List<Link2> glks = new ArrayList<>();
+			glks.add(taken);
+			int ind = 0;
+			while (ind < glks.size()) {
+				Link2 lnk = glks.get(ind);
+				// anything calling to tar and src
+				{
+					Set<Long> tars = callers.get(lnk.tar.blockId);
+					Set<Long> srcs = callers.get(lnk.src.blockId);
+					for (Long s : srcs)
+						for (Long t : tars) {
+							Link2 candidate = links.get(s + "-" + t);
+							if (candidate != null) {
+								glks.add(candidate);
+								links.remove(candidate.identifier());
+							}
+						}
+				}
+				// anything calling from tar and src
+				{
+					Set<Long> tars = callees.get(lnk.tar.blockId);
+					Set<Long> srcs = callees.get(lnk.src.blockId);
+					for (Long s : srcs)
+						for (Long t : tars) {
+							Link2 candidate = links.get(s + "-" + t);
+							if (candidate != null) {
+								glks.add(candidate);
+								links.remove(candidate.identifier());
+							}
+						}
+				}
+				ind++;
+				// System.out.println(StringResources.format("{}/{}-{}", ind, links.size(),
+				// fname));
+			}
+			Subgraph2 subgraph = new Subgraph2(glks);
+			subgraph.cal();
+			subgraphs.add(subgraph);
+
+		}
+
+		FunctionCloneEntry entry = new FunctionCloneEntry();
+		Block block = subgraphs.get(0).stream().findAny().get().src;
+		entry.functionId = block.functionId;
+		entry.functionName = block.functionName;
+		entry.binaryId = block.binaryId;
+		entry.binaryName = block.binaryName;
+
+		subgraphs.sort((g1, g2) -> Double.compare(g1.score, g2.score));
+		ArrayList<Subgraph2> picks = new ArrayList<>();
+
+		for (int i = subgraphs.size() - 1; i >= 0; i--) {
+			Subgraph2 largest = subgraphs.get(i);
+			subgraphs.remove(i);
+			if (largest.size() < 1)
+				continue;
+			picks.add(largest);
+			Set<Long> tars = largest.tars();
+			Set<Long> srcs = largest.srcs();
+			subgraphs.stream().forEach(gp -> {
+				gp.removeSrcAny(srcs);
+				gp.removeTarAny(tars);
+				gp.cal();
+			});
+			subgraphs.sort((g1, g2) -> Double.compare(g1.score, g2.score));
+		}
+
+		picks.forEach(graph -> entry.clonedParts
+				.add(graph.stream().map(lk -> new Tuple3<>(lk.tar.blockId, lk.src.blockId, lk.score))
+						.collect(Collectors.toCollection(HashSet::new))));
+
+		// List<Subgraph> gs = picks.stream().filter(graph -> graph.size() >
+		// 2).collect(Collectors.toList());
+		// if (gs.size() > 0)
+		// gs.stream().forEach(System.out::println);
+		// if(picks.size()==1) {
+		// picks.get(0).forEach(lk->{
+		// System.out.println(lk.tar.blockName + "," + lk.tar.codesSize + "," +
+		// lk.src.blockName + "," + lk.src.codesSize);
+		// });
+		// System.out.println();
+		// }
+		HashMap<Long, Double> hashMap = new HashMap<>();
+		picks.stream().flatMap(g -> g.stream()).forEach(lk -> hashMap.compute(lk.tar.blockId,
+				(k, v) -> v == null ? lk.score * lk.tar.codesSize : Math.max(lk.score * lk.tar.codesSize, v)));
+		// entry.similarity = picks.stream().mapToDouble(g -> g.score).sum() * 1.0 /
+		// (Math.abs(funcLength));
+		entry.similarity = hashMap.values().stream().mapToDouble(v -> v).sum() / Math.abs(funcLength);
+		return entry;
+	}
+
 	public FunctionCloneEntry toFunctionCloneEntry(int funcLength) {
 		FunctionCloneEntry entry = new FunctionCloneEntry();
 		Block block = this.subgraphs.get(0).stream().findAny().get().tar.original;
@@ -185,7 +384,8 @@ public class SubgraphBlocksImpl3 implements Serializable {
 				.add(graph.stream().map(lk -> new Tuple3<>(lk.src.original.blockId, lk.tar.original.blockId, lk.score))
 						.collect(Collectors.toCollection(HashSet::new))));
 
-		List<Subgraph> gs = picks.stream().filter(graph -> graph.size() > 2).collect(Collectors.toList());
+		// List<Subgraph> gs = picks.stream().filter(graph -> graph.size() >
+		// 2).collect(Collectors.toList());
 		// if (gs.size() > 0)
 		// gs.stream().forEach(System.out::println);
 
