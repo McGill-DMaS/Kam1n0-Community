@@ -55,6 +55,8 @@ public class Function implements Serializable, Iterable<Block> {
 	public String binaryName = StringResources.STR_EMPTY;
 
 	public long numBlocks;
+	
+	public long codeSize;
 
 	@AsBytes
 	public Set<Long> blockIds;

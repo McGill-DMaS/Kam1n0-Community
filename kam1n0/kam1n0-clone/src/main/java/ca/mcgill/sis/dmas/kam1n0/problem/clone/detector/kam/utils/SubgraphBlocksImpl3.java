@@ -303,12 +303,8 @@ public class SubgraphBlocksImpl3 implements Serializable {
 
 		}
 
-		FunctionCloneEntry entry = new FunctionCloneEntry();
 		Block block = subgraphs.get(0).stream().findAny().get().src;
-		entry.functionId = block.functionId;
-		entry.functionName = block.functionName;
-		entry.binaryId = block.binaryId;
-		entry.binaryName = block.binaryName;
+		FunctionCloneEntry entry = new FunctionCloneEntry(block, 0);
 
 		subgraphs.sort((g1, g2) -> Double.compare(g1.score, g2.score));
 		ArrayList<Subgraph2> picks = new ArrayList<>();
@@ -349,7 +345,8 @@ public class SubgraphBlocksImpl3 implements Serializable {
 				(k, v) -> v == null ? lk.score * lk.tar.codesSize : Math.max(lk.score * lk.tar.codesSize, v)));
 		// entry.similarity = picks.stream().mapToDouble(g -> g.score).sum() * 1.0 /
 		// (Math.abs(funcLength));
-		entry.similarity = hashMap.values().stream().mapToDouble(v -> v).sum() / Math.abs(funcLength);
+		double sum = hashMap.values().stream().mapToDouble(v -> v).sum() * 2;
+		entry.similarity = sum / (Math.abs(funcLength) + Math.abs(entry.codeSize));
 		return entry;
 	}
 

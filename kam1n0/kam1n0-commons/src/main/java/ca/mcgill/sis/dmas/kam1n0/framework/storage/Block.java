@@ -63,6 +63,8 @@ public class Block implements AsmFragment, Serializable {
 	public String blockName = StringResources.STR_EMPTY;
 
 	public long codesSize = -1;
+	
+	public long funcCodeSize = -1;
 
 	@AsBytes
 	public List<List<String>> codes;
