@@ -38,6 +38,7 @@ public class FunctionCloneEntry implements Serializable, Comparable<FunctionClon
 	public long binaryId;
 	public String binaryName = StringResources.STR_EMPTY;
 	public double similarity = Double.MAX_VALUE;
+	public long codeSize;
 	public long startingEA;
 	public long numBbs = 0;
 
@@ -56,15 +57,17 @@ public class FunctionCloneEntry implements Serializable, Comparable<FunctionClon
 		this.functionName = function.functionName;
 		this.similarity = similarity;
 		this.numBbs = function.numBlocks;
+		this.codeSize = function.codeSize;
 	}
 
-	public FunctionCloneEntry(Block aBlk, double similarity, int bbcount) {
+	public FunctionCloneEntry(Block aBlk, double similarity) {
 		this.binaryId = aBlk.binaryId;
 		this.binaryName = aBlk.binaryName;
 		this.functionId = aBlk.functionId;
 		this.functionName = aBlk.functionName;
 		this.similarity = similarity;
-		this.numBbs = bbcount;
+		this.numBbs = aBlk.peerSize;
+		this.codeSize = aBlk.funcCodeSize;
 	}
 
 	@Override

@@ -37,11 +37,12 @@ public class FunctionDataUnit implements Serializable {
 	public String functionName;
 	public String functionId;
 	public String startAddress;
-	public long blockSize;
+	public int blockSize;
 	public SrcFunction srcFunc;
 
 	public ArrayList<BlockDataUnit> nodes = new ArrayList<>();
 	public ArrayList<Link> links = new ArrayList<>();
+	public int codeSize;
 
 	public static class Link implements Serializable {
 		private static final long serialVersionUID = -3012737921524201819L;
@@ -152,7 +153,8 @@ public class FunctionDataUnit implements Serializable {
 		this.functionId = Long.toString(function.functionId);
 		this.functionName = function.functionName;
 		this.startAddress = Long.toString(function.startingAddress);
-		this.blockSize = function.numBlocks;
+		this.blockSize = (int) function.numBlocks;
+		this.codeSize = (int) function.codeSize;
 	}
 
 }

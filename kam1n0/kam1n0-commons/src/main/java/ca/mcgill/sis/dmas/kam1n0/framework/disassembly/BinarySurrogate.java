@@ -125,6 +125,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 		ofunc.srcName = func.srcName;
 		ofunc.blocks = new ArrayList<>();
 		ofunc.architecture = architecture;
+		ofunc.codeSize = func.blocks.stream().mapToLong(blk -> blk.asmLines().size()).sum();
 		func.blocks.forEach(blk -> ofunc.blockIds.add(blk.id));
 		func.blocks.forEach(blk -> {
 			Block oblk = new Block();
@@ -135,6 +136,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 			oblk.callingBlocks = blk.call;
 			oblk.codes = new ArrayList<>(blk.asmLines());
 			oblk.codesSize = oblk.codes.size();
+			oblk.funcCodeSize = ofunc.codeSize;
 			oblk.functionId = func.id;
 			oblk.functionName = func.name;
 			oblk.peerSize = func.blocks.size();
@@ -144,13 +146,12 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 			oblk.architecture = architecture;
 			ofunc.blocks.add(oblk);
 		});
+
 		ofunc.numBlocks = ofunc.blocks.size();
-		ofunc.comments = func.comments.stream()
-				.map(cmm -> {
-					String content = cmm.comment.replaceAll("(\r\n|\n)", "\n\n");
-					return new Comment(func.id, content, cmm.type, new Date().getTime(), "user_ida", cmm.offset);
-				})
-				.collect(Collectors.toList());
+		ofunc.comments = func.comments.stream().map(cmm -> {
+			String content = cmm.comment.replaceAll("(\r\n|\n)", "\n\n");
+			return new Comment(func.id, content, cmm.type, new Date().getTime(), "user_ida", cmm.offset);
+		}).collect(Collectors.toList());
 		return ofunc;
 	}
 
