@@ -31,6 +31,9 @@ import ca.mcgill.sis.dmas.kam1n0.AppPlatform.Prioritize;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.BinaryDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.FunctionCommentWrapper;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.FunctionDataUnit;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.SoftwareClassMeta;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.ExecutableClassificationApplicationConfiguration;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.ExecutableClassificationApplicationMeta;
 import ca.mcgill.sis.dmas.kam1n0.app.user.UserInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.util.MVCUtils;
 import ca.mcgill.sis.dmas.kam1n0.app.util.ModelAndFragment;
@@ -64,7 +67,7 @@ public abstract class ApplicationHandler {
 	protected UserController userController;
 
 	@Autowired
-	private ApplicationInfoValidatorUpdated validator;
+	public ApplicationInfoValidatorUpdated validator;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -89,7 +92,6 @@ public abstract class ApplicationHandler {
 	public final ModelAndFragment getBinaryListFragment(ApplicationInfo info) {
 		return new ModelAndFragment(FRAG_APP_BIN_LIST, info);
 	}
-
 	public List<Binary> getBinaries(long appId) {
 		return meta.getBinaries(appId);
 	}

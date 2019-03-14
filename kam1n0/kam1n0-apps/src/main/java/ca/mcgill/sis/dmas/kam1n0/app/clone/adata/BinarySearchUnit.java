@@ -82,7 +82,7 @@ public class BinarySearchUnit implements AutoCloseable {
 
 	private transient static Logger logger = LoggerFactory.getLogger(BinarySearchUnit.class);
 
-	private transient DB db;
+	protected transient DB db;
 
 	private ConcurrentMap<String, byte[]> functionMap; // function id ->
 	// function

@@ -37,6 +37,7 @@ import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfoSummary;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationMeta;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit.SummaryWrapper;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDetectionResultForWeb;
 import ca.mcgill.sis.dmas.kam1n0.app.util.FileServingUtils;
@@ -160,9 +161,10 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		}
 	}
 
+
 	@RequestMapping(value = "/{appId:.+}/search_bin", method = RequestMethod.POST)
 	@Access(AccessMode.READ)
-	public final @ResponseBody Map<String, Object> searchBinary(@PathVariable("appId") long appId,
+	public @ResponseBody Map<String, Object> searchBinary(@PathVariable("appId") long appId,
 			@RequestParam(value = "threshold", defaultValue = "0.5") double threshold,
 			@RequestParam(value = "avoidSameBinary") final boolean avoidSameBinary,
 			@RequestParam(value = "topk", defaultValue = "15") int topk, //
@@ -247,13 +249,13 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 
 	@RequestMapping(value = "/{appId:.+}/BinaryComposition", method = RequestMethod.GET)
 	@Access(AccessMode.READ)
-	public final ModelAndView searchBinaryRenderer(@PathVariable("appId") long appId) {
+	public ModelAndView searchBinaryRenderer(@PathVariable("appId") long appId) {
 		return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(VIEW_CLONE_BIN, meta.getInfo(appId)));
 	}
 
 	@RequestMapping(value = "/{appId:.+}/BinaryComposition", method = RequestMethod.POST)
 	@Access(AccessMode.READ)
-	public final @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
+	public @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
 			@RequestParam("fileName") String fileName,
 			@RequestParam(value = "keyword", defaultValue = "*") String keyword, HttpServletRequest request) {
 

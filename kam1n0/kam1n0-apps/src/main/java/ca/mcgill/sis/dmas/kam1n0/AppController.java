@@ -46,6 +46,9 @@ import ca.mcgill.sis.dmas.kam1n0.app.util.ModelAndFragment;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy;
 import ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra.ObjectFactoryCassandra;
 
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.ExecutableClassificationApplicationConfiguration;
+
+
 @Controller
 public class AppController {
 
@@ -123,6 +126,21 @@ public class AppController {
 		info_old.description = info.description;
 		info_old.isPrivate = info.isPrivate;
 		info_old.isOnline = info.isOnline;
+		appsFactory.put(global_key, info_old);
+		return true;
+	}
+	
+	public boolean updateFullApplicationInstance(ApplicationInfo info) {
+		// one can only update basic information (a copy):
+		ApplicationInfo info_old = getAppInfo(info.appId);
+		info_old.users_read = info.users_read;
+		info_old.users_wirte = info.users_wirte;
+		info_old.name = info.name;
+		info_old.title = info.title;
+		info_old.description = info.description;
+		info_old.isPrivate = info.isPrivate;
+		info_old.isOnline = info.isOnline;
+		info_old.setConfiguration(info.configuration);
 		appsFactory.put(global_key, info_old);
 		return true;
 	}
