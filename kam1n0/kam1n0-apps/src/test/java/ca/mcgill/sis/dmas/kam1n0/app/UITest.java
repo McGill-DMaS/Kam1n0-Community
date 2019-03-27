@@ -20,6 +20,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.res.KamResourceLoader;
@@ -44,9 +45,10 @@ public class UITest {
 		options.setExperimentalOption("useAutomationExtension", false);
 		options.addArguments("--start-maximized");
 		driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-		Thread.sleep(3*1000 * 60); // sleep for 60 seconds (take a rest).
+		Thread.sleep(1000 * 60); // sleep for 60 seconds (take a rest).
 	}
 
 	@AfterClass
@@ -85,7 +87,7 @@ public class UITest {
 		driver.findElement(By.id("username")).sendKeys("admin");
 		driver.findElement(By.id("password")).sendKeys("admin");
 		driver.findElement(By.tagName("button")).click();
-		Thread.sleep(3*5000); // sleep for 5s
+		Thread.sleep(5000); // sleep for 5s
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
         log("{}", url);
@@ -106,7 +108,7 @@ public class UITest {
 		driver.findElement(By.id("title")).sendKeys(identifier + "_title");
 		driver.findElement(By.id("description")).sendKeys(identifier + "_desp");
 		driver.findElement(By.id("btn_submit")).click();
-		Thread.sleep(3*5000);
+		Thread.sleep(5000);
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
 		WebElement title = driver.findElement(By.xpath("//h3[contains(text(), \"" + identifier + "\")]"));
@@ -124,7 +126,7 @@ public class UITest {
 		List<File> bins = Arrays.asList(folder.listFiles()).stream().filter(f -> f.isFile())
 				.collect(Collectors.toList());
 		a_permanent_link.click();
-		Thread.sleep(3*5000);
+		Thread.sleep(5000);
 		log("Current URL {}", driver.getCurrentUrl());
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
 
@@ -136,13 +138,13 @@ public class UITest {
 			WebElement btn = driver.findElement(By.id(submit_btn_id));
 			input.sendKeys(bin.getAbsolutePath());
 			btn.click();
-			Thread.sleep(3*5000);
+			Thread.sleep(5000);
 			boolean error = false;
 			do {
 				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
 				error = driver.findElementsByCssSelector("span.progress-label").stream()
 						.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
-				Thread.sleep(3*1000);
+				Thread.sleep(1000);
 				if (prgs.size() == 0 || error)
 					break;
 			} while (true);
@@ -162,13 +164,13 @@ public class UITest {
 		WebElement btn = driver.findElement(By.id("search-btn-binary"));
 		input.sendKeys(file.getAbsolutePath());
 		btn.click();
-		Thread.sleep(3*5000);
+		Thread.sleep(5000);
 		boolean error = false;
 		do {
 			List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
 			error = driver.findElementsByCssSelector("span.progress-label").stream()
 					.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
-			Thread.sleep(3*500);
+			Thread.sleep(500);
 			if (prgs.size() == 0 || error)
 				break;
 		} while (true);
@@ -185,11 +187,11 @@ public class UITest {
 		String original = driver.getWindowHandle();
 		handlers.remove(original);
 		driver.switchTo().window(handlers.stream().findAny().get());
-		Thread.sleep(3*5000);
+		Thread.sleep(5000);
 		List<WebElement> cards = driver.findElementsByCssSelector(".card");
 		log("{} cards", cards.size());
 		assertTrue(cards.size() > 0);
-		Thread.sleep(3*5000);
+		Thread.sleep(5000);
 		// driver.findElement(By.cssSelector("a[href='#details']")).click();
 		driver.executeScript("$(\"a[href='#details']\").click()");
 		// driver.executeScript("$(\"span[text()=\"adler32_z\"]).click()");
@@ -216,7 +218,7 @@ public class UITest {
 		dropdown.selectByIndex(1);
 		btn.click();
 
-		Thread.sleep(3*20000);
+		Thread.sleep(20000);
 		String parentWindowHandler = driver.getWindowHandle(); // Store your parent window
 		Set<String> handles = new HashSet<>(driver.getWindowHandles());
 		handles.remove(parentWindowHandler);
@@ -245,7 +247,7 @@ public class UITest {
 				for (String viewWindowHandler : viewHandles) {
 					WebDriver win = driver.switchTo().window(viewWindowHandler);
 					log("checking view {}", win.getTitle());
-					Thread.sleep(3*20000);
+					Thread.sleep(20000);
 					assertNoJSError();
 					driver.close();
 				}
