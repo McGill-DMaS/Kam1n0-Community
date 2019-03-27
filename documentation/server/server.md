@@ -154,6 +154,6 @@ By clicking `DETAILS`, you can see an address bar on the left which displays a l
 
 ![](images/details.png)
 
- The background color of a specific function in the address bar indicates that Kam1n0 finds a clone in the repository belongs to a specific binary file. By licking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
+ The background color of a specific function in the address bar indicates that Kam1n0 finds a clone in the repository belongs to a specific binary file. By clicking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
 
 ![](images/filters.png)
