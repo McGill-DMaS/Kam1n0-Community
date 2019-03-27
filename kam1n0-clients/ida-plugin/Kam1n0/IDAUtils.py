@@ -37,7 +37,7 @@ ICONS = namedtuple("Icons", list(ALL_ICONS.keys()))
 
 
 def is_hexrays_v7():
-    return idaapi.cvar.inf.version >= 700
+    return idaapi.IDA_SDK_VERSION >= 700
 
 
 def _is_lib_func(func):

@@ -54,7 +54,7 @@ class Kam1n0PluginManager:
             return ctx.form_title
 
     def setup_default_connection(self):
-        if self.configuration is not None:
+        if self.configuration is not None and len(self.configuration['apps']) > 0:
             if self.configuration['default-app'] is None:
                 self.connector = None
             else:
@@ -70,7 +70,8 @@ class Kam1n0PluginManager:
             self.configuration = dict()
             self.configuration['apps'] = {}
             self.configuration['default-app'] = None
-
+            self.connector = None
+            
         if 'default-threshold' not in self.configuration:
             self.configuration['default-threshold'] = 0.01
 

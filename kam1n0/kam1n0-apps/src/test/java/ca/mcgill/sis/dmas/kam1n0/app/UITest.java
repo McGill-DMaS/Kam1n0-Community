@@ -20,6 +20,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.res.KamResourceLoader;
@@ -39,7 +40,12 @@ public class UITest {
 		// need to set webdriver.chrome.driver in env vars
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
-		driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+		options.addArguments("--window-size=1920,1080");
+		options.setExperimentalOption("useAutomationExtension", false);
+		options.addArguments("--start-maximized");
+		driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
 		Thread.sleep(1000 * 60); // sleep for 60 seconds (take a rest).
@@ -84,8 +90,11 @@ public class UITest {
 		Thread.sleep(5000); // sleep for 5s
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
+        log("{}", url);
 		driver.executeScript("$(\"li.dropdown > a\").click()");
 		String userName = driver.findElement(By.tagName("h6")).getText().toLowerCase();
+        log("{}", driver.getPageSource());
+        log("{}", driver.findElement(By.tagName("body")).getText());
 		log("{}", userName);
 		assertTrue(userName.trim().equals("admin@dmas.com"));
 	}
