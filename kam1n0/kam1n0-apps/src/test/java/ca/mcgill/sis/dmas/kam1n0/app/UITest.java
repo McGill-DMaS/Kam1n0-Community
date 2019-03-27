@@ -39,7 +39,11 @@ public class UITest {
 		// need to set webdriver.chrome.driver in env vars
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
-		driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+		options.addArguments("--window-size=1920,1080");
+		options.setExperimentalOption("useAutomationExtension", false);
+		options.addArguments("--start-maximized");
+		driver = new ChromeDriver(options);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
 		Thread.sleep(3*1000 * 60); // sleep for 60 seconds (take a rest).
