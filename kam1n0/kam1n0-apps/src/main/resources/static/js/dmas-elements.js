@@ -93,7 +93,15 @@ function mergeCloneResult(dps){
 	
 }
 
-
+function CloneListIdaRename(addr, oldname, newname) {
+    var addrstr = '0x' + addr.toString(16);
+    var result = window.confirm(addrstr + ': ' + oldname + ' -> ' + newname);
+    if(result) {
+        if(typeof send_msg != 'undefined') {
+            send_msg("rename(" + addrstr + ", \'" + newname + "\')");
+        }
+    }
+}
 
 /*******************************************************************************
  * 
@@ -248,6 +256,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
                 	"&in1=" + ind + 
                 	"&in2=" + cind + 
                 	'\')\">' + icons[i] + '</span> ';
+                links += "<span title=\"RENAME\" onClick=\"javascript:CloneListIdaRename(" + val.function.startAddress + ", \'" + val.function.functionName + "\', \'" + clone.functionName + "\')\">RENAME</span> ";
                 var prefix;
                 if(isPercent)
                     prefix = "<div style='display:inline-block' class=\"sparkpie\" data-percent=\"" + percentage + "\"></div>&nbsp;" + links;
