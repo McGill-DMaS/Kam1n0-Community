@@ -284,8 +284,7 @@ We have a Jenkin server for contineous development and delivery. Latest stable r
 
 The software was developed by [Steven H. H. Ding](http://stevending.net/) and [Miles Q. Li](http://milesqli.github.io/) under the supervision of [Benjamin C. M. Fung](http://dmas.lab.mcgill.ca/fung/) in the Data Mining and Security Lab at McGill University, Canada. It is distributed under the Apache License Version 2.0. Please refer to [LICENSE.txt](LICENSE.txt) for details.
 
-Copyright 2018 McGill University.
-All rights reserved.
+Copyright 2014-2019 McGill University and the Researchers. All rights reserved.
 
 ## Acknowledgement
 
