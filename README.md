@@ -100,7 +100,7 @@ In this application, the user defines a set of software classes which are based 
 * Use Asm2Vec as its function similarity computation model
   * \+ Provide interpretable classification results.
   * \+ Learn common characteristics (i.e., function clusters) of each class.
-  * \+ Able to handle smaller and imbalanced datasets than an ordinary machine learning model。
+  * \+ Able to handle smaller and imbalanced datasets than an ordinary machine learning model.
   * \- The limitation is that the assumption that binaries in the same class share some common functions must hold for the system to work.
 
 
