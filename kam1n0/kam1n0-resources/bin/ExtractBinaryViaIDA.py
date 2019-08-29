@@ -195,9 +195,10 @@ for seg_ea in Segments():
                     if cleanStack == 1:
                         idc.OpOff(head, i, 16)
                     opd = idc.GetOpnd(head, i)
-                    if opd == "":
+                    tp = idc.get_operand_type(ea, i)
+                    if opd == "" or tp is None:
                         continue
-                    tline.append(opd)
+                    tline.append(opd+','+tp)
                 tlines.append(tline)
 
                 refdata = list(DataRefsFrom(head))
