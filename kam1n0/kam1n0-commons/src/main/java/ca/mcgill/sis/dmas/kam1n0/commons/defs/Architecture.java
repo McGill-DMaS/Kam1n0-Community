@@ -29,7 +29,7 @@ public class Architecture implements Serializable {
 	private static final long serialVersionUID = -8443410803609589918L;
 
 	public static enum ArchitectureType {
-		metapc, arm, ppc, mips, tms320c6, mc68, c6502;
+		metapc, arm, ppc, mips, tms320c6, mc68, m6502;
 
 		public ArchitectureRepresentation retrieveDefinition() {
 			return ArchitectureRepresentation

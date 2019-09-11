@@ -105,7 +105,7 @@ public class ArchitectureRepresentation6502 {
 
 				new LineFormat("(?<OPT>[\\S]+)[\\s]+", 0)));
 
-		ar.processor = "c6502";
+		ar.processor = "m6502";
 		ar.jmpKeywords = new ArrayList<>();
 		return ar;
 	}
