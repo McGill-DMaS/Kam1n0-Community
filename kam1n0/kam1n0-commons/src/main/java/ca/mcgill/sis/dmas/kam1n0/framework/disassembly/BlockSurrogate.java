@@ -23,6 +23,7 @@ public class BlockSurrogate implements Iterable<List<String>> {
 	// cfg
 	public ArrayList<Long> call = new ArrayList<Long>();
 	public ArrayList<List<String>> src = new ArrayList<>();
+	public ArrayList<List<Integer>> oprTypes = new ArrayList<>();
 	public HashMap<Long, String> dat = new HashMap<>();
 
 	@JsonIgnore

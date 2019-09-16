@@ -129,6 +129,8 @@ else:
     data['architecture']['endian'] = "be" if idaapi.cvar.inf.mf else "le";
 if info.procName.lower().startswith('mips'):
     data['architecture']['type'] = 'mips'
+if info.procName.lower().startswith('68330'):
+    data['architecture']['type'] = 'mc68'
 
 data['ida_compiler'] = idaapi.get_compiler_name(info.cc.id)
 
@@ -173,6 +175,7 @@ for seg_ea in Segments():
             dat = {}
             sblock['dat'] = dat
             tlines = []
+            oprTypes = []
 
 
             s = GetManyBytes(bblock.startEA, bblock.endEA - bblock.startEA)
@@ -184,6 +187,7 @@ for seg_ea in Segments():
             for head in Heads(bblock.startEA, bblock.endEA):
                 function['comments'].extend(get_comments(head))
                 tline = list()
+                oprType = list()
                 tline.append(
                     str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
                 mnem = idc.GetMnem(head)
@@ -195,11 +199,13 @@ for seg_ea in Segments():
                     if cleanStack == 1:
                         idc.OpOff(head, i, 16)
                     opd = idc.GetOpnd(head, i)
-                    tp = idc.get_operand_type(ea, i)
+                    tp = idc.get_operand_type(head, i)
                     if opd == "" or tp is None:
                         continue
-                    tline.append(opd+','+tp)
+                    tline.append(opd)
+                    oprType.append(tp)
                 tlines.append(tline)
+                oprTypes.append(oprType)
 
                 refdata = list(DataRefsFrom(head))
                 if len(refdata) > 0:
@@ -207,6 +213,7 @@ for seg_ea in Segments():
                         dat[head] = format(Qword(ref), 'x')[::-1]
 
             sblock['src'] = tlines
+            sblock['oprType'] = oprTypes
 
             # flow chart
             bcalls = list()

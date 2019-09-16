@@ -82,7 +82,7 @@ public class AsmLineNormalizationResource {
 		architecture = ar;
 
 		Builder<String, Register> registersBuilder = ImmutableMap.builder();
-		ar.registers.stream().forEach(reg -> reg.identifier = reg.identifier.toUpperCase());
+		ar.registers.stream().forEach(reg -> {reg.identifier = reg.identifier.toUpperCase(); reg.category = reg.category.toUpperCase();});
 		ar.registers.forEach(reg -> registersBuilder.put(reg.identifier, reg));
 		registers = registersBuilder.build();
 
@@ -98,7 +98,7 @@ public class AsmLineNormalizationResource {
 		final Map<String, String> opGrp;
 		if (ar.oprGroups != null)
 			opGrp = ar.oprGroups.stream()
-					.flatMap(og -> og.oprs.stream().map(opr -> new Tuple2<>(opr.toUpperCase(), og.identifier)))
+					.flatMap(og -> og.oprs.stream().map(opr -> new Tuple2<>(opr.toUpperCase(), og.identifier.toUpperCase())))
 					.collect(Collectors.toMap(tp -> tp._1.toUpperCase(), tp -> tp._2));
 
 		else
@@ -122,7 +122,7 @@ public class AsmLineNormalizationResource {
 					optBuilder.put((opt.identifier + sf).toUpperCase(), idstr);
 				}
 			else {
-				String idstr = opt.identifier;
+				String idstr = opt.identifier.toUpperCase();
 				if (opGrp.containsKey(idstr.toUpperCase()))
 					idstr = opGrp.get(idstr.toUpperCase());
 				optBuilder.put(opt.identifier, idstr);
@@ -162,7 +162,7 @@ public class AsmLineNormalizationResource {
 		case NORM_TYPE: {
 			HashSet<String> vals = new HashSet<>();
 			vals.add(NORM_MEM);
-			registers.values().stream().forEach(reg -> vals.add(reg.category));
+			registers.values().stream().forEach(reg -> vals.add(reg.category.toUpperCase()));
 			return vals;
 		}
 		case NORM_LENGTH: {
@@ -217,8 +217,8 @@ public class AsmLineNormalizationResource {
 		return length;
 	}
 
-	public String normalizeOperand(String operand, NormalizationSetting.NormalizationLevel level, int enforcedLenth,
-			boolean normalizeConstant) {
+	public String normalizeOperand(String operand, Integer oprType, NormalizationSetting.NormalizationLevel level,
+			int enforcedLenth, boolean normalizeConstant) {
 
 		operand = operand.trim().toUpperCase();
 
@@ -226,13 +226,15 @@ public class AsmLineNormalizationResource {
 		if (register != null)
 			return normalizeRegister(level, register, enforcedLenth);
 
-		if (constantPattern.matcher(operand).find())
+		if ((oprType == null && constantPattern.matcher(operand).find())
+				|| (oprType != null && oprType >= 5 && oprType <= 7))
 			if (normalizeConstant)
 				return NORM_CONST;
 			else
 				return normalizeConstant(operand);
 
-		if (memoryPattern.matcher(operand).find())
+		if ((oprType == null && memoryPattern.matcher(operand).find())
+				|| (oprType != null && oprType >= 2 && oprType <= 4))
 			return normalizeMemRef(level, operand, enforcedLenth);
 
 		// System.out.println("Discover unknown operand (treated as constant): "

@@ -17,6 +17,7 @@ package ca.mcgill.sis.dmas.kam1n0.framework.storage;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +69,9 @@ public class Block implements AsmFragment, Serializable {
 
 	@AsBytes
 	public List<List<String>> codes;
+	
+	@AsBytes
+	public List<List<Integer>> oprTypes;
 
 	public long sea = -1;
 
@@ -172,6 +176,11 @@ public class Block implements AsmFragment, Serializable {
 	// func[0].node[0].your_added_attribute.
 	public Map<String, Object> fillWebAttr() {
 		return new HashMap<>();
+	}
+
+	@Override
+	public List<List<Integer>> getOprTypes() {
+		return this.oprTypes;
 	}
 
 }

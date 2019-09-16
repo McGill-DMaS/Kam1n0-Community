@@ -54,7 +54,7 @@ public class PreNormalizedFunc implements Iterable<List<String>> {
 		public int count = 0;
 
 		public Region(int from, int to) {
-			super(lines.subList(from, to));
+			super(lines.subList(from, to), new ArrayList<>());
 			this.from = from;
 			this.to = to;
 		}

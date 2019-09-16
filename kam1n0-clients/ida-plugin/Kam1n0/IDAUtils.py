@@ -122,6 +122,8 @@ def _get_arch():
         arch['endian'] = "be" if idaapi.cvar.inf.mf else "le";
     if info.procName.lower().startswith('mips'):
         arch['type'] = 'mips'
+    if info.procName.lower().startswith('68330'):
+        arch['type'] = 'mc68'
     return arch
 
 
@@ -191,9 +193,11 @@ def _get_ida_func_surrogate(func, arch):
 
 
         instructions = list()
+        oprTypes = list()
         for head in idautils.Heads(bb.startEA, bb.endEA):
             func_surrogate['comments'].extend(get_comments(head))
             ins = list()
+            oprType = list()
             ins.append(
                 str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
             opr = idc.GetMnem(head)
@@ -202,10 +206,13 @@ def _get_ida_func_surrogate(func, arch):
             ins.append(opr)
             for i in range(5):
                 opd = idc.GetOpnd(head, i)
-                if opd == "":
+                tp = idc.get_operand_type(head, i)
+                if opd == "" or tp is None:
                     continue
                 ins.append(opd)
+                oprType.append(tp)
             instructions.append(ins)
+            oprTypes.append(oprType)
 
             refs = list(idautils.DataRefsFrom(head))
             for ref in refs:
@@ -213,6 +220,7 @@ def _get_ida_func_surrogate(func, arch):
                     struct.pack("<Q", idc.Qword(ref)))
 
         block['src'] = instructions
+        block['oprType'] = oprTypes
 
         # flow chart
         block_calls = list()
@@ -271,9 +279,11 @@ def get_selected_code(sea, eea):
     if s is not None:
         block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
     instructions = list()
+    oprTypes = list()
     for head in idautils.Heads(sea, eea):
         func['comments'].extend(get_comments(head))
         ins = list()
+        oprType = list()
         ins.append(
             str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
         opr = idc.GetMnem(head)
@@ -282,16 +292,20 @@ def get_selected_code(sea, eea):
         ins.append(opr)
         for i in range(5):
             opd = idc.GetOpnd(head, i)
-            if opd == "":
+            tp = idc.get_operand_type(head, i)
+            if opd == "" or tp is None:
                 continue
             ins.append(opd)
+            oprType.append(tp)
         instructions.append(ins)
+        oprTypes.append(oprType)
 
         refs = list(idautils.DataRefsFrom(head))
         for ref in refs:
             dat[head] = binascii.hexlify(
                 struct.pack("<Q", idc.Qword(ref)))
     block['src'] = instructions
+    block['oprType'] = oprTypes
     block['call'] = []
     func['blocks'].append(block)
     return surrogate
