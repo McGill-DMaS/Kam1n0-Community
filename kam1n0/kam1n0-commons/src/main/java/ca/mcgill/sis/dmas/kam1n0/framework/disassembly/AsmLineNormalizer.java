@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,10 @@ public class AsmLineNormalizer {
 	}
 
 	public List<String> tokenizeAsmLine(List<String> tkns) {
+		return tokenizeAsmLine(tkns, null);
+	}
+
+	public List<String> tokenizeAsmLine(List<String> tkns, List<Integer> oprTypes) {
 
 		if (tkns == null)
 			return emptyList;
@@ -54,6 +59,12 @@ public class AsmLineNormalizer {
 		// less than length 2: only has segment address
 		if (tkns.size() < 2)
 			return emptyList;
+
+		// unmatched oprTyles length v.s. tkns length:
+		if (oprTypes != null && tkns.size() != oprTypes.size() + 1) {
+			logger.error("Unmatched oprTypes vs token length: {} - {}", tkns, oprTypes);
+			return emptyList;
+		}
 
 		// add mnemonics
 		ArrayList<String> rtokens = new ArrayList<>();
@@ -77,7 +88,8 @@ public class AsmLineNormalizer {
 				if (setting.normalizationLevel == NormalizationLevel.NORM_TYPE_LENGTH
 						|| setting.normalizationLevel == NormalizationLevel.NORM_TYPE_LENGTH)
 					operationLevelLength = res.extractLengthInfpFromOperation(opC);
-				rtokens.add(res.normalizeOperand(tkns.get(j), setting.normalizationLevel, operationLevelLength,
+				Integer tp = oprTypes == null ? null : oprTypes.get(j - 1);
+				rtokens.add(res.normalizeOperand(tkns.get(j), tp, setting.normalizationLevel, operationLevelLength,
 						setting.normalizeConstant));
 			}
 
@@ -87,7 +99,7 @@ public class AsmLineNormalizer {
 	}
 
 	public Iterable<List<String>> tokenizeAsmLines(Iterable<? extends List<String>> asmlines) {
-		return Iterables.transform(asmlines, line -> tokenizeAsmLine(line));
+		return Iterables.transform(asmlines, line -> tokenizeAsmLine(line, null));
 	}
 
 	public static List<String> tokenizeAsmLineBySpace(String asmLine) {
@@ -104,9 +116,12 @@ public class AsmLineNormalizer {
 
 	public AsmFragmentNormalized tokenizeAsmFragment(AsmFragment fra) {
 		AsmFragmentNormalized nfra = new AsmFragmentNormalized(
-				fra.getAsmLines().stream().map(ln -> tokenizeAsmLine(ln)).collect(Collectors.toList()));
-		// nfra.forEach(System.out::println);
-		// System.out.println();
+				IntStream.range(0, fra.getAsmLines().size()).mapToObj(i -> {
+					return tokenizeAsmLine(fra.getAsmLines().get(i),
+							fra.getOprTypes().size() > 0 ? fra.getOprTypes().get(i) : null);
+				}).collect(Collectors.toList()), fra.getOprTypes());
+//		nfra.forEach(System.out::println);
+//		System.out.println();
 		return nfra;
 	}
 
