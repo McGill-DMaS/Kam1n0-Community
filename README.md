@@ -294,4 +294,6 @@ Copyright 2014-2019 McGill University and the Researchers. All rights reserved.
 
 ![image](https://img.shields.io/badge/Special%20thanks%20to-Philippe%20Charland,%20DRDC-orange.svg?style=for-the-badge)
 
+![image](https://img.shields.io/badge/Acknowledgement-NVIDIA%20Corporation%20for%20donating%20the%20Titan%20Xp%20used%20for%20this%20research-blue.svg?style=for-the-badge)
+
 ![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill%20Univrsity-red.svg?style=for-the-badge)
