@@ -2,14 +2,116 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Fragment>
         <DirectoryRef Id="PLUGINSDIR">
-            <Component Id="cmp252A61525CB481B7E52E0A534888486D" Guid="{9DD031C1-1564-4738-9686-293B6662E434}" KeyPath="yes">
-                <CreateFolder />
+            <Component Id="cmp748986FAA6A9A2C740420DAA8DD736D5" Guid="{B38696CC-D764-47A1-8B18-A12E582F04BD}">
+                <File Id="fil6A989F2EC354D84A4CFA5F29D5A8F201" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0.py" />
             </Component>
+            <Directory Id="dir3D9D323F4BC4C76E19F95661452776BE" Name="Kam1n0">
+                <Component Id="cmp0A96F7F133A397C81A891877E8790C52" Guid="{9700EE23-7AE6-46A8-B627-BD246D21D150}">
+                    <File Id="fil8542EF1D59632608817F2ED79C2CB3EA" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\IDAUtils.py" />
+                </Component>
+                <Component Id="cmp6D5E4A08D079F5AEA57EB4FD6932F01A" Guid="{A93934C0-CA3A-428F-91A3-EF0BFB523263}">
+                    <File Id="filA5347EBBB18B7DA84AFDAD1E0DCAD96F" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\Manager.py" />
+                </Component>
+                <Component Id="cmp140F049BE086FBC44C8C8711DB0C6559" Guid="{9126D6E5-50F3-4F49-9C63-28BA6615979A}">
+                    <File Id="fil3E39FA339FD336A23AFFA37C474630A5" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\Plugin.py" />
+                </Component>
+                <Component Id="cmpF65616947FD6518AE6E54A0FE0E59F7A" Guid="{E2B183ED-B5B0-49F6-B8DF-4E98E1D0107F}">
+                    <File Id="fil8D99D8108B506A83228A97C6E0F5126F" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\__init__.py" />
+                </Component>
+                <Directory Id="dir1F85875EE32466F61845D323365A50BE" Name="forms">
+                    <Component Id="cmp1951B9EB4AC15EDD93B701541B8A2D7B" Guid="{6F46530F-2AC6-48D5-8F0B-02ED2F1C423B}">
+                        <File Id="filAABFAEB9BF51045DBA6A774FAED52799" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\forms\ConnectionForm.py" />
+                    </Component>
+                    <Component Id="cmp2E7593DA5144792D9BE160447EB5D09C" Guid="{DCFF7F37-6F9D-424A-BF94-97972E7D95BA}">
+                        <File Id="fil6CEBCC0A3AC2CFDF306799882E274A56" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\forms\ConnectionManagementForm.py" />
+                    </Component>
+                    <Component Id="cmp34C0C0E4E034E6FD811676DDA55C8D19" Guid="{026D79CC-7D2F-43BE-BC53-1E5FAB5CDC1F}">
+                        <File Id="filD88AD33FE29702AB015F99359218E417" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\forms\SelectionForm.py" />
+                    </Component>
+                    <Component Id="cmp0507799FF65EFDF0785F36963038156D" Guid="{B55C6CD7-A2C0-4019-8490-F560D8D57B53}">
+                        <File Id="fil0ED98BD1721C2D0ADF0F11DEEFB06771" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\forms\__init__.py" />
+                    </Component>
+                </Directory>
+                <Directory Id="dir8175E828A064C7DAA13E8FE067B121F8" Name="img">
+                    <Component Id="cmpC2283CFB236B42236302043310DB5A94" Guid="{4057C303-73B0-4423-8B6B-51DC1C4D0E7F}">
+                        <File Id="fil4D0E8C9D6E40E706505ED76409781114" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\components.png" />
+                    </Component>
+                    <Component Id="cmp3227393B8616BA06A11A41E5B3E9F308" Guid="{8835D092-E1CC-46F6-8B21-5B2574441FFA}">
+                        <File Id="fil21D0D8ABAD9F9EBFD235E5C07C4BEE16" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\page_edit.png" />
+                    </Component>
+                    <Component Id="cmpA77E3166DD8B3E0473579EAEE91516D7" Guid="{BDDB86A6-146D-4B6C-ABCA-81B37E384000}">
+                        <File Id="filFEBB3905943E733C63CB2BD8AB709A28" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\search.png" />
+                    </Component>
+                    <Component Id="cmp9A3BC280EBE93D4E27B041DAA7E4BDA7" Guid="{E38B424C-50E2-4D77-85E9-56A24695BFFB}">
+                        <File Id="filD78F19FCB30E3F3E664A10CB441F5AA7" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\search_multiple.png" />
+                    </Component>
+                    <Component Id="cmp2002FFAB46D876BE12101B1EA0941426" Guid="{0044278F-D426-48B5-9560-BD6EDFEAF91F}">
+                        <File Id="fil79BFBDBB3A049B6CD60EBEEC025A957E" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\setting-cnn.png" />
+                    </Component>
+                    <Component Id="cmp9DF03655525497575C8E7C0F6B1E8B33" Guid="{F8156D0E-DEF5-46E2-9504-C9FF3355770E}">
+                        <File Id="filF9C3B76606E14F3D6489CF88BB7F1A0D" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\setting.png" />
+                    </Component>
+                    <Component Id="cmp0DC0804C2F8A207DB90A9986D21D5B86" Guid="{9AE8CA61-9150-4CC6-B3B1-E80CEBE28F19}">
+                        <File Id="fil9EE8956B8A06F43A19776A16D224F1D6" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\upload.png" />
+                    </Component>
+                    <Component Id="cmp87E50A68180AC92F77138DB9B9C9F36F" Guid="{30591EFD-ADFF-43BD-AA7E-A0C568017478}">
+                        <File Id="filD7E7F5CD6972D62397988804866361C9" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\img\upload_multiple.png" />
+                    </Component>
+                </Directory>
+                <Directory Id="dir8F1278DE233A3923958097FD54363446" Name="utilities">
+                    <Component Id="cmpE57A0BC72BDA7866E68E4951D2E879E1" Guid="{6C8C7700-C308-4DD6-B324-EE2C71D620B7}">
+                        <File Id="fil1EB8116A5D8CAC4BCA44F7C21CC98D14" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\CloneConnector.py" />
+                    </Component>
+                    <Component Id="cmp77B0955B0EB4A8A0299C4D8463E376C2" Guid="{E2B6B167-EDEB-472E-95D8-699325BDFCCD}">
+                        <File Id="filA5619D8FEA1084CFC676D1EC8DB725E5" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\RequestMini.py" />
+                    </Component>
+                    <Component Id="cmp1141840EFFEC583486B5AEE0A1176596" Guid="{F37BD8F4-85F2-40A4-B3D9-6D245CC73061}">
+                        <File Id="fil4BE00F7AB64D078765B0B6DDF8430668" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\RequestPage.py" />
+                    </Component>
+                    <Component Id="cmp980F44ECDEA1034BB83E212F182EEA4A" Guid="{94B3E8D6-EAA5-4672-8E16-72498F48F3FB}">
+                        <File Id="fil15AE9463ECF506F890825E30899D489D" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\__init__.py" />
+                    </Component>
+                    <Directory Id="dir87203CECB5463DBDDE9587479DAFCEA4" Name="resources">
+                        <Component Id="cmpBF37F4FEEB3ECC1A87C317D81EDFD8A9" Guid="{BF408134-802F-4B50-9214-43CF2BB71AAF}">
+                            <File Id="fil7076D260FA36B358BAE8718C33D6657B" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\resources\jquery.min.js" />
+                        </Component>
+                        <Component Id="cmp8D317791E3ECBD58AEF5043743229CF5" Guid="{FB189747-A37A-4F14-B274-BAE1A887FA4A}">
+                            <File Id="fil09AE7E4B57FE728128C0722E6D9085EB" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\resources\js.cookie.js" />
+                        </Component>
+                        <Component Id="cmpBEC243A8B38F354811573089474CC1E5" Guid="{6D395586-115A-44F8-87B8-55DFB0C861D5}">
+                            <File Id="filF997827E179E2B4852C6BF99508BAB63" KeyPath="yes" Source="$(env.KAM_IDA_DIST)\Kam1n0\utilities\resources\operations.html" />
+                        </Component>
+                    </Directory>
+                </Directory>
+            </Directory>
         </DirectoryRef>
     </Fragment>
     <Fragment>
         <ComponentGroup Id="GroupPlugin">
-            <ComponentRef Id="cmp252A61525CB481B7E52E0A534888486D" />
+            <ComponentRef Id="cmp748986FAA6A9A2C740420DAA8DD736D5" />
+            <ComponentRef Id="cmp0A96F7F133A397C81A891877E8790C52" />
+            <ComponentRef Id="cmp6D5E4A08D079F5AEA57EB4FD6932F01A" />
+            <ComponentRef Id="cmp140F049BE086FBC44C8C8711DB0C6559" />
+            <ComponentRef Id="cmpF65616947FD6518AE6E54A0FE0E59F7A" />
+            <ComponentRef Id="cmp1951B9EB4AC15EDD93B701541B8A2D7B" />
+            <ComponentRef Id="cmp2E7593DA5144792D9BE160447EB5D09C" />
+            <ComponentRef Id="cmp34C0C0E4E034E6FD811676DDA55C8D19" />
+            <ComponentRef Id="cmp0507799FF65EFDF0785F36963038156D" />
+            <ComponentRef Id="cmpC2283CFB236B42236302043310DB5A94" />
+            <ComponentRef Id="cmp3227393B8616BA06A11A41E5B3E9F308" />
+            <ComponentRef Id="cmpA77E3166DD8B3E0473579EAEE91516D7" />
+            <ComponentRef Id="cmp9A3BC280EBE93D4E27B041DAA7E4BDA7" />
+            <ComponentRef Id="cmp2002FFAB46D876BE12101B1EA0941426" />
+            <ComponentRef Id="cmp9DF03655525497575C8E7C0F6B1E8B33" />
+            <ComponentRef Id="cmp0DC0804C2F8A207DB90A9986D21D5B86" />
+            <ComponentRef Id="cmp87E50A68180AC92F77138DB9B9C9F36F" />
+            <ComponentRef Id="cmpE57A0BC72BDA7866E68E4951D2E879E1" />
+            <ComponentRef Id="cmp77B0955B0EB4A8A0299C4D8463E376C2" />
+            <ComponentRef Id="cmp1141840EFFEC583486B5AEE0A1176596" />
+            <ComponentRef Id="cmp980F44ECDEA1034BB83E212F182EEA4A" />
+            <ComponentRef Id="cmpBF37F4FEEB3ECC1A87C317D81EDFD8A9" />
+            <ComponentRef Id="cmp8D317791E3ECBD58AEF5043743229CF5" />
+            <ComponentRef Id="cmpBEC243A8B38F354811573089474CC1E5" />
         </ComponentGroup>
     </Fragment>
 </Wix>

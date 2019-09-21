@@ -53,11 +53,11 @@
 			<div class="card-header" data-background-color="purple">
 				<div class="nav-tabs-navigation">
 					<div class="nav-tabs-wrapper">
-						<span class="nav-tabs-title">Tasks:</span>
+						<span class="nav-tabs-title">Tasks</span>
 						<ul class="nav nav-tabs" data-tabs="tabs">
 							<li class="active"><a href="#profile" data-toggle="tab"
 								aria-expanded="false"> <i class="material-icons">bug_report</i>
-									Functions Search
+									Function Search
 									<div class="ripple-container"></div>
 							</a></li>
 							<li class=""><a href="#messages" data-toggle="tab"
@@ -88,7 +88,7 @@
 									<span class="input-group-addon"> <i
 										class="material-icons">settings</i>
 									</span>
-									<div class="form-group  label-floating">
+									<div class="form-group  label-floating"  data-toggle="tooltip" title="Only show the Top-K most similar assembly functions">
 										<label class="control-label">Top-K</label> <input type="text"
 											id="input-topk" class="form-control" value="50" name="topk" />
 										<span class="material-input"></span>
@@ -100,7 +100,7 @@
 									<span class="input-group-addon"> <i
 										class="material-icons">vertical_align_bottom</i>
 									</span>
-									<div class="form-group label-floating">
+									<div class="form-group label-floating" data-toggle="tooltip" title="The threshold of minimal similarity to consider two assembly functions are clones of each other">
 										<label class="control-label">Threshold</label> <input
 											id="input-threshold" type="text" class="form-control"
 											value="0.6" name="threshold" /> <span class="material-input"></span>
@@ -113,7 +113,7 @@
 										<div class="checkbox">
 											<label style="font-size: 9pt; margin-left: 10px"> <input
 												type="checkbox" id="input-avoidSameBinary"
-												name="avoidSameBinary" checked="true" /> Avoid Same Binary
+												name="avoidSameBinary" checked="true" /> Exclude the same binary from the results
 											</label>
 										</div>
 									</div>
@@ -127,8 +127,8 @@
 									<span class="input-group-addon"> <i
 										class="material-icons">tune</i>
 									</span>
-									<div class="form-group  label-floating">
-										<label class="control-label">Filter: minimum block count</label> <input type="text"
+									<div class="form-group  label-floating"  data-toggle="tooltip" title="The minimum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
+										<label class="control-label">Minimum block count Filter</label> <input type="text"
 											id="input-blkmin" class="form-control" value="1" name="blk_min" />
 										<span class="material-input"></span>
 									</div>
@@ -139,8 +139,8 @@
 									<span class="input-group-addon"> <i
 										class="material-icons">tune</i>
 									</span>
-									<div class="form-group  label-floating">
-										<label class="control-label">Filter: maximum block count</label> <input type="text"
+									<div class="form-group  label-floating"  data-toggle="tooltip" title="The maximum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
+										<label class="control-label">Maximum block count Filter</label> <input type="text"
 											id="input-blkmax" class="form-control" value="1300" name="blk_max" />
 										<span class="material-input"></span>
 									</div>
@@ -156,7 +156,7 @@
 								<form class="form-horizontal" id="appForm">
 									<div class="row">
 										<div class="col-md-12">
-											<h5>Select a Binary File from Your Computer. It will be
+											<h5>Select a binary file from your computer. It will be
 												searched against the repository of this application.</h5>
 											<form id="search-upload-form">
 												<span class="btn btn-default btn-file"> Browse <input
@@ -172,7 +172,7 @@
 											<table class="table" id='search-file-table'>
 												<thead>
 													<tr>
-														<th class="text-center">#</th>
+														<th>#</th>
 														<th>Name</th>
 														<th>Type</th>
 														<th>Size</th>
@@ -184,7 +184,7 @@
 										</div>
 									</div>
 									<p class="description pull-right">You can leave this page
-										and track all your jobs on your home page.</p>
+										and track all your jobs on the home page.</p>
 									<div class="row"></div>
 									<div class="row">
 										<button class='btn btn-primary pull-right'
@@ -208,9 +208,44 @@
 			</div>
 		</div>
 
+	<div class="modal fade" data-backdrop="false" id="modalCompNotifyFinish" tabindex="-1" role="dialog"
+		aria-labelledby="Indexing Finish" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header warning">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="modalStopLabel">Composition analysis Completed</h4>
+				</div>
+				<div class="modal-body">
+					<p id="comp-warning-words">The composition analysis has completed.</p>
 
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default btn-sm"
+						data-dismiss="modal" id="btn-conf-comp-close">Close</button>
+					<button type="button" class="btn btn-warning btn-sm"
+						id="btn-conf-comp-refresh">Go to User Home</button>
+				</div>
+			</div>
+		</div>
+	</div>
+    
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+            
+            $('#btn-conf-comp-refresh').click(function() {
+                 window.location.replace("/userHome");
+		        });
+            
+        function sleep(milliseconds) {
+          var start = new Date().getTime();
+          for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+              break;
+            }
+          }
+        }
 			// search binary
 			var file_to_search;
 			$(function() {
@@ -293,8 +328,14 @@
 														queryBinaryIndexJobProgress(
 																'BinaryComposition',
 																'#search-progress-holder',
-																function(
-																		progress) {
+																function(progress) {
+                                                                    $('#modalCompNotifyFinish').modal({
+                                                                        keyboard: false,
+                                                                        focus: true,
+                                                                        show: true
+                                                                        })
+                                                                    //sleep(3000);
+	                                                                //window.location.replace("/userHome");
 																	// location.reload();
 																});
 													}

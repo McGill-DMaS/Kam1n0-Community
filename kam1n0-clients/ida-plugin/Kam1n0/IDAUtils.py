@@ -63,10 +63,24 @@ def execute(cmd=''):
     else:
         print(func, globals())
 
+def sync_wrap(func):
+    def wrapper(*args, **kwargs):
+        rvs = []
+        def run():
+            rv = func(*args, **kwargs)
+            rvs.append(rv)
+
+        flag = idaapi.MFF_WRITE
+        idaapi.execute_sync(run, flag)
+        if len(rvs) > 0:
+            return rvs[0]
+        else:
+            return
+    return wrapper
 
 def jumpto(ea):
     if is_hexrays_v7():
-        idc.jumpto(ea)
+        sync_wrap(idc.jumpto)(ea)
     else:
         idaapi.jumpto(ea)
 

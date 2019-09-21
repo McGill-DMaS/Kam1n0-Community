@@ -2,14 +2,84 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Fragment>
         <DirectoryRef Id="DISTRIBUTIONDIR">
-            <Component Id="cmpDBF4508BD333DB7309F16D0FA4E80B24" Guid="{7E090A68-2218-49FC-907B-34A1F0A053ED}" KeyPath="yes">
-                <CreateFolder />
+            <Component Id="cmp7B48B611F174B2ED4AF3D3529B36DD45" Guid="{9C5A8D6E-32B0-47F6-98FA-C674138D819C}">
+                <File Id="filE318C76F6890B1C36BEF85EFF4AA9C99" KeyPath="yes" Source="$(env.KAM_DIST)\ExtractBinaryViaIDA.py" />
             </Component>
+            <Component Id="cmp78D521F7D173CB371AFC51FB2F72093F" Guid="{D15CE892-A8DA-4590-AF5F-94E9B2FCA576}">
+                <File Id="filE110928EA95E5BC12C83760B815FC037" KeyPath="yes" Source="$(env.KAM_DIST)\fairschedule.xml" />
+            </Component>
+            <Component Id="cmp048C69305E17ED1C4821E9DC763D77DE" Guid="{B745512E-562F-4733-B140-FEB0B9751324}">
+                <File Id="filE80856C139669213FB7F594F79E1B789" KeyPath="yes" Source="$(env.KAM_DIST)\kam.bash" />
+            </Component>
+            <Component Id="cmpDA89D2C2143C89E99B1B3D8463A779E7" Guid="{C484D696-522B-45E0-A9A7-9978D82E00ED}">
+                <File Id="filDB6FFA416AEE56A847D38B83379EECE0" KeyPath="yes" Source="$(env.KAM_DIST)\kam.bat" />
+            </Component>
+            <Component Id="cmp408AA1C156C65EF4654D7E8B99749670" Guid="{8AEA29A4-FF27-4979-BB58-F0AB16CA0816}">
+                <File Id="filED5CD8B4573EB8FEB8838DD98BA58755" KeyPath="yes" Source="$(env.KAM_DIST)\kam1n0-banner.txt" />
+            </Component>
+            <Component Id="cmpFF1B355EFF693A5FDEE4A948C9FB8EED" Guid="{5E6182F2-53B9-4B96-80AE-5C8AE1DA6195}">
+                <File Id="fil8562DBF295B7CE706957C451449762C0" KeyPath="yes" Source="$(env.KAM_DIST)\kam1n0-server-workbench.jar" />
+            </Component>
+            <Component Id="cmpF92659EF107C065AB40A573E65C3C275" Guid="{585F88C0-C116-4E82-A334-D9FCD9DCB4A4}">
+                <File Id="fil0FA9DF7DF545EBB883DA1DB49CCBB685" KeyPath="yes" Source="$(env.KAM_DIST)\kam1n0-server.jar" />
+            </Component>
+            
+            <Component Id="cmp02B4C52032ABDBA8A47FE8FCF006A8F3" Guid="{5B840D7F-7313-48A3-B712-12C0A82CF3F3}">
+                <File Id="fil3F67BA0304E3522AF18FD06A8EA5E488" KeyPath="yes" Source="$(env.KAM_DIST)\kam1n0.properties" />
+            </Component>
+            <Component Id="cmp4451A509D0D72766EAA869BDFB0E36F7" Guid="{3CE1F374-3501-4AF8-9346-12D38F9ADF1F}">
+                <File Id="fil7A96FED72AE7F23E2BFF908C75876D44" KeyPath="yes" Source="$(env.KAM_DIST)\kam1n0.properties.explained" />
+            </Component>
+            <Directory Id="dir89E0BEB99EA9A3324C712F2477C4618D" Name="architectures">
+                <Component Id="cmpD70028C71B6BD9FC2B2F94C131DD8D23" Guid="{6906C379-FE17-4B8D-9419-08CDA8506078}">
+                    <File Id="filA42E90008F896B81E76A1AEB5087DFF8" KeyPath="yes" Source="$(env.KAM_DIST)\architectures\arm.xml" />
+                </Component>
+                <Component Id="cmp0AAE97A929C99236E6134274DB516324" Guid="{CFF0A9AB-7BC8-4131-9AC2-49A2B7AEF35D}">
+                    <File Id="filA5AD7724E1E0D35FE653625F302C0A70" KeyPath="yes" Source="$(env.KAM_DIST)\architectures\mc68.xml" />
+                </Component>
+                <Component Id="cmp97E71A3557E89FDEDAF17DAB353DC664" Guid="{2FD49829-5D62-48F2-8B9B-E2E74A7BE5BB}">
+                    <File Id="fil14E8698BD0BD93A1112770D6E971C64F" KeyPath="yes" Source="$(env.KAM_DIST)\architectures\metapc.xml" />
+                </Component>
+                <Component Id="cmp5B6F4BDB00761571066010807E283265" Guid="{F7E26DE2-A0EA-414B-B252-4C5BCAE04433}">
+                    <File Id="filE5D526D94B6FB1CFB03867459D0AE271" KeyPath="yes" Source="$(env.KAM_DIST)\architectures\ppc.xml" />
+                </Component>
+                <Component Id="cmp1088AE6944F0D6CA36D5FDC343D2261B" Guid="{22711A0F-B12D-46DD-A9CA-DD48C582B2F9}">
+                    <File Id="filDD8C613F980BEB62B9A39774F4F4DB13" KeyPath="yes" Source="$(env.KAM_DIST)\architectures\tms320c6.xml" />
+                </Component>
+            </Directory>
+            <Directory Id="dir6AA5890A660653764651AD4E7B3D5D5B" Name="lib">
+                <Component Id="cmpBFC6F0D7E89C97299F7DFFAEF522DE02" Guid="{C969A497-1DFF-420A-AC37-7F3594852AC7}">
+                    <File Id="filC8326E28FBC1A31747AFFE4C44F728DE" KeyPath="yes" Source="$(env.KAM_DIST)\lib\libz3.dll" />
+                </Component>
+                <Component Id="cmp5CB77AB8D026DD4B0DDFEF19B923269B" Guid="{5E9ACFB4-176A-4F44-A8A0-310E9FBC2984}">
+                    <File Id="fil773F1BBBEF5618567AE3B79021AFB91B" KeyPath="yes" Source="$(env.KAM_DIST)\lib\libz3java.dll" />
+                </Component>
+                <Component Id="cmp8A266CACEF300070509E166A9310B4D4" Guid="{75D0B453-33A2-406C-9F95-E1E862E4EFBE}">
+                    <File Id="filAC30D2C73D255331D504DE81F7CDB2B1" KeyPath="yes" Source="$(env.KAM_DIST)\lib\VEXIRBB.dll" />
+                </Component>
+            </Directory>
         </DirectoryRef>
     </Fragment>
     <Fragment>
         <ComponentGroup Id="GroupDistribution">
-            <ComponentRef Id="cmpDBF4508BD333DB7309F16D0FA4E80B24" />
+            <ComponentRef Id="cmp7B48B611F174B2ED4AF3D3529B36DD45" />
+            <ComponentRef Id="cmp78D521F7D173CB371AFC51FB2F72093F" />
+            <ComponentRef Id="cmp048C69305E17ED1C4821E9DC763D77DE" />
+            <ComponentRef Id="cmpDA89D2C2143C89E99B1B3D8463A779E7" />
+            <ComponentRef Id="cmp408AA1C156C65EF4654D7E8B99749670" />
+            <ComponentRef Id="cmpFF1B355EFF693A5FDEE4A948C9FB8EED" />
+            <ComponentRef Id="cmpF92659EF107C065AB40A573E65C3C275" />
+            
+            <ComponentRef Id="cmp02B4C52032ABDBA8A47FE8FCF006A8F3" />
+            <ComponentRef Id="cmp4451A509D0D72766EAA869BDFB0E36F7" />
+            <ComponentRef Id="cmpD70028C71B6BD9FC2B2F94C131DD8D23" />
+            <ComponentRef Id="cmp0AAE97A929C99236E6134274DB516324" />
+            <ComponentRef Id="cmp97E71A3557E89FDEDAF17DAB353DC664" />
+            <ComponentRef Id="cmp5B6F4BDB00761571066010807E283265" />
+            <ComponentRef Id="cmp1088AE6944F0D6CA36D5FDC343D2261B" />
+            <ComponentRef Id="cmpBFC6F0D7E89C97299F7DFFAEF522DE02" />
+            <ComponentRef Id="cmp5CB77AB8D026DD4B0DDFEF19B923269B" />
+            <ComponentRef Id="cmp8A266CACEF300070509E166A9310B4D4" />
         </ComponentGroup>
     </Fragment>
 </Wix>

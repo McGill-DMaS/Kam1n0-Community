@@ -53,7 +53,7 @@
 			<div class="card-header" data-background-color="purple">
 				<div class="nav-tabs-navigation">
 					<div class="nav-tabs-wrapper">
-						<span class="nav-tabs-title">Tasks:</span>
+						<span class="nav-tabs-title">Tasks</span>
 						<ul class="nav nav-tabs" data-tabs="tabs">
 							<li class=""><a href="#messages" data-toggle="tab"
 								aria-expanded="true"> <i class="material-icons">code</i>
@@ -79,7 +79,7 @@
 									<span class="input-group-addon"> <i
 										class="material-icons">vertical_align_bottom</i>
 									</span>
-									<div class="form-group label-floating">
+									<div class="form-group label-floating"  data-toggle="tooltip" title="The threshold of minimal similarity to consider two assembly functions are clones of each other">
 										<label class="control-label">Similarity Threshold</label> <input
 											id="input-threshold" type="text" class="form-control"
 											value="0.85" name="threshold" /> <span class="material-input"></span>
@@ -131,7 +131,7 @@
 											<table class="table" id='search-file-table'>
 												<thead>
 													<tr>
-														<th class="text-center">#</th>
+														<th>#</th>
 														<th>Name</th>
 														<th>Type</th>
 														<th>Size</th>
@@ -167,9 +167,37 @@
 			</div>
 		</div>
 
+	<div class="modal fade" data-backdrop="false" id="modalCompNotifyFinish" tabindex="-1" role="dialog"
+		aria-labelledby="Indexing Finish" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header warning">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="modalStopLabel">Classification Completed</h4>
+				</div>
+				<div class="modal-body">
+					<p id="comp-warning-words">The classification has completed.</p>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default btn-sm"
+						data-dismiss="modal" id="btn-conf-comp-close">Close</button>
+					<button type="button" class="btn btn-warning btn-sm"
+						id="btn-conf-comp-refresh">Go to User Home</button>
+				</div>
+			</div>
+		</div>
+	</div>
+    
 
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+            
+            $('#btn-conf-comp-refresh').click(function() {
+                 window.location.replace("/userHome");
+		        });
+            
 			// search binary
 			var file_to_search;
 			$(function() {
@@ -254,6 +282,11 @@
 																'#search-progress-holder',
 																function(
 																		progress) {
+                                                                    $('#modalCompNotifyFinish').modal({
+                                                                        keyboard: false,
+                                                                        focus: true,
+                                                                        show: true
+                                                                        })
 																	// location.reload();
 																});
 													}

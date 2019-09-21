@@ -268,7 +268,7 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
             else
             	icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage +"</span>&nbsp;";
             node.percentage = percentage;
-            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] sea: " + val.function.startAddress;
+            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
             node.lvl = 1;
             node.a_attr = {'per': percentage, 'func':  val.function, 'lvl': 1};
             root.children.push(node);
@@ -356,8 +356,8 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
 							},
 							"data": {
 								"content": [
-									{ "label": "similarity " +  $(item).data('percent') + "%", "value": 100-$(item).data('percent'), "color": "#ffffff" },
-									{ "label": "similarity " +  $(item).data('percent') + "%", "value": $(item).data('percent'), "color": "#218812" },
+									{ "label": "Similarity " +  $(item).data('percent') + "%", "value": 100-$(item).data('percent'), "color": "#ffffff" },
+									{ "label": "Similarity " +  $(item).data('percent') + "%", "value": $(item).data('percent'), "color": "#218812" },
 								]
 							}
 						});
@@ -392,9 +392,9 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
         $select.append(
         	$('<option>', {'text':'Sort by Name', 'selected': 'true', 'value': 0})
         ).append(
-        	$('<option>', {'text':'Sort by SEA', 'value': 1})
+        	$('<option>', {'text':'Sort by Start Effective Address', 'value': 1})
         ).append(
-        	$('<option>', {'text':'Sort by #Blocks', 'value': 2})
+        	$('<option>', {'text':'Sort by Number of Blocks', 'value': 2})
         ).append(
             	$('<option>', {'text':'Sort by Similarity', 'value': 3})
         ).on('change', function() {
@@ -409,7 +409,7 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
         $download.click(function(){
         	var wrapper = {'data':dataParsed, 'view': window.location.href }
         	$("<a />", {
-        	    "download": "result.json",
+        	    "download": "results.json",
         	    "href" : "data:application/json," + encodeURIComponent(JSON.stringify(wrapper, null, 2))
         	  }).appendTo("body")
         	  .click(function() {
@@ -617,7 +617,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
             else
             	icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage +"</span>&nbsp;";
             node.percentage = percentage;
-            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] sea: " + val.function.startAddress;
+            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
             node.lvl = 1;
             node.a_attr = {'per': percentage, 'func':  val.function, 'lvl': 1};
             root.children.push(node);
@@ -741,9 +741,9 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         $select.append(
         	$('<option>', {'text':'Sort by Name', 'selected': 'true', 'value': 0})
         ).append(
-        	$('<option>', {'text':'Sort by SEA', 'value': 1})
+        	$('<option>', {'text':'Sort by Start Effective Address', 'value': 1})
         ).append(
-        	$('<option>', {'text':'Sort by #Blocks', 'value': 2})
+        	$('<option>', {'text':'Sort by Number of Blocks', 'value': 2})
         ).append(
             	$('<option>', {'text':'Sort by Similarity', 'value': 3})
         ).on('change', function() {
@@ -758,7 +758,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         $download.click(function(){
         	var wrapper = {'data':dataParsed, 'view': window.location.href }
         	$("<a />", {
-        	    "download": "result.json",
+        	    "download": "results.json",
         	    "href" : URL.createObjectURL(new Blob([JSON.stringify(wrapper, null, 2)], {type: "application/octet-stream"}))
         	  }).appendTo("body")
         	  .click(function() {
@@ -1205,7 +1205,7 @@ function drawFlow(func, placeholderId, cloneSets, code_key='srcCodes') {
                     });
     inner.selectAll(".node").attr("title", function (d) {
                     	if(typeof send_msg != 'undefined'){
-	        				return "Double-click to jump to IDA"
+	        				return "Double-click to jump in IDA Pro"
                     	}
                     }).each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
 
@@ -1623,7 +1623,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                                 }
                                 $form.remove();
                             }).append('close'))
-                            .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown supported'))
+                            .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown Supported'))
             )
     );
     var $editArea = $form.find('textarea');

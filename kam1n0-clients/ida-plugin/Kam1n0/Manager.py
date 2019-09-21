@@ -106,7 +106,7 @@ class Kam1n0PluginManager:
             id="Kam1n0:queryCurrent",
             name="Search current function",
             icon=self.icons.ICON_SEARCH,
-            tooltip="Search the current function",
+            tooltip="Search current function",
             shortcut="Ctrl+Shift+s",
             menuPath="Search/next code",
             callback=self.query_current_func,
@@ -118,11 +118,11 @@ class Kam1n0PluginManager:
 
         action = ActionWrapper(
             id="Kam1n0:querySelected",
-            name="Select functions to search",
+            name="Search the selected functions",
             icon=self.icons.ICON_SEARCH_MULTIPLE,
-            tooltip="Select functions to search",
+            tooltip="Search the selected functions",
             shortcut="Ctrl+Shift+a",
-            menuPath="Search/next code",
+            menuPath= "",            #"Search/next code",
             callback=self.query_selected_func,
             args=None
         )
@@ -146,9 +146,9 @@ class Kam1n0PluginManager:
 
         action = ActionWrapper(
             id="Kam1n0:indexSelected",
-            name="Index selected function",
+            name="Index the selected functions",
             icon=self.icons.ICON_INDEX_MULTIPLE,
-            tooltip="Index selected function",
+            tooltip="Index the selected functions",
             shortcut="Ctrl+Shift+j",
             menuPath="Edit/Export data",
             callback=self.index_selected_func,
@@ -160,9 +160,9 @@ class Kam1n0PluginManager:
 
         action = ActionWrapper(
             id="Kam1n0:connectionManagement",
-            name="Manage connection",
+            name="Manage connections",
             icon=self.icons.ICON_CONN,
-            tooltip="Manage connection",
+            tooltip="Manage connections",
             shortcut="",
             menuPath="Edit/Kam1n0/",
             callback=self.open_cnn_manager,
@@ -174,9 +174,9 @@ class Kam1n0PluginManager:
 
         action = ActionWrapper(
             id="Kam1n0:storageManagement",
-            name="Manage storage",
+            name="Manage applications",
             icon=self.icons.ICON_SETT,
-            tooltip="Manage storage",
+            tooltip="Manage applications",
             shortcut="",
             menuPath="Edit/Kam1n0/",
             callback=self.open_user_home,
@@ -188,9 +188,9 @@ class Kam1n0PluginManager:
 
         action = ActionWrapper(
             id="Kam1n0:compositionQuery",
-            name="Composition Analysis",
+            name="Composition analysis",
             icon=self.icons.ICON_COMP,
-            tooltip="Composition Analysis",
+            tooltip="Composition analysis",
             shortcut="",
             menuPath="Search/next code",
             callback=self.query_binary,
@@ -390,8 +390,9 @@ class ActionWrapper(idaapi.action_handler_t):
             self.icon)  # Optional: the action icon (shows when in menus/toolbars)
         if not idaapi.register_action(action_desc):
             return False
-        if not idaapi.attach_action_to_menu(self.menuPath, self.id, 0):
-            return False
+        if self.menuPath != "":
+            if not idaapi.attach_action_to_menu(self.menuPath, self.id, 0):
+                return False
         if add_to_toolbar:
             if not idaapi.attach_action_to_toolbar("SearchToolBar", self.id):
                 return False

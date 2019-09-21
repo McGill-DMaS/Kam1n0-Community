@@ -1,17 +1,17 @@
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of different LSH functions to use at the bottom level">
 	<label for="kStart" class="col-sm-2 control-label">Starting k
-		value</label>
+		Value</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.kStart}" id="kStart"
-			placeholder="Starting k value" /> <span
+			placeholder="Starting k Value" /> <span
 			th:each="error : ${#fields.errors('configuration.kStart')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Maximum number of different LSH functions to use at the top level">
 	<label for="kMax" class="col-sm-2 control-label">Maximum k
 		Value</label>
 	<div class="col-sm-10">
@@ -23,7 +23,7 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of levels to split (i.e., the depth of ALSH tree)">
 	<label for="mSplit" class="col-sm-2 control-label">Splitting
 		Point m</label>
 	<div class="col-sm-10">
@@ -35,9 +35,9 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of ALSH trees">
 	<label for="lv" class="col-sm-2 control-label">Number of Trees
-		(l)</label>
+		l</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.l}" id="lv" placeholder="L value" />
@@ -48,7 +48,7 @@
 
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Instruction set">
 	<label for="arch" class="col-sm-2 control-label">Instruction
 		Set</label>
 	<div class="col-sm-10">
@@ -66,7 +66,7 @@
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.ClusterModel')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.ClusterModel')} ?  'form-group has-error' : 'form-group' " style="display: none;">
 	<label for="clumod" class="col-sm-2 control-label">Cluster Model</label>
 	<div class="col-sm-10">
 		<select class="form-control"
@@ -83,71 +83,71 @@
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.iteration')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.iteration')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of iterations to train the Asm2Vec model">
 	<label for="iteration" class="col-sm-2 control-label">Number of
-		iterations</label>
+		Iterations</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.iteration}" id="iteration"
-			placeholder="Number of iterations" /> <span
+			placeholder="Number of Iterations" /> <span
 			th:each="error : ${#fields.errors('configuration.iteration')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.negative_samples')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.negative_samples')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of negative samples to use in approximating the log probability">
 	<label for="negative_samples" class="col-sm-2 control-label">Number
-		of negative samples</label>
+		of Negative Samples</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.negative_samples}"
-			id="negative_samples" placeholder="Number of negative samples" /> <span
+			id="negative_samples" placeholder="Number of Negative Samples" /> <span
 			th:each="error : ${#fields.errors('configuration.negative_samples')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.min_frequeceny')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.min_frequeceny')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Minimum frequency a token has to satisfy so as not to be ignored">
 	<label for="min_frequeceny" class="col-sm-2 control-label">Minimum
-		token frequency</label>
+		Token Frequency</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.min_frequeceny}"
-			id="min_frequeceny" placeholder="Minimum token frequency" /> <span
+			id="min_frequeceny" placeholder="Minimum Token Frequency" /> <span
 			th:each="error : ${#fields.errors('configuration.min_frequeceny')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.dim')} ?  'form-group has-error' : 'form-group' ">
-	<label for="dim" class="col-sm-2 control-label">Vector size</label>
+	th:class="${#fields.hasErrors('configuration.dim')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="The dimension of a token vector">
+	<label for="dim" class="col-sm-2 control-label">Vector Size</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.dim}" id="dim"
-			placeholder="Vector size" /> <span
+			placeholder="Vector Size" /> <span
 			th:each="error : ${#fields.errors('configuration.dim')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.similarity_threshold_for_cluster')} ?  'form-group has-error' : 'form-group' ">
-	<label for="similarity_threshold_for_cluster" class="col-sm-2 control-label">Similarity threshold</label>
+	th:class="${#fields.hasErrors('configuration.similarity_threshold_for_cluster')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="The threshold of minimal similarity to consider two assembly functions are clones to each other">
+	<label for="similarity_threshold_for_cluster" class="col-sm-2 control-label">Similarity Threshold</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.similarity_threshold_for_cluster}" id="similarity_threshold_for_cluster"
-			placeholder="Similarity threshold" /> <span
+			placeholder="Similarity Threshold" /> <span
 			th:each="error : ${#fields.errors('configuration.similarity_threshold_for_cluster')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.cluster_class_distribution_significance')} ?  'form-group has-error' : 'form-group' ">
-	<label for="cluster_class_distribution_significance" class="col-sm-2 control-label">Cluster discriminative power threshold (only for Union-Find)</label>
+	th:class="${#fields.hasErrors('configuration.cluster_class_distribution_significance')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="The threshold of minimal discriminative power a cluster should have to be kept">
+	<label for="cluster_class_distribution_significance" class="col-sm-2 control-label">Cluster Discriminative Power Threshold </label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.cluster_class_distribution_significance}"
@@ -159,7 +159,7 @@
 
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.min_exe_per_cluster')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.min_exe_per_cluster')} ?  'form-group has-error' : 'form-group' "  style="display: none;">
 	<label for="min_exe_per_cluster" class="col-sm-2 control-label">Number of covered executable per cluster threshold (only for SLink)</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
@@ -171,7 +171,7 @@
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.classes')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.classes')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="The list of software classes defined by the user">
 	<label for="classes" class="col-sm-2 control-label">Class List</label>
 	<div class="col-sm-10">
 	<span  class="btn btn-default btn-file" >

@@ -78,7 +78,7 @@ public class UITest {
 		driver.findElement(By.id("aggreeTLicense1")).click();
 		driver.findElement(By.tagName("button")).click();
 		String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
-		assertEquals(response, "success");
+		assertEquals(response, "successfully");
 	}
 
 	public void login() throws Exception {
@@ -105,7 +105,7 @@ public class UITest {
 		Select dropdown = new Select(driver.findElement(By.id("applicationType")));
 		dropdown.selectByValue(appType);
 		driver.findElement(By.id("name")).sendKeys(identifier);
-		driver.findElement(By.id("title")).sendKeys(identifier + "_title");
+		//driver.findElement(By.id("title")).sendKeys(identifier + "_title");
 		driver.findElement(By.id("description")).sendKeys(identifier + "_desp");
 		driver.findElement(By.id("btn_submit")).click();
 		Thread.sleep(5000);
@@ -148,6 +148,10 @@ public class UITest {
 				if (prgs.size() == 0 || error)
 					break;
 			} while (true);
+			Thread.sleep(1000);
+			btn = driver.findElement(By.id("btn-conf-index-close"));
+			btn.click();
+			Thread.sleep(1000);
 			assertFalse(error);
 		}
 

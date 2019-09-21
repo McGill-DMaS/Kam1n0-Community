@@ -168,7 +168,7 @@ public class AppController {
 				model.addAttribute("appConfForm", info.configuration.createView());
 			}
 			model.addAttribute("edit", false);
-			return MVCUtils.wrapAuthenticatedHomePage("Create an application.", "Please fill the required details.",
+			return MVCUtils.wrapAuthenticatedHomePage("Create an Application.", "Please fill the required information.",
 					new ModelAndFragment(FRAG_APP_CONF, model));
 		} catch (Exception e) {
 			AppPlatform.logger.error("Failed to create application form..", e);
@@ -188,7 +188,7 @@ public class AppController {
 				model.addAttribute("confObj", info);
 				model.addAttribute("applicationTypes", AppPlatform.appTypes.keySet());
 				model.addAttribute("edit", false);
-				return MVCUtils.wrapAuthenticatedHomePage("Create an application.", "Please edit the following errors.",
+				return MVCUtils.wrapAuthenticatedHomePage("Create an Application.", "Please correct the following errors.",
 						new ModelAndFragment(FRAG_APP_CONF, model));
 			}
 			info.owner = UserController.findUserName();
@@ -226,7 +226,7 @@ public class AppController {
 	@GetMapping("/userHome")
 	public ModelAndView createUserHome() {
 		try {
-			return MVCUtils.wrapAuthenticatedHomePage("App List", "Click on the permanent link to access.",
+			return MVCUtils.wrapAuthenticatedHomePage("Application List", "Click on a link to access the corresponding application.",
 					createAppList(), userController.createProgressList(), userController.createFileList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
@@ -239,7 +239,7 @@ public class AppController {
 	public ModelAndView createProgressList() {
 		try {
 			return MVCUtils.wrapAuthenticatedHomePage("Job Details",
-					"Job details can also be found under your user home page.", userController.createProgressList());
+					"Job details can also be found on your user home page.", userController.createProgressList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
 			return MVCUtils.errorMV("Failed to create homepage. ");

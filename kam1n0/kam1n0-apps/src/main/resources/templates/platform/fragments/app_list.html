@@ -2,7 +2,7 @@
 	<div th:if="${model.owned.isEmpty() and model.shared.isEmpty()}"
 		class="discription text-center"
 		style="font-size: 20pt; margin-top: 200px;">
-		You don't have any application yet. Get started from <a
+		You don't have any applications yet. Get started <a
 			href="/createApp">here</a>.
 	</div>
 
@@ -43,19 +43,19 @@
 									style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
 
 								<h2>
-									<small style="font-size: 10pt">Permanent link:</small> <a
+									<small style="font-size: 10pt">Permanent Link:</small> <a
 										th:href="@{${app.link}}"><span th:text="${app.link}"></span></a>
 								</h2>
 								<h3 th:inline="text">
-									[[${app.basicInfo.name}]] <small style="font-size: 13pt"
+									[[${app.basicInfo.name}]] <small style="font-size: 13pt;display: none;"
 										th:text="${app.basicInfo.title}"></small>
 								</h3>
 								<div class="togglebutton">
 									<label> <input type="checkbox" class="onlinebtn"
 										th:checked="${app.basicInfo.isOnline}"
 										th:attr="appId=${app.basicInfo.appId}" /> <span
-										th:if="${app.basicInfo.isOnline}">This App is online.</span> <span
-										th:if="${!app.basicInfo.isOnline}">This App is offline.</span>
+										th:if="${app.basicInfo.isOnline}">This application is online.</span> <span
+										th:if="${!app.basicInfo.isOnline}">This application is offline.</span>
 									</label>
 								</div>
 								<p style="font-size: 14px;"
@@ -73,11 +73,11 @@
 								</div>
 								<div class="row">
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
-										files</p>
+										Files</p>
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
-										functions</p>
+										Functions</p>
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
-										blocks</p>
+										Blocks</p>
 								</div>
 							</div>
 							<div></div>
@@ -148,11 +148,11 @@
 							<div class="col-sm-3">
 								<div class="row">
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
-										files</p>
+										Files</p>
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
-										functions</p>
+										Functions</p>
 									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
-										blocks</p>
+										Blocks</p>
 									<p class="pull-right"
 										th:text="${'Shared by: ' + app.basicInfo.owner}"></p>
 								</div>
@@ -195,7 +195,7 @@
 				</div>
 				<div class="modal-body">
 					<p>Please enter the application name and your password to
-						confirm deletion.</p>
+						confirm the deletion.</p>
 					<p id="modal-msg" class="text-danger"></p>
 					<form class="form-horizontal" id="appDeletionForm">
 						<div class="row">
@@ -217,7 +217,7 @@
 										class="material-icons">keyboard_arrow_right </i>
 									</span>
 									<div class="form-group label-floating">
-										<label class="control-label">Your Password</label> <input
+										<label class="control-label">Password</label> <input
 											class="form-control" name="pwd" type="password" /> <span
 											class="material-input"></span>
 									</div>

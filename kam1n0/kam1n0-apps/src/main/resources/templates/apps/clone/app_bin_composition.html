@@ -77,7 +77,7 @@ text {
 									Details
 									<div class="ripple-container"></div></a></li>
 						</ul>
-						<a href="#" id="btn_dump" class="pull-right"  style="padding-right:10px;color:white" title="Dump all as JSON file.">
+						<a href="#" id="btn_dump" class="pull-right"  style="padding-right:10px;color:white" title="Save as JSON file.">
 						<i class="material-icons" >move_to_inbox</i>
 						</a>
 					</div>
@@ -149,9 +149,9 @@ text {
 												</div>
 
 
-												<p class="small text-info">WARNING: using this filter
-													will disable address pagination and it may be slow to
-													search through all the functions.</p>
+												<p class="small text-info">WARNING: Using this filter
+                                                will disable address pagination. 
+                                                It may also be slow to search through all functions.</p>
 											</div>
 										</li>
 										<li><div class="row">
@@ -460,7 +460,7 @@ text {
 														.addClass("pull-right")
 														.prop(
 																'title',
-																'Matched target functions/Total valid queries/Source binary\'s function size. \nPercentage: Matched target functions/Total valid queries')
+																'Number of Matched Target Functions / Total Number of Valid Queries / Number of Functions in the Source Binary. \nPercentage: Matched Target Functions/Total Number of Valid Queries')
 														.css('cursor',
 																'default')
 														.css("color", "gray"));

@@ -111,7 +111,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 			model.addAttribute("appConfForm", null);
 			model.addAttribute("appConfForm", info.configuration.createView());
 			model.addAttribute("edit", true);
-			return MVCUtils.wrapAuthenticatedHomePage("Edit an application.", "Please edit the required details.",
+			return MVCUtils.wrapAuthenticatedHomePage("Edit the Application.", "Please edit the required information.",
 					new ModelAndFragment(FRAG_APP_CONF, model));
 		} catch (Exception e) {
 			logger.error("Failed to create application form..", e);

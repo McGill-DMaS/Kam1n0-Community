@@ -30,8 +30,7 @@
 
 			<div class="form-group"
 				th:class="${#fields.hasErrors('name')} ?  'form-group has-error' : 'form-group' ">
-				<label for="name" class="col-sm-2 control-label">Application
-					Name</label>
+				<label for="name" class="col-sm-2 control-label">Name</label>
 				<div class="col-sm-10">
 					<input class="form-control" id="name" th:field="*{name}"
 						placeholder="Application name" /> <span
@@ -42,7 +41,7 @@
 
 
 			<div class="form-group"
-				th:class="${#fields.hasErrors('title')} ?  'form-group has-error' : 'form-group' ">
+				th:class="${#fields.hasErrors('title')} ?  'form-group has-error' : 'form-group' "  style="display: none;">
 				<label for="title" class="col-sm-2 control-label">Title</label>
 				<div class="col-sm-10">
 					<input class="form-control" id="title" th:field="*{title}"
@@ -57,13 +56,13 @@
 				<label for="reads" class="col-sm-2 control-label">Access
 					Control</label>
 				<div class="col-sm-10">
-					<h6>* Write access will overwrite the read access.</h6>
+					<h6>*Write access will overwrite the read access</h6>
 					<table class="table" id="access">
 						<thead>
 							<tr>
 								<th class='text-center'>Operation</th>
-								<th class='text-center'>User Name</th>
-								<th class='text-center'>Users Right</th>
+								<th class='text-center'>UserName</th>
+								<th class='text-center'>User Right</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -121,7 +120,7 @@
 							</i>
 							</span>
 							<div class="form-group label-floating">
-								<label class="control-label">User name</label> <input
+								<label class="control-label">Username</label> <input
 									type="text" class="form-control" id='access-username' /> <span
 									class="material-input"></span>
 							</div>
