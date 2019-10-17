@@ -16,6 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogateMultipart;
 public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProcedure {
 
 	private static Logger logger = LoggerFactory.getLogger(BinaryAnalysisProcedureCompositionAnalysis.class);
-	public final static String KEY_FILE = "file";
+	public final static String KEY_FILES = "file";
 	public final static String KEY_THRESHOLD = "threshold";
 	public final static String KEY_TOP = "top";
 	public final static String KEY_BLK_MAX = "blk_max";
@@ -72,76 +73,80 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
 			String name = StringResources.STR_EMPTY;
 
 			BinarySurrogateMultipart parts = null;
-			Object obj = getObj(KEY_FILE, dataMap);
-			if (obj instanceof BinarySurrogate) {
-				BinarySurrogate surrogate = (BinarySurrogate) obj;
-				File surrogateFile = new File(surrogate.name);
-				name = surrogateFile.getName();
-				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
-						"Analysing binary " + name);
-				parts = surrogate.toMultipart();
-			} else if (obj instanceof File) {
-				File uploadedFile = (File) obj;
-				name = uploadedFile.getName();
-				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
-						"Analysing binary " + name);
-				if (uploadedFile.getName().endsWith(".tagged") || uploadedFile.getName().endsWith(".json"))
-					if (BinarySurrogateMultipart.check(uploadedFile))
-						parts = new BinarySurrogateMultipart(uploadedFile);
-				if (parts == null)
-					parts = ress.disassembleIntoMultiPart(uploadedFile, uploadedFile.getName(), progress);
-			} else {
-				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
-						"Failed to analyze binary " + name + ": the upload file cant be found.");
-				return;
-			}
+			//Object obj = getObj(KEY_FILE, dataMap);
+			List<? extends Object> objs = getObj(KEY_FILES, dataMap);
+			for(Object obj:objs)
+			{
+			    if (obj instanceof BinarySurrogate) {
+			    	BinarySurrogate surrogate = (BinarySurrogate) obj;
+			    	File surrogateFile = new File(surrogate.name);
+			    	name = surrogateFile.getName();
+			    	stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
+			    			"Analysing binary " + name);
+			    	parts = surrogate.toMultipart();
+			    } else if (obj instanceof File) {
+			    	File uploadedFile = (File) obj;
+			    	name = uploadedFile.getName();
+			    	stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
+			    			"Analysing binary " + name);
+			    	if (uploadedFile.getName().endsWith(".tagged") || uploadedFile.getName().endsWith(".json"))
+			    		if (BinarySurrogateMultipart.check(uploadedFile))
+			    			parts = new BinarySurrogateMultipart(uploadedFile);
+			    	if (parts == null)
+			    		parts = ress.disassembleIntoMultiPart(uploadedFile, uploadedFile.getName(), progress);
+			    } else {
+			    	stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
+			    			"Failed to analyze binary " + name + ": the upload file cant be found.");
+			    	return;
+			    }
 
-			stage.progress = 0.5;
-			File resultFile = new File(Environment.getUserFolder(userName) + "/"
-					+ FileServingUtils.escapeName("Composition-" + name + "-" + StringResources.timeString() + ".kam"));
+			    stage.progress = 0.5;
+			    File resultFile = new File(Environment.getUserFolder(userName) + "/"
+			    		+ FileServingUtils.escapeName("Composition-" + name + "-" + StringResources.timeString() + ".kam"));
 
-			int blk_max_p = blk_max;
-			try (BinarySearchUnit unit = new BinarySearchUnit(appId, resultFile);) {
+			    int blk_max_p = blk_max;
+			    try (BinarySearchUnit unit = new BinarySearchUnit(appId, resultFile);) {
 
-				FileInfo info = FileInfo.readFileInfo(resultFile);
-				info.preparing = true;
-				info.task = this.getJobName();
-				info.appType = appType;
-				info.appId = appId;
-				info.save();
+					FileInfo info = FileInfo.readFileInfo(resultFile);
+					info.preparing = true;
+					info.task = this.getJobName();
+					info.appType = appType;
+					info.appId = appId;
+					info.save();
 
-				int ind = 0;
-				for (BinarySurrogate part : parts) {
+					int ind = 0;
+					for (BinarySurrogate part : parts) {
 
-					part.functions = part.functions.stream()
-							.filter(func -> func.blocks.size() >= blk_min && func.blocks.size() < blk_max_p)
-							.collect(Collectors.toCollection(ArrayList::new));
+						part.functions = part.functions.stream()
+								.filter(func -> func.blocks.size() >= blk_min && func.blocks.size() < blk_max_p)
+								.collect(Collectors.toCollection(ArrayList::new));
 
-					if (progress.interrupted)
-						throw new Exception("This job is being interrupted.. cancelling job.");
+						if (progress.interrupted)
+							throw new Exception("This job is being interrupted.. cancelling job.");
 
-					ind++;
-					stage.updateMsg("Saving " + "part " + (ind) + "/" + parts.size);
-					unit.put(part);
-					stage.msg = "Analysing binary " + name + " part " + (ind) + "/" + parts.size;
-					FunctionCloneDataUnit cloneUnit = ress.detectFunctionClone(appId, part, threshold, top,
-							avoidSameBinary, progress, false);
-					unit.put(cloneUnit, ress.objectFactory, progress);
-					stage.progress = ind * 0.5 / parts.size + 0.5;
+						ind++;
+						stage.updateMsg("Saving " + "part " + (ind) + "/" + parts.size);
+						unit.put(part);
+						stage.msg = "Analysing binary " + name + " part " + (ind) + "/" + parts.size;
+						FunctionCloneDataUnit cloneUnit = ress.detectFunctionClone(appId, part, threshold, top,
+								avoidSameBinary, progress, false);
+						unit.put(cloneUnit, ress.objectFactory, progress);
+						stage.progress = ind * 0.5 / parts.size + 0.5;
+					}
+					stage.complete();
+
+					stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
+							"Summarizing clone data..");
+					unit.updateSummary(appId, ress.objectFactory, stage, blk_min, blk_max);
+					stage.complete();
+					// unit.makeOffline(appId, ress.objectFactory, progress);
+					info.preparing = false;
+					info.save();
+
+					progress.result = unit.file;
 				}
-				stage.complete();
-
-				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
-						"Summarizing clone data..");
-				unit.updateSummary(appId, ress.objectFactory, stage, blk_min, blk_max);
-				stage.complete();
-				// unit.makeOffline(appId, ress.objectFactory, progress);
-				info.preparing = false;
-				info.save();
-
-				progress.result = unit.file;
-				progress.complete();
 			}
+			progress.complete();
 
 		} catch (Exception e) {
 			logger.error("Failed to process the " + getJobName() + " job from " + getJobName(), e);

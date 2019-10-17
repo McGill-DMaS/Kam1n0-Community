@@ -156,15 +156,15 @@
 								<form class="form-horizontal" id="appForm">
 									<div class="row">
 										<div class="col-md-12">
-											<h5>Select a Binary File from Your Computer. It will be
+											<h5>Select Binary Files from Your Computer. It will be
 												searched against the repository of this application.</h5>
 											<form id="search-upload-form">
 												<span class="btn btn-default btn-file"> Browse <input
-													type="file" id="search-upload-input" />
+													type="file" multiple="" id="search-upload-input" />
 												</span>
 											</form>
 											<div class="upload-drop-zone" id="search-drop-zone">Or
-												drag and drop a file here</div>
+												drag and drop files here</div>
 										</div>
 									</div>
 									<div class="row">
@@ -264,7 +264,12 @@
 									document
 											.getElementById('search-upload-input').files = file_to_search;
 									var formData = new FormData();
-									formData.append('bin', file_to_search[0]);
+                                    console.log(file_to_search);
+									//formData.append('bin', file_to_search[0]);
+								    $.each(file_to_search,
+								    		function(i, file) {
+								    			formData.append('bins', file);
+								    		});
 									formData.append('threshold', $(
 											'#input-threshold').val());
 									formData.append('topk', $('#input-topk')
