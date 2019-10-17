@@ -146,7 +146,7 @@ Login Info:
                         self.configuration['default-app'] = \
                             self.configuration['apps'].keys()[0]
                     else:
-                        self.Kconf['default-cnn'] = None
+                        self.configuration['default-app'] = None
         self.updateDpList()
 
     def OnButtonUpdate(self, *_):
