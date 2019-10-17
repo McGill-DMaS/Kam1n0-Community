@@ -168,38 +168,43 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 			@RequestParam(value = "topk", defaultValue = "15") int topk, //
 			@RequestParam(value = "blk_min", defaultValue = "1") int blk_min, //
 			@RequestParam(value = "blk_max", defaultValue = "1300") int blk_max, //
-			@RequestParam(value = "bin") Object obj) {
+			@RequestParam(value = "bins") Object[] objs) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String name = auth.getName();
 		String tmpDir = Environment.getUserTmpDir(name);
-		if (obj instanceof MultipartFile) {
-			MultipartFile file = ((MultipartFile) obj);
-			File new_file = new File(tmpDir + "/" + file.getOriginalFilename());
-			try {
-				new_file.getParentFile().mkdirs();
-				file.transferTo(new_file);
-			} catch (Exception e) {
-				logger.error("Failed to process submited mutipart file", e);
-				return ImmutableMap.of("error", "Unsupported format " + obj.getClass().getName());
+		ArrayList<Object> nobjs = new ArrayList<>();
+		for (Object obj: objs) {
+			if (obj instanceof MultipartFile) {
+				MultipartFile file = ((MultipartFile) obj);
+				File new_file = new File(tmpDir + "/" + file.getOriginalFilename());
+				try {
+					new_file.getParentFile().mkdirs();
+					file.transferTo(new_file);
+				} catch (Exception e) {
+					logger.error("Failed to process submited mutipart file", e);
+					return ImmutableMap.of("error", "Unsupported format " + obj.getClass().getName());
+				}
+				//obj = new_file;
+				nobjs.add(new_file);
+			} else if (obj instanceof String) {
+				BinarySurrogate surrogate;
+				try {
+					surrogate = BinarySurrogate.loadFromJson((String) obj);
+					surrogate.processRawBinarySurrogate();
+					//obj = surrogate;
+					nobjs.add(surrogate);
+				} catch (Exception e) {
+					logger.error("Failed to process submited mutipart file", e);
+					return ImmutableMap.of("error", "Upload failes. Please check server log. " + obj.getClass().getName());
+				}
+			} else {
+				logger.error("Unsupported type {}", obj.getClass().getName());
+				return ImmutableMap.of("error", "Upload failes. Please check server log." + obj.getClass().getName());
 			}
-			obj = new_file;
-		} else if (obj instanceof String) {
-			BinarySurrogate surrogate;
-			try {
-				surrogate = BinarySurrogate.loadFromJson((String) obj);
-				surrogate.processRawBinarySurrogate();
-				obj = surrogate;
-			} catch (Exception e) {
-				logger.error("Failed to process submited mutipart file", e);
-				return ImmutableMap.of("error", "Upload failes. Please check server log. " + obj.getClass().getName());
-			}
-		} else {
-			logger.error("Unsupported type {}", obj.getClass().getName());
-			return ImmutableMap.of("error", "Upload failes. Please check server log." + obj.getClass().getName());
 		}
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILE, obj);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILES, nobjs);
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_THRESHOLD, threshold);
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILTER, avoidSameBinary);
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_TOP, topk);
