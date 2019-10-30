@@ -72,7 +72,7 @@ class CloneConnector:
         return self.app_url + '/push_bin'
 
     def get_composition_url(self):
-        return self.app_url + '/search_bin'
+        return self.app_url + '/search_bin_single'
 
     def open_user_home(self):
         self.request.show_get(self.get_user_home(),

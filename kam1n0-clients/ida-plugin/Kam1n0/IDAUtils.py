@@ -17,6 +17,8 @@
 import idaapi
 import idc
 import idautils
+import ida_name
+from ida_name import calc_gtn_flags
 import os
 import inspect
 import struct
@@ -63,10 +65,24 @@ def execute(cmd=''):
     else:
         print(func, globals())
 
+def sync_wrap(func):
+    def wrapper(*args, **kwargs):
+        rvs = []
+        def run():
+            rv = func(*args, **kwargs)
+            rvs.append(rv)
+
+        flag = idaapi.MFF_WRITE
+        idaapi.execute_sync(run, flag)
+        if len(rvs) > 0:
+            return rvs[0]
+        else:
+            return
+    return wrapper
 
 def jumpto(ea):
     if is_hexrays_v7():
-        idc.jumpto(ea)
+        sync_wrap(idc.jumpto)(ea)
     else:
         idaapi.jumpto(ea)
 
@@ -122,13 +138,15 @@ def _get_arch():
         arch['endian'] = "be" if idaapi.cvar.inf.mf else "le";
     if info.procName.lower().startswith('mips'):
         arch['type'] = 'mips'
+    if info.procName.lower().startswith('68330'):
+        arch['type'] = 'mc68'
     return arch
 
 
 def _get_api(sea):
     calls = 0
     api = []
-    flags = idc.GetFunctionFlags(sea)
+    flags = idc.get_func_attr(sea, idc.FUNCATTR_FLAGS)
     # ignore library functions
     if flags & idc.FUNC_LIB or flags & idc.FUNC_THUNK:
         return calls, api
@@ -146,10 +164,10 @@ def _get_api(sea):
             if tmp_api_address == "":
                 calls += 1
                 continue
-            api_flags = idc.GetFunctionFlags(tmp_api_address)
+            api_flags = idc.get_func_attr(tmp_api_address, idc.FUNCATTR_FLAGS)
             if api_flags & idaapi.FUNC_LIB is True \
                     or api_flags & idaapi.FUNC_THUNK:
-                tmp_api_name = idc.NameEx(0, tmp_api_address)
+                tmp_api_name = idc.get_name(tmp_api_address, ida_name.GN_VISIBLE | calc_gtn_flags(0, tmp_api_address))
                 if tmp_api_name:
                     api.append(tmp_api_name)
             else:
@@ -159,60 +177,66 @@ def _get_api(sea):
 
 def _get_ida_func_surrogate(func, arch):
     func_surrogate = dict()
-    func_surrogate['name'] = idc.GetFunctionName(func.startEA)
-    func_surrogate['id'] = func.startEA
+    func_surrogate['name'] = idc.get_func_name(func.start_ea)
+    func_surrogate['id'] = func.start_ea
     # ignore call-graph at this moment
     func_surrogate['call'] = list()
-    func_surrogate['sea'] = func.startEA
-    func_surrogate['see'] = idc.FindFuncEnd(func.startEA)
+    func_surrogate['sea'] = func.start_ea
+    func_surrogate['see'] = idc.find_func_end(func.start_ea)
     # api is optional
-    func_surrogate['api'] = _get_api(func.startEA)[1]
+    func_surrogate['api'] = _get_api(func.start_ea)[1]
     func_surrogate['blocks'] = list()
 
     # comments
     func_surrogate['comments'] = []
-    func_surrogate['comments'].extend(get_comments(func.startEA))
+    func_surrogate['comments'].extend(get_comments(func.start_ea))
 
-    for bb in idaapi.FlowChart(idaapi.get_func(func.startEA)):
+    for bb in idaapi.FlowChart(idaapi.get_func(func.start_ea)):
 
         block = dict()
         block['id'] = bb.id
-        block['sea'] = bb.startEA
+        block['sea'] = bb.start_ea
         if arch is 'arm':
             # for arm; the last bit indicates thumb mode.
-            block['sea'] += idc.GetReg(bb.startEA, 'T')
-        block['eea'] = bb.endEA
-        block['name'] = 'loc_' + format(bb.startEA, 'x').upper()
+            block['sea'] += idc.GetReg(bb.start_ea, 'T')
+        block['eea'] = bb.end_ea
+        block['name'] = 'loc_' + format(bb.start_ea, 'x').upper()
         dat = {}
         block['dat'] = dat
-        s = idc.GetManyBytes(bb.startEA, bb.endEA - bb.startEA)
+        s = idc.get_bytes(bb.start_ea, bb.end_ea - bb.start_ea)
         if s is not None:
             block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
 
 
         instructions = list()
-        for head in idautils.Heads(bb.startEA, bb.endEA):
+        oprTypes = list()
+        for head in idautils.Heads(bb.start_ea, bb.end_ea):
             func_surrogate['comments'].extend(get_comments(head))
             ins = list()
+            oprType = list()
             ins.append(
                 str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
-            opr = idc.GetMnem(head)
+            opr = idc.print_insn_mnem(head)
             if opr == "":
                 continue
             ins.append(opr)
             for i in range(5):
-                opd = idc.GetOpnd(head, i)
-                if opd == "":
+                opd = idc.print_operand(head, i)
+                tp = idc.get_operand_type(head, i)
+                if opd == "" or tp is None:
                     continue
                 ins.append(opd)
+                oprType.append(tp)
             instructions.append(ins)
+            oprTypes.append(oprType)
 
             refs = list(idautils.DataRefsFrom(head))
             for ref in refs:
                 dat[head] = binascii.hexlify(
-                    struct.pack("<Q", idc.Qword(ref)))
+                    struct.pack("<Q", idc.get_qword(ref)))
 
         block['src'] = instructions
+        block['oprType'] = oprTypes
 
         # flow chart
         block_calls = list()
@@ -267,31 +291,37 @@ def get_selected_code(sea, eea):
     block['name'] = 'loc_' + format(sea, 'x').upper()
     dat = {}
     block['dat'] = dat
-    s = idc.GetManyBytes(sea, eea -sea)
+    s = idc.get_bytes(sea, eea -sea)
     if s is not None:
         block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
     instructions = list()
+    oprTypes = list()
     for head in idautils.Heads(sea, eea):
         func['comments'].extend(get_comments(head))
         ins = list()
+        oprType = list()
         ins.append(
             str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
-        opr = idc.GetMnem(head)
+        opr = idc.print_insn_mnem(head)
         if opr == "":
             continue
         ins.append(opr)
         for i in range(5):
-            opd = idc.GetOpnd(head, i)
-            if opd == "":
+            opd = idc.print_operand(head, i)
+            tp = idc.get_operand_type(head, i)
+            if opd == "" or tp is None:
                 continue
             ins.append(opd)
+            oprType.append(tp)
         instructions.append(ins)
+        oprTypes.append(oprType)
 
         refs = list(idautils.DataRefsFrom(head))
         for ref in refs:
             dat[head] = binascii.hexlify(
-                struct.pack("<Q", idc.Qword(ref)))
+                struct.pack("<Q", idc.get_qword(ref)))
     block['src'] = instructions
+    block['oprType'] = oprTypes
     block['call'] = []
     func['blocks'].append(block)
     return surrogate
@@ -307,12 +337,12 @@ def _iter_extra_comments(ea, start):
 
 def get_comments(ea):
     comments = []
-    text = idc.RptCmt(ea)
+    text = idc.get_cmt(ea,1)
     if text and len(text) > 0:
         comments.append({'type': 'repeatable', 'comment': text,
                          'offset': str(hex(ea)).rstrip("L").upper().replace(
                              "0X", "0x")})
-    text = idc.Comment(ea)
+    text = idc.get_cmt(ea,0)
     if text and len(text) > 0:
         comments.append({'type': 'regular', 'comment': text,
                          'offset': str(hex(ea)).rstrip("L").upper().replace(

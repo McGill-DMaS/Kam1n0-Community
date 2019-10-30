@@ -78,20 +78,19 @@ class ConnectionManagementForm(Form):
         Form.__init__(self,
 r"""BUTTON YES* OK 
 BUTTON CANCEL NONE 
-Kam1n0 - Manage connections
+Kam1n0 - Manage Connections
 {FormChangeCb}
-Manage Connections:
-<(Click to edit):{fvChooser}>
-<Remove :{btnRemove}> Remove selected connection.
-<App URL  :{txtServer}>
+<               :{fvChooser}>
+<Remove :{btnRemove}> Remove the Selected Connection.
+<Application URL:{txtServer}>
 Login Info:
-<User     :{txtUser}>
-<Password :{txtPw}>
-<Update / Add:{btnUpdate}>
-<Threshold:{txtSim}>
-<Top-K    :{txtTopK}>
-<Avoid Same Binary  :{chkSameBin}>{chkGroup}>
-<Multiple queries saved as .kam file  :{chkKamSave}>{chkGroupp}>
+<User           :{txtUser}>
+<Password       :{txtPw}>
+<Update/Add     :{btnUpdate}>
+<Threshold      :{txtSim}>
+<Top-K          :{txtTopK}>
+<Exclude Results from the Same Binary  :{chkSameBin}>{chkGroup}>
+<Save Multiple Queries as a .kam File  :{chkKamSave}>{chkGroupp}>
 <Connector:{dpCnn}>
 """, {
                           'fvChooser': Form.EmbeddedChooserControl(
@@ -163,7 +162,7 @@ Login Info:
                 app['app_url']
             )])
         self.updateDpList()
-        info("Updated / added connection %s." % app['app_url'])
+        info("The connection \'%s\' was added/updated." % app['app_url'])
 
     def updateDpList(self):
         # update dropdown list:

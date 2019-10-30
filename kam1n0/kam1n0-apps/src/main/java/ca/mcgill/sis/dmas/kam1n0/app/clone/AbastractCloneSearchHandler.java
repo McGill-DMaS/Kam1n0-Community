@@ -37,6 +37,7 @@ import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfoSummary;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationMeta;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit.SummaryWrapper;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDetectionResultForWeb;
 import ca.mcgill.sis.dmas.kam1n0.app.util.FileServingUtils;
@@ -160,9 +161,70 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		}
 	}
 
+
+	@RequestMapping(value = "/{appId:.+}/search_bin_single", method = RequestMethod.POST)
+	@Access(AccessMode.READ)
+	public @ResponseBody Map<String, Object> searchBinarySingle(@PathVariable("appId") long appId,
+														  @RequestParam(value = "threshold", defaultValue = "0.5") double threshold,
+														  @RequestParam(value = "avoidSameBinary") final boolean avoidSameBinary,
+														  @RequestParam(value = "topk", defaultValue = "15") int topk, //
+														  @RequestParam(value = "blk_min", defaultValue = "1") int blk_min, //
+														  @RequestParam(value = "blk_max", defaultValue = "1300") int blk_max, //
+														  @RequestParam(value = "bin") Object obj) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
+		String tmpDir = Environment.getUserTmpDir(name);
+		ArrayList<Object> nobjs = new ArrayList<>();
+		if (obj instanceof MultipartFile) {
+			MultipartFile file = ((MultipartFile) obj);
+			File new_file = new File(tmpDir + "/" + file.getOriginalFilename());
+			try {
+				new_file.getParentFile().mkdirs();
+				file.transferTo(new_file);
+			} catch (Exception e) {
+				logger.error("Failed to process submited mutipart file", e);
+				return ImmutableMap.of("error", "Unsupported format " + obj.getClass().getName());
+			}
+			//obj = new_file;
+			nobjs.add(new_file);
+		} else if (obj instanceof String) {
+			BinarySurrogate surrogate;
+			try {
+				surrogate = BinarySurrogate.loadFromJson((String) obj);
+				surrogate.processRawBinarySurrogate();
+				//obj = surrogate;
+				nobjs.add(surrogate);
+			} catch (Exception e) {
+				logger.error("Failed to process submited mutipart file", e);
+				return ImmutableMap.of("error", "Upload failes. Please check server log. " + obj.getClass().getName());
+			}
+		} else {
+			logger.error("Unsupported type {}", obj.getClass().getName());
+			return ImmutableMap.of("error", "Upload failes. Please check server log." + obj.getClass().getName());
+		}
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILES, nobjs);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_THRESHOLD, threshold);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_FILTER, avoidSameBinary);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_TOP, topk);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MAX, blk_max);
+		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MIN, blk_min);
+		try {
+			ApplicationInfo appInfo = meta.getInfo(appId);
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+					BinaryAnalysisProcedureCompositionAnalysis.class, params);
+			return ImmutableMap.of("jid", id);
+		} catch (Exception e) {
+			logger.error("Failed submitting job.", e);
+			return ImmutableMap.of("error", e.getMessage());
+		}
+
+	}
+
 	@RequestMapping(value = "/{appId:.+}/search_bin", method = RequestMethod.POST)
 	@Access(AccessMode.READ)
-	public final @ResponseBody Map<String, Object> searchBinary(@PathVariable("appId") long appId,
+	public @ResponseBody Map<String, Object> searchBinary(@PathVariable("appId") long appId,
 			@RequestParam(value = "threshold", defaultValue = "0.5") double threshold,
 			@RequestParam(value = "avoidSameBinary") final boolean avoidSameBinary,
 			@RequestParam(value = "topk", defaultValue = "15") int topk, //
@@ -252,13 +314,13 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 
 	@RequestMapping(value = "/{appId:.+}/BinaryComposition", method = RequestMethod.GET)
 	@Access(AccessMode.READ)
-	public final ModelAndView searchBinaryRenderer(@PathVariable("appId") long appId) {
+	public ModelAndView searchBinaryRenderer(@PathVariable("appId") long appId) {
 		return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(VIEW_CLONE_BIN, meta.getInfo(appId)));
 	}
 
 	@RequestMapping(value = "/{appId:.+}/BinaryComposition", method = RequestMethod.POST)
 	@Access(AccessMode.READ)
-	public final @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
+	public @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
 			@RequestParam("fileName") String fileName,
 			@RequestParam(value = "keyword", defaultValue = "*") String keyword, HttpServletRequest request) {
 

@@ -38,7 +38,7 @@ class FunctionListView(Choose):
         self.PopulateItems()
 
     def PopulateItems(self):
-        self.items = [[hex(x.startEA), idc.GetFunctionName(x.startEA)] for x
+        self.items = [[hex(x.start_ea), idc.get_func_name(x.start_ea)] for x
                       in self.all_funcs]
 
     def OnClose(self):
