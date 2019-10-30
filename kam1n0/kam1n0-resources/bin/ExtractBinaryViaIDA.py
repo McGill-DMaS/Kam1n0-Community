@@ -23,7 +23,7 @@ import os
 
 print('Kam1n0 script for idapro is now running...')
 print('Waiting for idapro...')
-idaapi.autoWait()
+idaapi.auto_wait()#idaapi.autoWait()
 print('start persisting...')
 
 
@@ -37,10 +37,10 @@ def _iter_extra_comments(ea, start):
 
 def get_comments(ea):
     comments = []
-    text = idc.RptCmt(ea)
+    text = idc.get_cmt(ea,1) #RptCmt(ea)
     if text and len(text) > 0:
         comments.append({'type':'repeatable', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
-    text = idc.Comment(ea)
+    text = idc.get_cmt(ea,0)#Comment(ea)
     if text and len(text) > 0:
         comments.append({'type':'regular', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
     text = _iter_extra_comments(ea, idaapi.E_PREV)
@@ -55,7 +55,7 @@ def get_comments(ea):
 def get_apis(func_addr):
     calls = 0
     apis = []
-    flags = GetFunctionFlags(func_addr)
+    flags = get_func_attr(func_addr, FUNCATTR_FLAGS)#GetFunctionFlags(func_addr)
     # ignore library functions
     if flags & FUNC_LIB or flags & FUNC_THUNK:
         return calls, apis
@@ -77,10 +77,10 @@ def get_apis(func_addr):
             if tmp_api_address == "":
                 calls += 1
                 continue
-            api_flags = GetFunctionFlags(tmp_api_address)
+            api_flags = get_func_attr(tmp_api_address, FUNCATTR_FLAGS)#GetFunctionFlags(tmp_api_address)
             # check for lib code (api)
             if api_flags & idaapi.FUNC_LIB == True or api_flags & idaapi.FUNC_THUNK:
-                tmp_api_name = NameEx(0, tmp_api_address)
+                tmp_api_name = get_name(tmp_api_address, ida_name.GN_VISIBLE | calc_gtn_flags(0, tmp_api_address)) #NameEx(0, tmp_api_address)
                 if tmp_api_name:
                     apis.append(tmp_api_name)
             else:
@@ -93,7 +93,7 @@ cleanStack = int(os.getenv('K_CLEANSTACK', 0))
 if rebase == 1:
     idaapi.rebase_program(-1 * idaapi.get_imagebase(), 0)
 
-file_name = os.path.splitext(idc.GetIdbPath())[0]
+file_name = os.path.splitext(idc.get_idb_path())[0] #os.path.splitext(idc.GetIdbPath())[0]
 binary_name = idaapi.get_input_file_path()
 print(binary_name)
 callees = dict()
@@ -104,12 +104,12 @@ data['md5'] = idautils.GetInputFileMD5()
 
 
 for seg_ea in Segments():
-    for function_ea in Functions(SegStart(seg_ea), SegEnd(seg_ea)):
+    for function_ea in Functions(get_segm_start(seg_ea), get_segm_end(seg_ea)):#Functions(SegStart(seg_ea), SegEnd(seg_ea)):
         # fill call graph
         # For each of the incoming references
         for ref_ea in CodeRefsTo(function_ea, 0):
             # Get the name of the referring function
-            caller_name = GetFunctionName(ref_ea)
+            caller_name = get_func_name(ref_ea)#GetFunctionName(ref_ea)
             # Add the current function to the list of functions
             # called by the referring function
             callees[caller_name] = callees.get(caller_name, Set())
@@ -139,15 +139,15 @@ batchSize = int(os.getenv('K_BATCHSIZE', 10000))
 print 'batch size: %d' % batchSize
 batchCount = 0
 for seg_ea in Segments():
-    for function_ea in Functions(SegStart(seg_ea), SegEnd(seg_ea)):
-        f_name = GetFunctionName(function_ea)
+    for function_ea in Functions(get_segm_start(seg_ea), get_segm_end(seg_ea)):#Functions(SegStart(seg_ea), SegEnd(seg_ea)):
+        f_name = get_func_name(function_ea) #GetFunctionName(function_ea)
         function = dict()
         data['functions'].append(function)
         function['name'] = f_name
         function['id'] = function_ea
         function['call'] = list()
         function['sea'] = function_ea
-        function['see'] = FindFuncEnd(function_ea)
+        function['see'] = find_func_end(function_ea)#FindFuncEnd(function_ea)
         if callees.has_key(f_name):
             for calling in callees[f_name]:
                 function['call'].append(calling)
@@ -167,30 +167,30 @@ for seg_ea in Segments():
 
             sblock = dict()
             sblock['id'] = bblock.id
-            sblock['sea'] = bblock.startEA
+            sblock['sea'] = bblock.start_ea#startEA
             if data['architecture']['type'] == 'arm':
-                sblock['sea'] += GetReg(bblock.startEA, 'T')
-            sblock['eea'] = bblock.endEA
-            sblock['name'] = 'loc_' + format(bblock.startEA, 'x').upper()
+                sblock['sea'] += GetReg(bblock.start_ea, 'T')#GetReg(bblock.startEA, 'T')
+            sblock['eea'] = bblock.end_ea#bblock.endEA
+            sblock['name'] = 'loc_' + format(bblock.start_ea, 'x').upper()#format(bblock.startEA, 'x').upper()
             dat = {}
             sblock['dat'] = dat
             tlines = []
             oprTypes = []
 
 
-            s = GetManyBytes(bblock.startEA, bblock.endEA - bblock.startEA)
+            s = get_bytes(bblock.start_ea, bblock.end_ea - bblock.start_ea)#GetManyBytes(bblock.startEA, bblock.endEA - bblock.startEA)
             if s is not None:
                 sblock['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
             else:
                 print sblock['name']
 
-            for head in Heads(bblock.startEA, bblock.endEA):
+            for head in Heads(bblock.start_ea, bblock.end_ea):#Heads(bblock.startEA, bblock.endEA):
                 function['comments'].extend(get_comments(head))
                 tline = list()
                 oprType = list()
                 tline.append(
                     str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
-                mnem = idc.GetMnem(head)
+                mnem = idc.print_insn_mnem(head) #GetMnem(head)
                 if mnem == "":
                     continue
                 mnem = idc.GetDisasm(head).split()[0]
@@ -198,7 +198,7 @@ for seg_ea in Segments():
                 for i in range(5):
                     if cleanStack == 1:
                         idc.OpOff(head, i, 16)
-                    opd = idc.GetOpnd(head, i)
+                    opd = idc.print_operand(head, i)#GetOpnd(head, i)
                     tp = idc.get_operand_type(head, i)
                     if opd == "" or tp is None:
                         continue
@@ -210,7 +210,7 @@ for seg_ea in Segments():
                 refdata = list(DataRefsFrom(head))
                 if len(refdata) > 0:
                     for ref in refdata:
-                        dat[head] = format(Qword(ref), 'x')[::-1]
+                        dat[head] = format(get_qword(ref), 'x')[::-1]#Qword(ref), 'x')[::-1]
 
             sblock['src'] = tlines
             sblock['oprType'] = oprTypes
@@ -231,4 +231,4 @@ for seg_ea in Segments():
 with open('%s.tmp%d.json' % (file_name, batchCount), 'w') as outfile:
     json.dump(data, outfile, ensure_ascii=False)
 
-idc.Exit(0)
+idc.qexit(0)#Exit(0)

@@ -418,8 +418,8 @@ class Hooks(idaapi.UI_Hooks):
     def __init__(self):
         idaapi.UI_Hooks.__init__(self)
 
-    def finish_populating_tform_popup(self, form, popup):
-        if idaapi.get_tform_title(form).startswith("IDA View"):
+    def finish_populating_widget_popup(self, form, popup):
+        if idaapi.get_widget_title(form).startswith("IDA View"):
             idaapi.attach_action_to_popup(
                 form,
                 popup,
@@ -435,7 +435,7 @@ class Hooks(idaapi.UI_Hooks):
                 popup,
                 "Kam1n0:queryFragment",
                 None)
-        if idaapi.get_tform_title(form) == "Functions window":
+        if idaapi.get_widget_title(form) == "Functions window":
             idaapi.attach_action_to_popup(
                 form,
                 popup,
