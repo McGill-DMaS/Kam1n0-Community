@@ -5,7 +5,7 @@ import idc
 
 print('Kam1n0 testing script for idapro is now running...')
 print('Waiting for idapro...')
-idaapi.autoWait()
+idaapi.auto_wait()
 print('Testing every callback functions provided by the connector.')
 
 def get_mgr():
@@ -28,7 +28,7 @@ def test_index_current_func(mg):
     # hex string
     assert addr is not None and len(addr) > 0
     ut.jumpto(addr);
-    assert ScreenEA() == long(addr, 16)
+    assert get_screen_ea() == long(addr, 16)
     assert fire_action("Kam1n0:indexCurrent")
     mg.index_current_func()
     
@@ -38,7 +38,7 @@ def test_index_selected_func(mg):
     # hex string
     assert addr is not None and len(addr) > 0
     ut.jumpto(addr);
-    assert ScreenEA() == long(addr, 16)
+    assert get_screen_ea() == long(addr, 16)
     ind = idaapi.get_func_num(long(addr, 16))
     assert ind is not None and ind > 0
     ctx = idaapi.action_activation_ctx_t()
@@ -55,7 +55,7 @@ def test_query_current_func(mg):
     # hex string
     assert addr is not None and len(addr) > 0
     ut.jumpto(addr);
-    assert ScreenEA() == long(addr, 16)
+    assert get_screen_ea() == long(addr, 16)
     mg.query_current_func()
     
     
@@ -64,7 +64,7 @@ def test_query_selected_func(mg):
     # hex string
     assert addr is not None and len(addr) > 0
     ut.jumpto(addr);
-    assert ScreenEA() == long(addr, 16)
+    assert get_screen_ea() == long(addr, 16)
     ind = idaapi.get_func_num(long(addr, 16))
     assert ind is not None and ind > 0
     ctx = idaapi.action_activation_ctx_t()
