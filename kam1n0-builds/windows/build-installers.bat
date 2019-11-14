@@ -1,6 +1,6 @@
 @echo off
 
-call "D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
 
 SET KAM_DIST=%~dp0bins\server
 SET KAM_IDA_DIST=%~dp0bins\ida-plugin
