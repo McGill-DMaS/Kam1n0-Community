@@ -14,7 +14,6 @@
 #  * limitations under the License.
 #  *******************************************************************************/
 
-from sets import Set
 import json
 import idaapi
 import idautils
@@ -30,7 +29,7 @@ print('start persisting...')
 def _iter_extra_comments(ea, start):
     end = idaapi.get_first_free_extra_cmtidx(ea, start)
     lines = [idaapi.get_extra_cmt(ea, idx) for idx in
-             xrange(start, end)]
+             range(start, end)]
     lines = [line if line else '' for line in lines]
     return "\n".join(lines)
 
@@ -100,7 +99,7 @@ callees = dict()
 funcmap = dict()
 data = dict()
 data['name'] = binary_name
-data['md5'] = idautils.GetInputFileMD5()
+data['md5'] = idautils.GetInputFileMD5().hex().upper()
 
 
 for seg_ea in Segments():
@@ -112,7 +111,7 @@ for seg_ea in Segments():
             caller_name = get_func_name(ref_ea)#GetFunctionName(ref_ea)
             # Add the current function to the list of functions
             # called by the referring function
-            callees[caller_name] = callees.get(caller_name, Set())
+            callees[caller_name] = callees.get(caller_name, set())
             callees[caller_name].add(function_ea)
 
 data['architecture'] = {}
@@ -136,7 +135,7 @@ data['ida_compiler'] = idaapi.get_compiler_name(info.cc.id)
 
 data['functions'] = list()
 batchSize = int(os.getenv('K_BATCHSIZE', 10000))
-print 'batch size: %d' % batchSize
+print('batch size: %d' % batchSize)
 batchCount = 0
 for seg_ea in Segments():
     for function_ea in Functions(get_segm_start(seg_ea), get_segm_end(seg_ea)):#Functions(SegStart(seg_ea), SegEnd(seg_ea)):
@@ -148,7 +147,7 @@ for seg_ea in Segments():
         function['call'] = list()
         function['sea'] = function_ea
         function['see'] = find_func_end(function_ea)#FindFuncEnd(function_ea)
-        if callees.has_key(f_name):
+        if f_name in callees:
             for calling in callees[f_name]:
                 function['call'].append(calling)
 
@@ -167,24 +166,24 @@ for seg_ea in Segments():
 
             sblock = dict()
             sblock['id'] = bblock.id
-            sblock['sea'] = bblock.start_ea#startEA
+            sblock['sea'] = bblock.start_ea
             if data['architecture']['type'] == 'arm':
-                sblock['sea'] += GetReg(bblock.start_ea, 'T')#GetReg(bblock.startEA, 'T')
-            sblock['eea'] = bblock.end_ea#bblock.endEA
-            sblock['name'] = 'loc_' + format(bblock.start_ea, 'x').upper()#format(bblock.startEA, 'x').upper()
+                sblock['sea'] += GetReg(bblock.start_ea, 'T')
+            sblock['eea'] = bblock.end_ea
+            sblock['name'] = 'loc_' + format(bblock.start_ea, 'x').upper()
             dat = {}
             sblock['dat'] = dat
             tlines = []
             oprTypes = []
 
 
-            s = get_bytes(bblock.start_ea, bblock.end_ea - bblock.start_ea)#GetManyBytes(bblock.startEA, bblock.endEA - bblock.startEA)
+            s = get_bytes(bblock.start_ea, bblock.end_ea - bblock.start_ea)
             if s is not None:
-                sblock['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
+                sblock['bytes'] = "".join("{:02x}".format(c) for c in s)
             else:
-                print sblock['name']
+                print(sblock['name'])
 
-            for head in Heads(bblock.start_ea, bblock.end_ea):#Heads(bblock.startEA, bblock.endEA):
+            for head in Heads(bblock.start_ea, bblock.end_ea):
                 function['comments'].extend(get_comments(head))
                 tline = list()
                 oprType = list()
@@ -210,7 +209,7 @@ for seg_ea in Segments():
                 refdata = list(DataRefsFrom(head))
                 if len(refdata) > 0:
                     for ref in refdata:
-                        dat[head] = format(get_qword(ref), 'x')[::-1]#Qword(ref), 'x')[::-1]
+                        dat[head] = format(get_qword(ref), 'x')[::-1]
 
             sblock['src'] = tlines
             sblock['oprType'] = oprTypes
