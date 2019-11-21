@@ -63,7 +63,7 @@ def execute(cmd=''):
     if func in globals():
         exec(cmd)
     else:
-        print(func, globals())
+        print((func, globals()))
 
 def sync_wrap(func):
     def wrapper(*args, **kwargs):
@@ -89,7 +89,7 @@ def jumpto(ea):
 
 def load_icons_as_dict():
     icons = ICONS(
-        **{key: _load_icon(ALL_ICONS[key]) for key in ALL_ICONS.keys()})
+        **{key: _load_icon(ALL_ICONS[key]) for key in list(ALL_ICONS.keys())})
     return icons
 
 
@@ -205,7 +205,7 @@ def _get_ida_func_surrogate(func, arch):
         block['dat'] = dat
         s = idc.get_bytes(bb.start_ea, bb.end_ea - bb.start_ea)
         if s is not None:
-            block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
+            block['bytes'] = "".join("{:02x}".format(c) for c in s)
 
 
         instructions = list()
@@ -233,7 +233,7 @@ def _get_ida_func_surrogate(func, arch):
             refs = list(idautils.DataRefsFrom(head))
             for ref in refs:
                 dat[head] = binascii.hexlify(
-                    struct.pack("<Q", idc.get_qword(ref)))
+                    struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
 
         block['src'] = instructions
         block['oprType'] = oprTypes
@@ -251,7 +251,7 @@ def get_as_single_surrogate(funcs=None):
     data = dict()
     data['name'] = _get_bin_name()
     data['architecture'] = _get_arch()
-    data['md5'] = idautils.GetInputFileMD5()
+    data['md5'] = idautils.GetInputFileMD5().hex().upper()
 
     if funcs is None:
         funcs = get_all_ida_funcs()
@@ -272,7 +272,7 @@ def get_as_multiple_surrogate(funcs=None):
 
 
 def get_selected_code(sea, eea):
-    code = [unicode(idc.GetDisasm(head), errors='replace') for head in
+    code = [str(idc.GetDisasm(head), errors='replace') for head in
             idautils.Heads(sea, eea)]
     surrogate = get_as_single_surrogate(get_ida_func(sea))
     func = surrogate['functions'][0]
@@ -280,7 +280,7 @@ def get_selected_code(sea, eea):
     func['blocks'] = []
     func['sea'] = sea
     func['eea'] = eea
-    
+
     block = dict()
     block['id'] = 0
     block['sea'] = sea
@@ -319,8 +319,7 @@ def get_selected_code(sea, eea):
         refs = list(idautils.DataRefsFrom(head))
         for ref in refs:
             dat[head] = binascii.hexlify(
-                struct.pack("<Q", idc.get_qword(ref)))
-    block['src'] = instructions
+                struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
     block['oprType'] = oprTypes
     block['call'] = []
     func['blocks'].append(block)
@@ -330,7 +329,7 @@ def get_selected_code(sea, eea):
 def _iter_extra_comments(ea, start):
     end = idaapi.get_first_free_extra_cmtidx(ea, start)
     lines = [idaapi.get_extra_cmt(ea, idx) for idx in
-             xrange(start, end)]
+             range(start, end)]
     lines = [line if line else '' for line in lines]
     return "\n".join(lines)
 

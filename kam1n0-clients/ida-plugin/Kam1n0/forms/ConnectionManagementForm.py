@@ -65,7 +65,7 @@ class ConnectionManagementForm(Form):
         self.configuration = manager.configuration
         self.listView = ConnectionListView(manager)
 
-        apps = self.configuration['apps'].keys()
+        apps = list(self.configuration['apps'].keys())
         app_default = self.configuration['default-app']
 
         if app_default is not None:
@@ -143,7 +143,7 @@ Login Info:
                 if self.configuration['default-app'] == key:
                     if len(self.configuration['apps']) > 0:
                         self.configuration['default-app'] = \
-                            self.configuration['apps'].keys()[0]
+                            list(self.configuration['apps'].keys())[0]
                     else:
                         self.configuration['default-app'] = None
         self.updateDpList()
@@ -158,7 +158,7 @@ Login Info:
         self.RefreshField(self.fvChooser)
         # Select the newly added item
         self.SetControlValue(self.fvChooser, [
-            self.configuration['apps'].keys().index(
+            list(self.configuration['apps'].keys()).index(
                 app['app_url']
             )])
         self.updateDpList()
@@ -166,7 +166,7 @@ Login Info:
 
     def updateDpList(self):
         # update dropdown list:
-        apps = self.configuration['apps'].keys()
+        apps = list(self.configuration['apps'].keys())
         default_app = self.configuration['default-app']
         if default_app is not None:
             default_index = apps.index(default_app)
@@ -185,7 +185,7 @@ Login Info:
             # select the default connection
             self.SetControlValue(self.chkSameBin, self.configuration['default-avoidSameBinary'])
             self.SetControlValue(self.chkKamSave, self.configuration['default-saveAsKam'])
-            apps = self.configuration['apps'].keys()
+            apps = list(self.configuration['apps'].keys())
             default_app = self.configuration['default-app']
             if default_app is not None:
                 default_index = apps.index(default_app)
@@ -196,10 +196,10 @@ Login Info:
                 self.SetControlValue(self.txtPw, app['pw'])
 
         if fid == self.dpCnn.id:
-            if len(self.configuration['apps'].keys()) > 0:
+            if len(list(self.configuration['apps'].keys())) > 0:
                 # update configuration
                 selected_index = self.GetControlValue(self.dpCnn)
-                key = self.configuration['apps'].keys()[selected_index]
+                key = list(self.configuration['apps'].keys())[selected_index]
                 self.configuration['default-app'] = key
 
         if fid == self.fvChooser.id:

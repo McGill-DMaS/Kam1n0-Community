@@ -1,10 +1,10 @@
-import urllib2
-import urllib
-import cookielib
-import RequestPage
+import urllib.request, urllib.error, urllib.parse
+import urllib.request, urllib.parse, urllib.error
+import http.cookiejar
+from . import RequestPage
 from threading import Thread
-from urlparse import urlparse
-from urlparse import urlsplit, urlunsplit
+from urllib.parse import urlparse
+from urllib.parse import urlsplit, urlunsplit
 
 ERROR_CONNECTION = 2
 ERROR_LOGIN = 1
@@ -68,7 +68,7 @@ def resolve_url(url):
 
 
 def _console_call_back(code, message):
-    print " %s [%s] %s " % ('Request Result:', code, message)
+    print(" %s [%s] %s " % ('Request Result:', code, message))
 
 
 def check_authorization(func):
@@ -85,7 +85,7 @@ def check_authorization(func):
     return wrapper
 
 
-def async(func):
+def asynch(func):
     def wrapper(*args, **kwargs):
         call_back = kwargs['call_back']
         if call_back is None:
@@ -115,7 +115,7 @@ class Request:
 
     def _is_login_url(self, url_or_response):
         url = url_or_response \
-            if isinstance(url_or_response, basestring) \
+            if isinstance(url_or_response, str) \
             else url_or_response.geturl()
         return resolve_url(self.login_url).lower() in resolve_url(url).lower()
 
@@ -123,11 +123,11 @@ class Request:
         try:
             login_url = resolve_url(self.login_url)
             data = {'username': self.username, 'password': self.password}
-            post_data = urllib.urlencode(data)
-            cj = cookielib.MozillaCookieJar()
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+            post_data = urllib.parse.urlencode(data).encode('utf-8')
+            cj = http.cookiejar.MozillaCookieJar()
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
             self.opener = opener
-            req = urllib2.Request(login_url, post_data, {
+            req = urllib.request.Request(login_url, post_data, {
                 "User-agent": "Kam1n0-py/2.0.0"})
             response = opener.open(req)
             if not self._is_login_url(response):
@@ -136,17 +136,17 @@ class Request:
                         self.session = cookie.value
                         return OK, cookie.value
             return ERROR_LOGIN, ''
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             return ERROR_HTTP, "Error: " + str(e.code)
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             return ERROR_CONNECTION, e.reason
         except Exception as e:
             return ERROR_CONNECTION, e.message
 
     def _install_session_id(self):
-        cj = cookielib.MozillaCookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-        cookie = cookielib.Cookie(
+        cj = http.cookiejar.MozillaCookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        cookie = http.cookiejar.Cookie(
             version=0,
             name=self.session_identifier,
             value=self.session,
@@ -172,12 +172,12 @@ class Request:
         try:
             request = url
             if params is not None:
-                request = request + "?" + urllib.urlencode(params)
+                request = request + "?" + urllib.parse.urlencode(params)
             response = self.opener.open(fullurl=request)
             content = response.read()
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             return ERROR_HTTP, "Error: " + str(e.code)
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             return ERROR_CONNECTION, e.reason
         except Exception as e:
             return ERROR_CONNECTION, e.message
@@ -188,12 +188,12 @@ class Request:
 
     def _do_post(self, url, data):
         try:
-            post_data = urllib.urlencode(data)
+            post_data = urllib.parse.urlencode(data).encode('utf-8')
             response = self.opener.open(fullurl=url, data=post_data)
             content = response.read()
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             return ERROR_HTTP, "Error: " + str(e.code)
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             return ERROR_CONNECTION, e.reason
         except Exception as e:
             return ERROR_CONNECTION, e.message
@@ -211,17 +211,17 @@ class Request:
             return self._do_get(self.validation_url)
         return first_code, first_message
 
-    @async
+    @asynch
     @check_authorization
     def ajax_post(self, url, data, call_back=_console_call_back):
         return self._do_post(url, data)
 
-    @async
+    @asynch
     @check_authorization
     def ajax_get(self, url, data, call_back=_console_call_back):
         return self._do_get(url, data)
 
-    @async
+    @asynch
     @check_authorization
     def show_post(self, url, data, external=None,
                   call_back=_console_call_back, queue=None):
@@ -238,7 +238,7 @@ class Request:
             return ERROR_CLIENT, e.message
         return OK, ""
 
-    @async
+    @asynch
     @check_authorization
     def show_get(self, url, data=None, external=None,
                  call_back=_console_call_back, queue=None):

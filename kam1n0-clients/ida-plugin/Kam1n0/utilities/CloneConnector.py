@@ -13,10 +13,10 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  *******************************************************************************/
-from RequestMini import Request, get_root_domain, has_error, \
+from .RequestMini import Request, get_root_domain, has_error, \
     get_error_description
 import json, datetime
-from Queue import Queue, Empty
+from queue import Queue, Empty
 from threading import Thread
 
 
@@ -24,7 +24,7 @@ from threading import Thread
 def console_callback(error_code, message):
     code, msg = get_error_description(error_code, message)
     tstr = datetime.datetime.now().strftime("%m-%d %H:%M:%S")
-    print "[%s] Kam1n0: [E%s]: %s" % (tstr, code, msg)
+    print("[%s] Kam1n0: [E%s]: %s" % (tstr, code, msg))
 
 
 class CloneConnector:
@@ -79,7 +79,7 @@ class CloneConnector:
                               call_back=self.error_callback, queue=self.msg_queue)
 
     def _job_submit_callback(self, error_code, content):
-        if 'jid' in content:
+        if 'jid'.encode('utf-8') in content:
             self.request.show_get(self.get_progress_url(),
                                   call_back=self.error_callback, queue=self.msg_queue)
         else:
@@ -90,7 +90,7 @@ class CloneConnector:
         if not isinstance(queries, list):
             queries = [queries]
         queries = [
-            query if isinstance(query, basestring) else json.dumps(query, ensure_ascii=False) for
+            query if isinstance(query, str) else json.dumps(query, ensure_ascii=False) for
             query in queries]
         external = {'func_queries': queries,
                     'other_params': {'topk': topk, 'threshold': threshold, 'avoidSameBinary': avoid_same_binary}}
@@ -99,7 +99,7 @@ class CloneConnector:
 
     def search_binary(self, binary, topk, threshold, avoid_same_binary):
         if isinstance(binary, list) and len(binary) > 1:
-            print
+            print()
             "Error in searching binary. Multiple binaries found." \
             " Will search only the first one."
         if isinstance(binary, list):
@@ -114,7 +114,7 @@ class CloneConnector:
         if not isinstance(binaries, list):
             binaries = [binaries]
         binaries = [
-            binary if isinstance(binary, basestring) else json.dumps(binary, ensure_ascii=False)
+            binary if isinstance(binary, str) else json.dumps(binary, ensure_ascii=False)
             for binary in binaries]
         param = [('files', binary) for binary in binaries]
         if len(param) == 1:
