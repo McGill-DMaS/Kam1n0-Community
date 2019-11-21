@@ -320,6 +320,7 @@ def get_selected_code(sea, eea):
         for ref in refs:
             dat[head] = binascii.hexlify(
                 struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
+    block['src'] = instructions
     block['oprType'] = oprTypes
     block['call'] = []
     func['blocks'].append(block)
