@@ -89,10 +89,10 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			StageInfo stage = null;
 			String name = StringResources.STR_EMPTY;
 
-			BinarySurrogateMultipart parts = null;
 			List<? extends Object> objs = getObj(KEY_FILES, dataMap);
 			for(Object obj:objs)
 			{
+			  BinarySurrogateMultipart parts = null;
 			  try {
 			         if (obj instanceof BinarySurrogate) {
 			         	BinarySurrogate surrogate = (BinarySurrogate) obj;
@@ -106,11 +106,14 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			         	name = uploadedFile.getName();
 			         	stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class,
 			         			"Analysing binary " + name);
-						if (uploadedFile.getName().endsWith(".tagged") || uploadedFile.getName().endsWith(".json"))
-							 if (BinarySurrogateMultipart.check(uploadedFile)) {
+						if (uploadedFile.getName().endsWith(".tagged") || uploadedFile.getName().endsWith(".json")) {
+							if (BinarySurrogateMultipart.check(uploadedFile)) {
 
-								 parts = new BinarySurrogateMultipart(uploadedFile);
-							 }
+								parts = new BinarySurrogateMultipart(uploadedFile);
+							}
+							if (parts == null)
+								continue;
+						}
 						if (parts == null)
 			         	    parts = ress.disassembleIntoMultiPart(uploadedFile, uploadedFile.getName(), progress);
 			         } else {
