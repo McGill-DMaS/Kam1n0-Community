@@ -15,7 +15,7 @@
 #  *******************************************************************************/
 
 import idaapi
-import Manager
+from . import Manager
 from idaapi import plugin_t
 
 
@@ -36,7 +36,7 @@ class kam1n0_t(plugin_t):
             print("Kam1n0: initializing Kam1n0 IDA-pro plugin ...")
             kam1n0_manager = Manager.Kam1n0PluginManager()
             if kam1n0_manager.register_all_actions():
-                print "Failed to initialize Kam1n0."
+                print("Failed to initialize Kam1n0.")
                 # kam1n0_manager.removeAllAction()
                 del kam1n0_manager
                 return idaapi.PLUGIN_SKIP

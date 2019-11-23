@@ -48,7 +48,7 @@ class FunctionListView(Choose):
         return self.items[n]
 
     def OnSelectLine(self, n):
-        print n
+        print(n)
 
     def OnGetSize(self):
         return len(self.items)
@@ -65,7 +65,7 @@ class SelectionForm(Form):
         self.selected_funcs = []
 
         self.configuration = manager.configuration
-        apps = self.configuration['apps'].keys()
+        apps = list(self.configuration['apps'].keys())
         default_app = self.configuration['default-app']
         if self.configuration['default-app'] is not None:
             default_index = apps.index(default_app)
@@ -139,15 +139,15 @@ Configuration
             if self.GetControlValue(self.chkSearchAll) == 1:
                 self.SetControlValue(self.chkSkipLib, 0)
                 self.SetControlValue(self.fvChooser,
-                                     range(len(self.all_funcs)))
+                                     list(range(len(self.all_funcs))))
                 self.activated = True
 
         if fid == self.dpServer:
-            if len(self.configuration['apps'].keys()) > 0:
+            if len(list(self.configuration['apps'].keys())) > 0:
                 # update self.cnn
                 selected_ind = self.GetControlValue(self.dpServer)
                 self.selected_app_key = \
-                    self.configuration['apps'].keys()[selected_ind]
+                    list(self.configuration['apps'].keys())[selected_ind]
 
         if fid == self.txtSim:
             self.threshold = float(self.GetControlValue(self.txtSim))
@@ -166,7 +166,7 @@ Configuration
             if self.all_funcs is not None:
                 funcs = [self.all_funcs[x] for x in func_indexes]
                 if len(funcs) < 1:
-                    print "number of selected functions is less than 1"
+                    print("number of selected functions is less than 1")
                 else:
                     self.selected_funcs = funcs
 

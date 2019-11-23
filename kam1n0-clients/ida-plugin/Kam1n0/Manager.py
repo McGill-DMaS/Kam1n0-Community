@@ -20,11 +20,11 @@ import os
 import json
 import idaapi
 import pickle
-from utilities.CloneConnector import CloneConnector
-from forms.ConnectionManagementForm import ConnectionManagementForm
-from forms.SelectionForm import SelectionForm
+from .utilities.CloneConnector import CloneConnector
+from .forms.ConnectionManagementForm import ConnectionManagementForm
+from .forms.SelectionForm import SelectionForm
 
-import IDAUtils
+from . import IDAUtils
 
 
 class Kam1n0PluginManager:
@@ -219,7 +219,7 @@ class Kam1n0PluginManager:
     def index_current_func(self, *_):
         func = IDAUtils.get_ida_func()
         if not func:
-            print
+            print()
             "Current address does not belong to a function"
             return 0
         if self._get_connector() is not None:
@@ -251,7 +251,7 @@ class Kam1n0PluginManager:
     def query_current_func(self, *_):
         func = IDAUtils.get_ida_func()
         if not func:
-            print
+            print()
             "Current address does not belong to a function"
             return 0
         if self._get_connector() is not None:
@@ -318,11 +318,11 @@ class Kam1n0PluginManager:
                         avoid_same_binary=avoid_same_binary)
 
     def query_binary(self, *_):
-        print
+        print()
         "Generating binary surrogate for composition query..."
         surrogate = IDAUtils.get_as_single_surrogate()
         if not surrogate:
-            print
+            print()
             "Cannot generate the binary surrogate"
             return 0
         if self._get_connector() is not None:

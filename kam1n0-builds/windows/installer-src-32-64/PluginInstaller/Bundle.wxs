@@ -34,9 +34,11 @@
     <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx40FullVersion" />
     <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Client" Value="Version" Variable="Netfx40ClientVersion" />
 
-    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\WOW6432Node\Python\PythonCore\2.7\InstallPath"  Variable="PY27PATH32" />
-    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Python\PythonCore\2.7\InstallPath" Win64="yes"  Variable="PY27PATH64" />
-
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\WOW6432Node\Python\PythonCore\3.7\InstallPath"  Variable="PY37PATH32HKLM" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Python\PythonCore\3.7\InstallPath" Win64="yes"  Variable="PY37PATH64HKLM" />
+    <util:RegistrySearch Root="HKCU" Key="SOFTWARE\WOW6432Node\Python\PythonCore\3.7\InstallPath"  Variable="PY37PATH32HKCU" />
+    <util:RegistrySearch Root="HKCU" Key="SOFTWARE\Python\PythonCore\3.7\InstallPath" Win64="yes"  Variable="PY37PATH64HKCU" />
+    
     <WixVariable Id="PY_ENV_DEFAULT" Value="PY_ENV_DEFAULT" />
     
     <util:FileSearch Variable="IDA6X" Path="[BVAR_IDA_HOME_PATH]\idaw.exe" Result="exists"/>
@@ -53,18 +55,18 @@
     <PackageGroup Id="pipy_cefpython">
       <ExePackage Id="pipy_cefpython" Cache="no" Compressed="yes" PerMachine="yes" Permanent="yes" Vital="yes"
             SourceFile="..\libs-client\install.pip.bat" >
-        <CommandLine Condition="IDA6X AND NOT IDA7X AND PY27PATH32" InstallArgument="[PY27PATH32]"/>
-        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY27PATH64" InstallArgument="[PY27PATH64]"/>
+        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY37PATH64HKLM" InstallArgument="[PY37PATH64HKLM]"/>
+        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY37PATH32HKLM" InstallArgument="[PY37PATH32HKLM]"/>
+        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY37PATH64HKCU" InstallArgument="[PY37PATH64HKCU]"/>
+        <CommandLine Condition="IDA7X AND NOT IDA6X AND PY37PATH32HKCU" InstallArgument="[PY37PATH32HKCU]"/>
         <!--Defaults (when no path is found in registry, we use what is presented in env):-->
-        <CommandLine Condition="NOT PY27PATH32 AND NOT PY27PATH64" InstallArgument="[PY_ENV_DEFAULT]"/>
+        <CommandLine Condition="NOT PY37PATH32HKCU AND NOT PY37PATH64HKCU AND NOT PY37PATH32HKLM AND NOT PY37PATH64HKLM" InstallArgument="[PY_ENV_DEFAULT]"/>
 
         <!--All necessary wheels for x86 and amd64-->
         <Payload Name="get-pip.py" Compressed="yes" SourceFile="..\libs-client\get-pip.py"/>
-        <Payload Name="cefpython3-57.0-py2.py3-none-win_amd64.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-57.0-py2.py3-none-win_amd64.whl"/>
-        <Payload Name="cefpython3-57.0-py2.py3-none-win32.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-57.0-py2.py3-none-win32.whl"/>
-        <Payload Name="setuptools-38.2.3-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\setuptools-38.2.3-py2.py3-none-any.whl"/>
-        <Payload Name="pip-9.0.1-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\pip-9.0.1-py2.py3-none-any.whl"/>
-        <Payload Name="wheel-0.30.0-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\wheel-0.30.0-py2.py3-none-any.whl"/>
+        <Payload Name="cefpython3-66.0-py2.py3-none-win_amd64.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-66.0-py2.py3-none-win_amd64.whl"/>
+        <Payload Name="cefpython3-66.0-py2.py3-none-win32.whl" Compressed="yes" SourceFile="..\libs-client\cefpython3-66.0-py2.py3-none-win32.whl"/>
+        <Payload Name="pip-19.2.3-py2.py3-none-any.whl" Compressed="yes" SourceFile="..\libs-client\pip-19.2.3-py2.py3-none-any.whl"/>
 
       </ExePackage>
     </PackageGroup>

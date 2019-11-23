@@ -86,10 +86,10 @@ def set_javascript_bindings(browser, request_url, request_method,
 class CookieVisitor:
     def Visit(self, cookie, count, total, delete_cookie_out):
         if count == 0:
-            print("\n[wxpython.py] CookieVisitor.Visit(): total cookies: %s" \
-                  % total)
+            print(("\n[wxpython.py] CookieVisitor.Visit(): total cookies: %s" \
+                  % total))
         print("\n[wxpython.py] CookieVisitor.Visit(): cookie:")
-        print("    " + str(cookie.Get()))
+        print(("    " + str(cookie.Get())))
         # True to continue visiting cookies
         return True
 
@@ -183,7 +183,8 @@ def create_form_process(request_url, request_method='get', request_param=None,
               stderr=PIPE,
               bufsize=1
               )
-    p.stdin.write(json.dumps(param))
+
+    p.stdin.write(json.dumps(param).encode('utf-8'))
     p.stdin.close()
     for line in iter(p.stdout.readline, b''):
         lr = line.rstrip()
