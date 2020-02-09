@@ -174,13 +174,13 @@ Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page]
     * Afterwards: `sudo apt-get update`, and `sudo apt-get install oracle-java8-installer`
         * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-8-oracle`
 
-* Download the latest release for Linux (the tar.gz) from [Kam1n0-Community](https://github.com/McGill-DMaS/Kam1n0-Community/releases). For this example, we are using PullRequest-169_2018-05-23-21-33-53_Kam1n0-IDA-Plugin.tar.gz
-* Extract the tarball. (eg. `tar -xvzf PullRequest-169_2018-05-23-21-33-53_Kam1n0-IDA-Plugin.tar.gz`)
-* This should result in the extracted directory, `server`, or whatever you want to name it. 
-* Inside the `server` directory, you should see a file called `kam1n0.properties`, which is where you will set various configurations for kam1n0; this is very important. 
+* Download the latest release for Linux (Kam1n0-IDA-Plugin.tar.gz and Kam1n0-Server.tar.gz) from [Kam1n0-Community](https://github.com/McGill-DMaS/Kam1n0-Community/releases).
+* Extract the two tarballs (i.e. tar –xvzf Kam1n0-IDA-Plugin.tar.gz and tar –xvzf Kam1n0-Server.tar.gz)
+* The Kam1n0-Server.tar.gz file will create the server directory.
+* Inside the `server` directory, you should see a file called `kam1n0.properties`, which is where you will set various configurations for kam1n0; this is very important.
 * Set `kam1n0.data.path` to where you would like your kam1n0-related data to be written to. We choose to put it in the same place that we keep our `server`. `kam1n0.ida.home` refers to where your IDA installation is located. Comment this line (and `kam1n0.ida.batch`, the line following) if you do not have IDA and don't plan to use kam1n0 for disassembly. For more (accurate) information about the `kam1n0.properties` file, see the `kam1n0.properties.explained` file.  
-* Run kam1n0-server-workbench: `java -jar kam1n0-server-workbench.jar`. This *should* cause a window to pop up, which prompts you to actually start kam1n0. 
-* To connect and use it, go to `127.0.0.1:8571` (the default port kam1n0 listens on should be 8571, but can be changed in kam1n0.properties) in your browser. You should see the pretty kam1n0 web UI. From there, follow the [tutorial](https://github.com/McGill-DMaS/Kam1n0-Community/blob/master2.x/documentation/server/server.md) on the Kam1n0-Community repo if you do not know how to use kam1n0. 
+* Run kam1n0-server-workbench: `java -jar kam1n0-server-workbench.jar`. This *should* cause a window to pop up, which prompts you to actually start kam1n0. Alternatively, run kam1n0-server: `java -jar kam1n0-server.jar --start`. This starts the server from the console without a window.
+* To connect and use it, go to `127.0.0.1:8571` (the default port kam1n0 listens on should be 8571, but can be changed in kam1n0.properties) in your browser. You should see the pretty kam1n0 web UI. From there, follow the [tutorial](https://github.com/McGill-DMaS/Kam1n0-Community/blob/master2.x/documentation/server/server.md) on the Kam1n0-Community repo if you do not know how to use kam1n0.
 
 
 ## Backward Compatibility
