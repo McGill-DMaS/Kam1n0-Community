@@ -42,21 +42,24 @@ public class LshAdaptiveDupIndexRam<T extends VecInfo, K extends VecInfoShared> 
 
 	@Override
 	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs, StageInfo info) {
-		return vecs.stream().map(vec -> {
-			VecEntry<T, K> tvec = data.get(rid, vec.hashId);
-			if (tvec == null) {
-				this.calFullKey(vec);
-				data.put(rid, vec.hashId, vec);
-				return vec;
-			} else {
-				tvec.vids.addAll(vec.vids);
-				return null;
-			}
-		}).filter(vec -> vec != null).collect(Collectors.toList());
+		synchronized (data) {
+			return vecs.stream().map(vec -> {
+				VecEntry<T, K> tvec = data.get(rid, vec.hashId);
+				if (tvec == null) {
+					this.calFullKey(vec);
+					data.put(rid, vec.hashId, vec);
+					return vec;
+				} else {
+					tvec.vids.addAll(vec.vids);
+					return null;
+				}
+			}).filter(vec -> vec != null).collect(Collectors.toList());
+		}
 	}
 
 	// @Override
-	// public JavaPairRDD<Long, Tuple2<T, D>> getVidsAsRDD(HashSet<Long> hids, int
+	// public JavaPairRDD<Long, Tuple2<T, D>> getVidsAsRDD(HashSet<Long> hids,
+	// int
 	// topK) {
 	// List<Tuple2<Long, Tuple2<T, D>>> res = hids.stream().map(hid -> new
 	// Tuple2<>(hid, data.get(hid)))

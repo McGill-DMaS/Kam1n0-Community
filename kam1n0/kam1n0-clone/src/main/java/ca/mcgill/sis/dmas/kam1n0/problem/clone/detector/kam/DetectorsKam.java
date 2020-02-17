@@ -50,7 +50,7 @@ public class DetectorsKam {
 	 * @return
 	 */
 	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorRam(SparkInstance spark,
-			CassandraInstance cassandra, String platformName, String appName, ArchitectureType type) {
+			String platformName, String appName, ArchitectureType type) {
 		NormalizationSetting setting = NormalizationSetting.New();
 		setting.setNormalizationLevel(NormalizationLevel.NORM_LENGTH);
 		AsmObjectFactory factory = AsmObjectFactory.init(spark, platformName, appName);
@@ -60,11 +60,11 @@ public class DetectorsKam {
 				spark, //
 				new BlockIndexerLshKLAdaptive(//
 						spark, //
-						cassandra, //
+						null, //
 						factory, //
 						new FeatureConstructor(processor.normalizer, FreqFeatures.getFeatureMemOprFreq(),
 								FreqFeatures.getFeatureMemGramFreq(2)), //
-						256, // start K
+						16, // start K
 						1024, // max K
 						1, // l
 						30, // m

@@ -37,13 +37,15 @@ public class DifferentialIndexRam extends DifferentialIndexAbstract {
 
 	@Override
 	public boolean setBucket(long rid, Long K1, String val, IOBucketCtn cnt) {
-		HashMap<String, IOBucketCtn> subMap = data.get(rid, K1);
-		if (subMap == null) {
-			subMap = new HashMap<>();
-			data.put(rid, K1, subMap);
+		synchronized (data) {
+			HashMap<String, IOBucketCtn> subMap = data.get(rid, K1);
+			if (subMap == null) {
+				subMap = new HashMap<>();
+				data.put(rid, K1, subMap);
+			}
+			subMap.put(val, cnt);
+			return true;
 		}
-		subMap.put(val, cnt);
-		return true;
 	}
 
 	@Override
@@ -56,28 +58,32 @@ public class DifferentialIndexRam extends DifferentialIndexAbstract {
 
 	@Override
 	public void addHidToBucket(long rid, Long K1, String val, IOSymHashMeta hid) {
-		HashMap<String, IOBucketCtn> subMap = data.get(rid, K1);
-		if (subMap == null) {
-			subMap = new HashMap<>();
-			data.put(rid, K1, subMap);
+		synchronized (data) {
+			HashMap<String, IOBucketCtn> subMap = data.get(rid, K1);
+			if (subMap == null) {
+				subMap = new HashMap<>();
+				data.put(rid, K1, subMap);
+			}
+			IOBucketCtn bk = subMap.get(val);
+			if (bk == null) {
+				bk = new IOBucketCtn(null, null, null, 0);
+				subMap.put(val, bk);
+			}
+			bk.entries.add(hid);
+			bk.count++;
 		}
-		IOBucketCtn bk = subMap.get(val);
-		if (bk == null) {
-			bk = new IOBucketCtn(null, null, null, 0);
-			subMap.put(val, bk);
-		}
-		bk.entries.add(hid);
-		bk.count++;
 	}
 
 	@Override
 	public void addEntry(long rid, int hid, IOEntry entry) {
-		IOSymHashCnt cnt = hidTable.get(rid, hid);
-		if (cnt == null) {
-			cnt = new IOSymHashCnt(hid);
-			this.hidTable.put(rid, hid, cnt);
+		synchronized (hidTable) {
+			IOSymHashCnt cnt = hidTable.get(rid, hid);
+			if (cnt == null) {
+				cnt = new IOSymHashCnt(hid);
+				this.hidTable.put(rid, hid, cnt);
+			}
+			cnt.entries.add(entry);
 		}
-		cnt.entries.add(entry);
 	}
 
 	@Override
