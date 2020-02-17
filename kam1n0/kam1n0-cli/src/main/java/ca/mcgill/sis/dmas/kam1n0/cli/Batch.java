@@ -79,29 +79,7 @@ public class Batch {
 		asm2vec, asmbin2vec, sym1n0, asmclone,
 	}
 
-	public static void process(String path, String resPath, SparkInstance spark, Model choice, ArchitectureType atype)
-			throws Exception {
-
-		AsmObjectFactory ram = AsmObjectFactory.init(spark, "batch-mode", "kam1n0");
-		FunctionCloneDetector model = null;
-		if (choice == Model.asm2vec) {
-			Asm2VecNewParam param = new Asm2VecNewParam();
-			param.optm_iteration = 20;
-			param.vec_dim = 100;
-			param.optm_parallelism = 5;
-			model = new Asm2VecCloneDetectorIntegration(ram, param);
-		} else if (choice == Model.asmclone) {
-			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp",
-					"batch-tmp", atype);
-		} else if (choice == Model.sym1n0) {
-			Kam1n0SymbolicModule.setup();
-			model = DetectorsKam.getSymbolicSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp", "batch-mode",
-					40, 30, 3000, 0);
-		} else {
-			logger.error("Failed to find a model based on {}", choice);
-			return;
-		}
-		final FunctionCloneDetector fmodel = model;
+	public static void process(String path, String resPath, SparkInstance spark, Model choice) throws Exception {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
@@ -127,9 +105,35 @@ public class Batch {
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 
+		if (bins.size() < 1)
+			return;
+
+		Architecture atype = bins.get(0).architecture;
+
 		Map<String, Integer> labelMap = IntStream.range(0, bins.size()).mapToObj(ind -> ind)
 				.collect(Collectors.toMap(ind -> bins.get(ind).binaryName, ind -> ind));
 		List<String> labels = bins.stream().map(b -> b.binaryName).collect(Collectors.toList());
+
+		AsmObjectFactory ram = AsmObjectFactory.init(spark, "batch-mode", "kam1n0");
+		FunctionCloneDetector model = null;
+		if (choice == Model.asm2vec) {
+			Asm2VecNewParam param = new Asm2VecNewParam();
+			param.optm_iteration = 20;
+			param.vec_dim = 100;
+			param.optm_parallelism = 5;
+			model = new Asm2VecCloneDetectorIntegration(ram, param);
+		} else if (choice == Model.asmclone) {
+			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp",
+					"batch-tmp", atype.type);
+		} else if (choice == Model.sym1n0) {
+			Kam1n0SymbolicModule.setup();
+			model = DetectorsKam.getSymbolicSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp", "batch-mode",
+					40, 30, 3000, 0);
+		} else {
+			logger.error("Failed to find a model based on {}", choice);
+			return;
+		}
+		final FunctionCloneDetector fmodel = model;
 
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
@@ -157,8 +161,8 @@ public class Batch {
 				bins.stream().forEach(y -> {
 
 					int y_ind = labelMap.get(y.binaryName);
-					OptionalDouble m = res.stream().filter(e -> e.binaryId == y.binaryId)
-							.mapToDouble(e -> e.similarity).max();
+					OptionalDouble m = res.stream().filter(e -> e.binaryId == y.binaryId).mapToDouble(e -> e.similarity)
+							.max();
 
 					if (m.isPresent())
 						matrix[x_ind][y_ind] += m.getAsDouble();
@@ -167,7 +171,6 @@ public class Batch {
 			for (int i = 0; i < labels.size(); ++i)
 				matrix[x_ind][i] /= x.functions.size();
 			matrix[x_ind][x_ind] = 1;
-			
 
 		});
 
@@ -283,10 +286,6 @@ public class Batch {
 				Model.asmbin2vec.toString(),
 				Arrays.asList(Model.values()).stream().map(m -> m.toString()).collect(Collectors.toList()));
 
-		private Option op_arch = parser.addSelectiveOption("arch", false, "The model used in batch mode",
-				ArchitectureType.metapc.toString(),
-				Arrays.asList(ArchitectureType.values()).stream().map(m -> m.toString()).collect(Collectors.toList()));
-
 		@Override
 		public ArgumentParser getParser() {
 			return this.parser;
@@ -315,11 +314,11 @@ public class Batch {
 			SparkInstance spark = SparkInstance.createLocalInstance();
 			spark.init();
 
-			ArchitectureType arch = ArchitectureType.valueOf(op_arch.getValue());
+			
 			if (md == Model.asmbin2vec)
 				Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark);
 			else
-				Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md, arch);
+				Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md);
 			System.exit(0);
 		}
 
