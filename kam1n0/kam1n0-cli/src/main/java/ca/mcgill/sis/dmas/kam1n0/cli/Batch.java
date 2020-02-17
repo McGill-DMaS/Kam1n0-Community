@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -46,6 +47,7 @@ import ca.mcgill.sis.dmas.nlp.model.astyle._1_original.LearnerAsm2VecNew.Asm2Vec
 import scala.Tuple2;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
+import ca.mcgill.sis.dmas.kam1n0.graph.Kam1n0SymbolicModule;
 
 public class Batch {
 	private static Logger logger = LoggerFactory.getLogger(Batch.class);
@@ -89,10 +91,10 @@ public class Batch {
 			param.optm_parallelism = 5;
 			model = new Asm2VecCloneDetectorIntegration(ram, param);
 		} else if (choice == Model.asmclone) {
-			CassandraInstance ins = CassandraInstance.createEmbeddedInstance("batch-mode", true, true);
-			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorRam(spark, ins, "batch-platform-tmp",
+			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp",
 					"batch-tmp", atype);
 		} else if (choice == Model.sym1n0) {
+			Kam1n0SymbolicModule.setup();
 			model = DetectorsKam.getSymbolicSubGraphFunctionCloneDetectorRam(spark, "batch-platform-tmp", "batch-mode",
 					40, 30, 3000, 0);
 		} else {
@@ -103,22 +105,25 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile)
-				.filter(p -> p.toFile().getName().endsWith(".kam1n0.json")).parallel().map(p -> {
-					BinarySurrogate b;
-					try {
-						b = BinarySurrogate.load(p.toFile());
-						b.processRawBinarySurrogate();
-						fc.inc(b.functions.size());
-						Binary bin = b.toBinary();
-						bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
+		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+			BinarySurrogate b;
+			try {
+				if (p.toFile().getName().endsWith(".json")) {
+					b = BinarySurrogate.load(p.toFile());
+					b.processRawBinarySurrogate();
+				} else {
+					b = DisassemblyFactory.disassembleSingle(p.toFile());
+				}
+				fc.inc(b.functions.size());
+				Binary bin = b.toBinary();
+				bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
 
-						return bin;
-					} catch (Exception e) {
-						logger.error("Failed to load " + p, e);
-						return null;
-					}
-				}).collect(Collectors.toList());
+				return bin;
+			} catch (Exception e) {
+				logger.error("Failed to load " + p, e);
+				return null;
+			}
+		}).collect(Collectors.toList());
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 
@@ -134,36 +139,42 @@ public class Batch {
 
 		bins.stream().forEach(x -> {
 			int x_ind = labelMap.get(x.binaryName);
-			int ind = 0;
-			for (Function xf : x.functions) {
-				System.out.println("" + ind + "/" + x.functions.size() + " " + xf.functionName);
-				ind++;
+			Counter ind = Counter.zero();
+			x.functions.parallelStream().forEach(xf -> {
+
+				ind.inc();
 				List<FunctionCloneEntry> res;
 				try {
-					res = fmodel.detectClonesForFunc(-1, xf, 0.5, bins.size() * 20, true);
+					res = fmodel.detectClonesForFunc(-1l, xf, 0.5, 200, true);
 				} catch (Exception e1) {
 					logger.error("Failed to detect clone", e1);
 					return;
 				}
 
+				System.out.println(
+						"" + ind.getVal() + "/" + x.functions.size() + " " + xf.functionName + " " + res.size());
+
 				bins.stream().forEach(y -> {
 
 					int y_ind = labelMap.get(y.binaryName);
-					Optional<Double> m = res.stream().filter(e -> e.binaryId == y.binaryId).findFirst()
-							.map(e -> e.similarity);
+					OptionalDouble m = res.stream().filter(e -> e.binaryId == y.binaryId)
+							.mapToDouble(e -> e.similarity).max();
 
 					if (m.isPresent())
-						matrix[x_ind][y_ind] += m.get();
+						matrix[x_ind][y_ind] += m.getAsDouble();
 				});
-			}
+			});
 			for (int i = 0; i < labels.size(); ++i)
 				matrix[x_ind][i] /= x.functions.size();
+			matrix[x_ind][x_ind] = 1;
+			
 
 		});
 
 		Result res = new Result();
 		res.put(model.getClass().getSimpleName(), matrix, labels);
 		ObjectMapper mapper = new ObjectMapper();
+		logger.info("writing result file to {}", resPath);
 		mapper.writeValue(new File(resPath), res);
 	}
 
@@ -176,29 +187,33 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile)
-				.filter(p -> p.toFile().getName().endsWith(".kam1n0.json")).parallel().map(p -> {
-					BinarySurrogate b;
-					try {
-						b = BinarySurrogate.load(p.toFile());
-						b.processRawBinarySurrogate();
-						fc.inc(b.functions.size());
+		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+			BinarySurrogate b;
+			try {
+				if (p.toFile().getName().endsWith(".json")) {
+					b = BinarySurrogate.load(p.toFile());
+					b.processRawBinarySurrogate();
+				} else {
+					b = DisassemblyFactory.disassembleSingle(p.toFile());
+				}
 
-						FunctionSurrogate fs = b.functions.get(0);
-						fs.blocks = b.functions.stream().flatMap(f -> f.blocks.stream())
-								.collect(Collectors.toCollection(ArrayList::new));
-						b.functions.clear();
-						b.functions.add(fs);
+				fc.inc(b.functions.size());
 
-						Binary bin = b.toBinary();
-						bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
+				FunctionSurrogate fs = b.functions.get(0);
+				fs.blocks = b.functions.stream().flatMap(f -> f.blocks.stream())
+						.collect(Collectors.toCollection(ArrayList::new));
+				b.functions.clear();
+				b.functions.add(fs);
 
-						return bin;
-					} catch (Exception e) {
-						logger.error("Failed to load " + p, e);
-						return null;
-					}
-				}).collect(Collectors.toList());
+				Binary bin = b.toBinary();
+				bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
+
+				return bin;
+			} catch (Exception e) {
+				logger.error("Failed to load " + p, e);
+				return null;
+			}
+		}).collect(Collectors.toList());
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 		List<String> labels = bins.stream().map(b -> b.binaryName).collect(Collectors.toList());
@@ -250,6 +265,7 @@ public class Batch {
 		Result res = new Result();
 		res.put(model.getClass().getSimpleName(), matrix, labels);
 		ObjectMapper mapper = new ObjectMapper();
+		logger.info("writing result file to {}", resPath);
 		mapper.writeValue(new File(resPath), res);
 	}
 
