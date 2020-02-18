@@ -24,4 +24,7 @@ if sys.version.startswith('3.'):
     script_file = 'ExtractBinaryViaIDA.python3.py'
 script_file = os.path.abspath(
     os.path.join(script_dir, script_file))
-execfile(script_file)
+if sys.version.startswith('3.'):
+    exec(open(script_file).read())
+else:
+    execfile(script_file)
