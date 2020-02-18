@@ -4,13 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -102,6 +96,24 @@ public class Batch {
 				return null;
 			}
 		}).collect(Collectors.toList());
+
+		Map<Long, String> idset = new HashMap<Long, String>();
+		List<Binary> new_bins = new ArrayList<Binary>();
+
+		for(Binary bin : bins)
+		{
+			if(idset.containsKey(bin.binaryId))
+			{
+				logger.info(bin.binaryName+" is a duplicate of "+idset.get(bin.binaryId));
+			}
+			else
+			{
+				new_bins.add(bin);
+				idset.put(bin.binaryId,bin.binaryName);
+			}
+		}
+		bins = new_bins;
+
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 
@@ -110,8 +122,9 @@ public class Batch {
 
 		Architecture atype = bins.get(0).architecture;
 
+		List<Binary> finalBins = bins;
 		Map<String, Integer> labelMap = IntStream.range(0, bins.size()).mapToObj(ind -> ind)
-				.collect(Collectors.toMap(ind -> bins.get(ind).binaryName, ind -> ind));
+				.collect(Collectors.toMap(ind -> finalBins.get(ind).binaryName, ind -> ind));
 		List<String> labels = bins.stream().map(b -> b.binaryName).collect(Collectors.toList());
 
 		AsmObjectFactory ram = AsmObjectFactory.init(spark, "batch-mode", "kam1n0");
@@ -158,7 +171,7 @@ public class Batch {
 				System.out.println(
 						"" + ind.getVal() + "/" + x.functions.size() + " " + xf.functionName + " " + res.size());
 
-				bins.stream().forEach(y -> {
+				finalBins.stream().forEach(y -> {
 
 					int y_ind = labelMap.get(y.binaryName);
 					OptionalDouble m = res.stream().filter(e -> e.binaryId == y.binaryId).mapToDouble(e -> e.similarity)
