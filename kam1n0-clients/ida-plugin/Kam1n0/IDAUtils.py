@@ -87,6 +87,14 @@ def jumpto(ea):
         idaapi.jumpto(ea)
 
 
+def rename(ea, name):
+    print("rename(0x%x, '%s')" % (ea, name))
+    if is_hexrays_v7():
+        idc.set_name(ea, str(name))
+    else:
+        idaapi.set_name(ea, str(name))
+
+
 def load_icons_as_dict():
     icons = ICONS(
         **{key: _load_icon(ALL_ICONS[key]) for key in list(ALL_ICONS.keys())})
