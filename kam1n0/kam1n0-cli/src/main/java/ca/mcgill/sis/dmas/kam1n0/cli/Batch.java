@@ -77,7 +77,7 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+		List<Binary> bins = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
 			BinarySurrogate b;
 			try {
 				if (p.toFile().getName().endsWith(".json")) {
@@ -95,24 +95,11 @@ public class Batch {
 				logger.error("Failed to load " + p, e);
 				return null;
 			}
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toMap(b->b.binaryId, b->b, (b1, b2)->{
+			logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
+			return b1;
+		})).values());
 
-		Map<Long, String> idset = new HashMap<Long, String>();
-		List<Binary> new_bins = new ArrayList<Binary>();
-
-		for(Binary bin : bins)
-		{
-			if(idset.containsKey(bin.binaryId))
-			{
-				logger.info(bin.binaryName+" is a duplicate of "+idset.get(bin.binaryId));
-			}
-			else
-			{
-				new_bins.add(bin);
-				idset.put(bin.binaryId,bin.binaryName);
-			}
-		}
-		bins = new_bins;
 
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
@@ -203,7 +190,7 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+		List<Binary> bins = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
 			BinarySurrogate b;
 			try {
 				if (p.toFile().getName().endsWith(".json")) {
@@ -229,7 +216,10 @@ public class Batch {
 				logger.error("Failed to load " + p, e);
 				return null;
 			}
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toMap(b->b.binaryId, b->b, (b1, b2)->{
+			logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
+			return b1;
+		})).values());
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 		List<String> labels = bins.stream().map(b -> b.binaryName).collect(Collectors.toList());
