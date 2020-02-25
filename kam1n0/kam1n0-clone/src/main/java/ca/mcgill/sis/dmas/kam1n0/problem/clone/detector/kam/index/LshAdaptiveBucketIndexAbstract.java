@@ -265,6 +265,8 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 					// get all the valid hids to a list
 					ArrayList<Tuple2<Long, T>> vals = new ArrayList<>();
 					for (int i = 0; i < bks.size(); ++i) {
+						if (bks.get(i).length < 1)
+							continue;
 						Tuple2<HashSet<Long>, Integer> hids = getHidsWithDepth(rid, i, bks.get(i));
 						Long bhid = blk.getUniqueHash();
 						Long id = HashUtils.constructID(//
