@@ -77,29 +77,29 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
-			BinarySurrogate b;
-			try {
-				if (p.toFile().getName().endsWith(".json")) {
-					b = BinarySurrogate.load(p.toFile());
-					b.processRawBinarySurrogate();
-				} else {
-					b = DisassemblyFactory.disassembleSingle(p.toFile());
-				}
-				fc.inc(b.functions.size());
-				Binary bin = b.toBinary();
-				bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
+		List<Binary> bins = new ArrayList<>(
+				Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+					BinarySurrogate b;
+					try {
+						if (p.toFile().getName().endsWith(".json")) {
+							b = BinarySurrogate.load(p.toFile());
+							b.processRawBinarySurrogate();
+						} else {
+							b = DisassemblyFactory.disassembleSingle(p.toFile());
+						}
+						fc.inc(b.functions.size());
+						Binary bin = b.toBinary();
+						bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
 
-				return bin;
-			} catch (Exception e) {
-				logger.error("Failed to load " + p, e);
-				return null;
-			}
-		}).collect(Collectors.toMap(b->b.binaryId, b->b, (b1, b2)->{
-			logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
-			return b1;
-		})).values());
-
+						return bin;
+					} catch (Exception e) {
+						logger.error("Failed to load " + p, e);
+						return null;
+					}
+				}).collect(Collectors.toMap(b -> b.binaryId, b -> b, (b1, b2) -> {
+					logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
+					return b1;
+				})).values());
 
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
@@ -190,36 +190,37 @@ public class Batch {
 
 		logger.info("loading data...");
 		Counter fc = Counter.zero();
-		List<Binary> bins = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
-			BinarySurrogate b;
-			try {
-				if (p.toFile().getName().endsWith(".json")) {
-					b = BinarySurrogate.load(p.toFile());
-					b.processRawBinarySurrogate();
-				} else {
-					b = DisassemblyFactory.disassembleSingle(p.toFile());
-				}
+		List<Binary> bins = new ArrayList<>(
+				Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
+					BinarySurrogate b;
+					try {
+						if (p.toFile().getName().endsWith(".json")) {
+							b = BinarySurrogate.load(p.toFile());
+							b.processRawBinarySurrogate();
+						} else {
+							b = DisassemblyFactory.disassembleSingle(p.toFile());
+						}
 
-				fc.inc(b.functions.size());
+						fc.inc(b.functions.size());
 
-				FunctionSurrogate fs = b.functions.get(0);
-				fs.blocks = b.functions.stream().flatMap(f -> f.blocks.stream())
-						.collect(Collectors.toCollection(ArrayList::new));
-				b.functions.clear();
-				b.functions.add(fs);
+						FunctionSurrogate fs = b.functions.get(0);
+						fs.blocks = b.functions.stream().flatMap(f -> f.blocks.stream())
+								.collect(Collectors.toCollection(ArrayList::new));
+						b.functions.clear();
+						b.functions.add(fs);
 
-				Binary bin = b.toBinary();
-				bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
+						Binary bin = b.toBinary();
+						bin.binaryName = p.toFile().getName().split("\\.")[0] + '-' + b.md5.substring(0, 6);
 
-				return bin;
-			} catch (Exception e) {
-				logger.error("Failed to load " + p, e);
-				return null;
-			}
-		}).collect(Collectors.toMap(b->b.binaryId, b->b, (b1, b2)->{
-			logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
-			return b1;
-		})).values());
+						return bin;
+					} catch (Exception e) {
+						logger.error("Failed to load " + p, e);
+						return null;
+					}
+				}).collect(Collectors.toMap(b -> b.binaryId, b -> b, (b1, b2) -> {
+					logger.info("{} is a duplicate of {}", b1.binaryName, b2.binaryName);
+					return b1;
+				})).values());
 		logger.info("{} bins {} funcs.", bins.size(), fc.getVal());
 		bins.sort((a, b) -> a.binaryName.compareTo(b.binaryName));
 		List<String> labels = bins.stream().map(b -> b.binaryName).collect(Collectors.toList());
@@ -305,23 +306,26 @@ public class Batch {
 		}
 
 		@Override
-		public void process(String[] args) throws Exception {
+		public void process(String[] args) {
 			if (!parser.parse(args)) {
-				return;
+				System.exit(0);
 			}
 
-			File dir = op_dir.getValue();
-			File res = op_res.getValue();
-			Model md = Model.valueOf(op_md.getValue());
+			try {
 
-			SparkInstance spark = SparkInstance.createLocalInstance();
-			spark.init();
+				File dir = op_dir.getValue();
+				File res = op_res.getValue();
+				Model md = Model.valueOf(op_md.getValue());
 
-			
-			if (md == Model.asmbin2vec)
-				Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark);
-			else
-				Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md);
+				SparkInstance spark = SparkInstance.createLocalInstance();
+				spark.init();
+				if (md == Model.asmbin2vec)
+					Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark);
+				else
+					Batch.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md);
+			} catch (Exception e) {
+				logger.info("Failed to process {}", Arrays.toString(args));
+			}
 			System.exit(0);
 		}
 
