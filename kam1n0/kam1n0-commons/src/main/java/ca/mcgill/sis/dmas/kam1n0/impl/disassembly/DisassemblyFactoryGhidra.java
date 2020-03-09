@@ -24,9 +24,11 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -214,7 +216,7 @@ public class DisassemblyFactoryGhidra extends DisassemblyFactory {
 						"false" };
 				System.out.println(StringResources.JOINER_TOKEN.join(arg));
 
-				ProcessBuilder pBuilder = new ProcessBuilder(arg);
+				ProcessBuilder pBuilder = new ProcessBuilder().inheritIO().command(arg);
 				pBuilder.directory(this.java.getParentFile());
 				Process p = pBuilder.start();
 				p.waitFor();
@@ -265,13 +267,14 @@ public class DisassemblyFactoryGhidra extends DisassemblyFactory {
 	}
 
 	public static void main(String[] args) throws Exception {
+		long start = System.currentTimeMillis();
 		Environment.init();
-		DisassemblyFactoryGhidra dg = new DisassemblyFactoryGhidra();
-		dg.init();
-		System.setProperty("kam1n0.disassembler", "ghidra");
-		BinarySurrogate bin = DisassemblyFactory.disassembleSingle(
-				new File("C:\\Users\\Steven\\git\\Kam1n0-Batch\\example\\asmclone\\libpng-1.7.0b54.dll"));
-		System.out.print(bin.functions.size());
+//		System.setProperty("kam1n0.disassembler", "ghidra");
+
+		HashMap<File, BinarySurrogate> bin = DisassemblyFactory.diassemble(Arrays.asList(new File("I:\\ms-apt")),
+				Pattern.compile(".*"));
+		System.out.print(bin.size());
+		System.out.print(System.currentTimeMillis() - start);
 	}
 
 }
