@@ -75,7 +75,7 @@ public abstract class DisassemblyFactory {
 	private static Logger logger = LoggerFactory.getLogger(DisassemblyFactory.class);
 
 	public static DisassemblyFactory getDefaultDisassemblyFactory() {
-		String disassembler = System.getProperty("kam1n0.data.logging.path", "IDA");
+		String disassembler = System.getProperty("kam1n0.disassembler", "IDA");
 		if (disassembler.toLowerCase().equals("ida")) {
 			DisassemblyFactoryIDA factory = new DisassemblyFactoryIDA();
 			factory.init();
