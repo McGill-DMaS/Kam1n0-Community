@@ -212,3 +212,25 @@ span.delete {
 li.dropdown{
 	list-style-type: none;
 }
+
+/* regular/repeatable comments in text view*/
+.diff-line-content .cmrow{
+	display: inline-block;
+	flex-grow: 1;
+	margin-right: -10px;
+	margin-left: 10px;
+}
+
+.diff-line-content{
+	display: flex;
+}
+
+.diff-line-content .cmrow td{
+	display: block
+}
+
+.cp-addr{
+	width:60px;
+	padding:0;
+	    line-height: 8pt;
+}

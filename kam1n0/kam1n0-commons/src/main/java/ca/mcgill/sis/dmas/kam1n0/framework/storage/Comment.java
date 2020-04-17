@@ -41,7 +41,8 @@ public class Comment implements Serializable {
 	public long date;
 
 	public String comment = StringResources.STR_EMPTY;
-
+	
+	@ObjectFactoryMultiTenancy.KeyedSecondary(index = 3)
 	@AsString
 	public CommentType type = CommentType.repeatable;
 

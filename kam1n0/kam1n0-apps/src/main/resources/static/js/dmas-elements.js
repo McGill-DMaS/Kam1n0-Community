@@ -1295,30 +1295,39 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     var code_a = "", code_b = "";
     var addr_a = [], addr_b = [];
     var addr_ind_a = 0, addr_ind_b = 0;
+    var combined_a = [], combined_b = [];
     for (var i = 0; i < p_a.nodes.length; ++i) {
         for (var j = 0; j < p_a.nodes[i][code_key].length; ++j) {
             var parts = p_a.nodes[i][code_key][j].split(' ');
             if(parts.length < 2)
             	continue;
-            addr_a.push(parts[0]);
             if(normalize_opr && !a_isVex){
             	normalizer.normalize_opr(parts[1]);
             }
-            code_a += normalize(parts.slice(1, parts.length).join(' ')) + "\r\n";
+            combined_a.push([parts[0], normalize(parts.slice(1, parts.length).join(' ')) + "\r\n"])
         }
     }
+    combined_a.sort((a,b)=> a[0]-b[0])
+    for(var i = 0; i < combined_a.length; ++i){
+            addr_a.push(combined_a[i][0]);
+            code_a += combined_a[i][1];
+        }
 
     for (var i = 0; i < p_b.nodes.length; ++i) {
         for (var j = 0; j < p_b.nodes[i][code_key].length; ++j) {
             var parts = p_b.nodes[i][code_key][j].split(' ');
             if(parts.length < 2)
             	continue;
-            addr_b.push(parts[0]);
             if(normalize_opr && !b_isVex)
             	normalizer.normalize_opr(parts[1]);
-            code_b += normalize(parts.slice(1, parts.length).join(' ')) + "\r\n";
+           	combined_b.push([parts[0], normalize(parts.slice(1, parts.length).join(' ')) + "\r\n"])
         }
     }
+    combined_b.sort((a,b)=> a[0]-b[0])
+    for(var i = 0; i < combined_b.length; ++i){
+            addr_b.push(combined_b[i][0]);
+            code_b += combined_b[i][1];
+        }
 
     var cache = [];
     var index = -1;
@@ -1519,14 +1528,23 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters=all_cm_types){
             if (!type_filters.has(ent.type))
             	return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
-            $cmbox.insertAfter($row.parent());
+            if(ent.type === 'anterior')
+                $cmbox.insertBefore($row.parent())
+            else if(ent.type === 'posterior') 
+                $cmbox.insertAfter($row.parent());
+            else
+                $row.next().append($cmbox);
         });
 	});
 }
 
 function createCommentRowSingle(cm, url, prefix){
+	var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
+	var interaction = false;
+	if(typeof send_msg != 'undefined' && prefix =='r-')
+		interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
-    if(prefix =='r-'){
+    if(prefix =='r-' && (cm.type === 'posterior' || cm.type === 'anterior' )){
     	$tr = $tr.append( $('<td class=\"diff-line-num empty\">'));
     	$tr = $tr.append( $('<td class=\"diff-line-content empty\">'));
     }
@@ -1551,8 +1569,9 @@ function createCommentRowSingle(cm, url, prefix){
                                 		$sp.parent().parent().parent().remove();
                                     }
                                 );
-                            })
+                            }) 
             )
+            	
                     .append($('<span class=\"pull-right delete\">')
                             .append($('<i class=\"fa fa-edit\">'))
                             .click(function() {
@@ -1564,11 +1583,21 @@ function createCommentRowSingle(cm, url, prefix){
                                 $crow.remove();
                             })
             )
+            	.append(!interaction?$(''):$('<span class=\"pull-right delete\">')
+            	.append($('<i class=\"fa fa-plus\" title=\"Copy to IDA\">')).append(ida_addr).click(function(){
+            		let msg = cm.comment.replace(/(?:\r\n|\r|\n)/g, '<br>');
+            		let addr = ida_addr[0].value;
+            		let ty = cm.type === "repeatable"?1:0;
+            		let cmd = `set_cmt(${addr}, """${msg}""", ${ty})`;
+            		console.log(cmd);
+            		send_msg(cmd);
+            	})
+            )
                     .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
                             .append(markdown.toHTML( cm.comment ))
             )
     );
-    if(prefix =='l-'){
+    if(prefix =='l-' && (cm.type === 'posterior' || cm.type === 'anterior' )){
     	$tr = $tr.append( $('<td class=\"diff-line-num empty\">'));
     	$tr = $tr.append( $('<td class=\"diff-line-content empty\">'));
     }
@@ -1647,15 +1676,24 @@ function drawText(p_a, titleId, tableId, code_key='srcCodes'){
 	            + ")");
 
 	    var code_a = [];
-	    var addr_a = [];
-	    var addr_ind_a = 0;
+        var addr_a = [];
+        var combined = []
+        var addr_ind_a = 0;
 	    for (var i = 0; i < p_a.nodes.length; ++i) {
 	        for (var j = 0; j < p_a.nodes[i][code_key].length; ++j) {
 	            var parts = p_a.nodes[i][code_key][j].split(' ');
-	            addr_a.push(parts[0]);
-	            code_a.push(p_a.nodes[i][code_key][j]);
+	            // addr_a.push(parts[0]);
+                // code_a.push(p_a.nodes[i][code_key][j]);
+                combined.push([parts[0], p_a.nodes[i][code_key][j]])
 	        }
-	    }
+        }
+
+        combined.sort((a,b)=> a[0]-b[0])
+        for(var i = 0; i < combined.length; ++i){
+            addr_a.push(combined[i][0]);
+            code_a.push(combined[i][1]);
+        }
+        
 
 	    $("#"+tableId).find("tr").remove();
 	    var tbl = $('#' + tableId + ' > tbody:last');

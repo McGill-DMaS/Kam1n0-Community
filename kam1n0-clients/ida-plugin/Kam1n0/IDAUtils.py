@@ -59,11 +59,14 @@ def _load_icon(name):
 
 
 def execute(cmd=''):
+    if isinstance(cmd, bytes):
+        cmd = cmd.decode('utf-8')
+    cmd = cmd.replace('<br>', '\r\n')
+    print(cmd)
     func = cmd[0:cmd.index('(')]
     if func in globals():
         exec(cmd)
-    else:
-        print((func, globals()))
+
 
 def sync_wrap(func):
     def wrapper(*args, **kwargs):
@@ -79,6 +82,11 @@ def sync_wrap(func):
         else:
             return
     return wrapper
+
+
+def set_cmt(ea, msg, rp):
+    sync_wrap(idaapi.set_cmt)(ea, msg, rp)
+
 
 def jumpto(ea):
     if is_hexrays_v7():
@@ -103,7 +111,7 @@ def get_not_lib_ida_func_indexes(funcs):
 
 def get_ida_func(ea=None):
     if ea is None:
-        func = idaapi.get_func(idc.ScreenEA())
+        func = idaapi.get_func(idc.get_screen_ea())
         if not func:
             return None
         else:
