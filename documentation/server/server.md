@@ -228,3 +228,26 @@ By clicking `CLASSIFICATION DETAILS`, you can see an address bar on the left whi
 
 
 ![](images/clsdetails.png)
+
+## Assembly clone research
+
+### Create an application
+
+The next thing to do is create an APP. Between all the three kinds of clone search application available, you should select ` asm2vec-clone` and customize your settings. General Information can be edited again later and Application Settings will be fixed.
+
+--SCREENSHOT CREATE APPLICATION--
+
+### Share an application
+If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
+
+--SCREENSHOT EDIT APPLICATION--
+--SCREENSHOT SHARE APPLICATION--
+
+### Preparing the data
+Suppose we have some binary files : `libz.so.1.2.11-gcc-g-Ox-m32-fno-pic.bin`, these files are included in the example.zip file in our release in the sub-folder `asm2vec`. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish.
+
+### Get the application URL for IDA Pro Plugin
+Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
+
+--SCREENSHOT URL APPLICATION--
+
