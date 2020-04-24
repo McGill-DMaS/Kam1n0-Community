@@ -252,3 +252,16 @@ Enter the APP by clicking the Permanent Link of the APP. Then You can see the UR
 
 ![](images/get_url.PNG)
 
+### Index binary files
+By clicking `INDEXING` on the homepage of the APP, you will see the interface for indexing. You can browse your folders to find the files you want to index or drag them to the rectangle area in the page. After that, click the `REBUILD INDEX WITH ALL BINARIES IN REPOSITORY` button.
+
+![](images/indexing_app.PNG)
+
+You can see the progress bars are being created continuously with displayed messages.
+
+
+![](images/progress_app.PNG)
+
+If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
+
+![](images/binary_app.PNG)
