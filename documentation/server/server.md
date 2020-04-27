@@ -48,7 +48,7 @@ After you register an account, you can login using the username and password and
 ![](images/IuunWz5.png)
 
 
-## Clone search
+## Clone search (asm-clone)
 
 ### Create an application
 
@@ -229,11 +229,11 @@ By clicking `CLASSIFICATION DETAILS`, you can see an address bar on the left whi
 
 ![](images/clsdetails.png)
 
-## Assembly clone research
+## Clone search (asm2vec)
 
 ### Create an application
 
-The next thing to do is create an APP. Between all the three kinds of clone search application available, you should select ` asm2vec-clone` and customize your settings. General Information can be edited again later and Application Settings will be fixed.
+`asm2vec-clone` is another APP for clone search. The general idea is to first apply representation learning to automically generate an embedding vector for each assembly function, and then perform a search on the vectors. To create an APP, select `asm2vec-clone` and customize your settings.
 
 ![](images/creation_app.PNG)
 
@@ -283,8 +283,3 @@ After the process finishes, the page will refresh and the result will be present
 For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
 
 ![](images/clone_graph2.PNG)
-
-
-
-
-
