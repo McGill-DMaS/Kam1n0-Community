@@ -265,3 +265,26 @@ You can see the progress bars are being created continuously with displayed mess
 If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
 
 ![](images/binary_app.PNG)
+
+### Search with an assembly function
+Next, we want to search an assembly function against the repository. By clicking `FUNCTION SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process. Here, we provide you `adler32.txt` as an assembly code function example.
+
+
+![](images/assembly_function_search.PNG)
+
+A new page will pop up. If this is the first time you search with an assembly function, make sure you always allow pop-ups from the server.
+
+![](images/allow_pop_ups.PNG)
+
+After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in JSON form.
+
+![](images/clone_graph1.PNG)
+
+For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
+
+![](images/clone_graph2.PNG)
+
+
+
+
+
