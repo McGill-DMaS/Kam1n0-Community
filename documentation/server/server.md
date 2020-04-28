@@ -170,6 +170,61 @@ By clicking `DETAILS`, you can see an address bar on the left which displays a l
 
 ![](images/filters.png)
 
+## Clone search (asm2vec)
+
+### Create an application
+
+`asm2vec-clone` is another APP for clone search. The general idea is to first apply representation learning to automically generate an embedding vector for each assembly function, and then perform a search on the vectors. To create an APP, select `asm2vec-clone` and customize your settings.
+
+![](images/creation_app.PNG)
+
+### Share an application
+If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
+
+![](images/edit_app.PNG)
+
+![](images/share_app.PNG)
+
+### Preparing the data
+Suppose we have some binary files : `libz.so.1.2.11-gcc-g-Ox-m32-fno-pic.bin`, these files are included in the example.zip file in our release in the sub-folder `asm2vec`. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish.
+
+### Get the application URL for IDA Pro Plugin
+Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
+
+![](images/get_url.PNG)
+
+### Index binary files
+By clicking `INDEXING` on the homepage of the APP, you will see the interface for indexing. You can browse your folders to find the files you want to index or drag them to the rectangle area in the page. After that, click the `REBUILD INDEX WITH ALL BINARIES IN REPOSITORY` button.
+
+![](images/indexing_app.PNG)
+
+You can see the progress bars are being created continuously with displayed messages.
+
+
+![](images/progress_app.PNG)
+
+If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
+
+![](images/binary_app.PNG)
+
+### Search with an assembly function
+Next, we want to search an assembly function against the repository. By clicking `FUNCTION SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process. Here, we provide you `adler32.txt` as an assembly code function example.
+
+
+![](images/assembly_function_search.PNG)
+
+A new page will pop up. If this is the first time you search with an assembly function, make sure you always allow pop-ups from the server.
+
+![](images/allow_pop_ups.PNG)
+
+After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in JSON form.
+
+![](images/clone_graph1.PNG)
+
+For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
+
+![](images/clone_graph2.PNG)
+
 ## Executable classification
 
 ### Create an application for classification
@@ -228,58 +283,3 @@ By clicking `CLASSIFICATION DETAILS`, you can see an address bar on the left whi
 
 
 ![](images/clsdetails.png)
-
-## Clone search (asm2vec)
-
-### Create an application
-
-`asm2vec-clone` is another APP for clone search. The general idea is to first apply representation learning to automically generate an embedding vector for each assembly function, and then perform a search on the vectors. To create an APP, select `asm2vec-clone` and customize your settings.
-
-![](images/creation_app.PNG)
-
-### Share an application
-If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
-
-![](images/edit_app.PNG)
-
-![](images/share_app.PNG)
-
-### Preparing the data
-Suppose we have some binary files : `libz.so.1.2.11-gcc-g-Ox-m32-fno-pic.bin`, these files are included in the example.zip file in our release in the sub-folder `asm2vec`. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish.
-
-### Get the application URL for IDA Pro Plugin
-Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
-
-![](images/get_url.PNG)
-
-### Index binary files
-By clicking `INDEXING` on the homepage of the APP, you will see the interface for indexing. You can browse your folders to find the files you want to index or drag them to the rectangle area in the page. After that, click the `REBUILD INDEX WITH ALL BINARIES IN REPOSITORY` button.
-
-![](images/indexing_app.PNG)
-
-You can see the progress bars are being created continuously with displayed messages.
-
-
-![](images/progress_app.PNG)
-
-If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
-
-![](images/binary_app.PNG)
-
-### Search with an assembly function
-Next, we want to search an assembly function against the repository. By clicking `FUNCTION SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process. Here, we provide you `adler32.txt` as an assembly code function example.
-
-
-![](images/assembly_function_search.PNG)
-
-A new page will pop up. If this is the first time you search with an assembly function, make sure you always allow pop-ups from the server.
-
-![](images/allow_pop_ups.PNG)
-
-After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in JSON form.
-
-![](images/clone_graph1.PNG)
-
-For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
-
-![](images/clone_graph2.PNG)
