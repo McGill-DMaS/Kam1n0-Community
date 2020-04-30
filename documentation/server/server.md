@@ -200,7 +200,6 @@ By clicking `INDEXING` on the homepage of the APP, you will see the interface fo
 
 You can see the progress bars are being created continuously with displayed messages.
 
-
 ![](images/progress_app.PNG)
 
 If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
@@ -209,7 +208,6 @@ If no error occurs, you will find the new indexed binary files in the Binary Bro
 
 ### Search with an assembly function
 Next, we want to search an assembly function against the repository. By clicking `FUNCTION SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process. Here, we provide you `adler32.txt` as an assembly code function example.
-
 
 ![](images/assembly_function_search.PNG)
 
@@ -224,6 +222,39 @@ After the process finishes, the page will refresh and the result will be present
 For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
 
 ![](images/clone_graph2.PNG)
+
+#### Flow graph view
+`Flow Graph View` explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with a different color. Currently, we ignore blocks with a single instruction. Both graphs can be zoomed in/out and dragged. We provide a scroll (blue) for each of them.
+
+![](images/flow_graph_asm2vec.PNG)
+
+#### Text diff view
+
+`Text Diff View` tries to fully align two assembly functions using a basic string alignment algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion while the ones with a green background mean addition. 
+
+![](images/text_diff.PNG)
+
+### Search with a binary file
+You can see the interface for searching with a binary file by clicking `BINARY COMPOSITION` on the homepage of the APP. Select a binary file through browsing or dragging. Then, set the searching parameters which is similar to search with an assembly function. After you click `ANALYZE`, the searching process begins.
+
+![](images/binary_compo.PNG)
+![](images/running_jobs_asm2vec.PNG)
+
+### Browse a clone search result
+
+After Kam1n0 completes a search query with a binary file, you can see it from the result file list on your user homepage. The `.kam` file contains all the details about the query and the search results. The `.kam` file can be found at %repository_directory%/UserFiles/. Specifically, the file contains several B-Tree which indexes the following information:
+
+* the assembly functions of the query
+* the assembly functions of all the involved assembly functions in the repository
+* the clone details
+
+![](images/result_files_asm2vec.PNG)
+
+You can edit the name of the result file by clicking its name.
+
+![](images/edit_name_asm2vec.PNG)
+
+You can see the result by clicking `OPEN`.
 
 ## Executable classification
 
