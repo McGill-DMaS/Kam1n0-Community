@@ -178,11 +178,11 @@ public class DisassemblyFactoryIDA extends DisassemblyFactory {
 			String[] arg = null;
 			if (parts == null || parts.size() < 1) {
 				if (fname.endsWith(".i64"))
-					arg = new String[] { idaw64.getAbsolutePath(), "-A", "-S" + script.getName(), binaryPath };
+					arg = new String[] { idaw64.getAbsolutePath(), "-A", "-Okam1n0:noinit", "-S" + script.getName(), binaryPath };
 				else if (fname.endsWith(".idb"))
-					arg = new String[] { idaw32.getAbsolutePath(), "-A", "-S" + script.getName(), binaryPath };
+					arg = new String[] { idaw32.getAbsolutePath(), "-A", "-Okam1n0:noinit", "-S" + script.getName(), binaryPath };
 				else
-					arg = new String[] { idaw64.getAbsolutePath(), "-A", "-S" + script.getName(), binaryPath };
+					arg = new String[] { idaw64.getAbsolutePath(), "-A", "-Okam1n0:noinit", "-S" + script.getName(), binaryPath };
 
 				// System.out.println(StringResources.JOINER_TOKEN.join(arg));
 
