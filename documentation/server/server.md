@@ -18,6 +18,8 @@
       * [The summary boxes](#the-summary-boxes)
       * [Details](#details)
 
+  * [Clone search (asm2vec)](#clone-search-(asm2vec))
+
   * [Executable classification](#executable-classification)
     * [Create an application for classification](#create-an-application-for-classification)
     * [Index files of each software class](#index-files-of-each-software-class)
@@ -224,7 +226,7 @@ For each retrieved function, you can see the similarity, `Flow Graph View`, `Tex
 ![](images/clone_graph2.PNG)
 
 #### Flow graph view
-`Flow Graph View` explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with a different color. Currently, we ignore blocks with a single instruction. Both graphs can be zoomed in/out and dragged. We provide a scroll (blue) for each of them.
+`Flow Graph View` explores the cloned control flow graph structure between two functions. In asm2vec, we convert every assembly function into a vector. We can only tell two functions (two vectors) are similar, but we can't tell which parts of them are similar. Therefore, it can't show the convex hubs like it did with asm-clone. 
 
 ![](images/flow_graph_asm2vec.PNG)
 
