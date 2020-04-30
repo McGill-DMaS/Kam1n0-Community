@@ -13,13 +13,14 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  *******************************************************************************/
-
+import inspect
 import threading
 import time
 import os
 import sys
 
 from Kam1n0 import IDAUtils
+
 if IDAUtils.is_hexrays_v7():
     from idaapi import Choose as Choose
     from ida_kernwin import Form, info
@@ -28,201 +29,225 @@ else:
     from idaapi import Choose2 as Choose
     from idaapi import Form, plugin_t, info
 
+from PyQt5 import QtWidgets, QtCore, QtGui
 
-class ConnectionListView(Choose):
-    def __init__(self, manager, flags=0):
-        Choose.__init__(self,
-                         "apps",
-                         [
-                             ["Connection Identifier",
-                              50 | Choose.CHCOL_PLAIN]],
-                         embedded=True, width=80, height=6, flags=flags)
-        self.manager = manager
+conn_icon = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'img', 'setting-cnn.png'))
+
+
+class ConnectionListView(QtWidgets.QTreeWidget):
+    def __init__(self, config, parent=None):
+        super(ConnectionListView, self).__init__(parent)
+
+        self.setHeaderLabels(['Connection identifier'])
+        self.config = config
         self.UpdateItems()
 
     def UpdateItems(self):
-        apps = self.manager.configuration['apps']
+        apps = self.config['apps']
         self.items = [[x] for x in apps]
-
-    def OnGetIcon(self, *_):
-        if not len(self.items) > 0:
-            return -1
-        return self.manager.icons.ICON_CONN
-
-    def OnClose(self):
-        pass
-
-    def OnGetLine(self, n):
-        return self.items[n]
-
-    def OnGetSize(self):
-        return len(self.items)
+        self.clear()
+        for item in self.items:
+            tree_item = QtWidgets.QTreeWidgetItem(self)
+            tree_item.setText(0, item[0])
+            tree_item.setIcon(0, QtGui.QIcon(conn_icon))
+            self.addTopLevelItem(tree_item)
 
 
-class ConnectionManagementForm(Form):
-    def __init__(self, manager):
+class ConnectionManagementForm(QtWidgets.QDialog):
+    def __init__(self, manager, parent=None):
+        super(ConnectionManagementForm, self).__init__(parent)
+        self.setWindowFlags(
+            QtCore.Qt.WindowCloseButtonHint
+        )
+        self.setModal(True)
+        self.setWindowTitle("Kam1n0 - Manage connections")
         self.cnn = manager.connector
         self.configuration = manager.configuration
-        self.listView = ConnectionListView(manager)
+
+        self.listView = ConnectionListView(self.configuration)
+
+        # Application
+        self.url_line_edit = QtWidgets.QLineEdit()
+        self.user_line_edit = QtWidgets.QLineEdit()
+        self.pass_line_edit = QtWidgets.QLineEdit()
+
+        # Search settings
+        self.threshold_line_edit = QtWidgets.QLineEdit()
+        self.topk_line_edit = QtWidgets.QLineEdit()
+        self.exclude_check_box = QtWidgets.QCheckBox()
+        self.kam_check_box = QtWidgets.QCheckBox()
+
+        # Connector
+        connector_label = QtWidgets.QLabel("Connector")
+        self.connector_combo = QtWidgets.QComboBox()
+        self.connector_combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+        # Controls
+        self.add_update_button = QtWidgets.QPushButton('Update/Add')
+        self.remove_button = QtWidgets.QPushButton('Remove')
+        self.save_button = QtWidgets.QPushButton('OK')
+        self.cancel_button = QtWidgets.QPushButton('Cancel')
+
+        spacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
+        # Layouts
+        app_form_layout = QtWidgets.QFormLayout()
+        app_form_layout.setHorizontalSpacing(10)
+        app_form_layout.setVerticalSpacing(5)
+        app_form_layout.addRow(QtWidgets.QLabel("URL"), self.url_line_edit)
+        app_form_layout.addRow(QtWidgets.QLabel("User"), self.user_line_edit)
+        app_form_layout.addRow(QtWidgets.QLabel("Password"), self.pass_line_edit)
+
+        applications_group = QtWidgets.QGroupBox('Application')
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addItem(app_form_layout)
+        applications_group.setLayout(vbox)
+
+        search_form_layout = QtWidgets.QFormLayout()
+        search_form_layout.setHorizontalSpacing(10)
+        search_form_layout.setVerticalSpacing(5)
+        search_form_layout.addRow(QtWidgets.QLabel("Threshold"), self.threshold_line_edit)
+        search_form_layout.addRow(QtWidgets.QLabel("Top-K"), self.topk_line_edit)
+        search_form_layout.addRow(QtWidgets.QLabel("Exclude results from the same binary"), self.exclude_check_box)
+        search_form_layout.addRow(QtWidgets.QLabel("Save multiple queries as .kam file"), self.kam_check_box)
+
+        search_group = QtWidgets.QGroupBox('Search')
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addItem(search_form_layout)
+        search_group.setLayout(vbox)
+
+        connector_layout = QtWidgets.QHBoxLayout()
+        connector_layout.addItem(spacer)
+        connector_layout.addWidget(connector_label)
+        connector_layout.addItem(spacer)
+        connector_layout.addWidget(self.connector_combo)
+        connector_layout.addItem(spacer)
+
+        control_layout = QtWidgets.QHBoxLayout()
+        control_layout.addItem(spacer)
+        control_layout.addWidget(self.add_update_button)
+        control_layout.addWidget(self.remove_button)
+        control_layout.addWidget(self.save_button)
+        control_layout.addWidget(self.cancel_button)
+        control_layout.addItem(spacer)
+
+        main_layout = QtWidgets.QVBoxLayout()
+        main_layout.addWidget(self.listView)
+        main_layout.addWidget(applications_group)
+        main_layout.addWidget(search_group)
+        main_layout.addItem(connector_layout)
+        main_layout.addItem(control_layout)
+        self.setLayout(main_layout)
 
         apps = list(self.configuration['apps'].keys())
         app_default = self.configuration['default-app']
-
         if app_default is not None:
             default_index = apps.index(app_default)
-
         else:
             default_index = 0
+        self.listView.setCurrentItem(self.listView.topLevelItem(default_index))
 
-        # indent matters:
-        Form.__init__(self,
-r"""BUTTON YES* OK 
-BUTTON CANCEL NONE 
-Kam1n0 - Manage Connections
-{FormChangeCb}
-<               :{fvChooser}>
-<Remove :{btnRemove}> Remove the Selected Connection.
-<Application URL:{txtServer}>
-Login Info:
-<User           :{txtUser}>
-<Password       :{txtPw}>
-<Update/Add     :{btnUpdate}>
-<Threshold      :{txtSim}>
-<Top-K          :{txtTopK}>
-<Exclude Results from the Same Binary  :{chkSameBin}>{chkGroup}>
-<Save Multiple Queries as a .kam File  :{chkKamSave}>{chkGroupp}>
-<Connector:{dpCnn}>
-""", {
-                          'fvChooser': Form.EmbeddedChooserControl(
-                              self.listView),
-                          'FormChangeCb': Form.FormChangeCb(
-                              self.OnFormChange),
-                          'txtServer': Form.StringInput(
-                              swidth=60,
-                              tp=Form.FT_ASCII),
-                          'txtUser': Form.StringInput(
-                              swidth=60,
-                              tp=Form.FT_ASCII),
-                          'txtPw': Form.StringInput(
-                              swidth=60,
-                              tp=Form.FT_ASCII),
-                          'btnRemove': Form.ButtonInput(self.OnButtonRemove),
-                          'btnUpdate': Form.ButtonInput(self.OnButtonUpdate),
-                          'txtSim': Form.StringInput(
-                              swidth=45,
-                              tp=Form.FT_ASCII,
-                              value=str(self.configuration[
-                                            'default-threshold'])),
-                          'txtTopK': Form.StringInput(
-                              swidth=45,
-                              tp=Form.FT_ASCII,
-                              value=str(self.configuration[
-                                            'default-topk'])),
-                          'chkGroup': Form.ChkGroupControl(
-                              ("chkSameBin", "")),
-                          'chkGroupp': Form.ChkGroupControl(
-                              ("chkKamSave", "")),
-                          'dpCnn': Form.DropdownListControl(
-                              swidth=60,
-                              width=60,
-                              selval=default_index,
-                              items=apps,
-                              readonly=True)
-                      })
-        self.Compile()
+        # Events
+        self.remove_button.clicked.connect(self.OnButtonRemove)
+        self.add_update_button.clicked.connect(self.OnButtonUpdate)
+        self.save_button.clicked.connect(self.OnSave)
+        self.listView.itemSelectionChanged.connect(self.OnSelectionChange)
+        self.connector_combo.currentIndexChanged.connect(self.OnConnChange)
+        self.cancel_button.clicked.connect(self.OnCancel)
 
-    def OnButtonRemove(self, *_):
-        indexes = self.GetControlValue(self.fvChooser)
-        if indexes is not None and len(indexes) > 0:
-            ind = indexes[0]
-            if 0 <= ind < len(self.listView.items):
-                key = self.listView.items[ind][0]
-                self.configuration['apps'].pop(key, None)
-                self.listView.UpdateItems()
-                self.RefreshField(self.fvChooser)
-                if self.configuration['default-app'] == key:
-                    if len(self.configuration['apps']) > 0:
-                        self.configuration['default-app'] = \
-                            list(self.configuration['apps'].keys())[0]
-                    else:
-                        self.configuration['default-app'] = None
-        self.updateDpList()
+    def OnButtonUpdate(self):
+        if self.url_line_edit.text():
+            app = dict()
+            app['app_url'] = str(self.url_line_edit.text())
+            app['un'] = str(self.user_line_edit.text())
+            app['pw'] = str(self.pass_line_edit.text())
+            self.configuration['apps'][app['app_url']] = app
+            self.listView.UpdateItems()
+            # Select the newly added item
+            idx = list(self.configuration['apps'].keys()).index(app['app_url'])
+            self.listView.setCurrentItem(self.listView.topLevelItem(idx))
+            self.UpdateDropDownList(idx)
+            info("The connection \'%s\' was added/updated." % app['app_url'])
 
-    def OnButtonUpdate(self, *_):
-        app = dict()
-        app['app_url'] = self.GetControlValue(self.txtServer)
-        app['un'] = self.GetControlValue(self.txtUser)
-        app['pw'] = self.GetControlValue(self.txtPw)
-        self.configuration['apps'][app['app_url']] = app
-        self.listView.UpdateItems()
-        self.RefreshField(self.fvChooser)
-        # Select the newly added item
-        self.SetControlValue(self.fvChooser, [
-            list(self.configuration['apps'].keys()).index(
-                app['app_url']
-            )])
-        self.updateDpList()
-        info("The connection \'%s\' was added/updated." % app['app_url'])
+    def OnButtonRemove(self):
+        idx = int(self.listView.currentIndex().row())
+        if 0 <= idx < len(self.listView.items):
+            key = self.listView.items[idx][0]
+            self.configuration['apps'].pop(key, None)
+            self.listView.UpdateItems()
+            # self.RefreshField(self.fvChooser)
+            if self.configuration['default-app'] == key:
+                if len(self.configuration['apps']) > 0:
+                    self.configuration['default-app'] = \
+                        list(self.configuration['apps'].keys())[0]
+                else:
+                    self.configuration['default-app'] = None
+        self.UpdateDropDownList()
 
-    def updateDpList(self):
-        # update dropdown list:
+    def UpdateDropDownList(self, idx=None):
         apps = list(self.configuration['apps'].keys())
         default_app = self.configuration['default-app']
         if default_app is not None:
             default_index = apps.index(default_app)
-
-            self.dpCnn.set_items(apps)
-            self.RefreshField(self.dpCnn)
-            self.SetControlValue(self.dpCnn, default_index)
+            self.connector_combo.clear()
+            self.connector_combo.addItems(apps)
+            self.listView.setCurrentItem(self.listView.topLevelItem(default_index))
+            self.connector_combo.setCurrentIndex(default_index)
+            if idx:
+                self.listView.setCurrentItem(self.listView.topLevelItem(idx))
         else:
-            self.dpCnn.set_items(apps)
-            self.RefreshField(self.dpCnn)
+            self.connector_combo.clear()
+            self.connector_combo.addItems(apps)
 
-    def OnFormChange(self, fid):
+    def OnStart(self):
+        self.listView.UpdateItems()
+        self.UpdateDropDownList()
 
-        if fid == -1:
-            # self.EnableField(self.txtProtocol, False)
-            # select the default connection
-            self.SetControlValue(self.chkSameBin, self.configuration['default-avoidSameBinary'])
-            self.SetControlValue(self.chkKamSave, self.configuration['default-saveAsKam'])
-            apps = list(self.configuration['apps'].keys())
-            default_app = self.configuration['default-app']
-            if default_app is not None:
-                default_index = apps.index(default_app)
-                app = self.configuration['apps'][default_app]
-                self.SetControlValue(self.fvChooser, [default_index])
-                self.SetControlValue(self.txtServer, app['app_url'])
-                self.SetControlValue(self.txtUser, app['un'])
-                self.SetControlValue(self.txtPw, app['pw'])
+        self.threshold_line_edit.setText(str(self.configuration['default-threshold']))
+        self.topk_line_edit.setText(str(self.configuration['default-topk']))
+        self.exclude_check_box.setChecked(self.configuration['default-avoidSameBinary'])
+        self.kam_check_box.setChecked(self.configuration['default-saveAsKam'])
 
-        if fid == self.dpCnn.id:
-            if len(list(self.configuration['apps'].keys())) > 0:
-                # update configuration
-                selected_index = self.GetControlValue(self.dpCnn)
-                key = list(self.configuration['apps'].keys())[selected_index]
-                self.configuration['default-app'] = key
+        apps = list(self.configuration['apps'].keys())
+        default_app = self.configuration['default-app']
+        if default_app is not None:
+            default_index = apps.index(default_app)
+            app = self.configuration['apps'][default_app]
+            self.listView.setCurrentItem(self.listView.topLevelItem(default_index))
+            self.connector_combo.setCurrentIndex(default_index)
+            self.url_line_edit.setText(app['app_url'])
+            self.user_line_edit.setText(app['un'])
+            self.pass_line_edit.setText(app['pw'])
 
-        if fid == self.fvChooser.id:
-            selected_indexes = self.GetControlValue(self.fvChooser)
-            #print(selected_indexes)
-            if selected_indexes is not None and len(selected_indexes) > 0:
-                ind = selected_indexes[0]
-                key = self.listView.items[ind][0]
-                app = self.configuration['apps'][key]
-                self.SetControlValue(self.txtServer, app['app_url'])
-                self.SetControlValue(self.txtUser, app['un'])
-                self.SetControlValue(self.txtPw, app['pw'])
+    def closeEvent(self, evnt):
+        pass
+        #self.OnSave()
+        #super(ConnectionManagementForm, self).closeEvent(evnt)
 
-        if fid == -2:
-            self.configuration['default-threshold'] = float(
-                self.GetControlValue(self.txtSim))
-            self.configuration['default-topk'] = int(
-                self.GetControlValue(self.txtTopK))
-            self.configuration['default-avoidSameBinary'] = bool(
-                self.GetControlValue(self.chkSameBin)
-            )
-            self.configuration['default-saveAsKam'] = bool(
-                self.GetControlValue(self.chkKamSave)
-            )
+    def OnCancel(self):
+        self.close()
 
-        return 1
+    def OnSave(self):
+        self.configuration['default-threshold'] = float(self.threshold_line_edit.text())
+        self.configuration['default-topk'] = int(self.topk_line_edit.text())
+        self.configuration['default-avoidSameBinary'] = self.exclude_check_box.isChecked()
+        self.configuration['default-saveAsKam'] = self.kam_check_box.isChecked()
+
+        self.accept()
+
+    def OnConnChange(self):
+        if len(list(self.configuration['apps'].keys())) > 0:
+            # update configuration
+            selected_index = self.connector_combo.currentIndex()
+            key = list(self.configuration['apps'].keys())[selected_index]
+            self.configuration['default-app'] = key
+
+    def OnSelectionChange(self):
+        selected_indexes = self.listView.selectedItems()
+        # print(selected_indexes)
+        if selected_indexes is not None and len(selected_indexes) > 0:
+            ind = self.listView.indexOfTopLevelItem(selected_indexes[0])
+            key = self.listView.items[ind][0]
+            app = self.configuration['apps'][key]
+            self.url_line_edit.setText(app['app_url'])
+            self.user_line_edit.setText(app['un'])
+            self.pass_line_edit.setText(app['pw'])

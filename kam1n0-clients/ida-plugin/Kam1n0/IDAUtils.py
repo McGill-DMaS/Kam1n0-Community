@@ -103,7 +103,7 @@ def get_not_lib_ida_func_indexes(funcs):
 
 def get_ida_func(ea=None):
     if ea is None:
-        func = idaapi.get_func(idc.ScreenEA())
+        func = idaapi.get_func(idc.get_screen_ea())
         if not func:
             return None
         else:
@@ -272,7 +272,7 @@ def get_as_multiple_surrogate(funcs=None):
 
 
 def get_selected_code(sea, eea):
-    code = [str(idc.GetDisasm(head), errors='replace') for head in
+    code = [idc.GetDisasm(head) for head in
             idautils.Heads(sea, eea)]
     surrogate = get_as_single_surrogate(get_ida_func(sea))
     func = surrogate['functions'][0]
@@ -293,7 +293,7 @@ def get_selected_code(sea, eea):
     block['dat'] = dat
     s = idc.get_bytes(sea, eea -sea)
     if s is not None:
-        block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
+        block['bytes'] = "".join("{:02x}".format(c) for c in s)
     instructions = list()
     oprTypes = list()
     for head in idautils.Heads(sea, eea):
