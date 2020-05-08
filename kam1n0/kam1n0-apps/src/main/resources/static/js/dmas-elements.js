@@ -1243,7 +1243,7 @@ function drawFlow(func, placeholderId, cloneSets, code_key='srcCodes') {
         for (var k = 0; k < cloneSet.length; ++k) {
             var clonePair = cloneSet[k];
             inner.selectAll("g.node").each(function (i, d) {
-                if (i == clonePair._1 || i == clonePair._2) {
+                if ((placeholderId=='chartSource'&&i == clonePair._1) || (placeholderId=='chartTarget'&&i == clonePair._2)) {
                     var m = this.transform.animVal[0]['matrix'];
                     var re = this.children[0];
 
