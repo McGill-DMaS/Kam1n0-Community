@@ -40,8 +40,8 @@ class SelectionForm(QtWidgets.QDialog):
         self.setModal(True)
 
         # Selection settings
-        self.select_all = QtWidgets.QCheckBox("Select all functions")
-        self.skip_library = QtWidgets.QCheckBox("Skip library functions")
+        self.select_all = QtWidgets.QCheckBox("Select All Functions")
+        self.skip_library = QtWidgets.QCheckBox("Skip Library Functions")
 
         # Search settings
         self.threshold_line_edit = QtWidgets.QLineEdit()
@@ -71,7 +71,7 @@ class SelectionForm(QtWidgets.QDialog):
         search_form_layout.setVerticalSpacing(5)
         search_form_layout.addRow(QtWidgets.QLabel("Threshold"), self.threshold_line_edit)
         search_form_layout.addRow(QtWidgets.QLabel("Top-K"), self.topk_line_edit)
-        search_form_layout.addRow(QtWidgets.QLabel("Exclude results from the same binary"), self.exclude_check_box)
+        search_form_layout.addRow(QtWidgets.QLabel("Exclude Results from the Same Binary"), self.exclude_check_box)
         search_form_layout.addRow(QtWidgets.QLabel("Save multiple queries as .kam file"), self.kam_check_box)
 
         self.search_group = QtWidgets.QGroupBox('Configuration')
@@ -145,10 +145,10 @@ class SelectionForm(QtWidgets.QDialog):
 
     def OnStart(self, selectedFun, type='Search'):
         if type == 'Search':
-            self.setWindowTitle("Kam1n0 - Search the selected functions")
+            self.setWindowTitle("Kam1n0 - Select Functions to Search")
             self.search_group.setVisible(True)
         elif type == 'Index':
-            self.setWindowTitle("Kam1n0 - Index the selected functions")
+            self.setWindowTitle("Kam1n0 - Select Functions to Index")
             self.search_group.setVisible(False)
         else:
             self.setWindowTitle("Kam1n0 - Search/Index")

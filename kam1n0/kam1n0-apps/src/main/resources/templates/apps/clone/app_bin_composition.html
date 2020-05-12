@@ -322,9 +322,9 @@ text {
 												"<i class='fa fa-fw  fa-clone lnk'></i>",
 												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
 										var viewNames = [
-												"Flow graph comparison.",
-												"Full text alignment.",
-												"Clone group alignment." ];
+												"Flow Graph View",
+												"Textual Difference View",
+												"Clone Group View" ];
 												
 										if(/*[[${model.applicationType.toString().equals("/sym1n0-clone")}]]*/false){
 										views = [ "func_diff_flow", "func_diff_flow_vex", "func_diff_flow_logic", "func_diff_text", "func_diff_text_vex",
@@ -336,9 +336,9 @@ text {
 												"<i class='fa fa-fw  fa-clone lnk'></i>",
 												"<i class='fa fa-fw  fa-file-code-o'></i>",
 												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
-										viewNames = [ "Flow graph comparison.",  "Flow graph comparison (VEX).", 
-												"Flow graph comparison (syntax tree).", "Full text alignment (ASM).", "Full text alignment (VEX).",
-												"Clone group alignment." ];
+										viewNames = [ "Flow Graph View",  "Flow Graph View (VEX).", 
+												"Flow Graph View (syntax tree).", "Textual Difference View (ASM).", "Textual Difference View (VEX).",
+												"Clone Group View" ];
 										}
 
 										CreateCloneList($('#cloneList'), data,
