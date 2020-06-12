@@ -24,3 +24,5 @@ kam1n0-bin-win/
 .project
 .settings
 
+# Visual Studio
+.vs/
