@@ -158,6 +158,10 @@ public class Batch2 {
 		public int size() {
 			return this.vals.size();
 		}
+		
+		public int totalFunctions(){
+			return vals.stream().mapToInt(t3 -> loadAssembly(t3._3(), this.mergeFunctions).functions.size()).sum();
+		}
 
 	}
 
@@ -165,7 +169,7 @@ public class Batch2 {
 			CassandraInstance cassandra) throws Exception {
 
 		Dataset ds = new Dataset(path, false);
-		logger.info("{} bins.", ds.size());
+		logger.info("{} bins. {} functions.", ds.size(), ds.totalFunctions());
 
 		if (ds.size() < 1)
 			return;
@@ -178,8 +182,8 @@ public class Batch2 {
 		FunctionCloneDetector model = null;
 		if (choice == Model.asm2vec || choice == Model.asmbin2vec) {
 			Asm2VecNewParam param = new Asm2VecNewParam();
-			param.optm_iteration = 20;
-			param.vec_dim = 100;
+			param.optm_iteration = 5;
+			param.vec_dim = 50;
 			param.optm_parallelism = 5;
 			model = new Asm2VecCloneDetectorIntegration(factory, param);
 		} else if (choice == Model.asmclone) {
@@ -195,6 +199,7 @@ public class Batch2 {
 			return;
 		}
 		final FunctionCloneDetector fmodel = model;
+		fmodel.init();
 
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
@@ -238,14 +243,18 @@ public class Batch2 {
 
 			res.put(model.getClass().getSimpleName(), matrix, ds.labels);
 		} else {
+			Counter c = Counter.zero();
+			Counter tf = Counter.zero();
 
 			StreamSupport.stream(ds.spliterator(), false).forEach(m -> m.forEach(x -> {
 
+				c.inc();
 				int x_ind = ds.labelMap.get(x.binaryName);
 				Counter ind = Counter.zero();
 				x.functions.parallelStream().forEach(xf -> {
 
 					ind.inc();
+					tf.inc();
 					List<FunctionCloneEntry> fres;
 					try {
 						fres = fmodel.detectClonesForFunc(-1l, xf, 0.5, 200, true);
@@ -254,8 +263,8 @@ public class Batch2 {
 						return;
 					}
 
-					System.out.println(
-							"" + ind.getVal() + "/" + x.functions.size() + " " + xf.functionName + " " + fres.size());
+					System.out.println("" + ind.getVal() + "/" + x.functions.size() + " " + c.getVal() + "/" + ds.size()
+							+ "/" + tf.getVal() + " " + xf.functionName + " " + fres.size());
 
 					ds.vals.stream().forEach(t3 -> {
 
@@ -333,7 +342,7 @@ public class Batch2 {
 				cassandra.setSparkInstance(spark);
 				Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md, cassandra);
 			} catch (Exception e) {
-				logger.info("Failed to process {}", Arrays.toString(args));
+				logger.info("Failed to process " + Arrays.toString(args), e);
 			}
 			System.exit(0);
 		}
