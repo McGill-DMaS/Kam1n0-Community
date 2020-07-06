@@ -251,7 +251,8 @@ public class Batch2 {
 				c.inc();
 				int x_ind = ds.labelMap.get(x.binaryName);
 				Counter ind = Counter.zero();
-				x.functions.parallelStream().forEach(xf -> {
+				//FIXME: revert this hack: remove limit(100)
+				x.functions.parallelStream().limit(100).forEach(xf -> {
 
 					ind.inc();
 					tf.inc();
