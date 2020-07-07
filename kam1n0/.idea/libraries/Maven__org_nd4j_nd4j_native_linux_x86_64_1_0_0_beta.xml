@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.nd4j:nd4j-native:linux-x86_64:1.0.0-beta">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nd4j/nd4j-native/1.0.0-beta/nd4j-native-1.0.0-beta-linux-x86_64.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nd4j/nd4j-native/1.0.0-beta/nd4j-native-1.0.0-beta-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nd4j/nd4j-native/1.0.0-beta/nd4j-native-1.0.0-beta-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

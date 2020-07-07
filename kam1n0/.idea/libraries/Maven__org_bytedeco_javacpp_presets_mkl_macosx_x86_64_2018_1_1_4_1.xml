@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.bytedeco.javacpp-presets:mkl:macosx-x86_64:2018.1-1.4.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/mkl/2018.1-1.4.1/mkl-2018.1-1.4.1-macosx-x86_64.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/mkl/2018.1-1.4.1/mkl-2018.1-1.4.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/mkl/2018.1-1.4.1/mkl-2018.1-1.4.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

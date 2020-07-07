@@ -35,7 +35,6 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import ca.mcgill.sis.dmas.io.collection.DmasCollectionOperations;
 import ca.mcgill.sis.dmas.io.collection.EntryPair;

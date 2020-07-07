@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/kam1n0.iml" filepath="$PROJECT_DIR$/.idea/kam1n0.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-apps/kam1n0-apps.iml" filepath="$PROJECT_DIR$/kam1n0-apps/kam1n0-apps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-cli/kam1n0-cli.iml" filepath="$PROJECT_DIR$/kam1n0-cli/kam1n0-cli.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-clone/kam1n0-clone.iml" filepath="$PROJECT_DIR$/kam1n0-clone/kam1n0-clone.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-commons/kam1n0-commons.iml" filepath="$PROJECT_DIR$/kam1n0-commons/kam1n0-commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-postbuild/kam1n0-postbuild.iml" filepath="$PROJECT_DIR$/kam1n0-postbuild/kam1n0-postbuild.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-rep/kam1n0-rep.iml" filepath="$PROJECT_DIR$/kam1n0-rep/kam1n0-rep.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-resources/kam1n0-resources.iml" filepath="$PROJECT_DIR$/kam1n0-resources/kam1n0-resources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-symbolic/kam1n0-symbolic.iml" filepath="$PROJECT_DIR$/kam1n0-symbolic/kam1n0-symbolic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kam1n0-workbench/kam1n0-workbench.iml" filepath="$PROJECT_DIR$/kam1n0-workbench/kam1n0-workbench.iml" />
+    </modules>
+  </component>
+</project>

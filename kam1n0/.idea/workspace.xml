@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="26757a7c-2267-43e5-be07-a6f9cd191219" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/kam1n0-apps/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-apps/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-apps/src/main/java/ca/mcgill/sis/dmas/kam1n0/AppPlatform.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-apps/src/main/java/ca/mcgill/sis/dmas/kam1n0/AppPlatform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-cli/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-cli/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-clone/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-clone/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-commons/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-commons/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-rep/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-rep/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-rep/src/main/java/ca/mcgill/sis/dmas/autograd/utils/Convolutions.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-rep/src/main/java/ca/mcgill/sis/dmas/autograd/utils/Convolutions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-resources/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-resources/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/graph/ComputationNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/graph/ComputationNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/symbolic/SimNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/symbolic/SimNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/symbolic/Z3Box.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/symbolic/Z3Box.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/VEXIRBB.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/VEXIRBB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/enumeration/VexVariableType.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/enumeration/VexVariableType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/operation/VexOperationUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-symbolic/src/main/java/ca/mcgill/sis/dmas/kam1n0/vex/operation/VexOperationUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kam1n0-workbench/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kam1n0-workbench/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1eJySWjf4jv5oQ6iVY4fKD4AfmO" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Kam1n0_base/kam1n0" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.4597701" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RunManager">
+    <configuration name="UITest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="kam1n0-apps" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ca.mcgill.sis.dmas.kam1n0.app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ca.mcgill.sis.dmas.kam1n0.app" />
+      <option name="MAIN_CLASS_NAME" value="ca.mcgill.sis.dmas.kam1n0.app.UITest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.UITest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="26757a7c-2267-43e5-be07-a6f9cd191219" name="Default Changelist" comment="" />
+      <created>1594053990881</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1594053990881</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="784" y="317" width="501" height="472" key="FileChooserDialogImpl" timestamp="1594149511253">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="2663" y="297" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1594133023380" />
+    <state x="784" y="317" width="501" height="472" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594149511253" />
+    <state width="1807" height="344" key="GridCell.Tab.0.bottom" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.0.center" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.0.left" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.0.right" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.1.bottom" timestamp="1594150101395">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101395" />
+    <state width="1807" height="344" key="GridCell.Tab.1.center" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.1.left" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state width="1807" height="344" key="GridCell.Tab.1.right" timestamp="1594150101394">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="344" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594150101394" />
+    <state x="596" y="312" width="924" height="684" key="Maven.ArtifactSearchDialog" timestamp="1594066624052">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="596" y="312" width="924" height="684" key="Maven.ArtifactSearchDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594066624052" />
+    <state x="482" y="187" width="1024" height="845" key="SettingsEditor" timestamp="1594149774924">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="482" y="187" width="1024" height="845" key="SettingsEditor/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594149774924" />
+    <state x="683" y="161" width="946" height="783" key="find.popup" timestamp="1594063383942">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="683" y="161" width="946" height="783" key="find.popup/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594063383942" />
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1594149704126">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1594149704126" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/kam1n0-apps/src/test/java/ca/mcgill/sis/dmas/kam1n0/app/UITest.java</url>
+          <line>41</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

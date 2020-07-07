@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.rholder:snowball-stemmer:1.3.0.581.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/rholder/snowball-stemmer/1.3.0.581.1/snowball-stemmer-1.3.0.581.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/rholder/snowball-stemmer/1.3.0.581.1/snowball-stemmer-1.3.0.581.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/rholder/snowball-stemmer/1.3.0.581.1/snowball-stemmer-1.3.0.581.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

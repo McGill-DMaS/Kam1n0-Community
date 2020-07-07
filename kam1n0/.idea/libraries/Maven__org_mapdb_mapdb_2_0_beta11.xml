@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.mapdb:mapdb:2.0-beta11">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mapdb/mapdb/2.0-beta11/mapdb-2.0-beta11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mapdb/mapdb/2.0-beta11/mapdb-2.0-beta11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mapdb/mapdb/2.0-beta11/mapdb-2.0-beta11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
