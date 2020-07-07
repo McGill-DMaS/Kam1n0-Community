@@ -16,11 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
@@ -182,7 +178,16 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			} else {
 
 				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> mp = ArrayListMultimap.create();
-				b_to_b.collect().forEach(tp2 -> mp.put(tp2._1(), tp2._2()));
+
+				// FIXME: complete this experiment in progress
+				// Original line causes OOM:
+				//    b_to_b.collect().forEach(tp2 -> mp.put(tp2._1(), tp2._2()));
+				// Replacement is about 2 times slower but does not cause OOM. In theory, this could be parallelized
+				// over existing partitions.
+				// TODO: investigate that
+				// TODO: find other ways to process the data in chunks (something in between a full local array, above,
+				//  and the single element iterator, below).
+				b_to_b.toLocalIterator().forEachRemaining(tp2 -> mp.put(tp2._1(), tp2._2()));
 
 				// logger.info("started {}", function.functionName);
 				results = mp.keySet().stream().parallel().map(tp -> {
