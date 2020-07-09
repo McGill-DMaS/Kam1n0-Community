@@ -179,14 +179,6 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 
 				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> mp = ArrayListMultimap.create();
 
-				// FIXME: complete this experiment in progress
-				// Original line causes OOM:
-				//    b_to_b.collect().forEach(tp2 -> mp.put(tp2._1(), tp2._2()));
-				// Replacement is about 2 times slower but does not cause OOM. In theory, this could be parallelized
-				// over existing partitions.
-				// TODO: investigate that
-				// TODO: find other ways to process the data in chunks (something in between a full local array, above,
-				//  and the single element iterator, below).
 				b_to_b.toLocalIterator().forEachRemaining(tp2 -> mp.put(tp2._1(), tp2._2()));
 
 				// logger.info("started {}", function.functionName);
