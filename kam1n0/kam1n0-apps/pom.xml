@@ -11,7 +11,7 @@
 
 	<properties>
 		<spring-boot-version>1.5.8.RELEASE</spring-boot-version>
-		<spring-load-version>1.2.6.RELEASEE</spring-load-version>
+		<spring-load-version>1.2.6.RELEASE</spring-load-version>
 	</properties>
 
 	<dependencyManagement>

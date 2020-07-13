@@ -19,12 +19,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
+
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.io.LineSequenceWriter;
@@ -91,11 +92,12 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	@Override
 	public HashSet<Long> getHids(long rid, String primaryKey, String secondaryKey) {
 		return this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
-			Row row = session.execute((QueryBuilder.select(_ADAPTIVE_BUCK_HIDS)//
-					.from(databaseName, _ADAPTIVE_BUCK))//
-							.where(eq(_APP_ID, rid))//
-							.and(eq(_ADAPTIVE_BUCK_PKEY, primaryKey))//
-							.and(eq(_ADAPTIVE_BUCK_CKEY, secondaryKey)))
+			Row row = session.execute(QueryBuilder.selectFrom(databaseName, _ADAPTIVE_BUCK)
+							.column(_ADAPTIVE_BUCK_HIDS)//
+							.whereColumn(_APP_ID).isEqualTo(literal(rid))//
+							.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))//
+							.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(secondaryKey))
+						.build())
 					.one();
 			// not existed
 			if (row == null)
@@ -114,11 +116,12 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean clearHid(long rid, String primaryKey, String secondaryKey) {
 		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_BUCK)//
-					.with(set(_ADAPTIVE_BUCK_HIDS, null))//
-					.and(set(_ADAPTIVE_BUCK_DEPTH, 1))//
-					.where(eq(_APP_ID, rid))//
-					.and(eq(_ADAPTIVE_BUCK_PKEY, primaryKey))//
-					.and(eq(_ADAPTIVE_BUCK_CKEY, secondaryKey)));
+					.setColumn(_ADAPTIVE_BUCK_HIDS,null)
+					.setColumn(_ADAPTIVE_BUCK_DEPTH, literal(1))
+					.whereColumn(_APP_ID).isEqualTo(literal(rid))
+					.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))
+					.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(secondaryKey))
+					.build());
 		});
 		return true;
 	}
@@ -127,11 +130,12 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, int newDepth, Long hid) {
 		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_BUCK)//
-					.with(add(_ADAPTIVE_BUCK_HIDS, hid))//
-					.and(set(_ADAPTIVE_BUCK_DEPTH, newDepth))//
-					.where(eq(_APP_ID, rid))//
-					.and(eq(_ADAPTIVE_BUCK_PKEY, primaryKey))//
-					.and(eq(_ADAPTIVE_BUCK_CKEY, secondaryKey)));
+					.append(_ADAPTIVE_BUCK_HIDS,literal(hid))
+					.setColumn(_ADAPTIVE_BUCK_DEPTH, literal(newDepth))//
+					.whereColumn(_APP_ID).isEqualTo(literal(rid))//
+					.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))
+					.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(secondaryKey))
+					.build());
 		});
 		return true;
 	}
@@ -140,10 +144,11 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, HashSet<Long> hids) {
 		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_BUCK)//
-					.with(QueryBuilder.addAll(_ADAPTIVE_BUCK_HIDS, hids))//
-					.where(eq(_APP_ID, rid))//
-					.and(eq(_ADAPTIVE_BUCK_PKEY, primaryKey))//
-					.and(eq(_ADAPTIVE_BUCK_CKEY, secondaryKey)));
+					.appendListElement(_ADAPTIVE_BUCK_HIDS,literal(hids))
+					.whereColumn(_APP_ID).isEqualTo(literal(rid))//
+					.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))
+					.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(secondaryKey))
+					.build());
 		});
 		return true;
 	}
@@ -151,11 +156,12 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	@Override
 	public AdaptiveBucket nextOnTheLeft(long rid, AdaptiveBucket target) {
 		return this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
-			Row row = session.execute((QueryBuilder.select()//
-					.from(databaseName, _ADAPTIVE_BUCK))//
-							.where(eq(_APP_ID, rid))//
-							.and(eq(_ADAPTIVE_BUCK_PKEY, target.pkey))//
-							.and(lt(_ADAPTIVE_BUCK_CKEY, target.cKey)))
+			Row row = session.execute(QueryBuilder.selectFrom(databaseName, _ADAPTIVE_BUCK)
+							.all()//
+							.whereColumn(_APP_ID).isEqualTo(literal(rid))//
+							.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(target.pkey))//
+							.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(target.cKey))
+							.build())
 					.one();
 			if (row == null || row.isNull(0))
 				return null;
@@ -171,11 +177,13 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	@Override
 	public AdaptiveBucket nextOnTheRight(long rid, AdaptiveBucket target) {
 		return this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
-			Row row = session.execute((QueryBuilder.select()//
-					.from(databaseName, _ADAPTIVE_BUCK))//
-							.where(eq(_APP_ID, rid))//
-							.and(eq(_ADAPTIVE_BUCK_PKEY, target.pkey))//
-							.and(gt(_ADAPTIVE_BUCK_CKEY, target.cKey)))
+			Row row = session.execute(QueryBuilder.selectFrom(databaseName, _ADAPTIVE_BUCK)
+							.all()
+							.whereColumn(_APP_ID).isEqualTo(literal(rid))//
+							.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(target.pkey))//
+							.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(target.cKey))
+							.build()
+							)
 					.one();
 			if (row == null || row.isNull(1))
 				return null;
@@ -207,8 +215,8 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean clearAll(long rid) {
 		try {
 			this.cassandraInstance.doWithSession(sess -> {
-				sess.executeAsync(QueryBuilder.delete().from(databaseName, _ADAPTIVE_BUCK)//
-						.where(eq(_APP_ID, rid)));
+				sess.executeAsync(QueryBuilder.deleteFrom(databaseName, _ADAPTIVE_BUCK)//
+						.whereColumn(_APP_ID).isEqualTo(literal(rid)).build());
 			});
 			return true;
 		} catch (Exception e) {

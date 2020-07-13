@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -27,16 +28,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
+
 import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.db.WindowsFailedSnapshotTracker;
 import org.apache.cassandra.service.CassandraDaemon;
-import org.apache.cassandra.thrift.Cassandra;
 import org.apache.spark.SparkConf;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TTransportException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +54,10 @@ import ca.mcgill.sis.dmas.io.collection.Switch;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import ca.mcgill.sis.dmas.res.KamResourceLoader;
 
-import com.datastax.driver.core.*;
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.datastax.spark.connector.cql.SessionProxy;
 
 public class CassandraInstance {
-
 	private Logger logger = LoggerFactory.getLogger(CassandraInstance.class);
 
 	public static final int DEFAULT_PORT = 9042;
@@ -72,12 +70,6 @@ public class CassandraInstance {
 
 	public SparkInstance spark;
 
-	public void setSparkInstance(SparkInstance spark) {
-		this.spark = spark;
-		this.doWithCluster(this.spark.getConf(), cluster -> {
-			cluster.getConfiguration().getPoolingOptions().setMaxQueueSize(2048);
-		});
-	}
 
 	private boolean inMem = false;
 
@@ -195,66 +187,47 @@ public class CassandraInstance {
 		}
 	}
 
-	public Cassandra.Client getClient() throws TTransportException {
-		TTransport tr = new TSocket(host, port);
-		TProtocol proto = new TBinaryProtocol(tr);
-		Cassandra.Client client = new Cassandra.Client(proto);
-		tr.open();
-		return client;
-	}
 
-	public void doWithCluster(SparkConf conf, DoWithObj<Cluster> func) {
-		doWithSession(conf, session -> {
-			func.doWith(session.getCluster());
-		});
-	}
-
-	public <K> K doWithClusterWithReturn(SparkConf conf, DoWithObjHasReturn<Cluster, K> func) {
-		return doWithSessionWithReturn(conf, session -> {
-			return func.doWith(session.getCluster());
-		});
-	}
-
-	public void doWithSession(SparkConf conf, DoWithObj<Session> func) {
-		try (Session session = SessionProxy.wrap( //
+	public void doWithSession(SparkConf conf, DoWithObj<CqlSession> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction(
 				CassandraConnector //
 						.apply(conf) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";} )) {
 			func.doWith(session);
 		}
 	}
 
-	public void doWithSession(DoWithObj<Session> func) {
-		try (Session session = SessionProxy.wrap( //
+	public void doWithSession(DoWithObj<CqlSession> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(spark.getConf()) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			func.doWith(session);
 		}
 	}
 
-	public <K> K doWithSessionWithReturn(SparkConf conf, DoWithObjHasReturn<Session, K> func) {
-		try (Session session = SessionProxy.wrap( //
+	public <K> K doWithSessionWithReturn(SparkConf conf, DoWithObjHasReturn<CqlSession, K> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(conf) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			return func.doWith(session);
 		}
 	}
 
-	public <K> K doWithSessionWithReturn(DoWithObjHasReturn<Session, K> func) {
-		try (Session session = SessionProxy.wrap( //
+	public <K> K doWithSessionWithReturn(DoWithObjHasReturn<CqlSession, K> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(spark.getConf()) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			return func.doWith(session);
 		}
 	}
 
 	public boolean checkColumnFamilies(SparkConf conf, String dbName, String... clmFamilyNames) {
 		final Switch swt = new Switch(false);
-		doWithCluster(conf, cluster -> {
-			KeyspaceMetadata keysapce = cluster.getMetadata().getKeyspace(dbName);
+		doWithSession(conf, session -> {
+			KeyspaceMetadata keysapce = session.getMetadata().getKeyspace(dbName).get();
 			if (keysapce == null) {
 				swt.value = false;
 				return;
@@ -305,16 +278,15 @@ public class CassandraInstance {
 		} else {
 			logger.info("Testing remote cassandra connection");
 			try {
-				Cluster cluster = Cluster.builder().addContactPoints(host).withPort(port).build();
-				Session session = cluster.connect();
+				CqlSession session = CqlSession.builder().addContactPoint(new InetSocketAddress(host, port)).build();
 				session.execute("SELECT now() FROM system.local;");
 				session.close();
-				cluster.close();
 				logger.info("Connection health checked.");
 			} catch (Exception e) {
 				logger.error("Failed to connect to the specified cassandra cluster.", e);
 			}
 		}
+
 	}
 
 	public boolean close() {

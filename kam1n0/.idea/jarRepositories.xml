@@ -4,22 +4,22 @@
     <remote-repository>
       <option name="id" value="Local repository" />
       <option name="name" value="Local repository" />
-      <option name="url" value="file://$PROJECT_DIR$/local-m2-repo/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="Local repository" />
-      <option name="name" value="Local repository" />
       <option name="url" value="file://$PROJECT_DIR$/kam1n0-commons/../local-m2-repo/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="Central Repository" />
-      <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="Local repository" />
       <option name="name" value="Local repository" />
       <option name="url" value="file://$PROJECT_DIR$/kam1n0-symbolic/../local-m2-repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Local repository" />
+      <option name="name" value="Local repository" />
+      <option name="url" value="file://C:\Users\neo\Desktop\Kam1n0\kam1n0/local-m2-repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -40,6 +40,21 @@
       <option name="id" value="cloudera" />
       <option name="name" value="cloudera" />
       <option name="url" value="https://repository.cloudera.com/artifactory/cloudera-repos" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Local repository" />
+      <option name="name" value="Local repository" />
+      <option name="url" value="file://C:\Users\neo\Desktop\Kam1n0\kam1n0\kam1n0-symbolic/../local-m2-repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Local repository" />
+      <option name="name" value="Local repository" />
+      <option name="url" value="file://$PROJECT_DIR$/local-m2-repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Local repository" />
+      <option name="name" value="Local repository" />
+      <option name="url" value="file://C:\Users\neo\Desktop\Kam1n0\kam1n0\kam1n0-commons/../local-m2-repo/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />

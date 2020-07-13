@@ -32,6 +32,8 @@ import org.apache.spark.SparkJobInfo;
 import org.apache.spark.SparkStageInfo;
 import org.apache.spark.SparkStatusTracker;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.JavaSparkStatusTracker;
+import org.apache.spark.status.AppStatusStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,7 @@ public class SparkInstance {
 	public int timeout = 10;
 
 	private JavaSparkContext context;
-	private SparkStatusTracker tracker;
+	private JavaSparkStatusTracker tracker;
 	private List<Tuple2<String, String>> other_config = null;
 
 	private ScheduledExecutorService scheduler;
@@ -182,11 +184,11 @@ public class SparkInstance {
 	public HashMap<Integer, Long> getActiveJobRunTime() {
 		HashMap<Integer, Long> stats = new HashMap<>();
 		for (int id : tracker.getActiveJobIds()) {
-			SparkJobInfo info = tracker.getJobInfo(id).get();
+			SparkJobInfo info = tracker.getJobInfo(id);
 			if (info != null) {
-				int[] sids = tracker.getJobInfo(id).get().stageIds();
+				int[] sids = tracker.getJobInfo(id).stageIds();
 				List<SparkStageInfo> stages = Arrays.stream(sids).mapToObj(sid -> tracker.getStageInfo(sid))
-						.filter(opt -> opt.isDefined()).map(opt -> opt.get()).collect(Collectors.toList());
+						.collect(Collectors.toList());
 				OptionalLong submission = stages.stream().mapToLong(sinf -> sinf.submissionTime())
 						.filter(sinf -> sinf > 0).min();
 				if (submission.isPresent()) {
@@ -203,7 +205,8 @@ public class SparkInstance {
 
 	public void init() {
 		context = new JavaSparkContext(getConf());
-		tracker = new SparkStatusTracker(context.sc());
+		context.statusTracker();
+		tracker = context.statusTracker();;
 
 		scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(() -> {

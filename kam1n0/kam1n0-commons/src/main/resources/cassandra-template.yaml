@@ -46,7 +46,5 @@ dynamic_snitch_update_interval_in_ms: 100
 dynamic_snitch_reset_interval_in_ms: 600000
 dynamic_snitch_badness_threshold: 0.0
 request_scheduler: org.apache.cassandra.scheduler.NoScheduler
-index_interval: 128
-disk_access_mode: standard
 commitlog_segment_size_in_mb: 128
 read_request_timeout_in_ms: 65000

@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 	<properties>
 		<kam1n0.version>2.0.0</kam1n0.version>
-		<java.version>14</java.version>
+		<java.version>11</java.version>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
 		<kam1n0.jar.name>kam1n0-server</kam1n0.jar.name>
 		<output.dir>${user.dir}/build-bins/</output.dir>
