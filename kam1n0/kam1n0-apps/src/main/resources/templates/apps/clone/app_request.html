@@ -247,20 +247,26 @@
           }
         }
 			// search binary
-			var file_to_search;
+			var file_to_search=[];
 			$(function() {
 				var dropZone = document.getElementById('search-drop-zone');
 				var uploadForm = document.getElementById('search-upload-input');
 
 				var startUpload = function(files) {
 					console.log(files)
-					file_to_search = files;
+                    n_pre = file_to_search.length;
+                    if(file_to_search==[])
+                        {file_to_search = files;}
+                    else
+				        file_to_search = $.merge(file_to_search,files);
+				    console.log("file_to_search");
+				    console.log(file_to_search);
 
-					$("#search-file-table").find("tr:gt(0)").remove();
+					//$("#search-file-table").find("tr:gt(0)").remove();
 					for (var i = 0; i < files.length; i++) {
 						var file = files[i];
 						var row = $('<tr>');
-						row.append($('<td>').append(i));
+						row.append($('<td>').append(i+n_pre));
 						row.append($('<td>').append(file.name));
 						row.append($('<td>').append(file.type));
 						row.append($('<td>').append(
@@ -296,8 +302,7 @@
 				$("#search-btn-binary")
 						.click(
 								function() {
-									document
-											.getElementById('search-upload-input').files = file_to_search;
+									//document.getElementById('search-upload-input').files = file_to_search;
 									var formData = new FormData();
 									//formData.append('bin', file_to_search[0]);
 								    $.each(file_to_search,
