@@ -125,9 +125,11 @@ public class Batch2 {
 		public boolean mergeFunctions = false;
 		public List<String> labels;
 		public Map<String, Integer> labelMap;
+		private Map<Long, Integer> functionCountByBinaryId;
 
 		public Dataset(String path, boolean mergeFunctions) throws Exception {
 			this.mergeFunctions = mergeFunctions;
+			this.functionCountByBinaryId = new HashMap<>();
 			logger.info("creating a mapping between binary names and the data...");
 			// ID, name, & File
 			vals = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
@@ -137,6 +139,7 @@ public class Batch2 {
 				else {
 					if (this.arch == null)
 						this.arch = b.architecture;
+					functionCountByBinaryId.putIfAbsent(b.binaryId, b.functions.size());
 					return new Tuple3<>(b.binaryId, b.binaryName, p.toFile());
 				}
 				// filtering and de-duplication:
@@ -160,7 +163,7 @@ public class Batch2 {
 		}
 		
 		public int totalFunctions(){
-			return vals.stream().mapToInt(t3 -> loadAssembly(t3._3(), this.mergeFunctions).functions.size()).sum();
+			return vals.stream().mapToInt(t3 -> functionCountByBinaryId.getOrDefault(t3._1(), 0)).sum();
 		}
 
 	}
