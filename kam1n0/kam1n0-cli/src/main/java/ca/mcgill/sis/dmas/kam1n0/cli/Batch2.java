@@ -273,15 +273,6 @@ public class Batch2 {
 				c.inc();
 				int x_ind = ds.labelMap.get(x.binaryName);
 				Counter ind = Counter.zero();
-
-//				x.functions.stream().forEach(xf -> System.out.println(xf.blocks.size() + " " + xf.functionName));
-//				// Wpc.dll: 169: sub_180005F40, 1739: sub_18002A6D4, 1838: sub_180030DDC
-//				// XpsPrint.dll: 3687: sub_180111684,  3688: sub_180116B30
-//				List<Function> debugList = new ArrayList<>();
-//				debugList.add(x.functions.get(3688));
-//				assert debugList.get(0).functionName.equals("sub_180116B30");
-//				debugList.stream().forEach(xf -> {
-//				x.functions.stream().forEach(xf -> {
 				x.functions.parallelStream().forEach(xf -> {
 
 					ind.inc();
@@ -376,7 +367,6 @@ public class Batch2 {
 					filterFilename = "";
 				}
 
-				//SparkInstance spark = SparkInstance.createLocalInstance();
 				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", filterFilename.isEmpty(), false);
 				cassandra.init();
 				SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());

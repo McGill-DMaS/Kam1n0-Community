@@ -92,13 +92,7 @@ public class SparkInstance {
 		String core = System.getProperty("spark.local.cores", "4");
 		String min = System.getProperty("spark.job.timeout.min", "10");
 		String web = System.getProperty("spark.web", "true");
-
-		List<Tuple2<String, String>> mergedConfigs = new ArrayList<>(otherConfigs);
-		//mergedConfigs.add( new Tuple2<>("spark.default.parallelism", "1"));
-		//mergedConfigs.add( new Tuple2<>("spark.driver.maxResultSize", "1200000"));
-		//mergedConfigs.add( new Tuple2<>("spark.memory.fraction", "0.1"));
-
-		SparkInstance spark = new SparkInstance(Integer.parseInt(core), Boolean.parseBoolean(web), 4040, mergedConfigs);
+		SparkInstance spark = new SparkInstance(Integer.parseInt(core), Boolean.parseBoolean(web), 4040, otherConfigs);
 		spark.timeout = Integer.parseInt(min);
 		internalInstance = spark;
 		return spark;

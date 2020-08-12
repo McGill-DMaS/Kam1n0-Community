@@ -38,8 +38,8 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 
 	// Spark tuning magic number from experimentation.
 	// In all experiments, it was faster in general (and not more memory intensive) to use a single RDD partition to
-	// store "HID infos", and there are typically less than 100 HIDs per analyzed function, and very rarely above 1000,
-	// if ever. However, as a fail-safe in the case of a totally degenerate function (like 100000 HIDs), a limit of
+	// store "HID infos", and there are typically less than 100 HIDs per analyzed function, and very rarely above 1000.
+	// However, as a fail-safe in the case of a totally degenerate function (like 100000 HIDs), a limit of
 	// 1000 HID per RDD partition is applied.
 	private static final int MAX_HIDS_PER_PARTITION = 1000;
 
@@ -219,7 +219,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 		// hid->info
 		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(
 				rid, hids, false, filter, MAX_HIDS_PER_PARTITION);// .cache();
-		//logger.info("kam77 hid_info {} items, {} partitions", hid_info.count(), hid_info.getNumPartitions());
+
 		return new Tuple2<>(hid_tbid_l, hid_info);
 	}
 
