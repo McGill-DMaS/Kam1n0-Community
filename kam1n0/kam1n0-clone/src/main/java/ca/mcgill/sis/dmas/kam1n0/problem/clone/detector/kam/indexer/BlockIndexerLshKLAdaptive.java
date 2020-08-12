@@ -75,6 +75,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 	private static Logger logger = LoggerFactory.getLogger(BlockIndexerLshKLAdaptive.class);
 
+	// Spark tuning magic number from experimentation.
+	// Number of partitions for 'hid_tblk' has to be tuned
+	//  - too much items per partition can easily lead to out-of-memory exceptions
+	//  - too few items just creates more and more shuffling overhead between Spark cores
+	// This number is well below numbers that would cause OOM (about 1000) and well above values that would start
+	// wasting resources (less than 10 for very large RDDs).
+	private static final int MAX_HID_TBLK_PER_PARTITION = 50;
+
 	private transient SparkInstance sparkInstance;
 	private transient AsmObjectFactory objectFactory;
 	private transient ca.mcgill.sis.dmas.kam1n0.problem.clone.features.FeatureConstructor featureGenerator;
@@ -267,6 +275,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public JavaRDD<Tuple3<Block, Block, Double>> queryAsRdds(long rid, List<Block> blks, Set<Tuple2<Long, Long>> links,
 			int topK) {
 
+		String functionName = blks.isEmpty() ? "Unknown_empty_function" : blks.get(0).functionName;
 		int length = blks.stream().mapToInt(blk -> blk.codes.size()).sum();
 		List<VecObjectBlock> objs = blks.stream().map(tar -> new VecObjectBlock(tar, featureGenerator))
 				.collect(Collectors.toList());
@@ -303,20 +312,22 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(tp2._1.stream().map(tp -> {
 			return new Tuple2<>(tp._1, tp._2.block);
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList()), tp2._1.size() / MAX_HID_TBLK_PER_PARTITION + 1);
+		//logger.info("kam77 hid_tblk {} items, {} partitions", hid_tblk.count(), hid_tblk.getNumPartitions());
 
 		// @SuppressWarnings("unused")
 		// List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> tmp = tp2._2.collect();
-
 		JavaPairRDD<Long, VecInfoBlock> hid_info = tp2._2.flatMapToPair(entry -> entry.vids.stream()
 				.map(info -> new Tuple2<>(entry.hashId, info)).collect(Collectors.toList()).iterator());
 
+
 		// filter:
 		// hid->(tblk, info)
-		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info);
-
+		int junctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_info.getNumPartitions());
+		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info, junctionNumPartitions);
+		//logger.info("kam77 jointed {} items, {} partitions", jointed.count(), jointed.getNumPartitions());
 		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(rid, jointed, links, length, topK);
-
+		//logger.info("kam77 hid_sbid {} items, {} partitions", hid_sbid.count(), hid_sbid.getNumPartitions());
 		HashSet<Long> sids = new HashSet<>(hid_sbid.map(tp -> tp._2).collect());
 
 		// if (debug)
@@ -324,10 +335,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// blks.get(0).functionName, length, blks.size());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
+		//logger.info("kam77 sbid_sblk {} items, {} partitions", sbid_sblk.count(), sbid_sblk.getNumPartitions());
 
-		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid)
-				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1)).join(sbid_sblk).map(tp -> tp._2);
-
+		int firstJunctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_sbid.getNumPartitions());
+		int secondJunctionNumPartitions = Math.max(firstJunctionNumPartitions, sbid_sblk.getNumPartitions());
+		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid, firstJunctionNumPartitions)
+				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1)).join(sbid_sblk, secondJunctionNumPartitions).map(tp -> tp._2);
+		//logger.info("kam77 tblk_sblk {} items, {} partitions", tblk_sblk.count(), tblk_sblk.getNumPartitions());
+		//logger.info("kam77 tblk_sblk {} partitions {}", tblk_sblk.getNumPartitions(), functionName);
 		return tblk_sblk.map(tp -> new Tuple3<>(tp._1, tp._2, 1d));
 	}
 

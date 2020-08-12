@@ -178,9 +178,12 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				}).collect();
 			} else {
 
+				// (srcfuncid -> list of (tar, src, score))
 				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> mp = ArrayListMultimap.create();
 
+				//logger.info("kam77 before main iteration loop");
 				b_to_b.toLocalIterator().forEachRemaining(tp2 -> mp.put(tp2._1(), tp2._2()));
+				// logger.info("kam77 after main iteration loop");
 
 				// logger.info("started {}", function.functionName);
 				results = mp.keySet().stream().parallel().map(tp -> {

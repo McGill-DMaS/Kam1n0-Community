@@ -73,8 +73,17 @@ public abstract class LshAdaptiveDupFuncIndex<T extends VecInfo, K extends VecIn
 	// public abstract JavaPairRDD<Long, Tuple2<T, D>> getVidsAsRDD(HashSet<Long>
 	// hids, int topK);
 
+	/**
+	 *
+	 * @param rid
+	 * @param hashIds
+	 * @param excludeIndividualInfo
+	 * @param filter
+	 * @param maxHidsPerPartition A value < 1 means 'infinite', i.e. always create a single partition
+	 * @return
+	 */
 	public abstract JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds,
-			boolean excludeIndividualInfo, Function<List<T>, List<T>> filter);
+			boolean excludeIndividualInfo, Function<List<T>, List<T>> filter, int maxHidsPerPartition );
 
 	public abstract void init();
 

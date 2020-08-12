@@ -251,7 +251,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 
 	@Override
 	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds,
-			Function<List<T>, List<T>> filter) {
+			Function<List<T>, List<T>> filter, int maxHidsPerPartition ) {
 
 		String[] selection;
 		if (excludeBlockIds)
@@ -287,7 +287,9 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							return vec;
 						}).collect(Collectors.toList());
 					});
-			return sparkInstance.getContext().parallelize(collected);
+
+			int numPartitions = maxHidsPerPartition < 1 ? 1 : (collected.size() / maxHidsPerPartition + 1);
+			return sparkInstance.getContext().parallelize(collected, numPartitions);
 		} else {
 			return javaFunctions(this.sparkInstance.getContext())
 					//
