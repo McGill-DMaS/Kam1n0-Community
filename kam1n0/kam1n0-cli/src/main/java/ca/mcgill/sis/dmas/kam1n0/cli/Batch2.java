@@ -326,7 +326,7 @@ public class Batch2 {
 				"The [path] and the name of the result file", new File("similarity.txt"));
 
 		private Option filterOption = parser.addOption("filter", OpType.String, false,
-				"asmclone only, 2-step process: // none: normal batch processing // " +
+				"asmclone only, 2-step process: // unspecified: normal batch processing // " +
 						filterValueForIndexingOnly + ": create permanent local DB only // " +
 						"filename: compare only that file against the previously made DB", "");
 

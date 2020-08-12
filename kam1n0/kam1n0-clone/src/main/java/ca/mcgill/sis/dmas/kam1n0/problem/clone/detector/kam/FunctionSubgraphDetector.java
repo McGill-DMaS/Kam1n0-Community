@@ -16,7 +16,11 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
