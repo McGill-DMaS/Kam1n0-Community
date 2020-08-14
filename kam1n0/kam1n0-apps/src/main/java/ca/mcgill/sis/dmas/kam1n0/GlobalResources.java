@@ -32,6 +32,7 @@ public class GlobalResources {
 			cassandra.init();
 			spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
 			spark.init();
+			cassandra.setSparkInstance(spark);
 
 			disassemblyFactory = DisassemblyFactory.getDefaultDisassemblyFactory();
 			scheduler = new LocalJobScheduler(60 * 3, 100);
