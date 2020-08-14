@@ -47,6 +47,8 @@ public abstract class LshAdaptiveDupFuncIndex<T extends VecInfo, K extends VecIn
 
 	private static Logger logger = LoggerFactory.getLogger(LshAdaptiveDupFuncIndex.class);
 
+	public static final int ALL_HIDS_IN_ONE_PARTITION = 0;
+
 	public LshAdaptiveDupFuncIndex(SparkInstance sparkInstance) {
 		this.sparkInstance = sparkInstance;
 	}
@@ -74,7 +76,8 @@ public abstract class LshAdaptiveDupFuncIndex<T extends VecInfo, K extends VecIn
 	// hids, int topK);
 
 	/**
-	 * @param maxHidsPerPartition A value < 1 means 'infinite', i.e. always create a single partition
+	 * @param maxHidsPerPartition The maximum number of 'Hid' per partition, or ALL_HIDS_IN_ONE_PARTITION to force all
+	 *                            of them into a single partition.
 	 */
 	public abstract JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds,
 			boolean excludeIndividualInfo, Function<List<T>, List<T>> filter, int maxHidsPerPartition );

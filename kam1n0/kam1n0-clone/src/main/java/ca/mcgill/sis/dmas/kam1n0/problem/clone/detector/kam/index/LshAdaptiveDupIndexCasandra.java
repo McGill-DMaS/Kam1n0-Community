@@ -288,7 +288,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						}).collect(Collectors.toList());
 					});
 
-			int numPartitions = maxHidsPerPartition < 1 ? 1 : (collected.size() / maxHidsPerPartition + 1);
+			int numPartitions = maxHidsPerPartition <= ALL_HIDS_IN_ONE_PARTITION ? 1 : (collected.size() / maxHidsPerPartition + 1);
 			return sparkInstance.getContext().parallelize(collected, numPartitions);
 		} else {
 			return javaFunctions(this.sparkInstance.getContext())

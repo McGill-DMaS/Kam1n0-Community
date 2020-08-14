@@ -158,8 +158,12 @@ public class Batch2 {
 					.collect(Collectors.toMap(ind -> this.labels.get(ind), ind -> ind));
 		}
 
-		// Rationale: this.iterator().filter(...) is very costly, since it will call loadAssembly for each files BEFORE
-		// 			  passing them on to the filter. Instead, this processing filter will occur before loadAssembly.
+		/**
+		 * Sets a filter when iterating on this Dataset. Filtered out assemblies will not be loaded at all when
+		 * iterating through iterator(), as opposed to a user filter applied after iterator().
+		 *
+		 * @param predicate Filter predicate
+		 */
 		public void setProcessingFilter(Predicate<? super Tuple3<Long, String, File>> predicate) {
 			processingFileFilter = predicate;
 		}

@@ -160,7 +160,8 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			partitionKey = bucket.pkey + bucket.cKey;
 		int nextDepth = nextDepth(bucket.depth);
 		List<Tuple3<String, String, Long>> children = this.index_deduplication
-				.getVecEntryInfoAsRDD(rid, bucket.hids, true, null, 0).map(vec -> {
+				.getVecEntryInfoAsRDD(rid, bucket.hids, true, null, LshAdaptiveDupFuncIndex.ALL_HIDS_IN_ONE_PARTITION)
+				.map(vec -> {
 					int ind = vec.ind;
 					String nextKey = StringResources.FORMAT_3R.format(ind) + "-"
 							+ DmasByteOperation.toHexs(vec.fullKey, nextDepth);
@@ -173,7 +174,8 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private void splitBucketRecursive(long rid, AdaptiveBucket bucket) {
 		if (bucket.depth >= this.index_bucket.maxDepth)
 			return;
-		List<VecEntry<T, K>> children = this.index_deduplication.getVecEntryInfoAsRDD(rid, bucket.hids, true, null, 0)
+		List<VecEntry<T, K>> children = this.index_deduplication.getVecEntryInfoAsRDD(
+				rid, bucket.hids, true, null, LshAdaptiveDupFuncIndex.ALL_HIDS_IN_ONE_PARTITION)
 				.collect();
 		splitBucketRecursiveHandler(rid, bucket.pkey, bucket.cKey, bucket.depth, children);
 	}
