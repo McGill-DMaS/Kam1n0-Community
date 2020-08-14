@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,6 +65,9 @@ import ca.mcgill.sis.dmas.kam1n0.graph.Kam1n0SymbolicModule;
 
 public class Batch2 {
 	private static Logger logger = LoggerFactory.getLogger(Batch2.class);
+
+	// Any simple value would do, as long as this can't be a valid filename
+	private static String filterValueForIndexingOnly = "*";
 
 	public static class HeatMapData {
 		public double[][] similarity;
@@ -125,9 +129,12 @@ public class Batch2 {
 		public boolean mergeFunctions = false;
 		public List<String> labels;
 		public Map<String, Integer> labelMap;
+		private Map<Long, Integer> functionCountByBinaryId;
+		private Predicate<? super Tuple3<Long, String, File>> processingFileFilter = (x -> true);
 
 		public Dataset(String path, boolean mergeFunctions) throws Exception {
 			this.mergeFunctions = mergeFunctions;
+			this.functionCountByBinaryId = new HashMap<>();
 			logger.info("creating a mapping between binary names and the data...");
 			// ID, name, & File
 			vals = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
@@ -137,6 +144,7 @@ public class Batch2 {
 				else {
 					if (this.arch == null)
 						this.arch = b.architecture;
+					functionCountByBinaryId.putIfAbsent(b.binaryId, b.functions.size());
 					return new Tuple3<>(b.binaryId, b.binaryName, p.toFile());
 				}
 				// filtering and de-duplication:
@@ -150,22 +158,35 @@ public class Batch2 {
 					.collect(Collectors.toMap(ind -> this.labels.get(ind), ind -> ind));
 		}
 
+		/**
+		 * Sets a filter when iterating on this Dataset. Filtered out assemblies will not be loaded at all when
+		 * iterating through iterator(), as opposed to a user filter applied after iterator().
+		 *
+		 * @param predicate Filter predicate
+		 */
+		public void setProcessingFilter(Predicate<? super Tuple3<Long, String, File>> predicate) {
+			processingFileFilter = predicate;
+		}
+
 		@Override
 		public Iterator<BinaryMultiParts> iterator() {
-			return vals.stream().map(t3 -> loadAssembly(t3._3(), this.mergeFunctions).converToMultiPart()).iterator();
+			return vals.stream().
+					filter(processingFileFilter).
+					map(t3 -> loadAssembly(t3._3(), this.mergeFunctions).converToMultiPart()).
+					iterator();
 		}
 
 		public int size() {
 			return this.vals.size();
 		}
-		
+
 		public int totalFunctions(){
-			return vals.stream().mapToInt(t3 -> loadAssembly(t3._3(), this.mergeFunctions).functions.size()).sum();
+			return vals.stream().mapToInt(t3 -> functionCountByBinaryId.getOrDefault(t3._1(), 0)).sum();
 		}
 
 	}
 
-	public static void process(String path, String resPath, SparkInstance spark, Model choice,
+	public static void process(String path, String resPath, String filterFilename, SparkInstance spark, Model choice,
 			CassandraInstance cassandra) throws Exception {
 
 		Dataset ds = new Dataset(path, false);
@@ -203,7 +224,9 @@ public class Batch2 {
 
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
-		fmodel.index(-1l, ds, new LocalJobProgress());
+		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
+			fmodel.index(-1l, ds, new LocalJobProgress());
+		}
 
 		double[][] matrix = new double[ds.size()][ds.size()];
 		for (double[] row : matrix)
@@ -242,12 +265,15 @@ public class Batch2 {
 			});
 
 			res.put(model.getClass().getSimpleName(), matrix, ds.labels);
-		} else {
+ 		} else if (!filterFilename.equals(filterValueForIndexingOnly))  {
 			Counter c = Counter.zero();
 			Counter tf = Counter.zero();
 
-			StreamSupport.stream(ds.spliterator(), false).forEach(m -> m.forEach(x -> {
+			if (!filterFilename.isEmpty()) {
+				ds.setProcessingFilter(m -> m._3().getName().equals(filterFilename));
+			}
 
+			StreamSupport.stream(ds.spliterator(), false).forEach(m -> m.forEach(x -> {
 				c.inc();
 				int x_ind = ds.labelMap.get(x.binaryName);
 				Counter ind = Counter.zero();
@@ -303,6 +329,11 @@ public class Batch2 {
 		private Option op_res = parser.addOption("res", OpType.File, false,
 				"The [path] and the name of the result file", new File("similarity.txt"));
 
+		private Option filterOption = parser.addOption("filter", OpType.String, false,
+				"asmclone only, 2-step process: // unspecified: normal batch processing // " +
+						filterValueForIndexingOnly + ": create permanent local DB only // " +
+						"filename: compare only that file against the previously made DB", "");
+
 		private Option op_md = parser.addSelectiveOption("md", false, "The model used in batch mode",
 				Model.asmbin2vec.toString(),
 				Arrays.asList(Model.values()).stream().map(m -> m.toString()).collect(Collectors.toList()));
@@ -333,14 +364,19 @@ public class Batch2 {
 				File dir = op_dir.getValue();
 				File res = op_res.getValue();
 				Model md = Model.valueOf(op_md.getValue());
+				String filterFilename = filterOption.getValue();
 
-				SparkInstance spark = SparkInstance.createLocalInstance();
-				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", true, false);
+				if ( !md.equals(Model.asmclone) && !filterFilename.isEmpty() ) {
+					logger.warn("'filter' option is for 'asmclone' only. Current value will be ignored.");
+					filterFilename = "";
+				}
+
+				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", filterFilename.isEmpty(), false);
 				cassandra.init();
-				spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
+				SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
 				spark.init();
 				cassandra.setSparkInstance(spark);
-				Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), spark, md, cassandra);
+				Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
 			} catch (Exception e) {
 				logger.info("Failed to process " + Arrays.toString(args), e);
 			}

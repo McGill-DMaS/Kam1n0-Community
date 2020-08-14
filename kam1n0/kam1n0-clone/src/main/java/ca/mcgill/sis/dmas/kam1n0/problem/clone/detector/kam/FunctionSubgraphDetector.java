@@ -165,6 +165,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			// convert (tar, src, score) to (srcfuncid, (tar, src, score))
 			JavaRDD<Tuple2<Long, Tuple3<Block, Block, Double>>> b_to_b = indexer//
 					.queryAsRdds(rid, vBlks, links, topK)//
+					.filter(tuple -> !avoidSameBinary || (tuple._2().binaryId != function.binaryId))
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
 			// logger.info("b_to_b {}", b_to_b.count());
@@ -181,12 +182,14 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				}).collect();
 			} else {
 
-				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> mp = ArrayListMultimap.create();
-				b_to_b.collect().forEach(tp2 -> mp.put(tp2._1(), tp2._2()));
+				ArrayListMultimap<Long, Tuple3<Block, Block, Double>> matchedBlocksBySourceFunction =
+						ArrayListMultimap.create();
+
+				b_to_b.toLocalIterator().forEachRemaining(tp2 -> matchedBlocksBySourceFunction.put(tp2._1(), tp2._2()));
 
 				// logger.info("started {}", function.functionName);
-				results = mp.keySet().stream().parallel().map(tp -> {
-					return SubgraphBlocksImpl3.mergeSingles2(fc, mp.get(tp));
+				results = matchedBlocksBySourceFunction.keySet().stream().parallel().map(tp -> {
+					return SubgraphBlocksImpl3.mergeSingles2(fc, matchedBlocksBySourceFunction.get(tp));
 				}).collect(Collectors.toList());
 
 				// Warning: may cause OOM
@@ -196,8 +199,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			}
 		}
 
-		return results.stream().filter(fce -> !avoidSameBinary || (fce.binaryId != function.binaryId))
-				.collect(Collectors.toList());
+		return results;
 	}
 
 	public String params() {

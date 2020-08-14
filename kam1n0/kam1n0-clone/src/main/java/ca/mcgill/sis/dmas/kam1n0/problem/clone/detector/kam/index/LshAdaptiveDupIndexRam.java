@@ -72,9 +72,11 @@ public class LshAdaptiveDupIndexRam<T extends VecInfo, K extends VecInfoShared> 
 
 	@Override
 	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds,
-			Function<List<T>, List<T>> filter) {
+			Function<List<T>, List<T>> filter, int maxHidsPerPartition) {
+
+		int numPartitions = maxHidsPerPartition <= ALL_HIDS_IN_ONE_PARTITION ? 1 : (hashIds.size() / maxHidsPerPartition + 1);
 		return this.sparkInstance.getContext().parallelize(
-				hashIds.stream().map(id -> data.get(rid, id)).filter(ent -> ent != null).collect(Collectors.toList()));
+				hashIds.stream().map(id -> data.get(rid, id)).filter(ent -> ent != null).collect(Collectors.toList()), numPartitions);
 	}
 
 	@Override

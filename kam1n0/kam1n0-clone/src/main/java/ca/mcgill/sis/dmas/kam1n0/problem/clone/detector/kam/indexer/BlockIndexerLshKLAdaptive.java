@@ -75,6 +75,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 	private static Logger logger = LoggerFactory.getLogger(BlockIndexerLshKLAdaptive.class);
 
+	// Spark tuning magic number from experimentation.
+	// Number of partitions for 'hid_tblk' has to be tuned
+	//  - too much items per partition can easily lead to out-of-memory exceptions
+	//  - too few items just creates more and more shuffling overhead between Spark cores
+	// This number is well below numbers that would cause OOM (about 1000) and well above values that would start
+	// wasting resources (less than 10 for very large RDDs).
+	private static final int MAX_HID_TBLK_PER_PARTITION = 50;
+
 	private transient SparkInstance sparkInstance;
 	private transient AsmObjectFactory objectFactory;
 	private transient ca.mcgill.sis.dmas.kam1n0.problem.clone.features.FeatureConstructor featureGenerator;
@@ -303,7 +311,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(tp2._1.stream().map(tp -> {
 			return new Tuple2<>(tp._1, tp._2.block);
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList()), tp2._1.size() / MAX_HID_TBLK_PER_PARTITION + 1);
 
 		// @SuppressWarnings("unused")
 		// List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> tmp = tp2._2.collect();
@@ -313,7 +321,8 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		// filter:
 		// hid->(tblk, info)
-		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info);
+		int junctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_info.getNumPartitions());
+		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info, junctionNumPartitions);
 
 		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(rid, jointed, links, length, topK);
 
@@ -325,8 +334,10 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 
-		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid)
-				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1)).join(sbid_sblk).map(tp -> tp._2);
+		int firstJunctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_sbid.getNumPartitions());
+		int secondJunctionNumPartitions = Math.max(firstJunctionNumPartitions, sbid_sblk.getNumPartitions());
+		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid, firstJunctionNumPartitions)
+				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1)).join(sbid_sblk, secondJunctionNumPartitions).map(tp -> tp._2);
 
 		return tblk_sblk.map(tp -> new Tuple3<>(tp._1, tp._2, 1d));
 	}
