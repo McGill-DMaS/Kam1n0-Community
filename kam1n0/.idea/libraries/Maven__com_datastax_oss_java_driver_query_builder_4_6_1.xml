@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.datastax.oss:java-driver-query-builder:4.6.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/datastax/oss/java-driver-query-builder/4.6.1/java-driver-query-builder-4.6.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/datastax/oss/java-driver-query-builder/4.6.1/java-driver-query-builder-4.6.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/datastax/oss/java-driver-query-builder/4.6.1/java-driver-query-builder-4.6.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
