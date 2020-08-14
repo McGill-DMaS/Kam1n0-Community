@@ -149,7 +149,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							return vec;
 						} else {
 							session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_HASH)
-									.appendListElement(_ADAPTIVE_HASH_VIDS,literal(vals))
+									.append(_ADAPTIVE_HASH_VIDS,literal(vals))
 									.whereColumn(_APP_ID).isEqualTo(literal(rid)) //
 									.whereColumn(_ADAPTIVE_HASH_HASHID).isEqualTo(literal(vec.hashId))
 									.build());

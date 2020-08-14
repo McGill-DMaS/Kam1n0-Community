@@ -15,6 +15,7 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -130,7 +131,7 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, int newDepth, Long hid) {
 		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_BUCK)//
-					.append(_ADAPTIVE_BUCK_HIDS,literal(hid))
+					.appendSetElement(_ADAPTIVE_BUCK_HIDS,literal(hid))
 					.setColumn(_ADAPTIVE_BUCK_DEPTH, literal(newDepth))//
 					.whereColumn(_APP_ID).isEqualTo(literal(rid))//
 					.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))
@@ -144,7 +145,7 @@ public class LshAdaptiveBucketIndexCassandra extends LshAdaptiveBucketIndexAbstr
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, HashSet<Long> hids) {
 		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_BUCK)//
-					.appendListElement(_ADAPTIVE_BUCK_HIDS,literal(hids))
+					.append(_ADAPTIVE_BUCK_HIDS,literal(hids))
 					.whereColumn(_APP_ID).isEqualTo(literal(rid))//
 					.whereColumn(_ADAPTIVE_BUCK_PKEY).isEqualTo(literal(primaryKey))
 					.whereColumn(_ADAPTIVE_BUCK_CKEY).isEqualTo(literal(secondaryKey))

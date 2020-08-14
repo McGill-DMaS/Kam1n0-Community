@@ -270,7 +270,7 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 					session.executeAsync(//
 							QueryBuilder//
 									.update(databaseName, _SYMBOLIC_DIFF)//
-									.append(_SYMBOLIC_DIFF_CNT, literal(ByteBuffer.wrap(cnt)))
+									.appendListElement(_SYMBOLIC_DIFF_CNT, literal(ByteBuffer.wrap(cnt)))
 									.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
 									.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(K1))
 									.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(val))
@@ -300,7 +300,7 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 					session.executeAsync(//
 							QueryBuilder//
 									.update(databaseName, _SYMBOLIC_HASH)//
-									.append(_SYMBOLIC_HASH_CNT,literal(ByteBuffer.wrap(cnt)))
+									.appendListElement(_SYMBOLIC_HASH_CNT,literal(ByteBuffer.wrap(cnt)))
 									.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
 									.whereColumn(_SYMBOLIC_HASH_HID).isEqualTo(literal(hid))
 									.build()//

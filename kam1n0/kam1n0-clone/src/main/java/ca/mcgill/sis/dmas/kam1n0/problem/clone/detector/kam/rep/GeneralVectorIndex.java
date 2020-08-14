@@ -79,6 +79,7 @@ public class GeneralVectorIndex {
 		cassandra.init();
 		SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
 		spark.init();
+		cassandra.setSparkInstance(spark);
 
 		GeneralVectorIndex index = new GeneralVectorIndex(spark, cassandra, dim, 4, 128, 15, 200,
 				HashSchemaTypes.SimHash, false);

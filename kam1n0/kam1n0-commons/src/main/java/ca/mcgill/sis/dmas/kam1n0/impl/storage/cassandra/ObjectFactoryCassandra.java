@@ -23,6 +23,7 @@ import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
+import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
@@ -210,8 +211,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	@SuppressWarnings("unchecked")
 	public void update(long rid, T obj, boolean async, boolean addC) {
 		cassandra.doWithSession(sess -> {
-			InsertInto query = QueryBuilder.insertInto(name_db, name_cl);
-			query.value(primaryKey_rid, QueryBuilder.literal(rid));
+			InsertInto insert = QueryBuilder.insertInto(name_db, name_cl);
+			RegularInsert query = insert.value(primaryKey_rid, QueryBuilder.literal(rid));
 			for (FieldInformation info : allAttributes.values())
 				try {
 					Object val = clazz.getField(info.name).get(obj);
@@ -242,16 +243,17 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 						else
 							val = stream.collect(Collectors.toCollection(HashSet::new));
 					}
-					query.value(info.name, QueryBuilder.literal(val));
+					query = query.value(info.name, QueryBuilder.literal(val));
 				} catch (Exception e) {
 					logger.error("Failed to set field " + info + "with value", e);
 				}
 			if (async) {
-				CompletionStage<CqlSession> sessionStage = CqlSession.builder().buildAsync();
+				CompletionStage<CqlSession> sessionStage = CqlSession.builder().withLocalDatacenter("datacenter1").buildAsync();
 				// Chain one async operation after another:
+				String finalStringQuery = query.toString();
 				CompletionStage<AsyncResultSet> responseStage =
 						sessionStage.thenCompose(
-								session -> session.executeAsync(query.toString()));
+								session -> session.executeAsync(finalStringQuery));
 
 
 				// Perform an action once a stage is complete:
@@ -600,6 +602,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		cassandra.init();
 		SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
 		spark.init();
+		cassandra.setSparkInstance(spark);
 
 		ObjectFactoryCassandra<TestClass> testFactory = new ObjectFactoryCassandra<>(cassandra, spark);
 		testFactory.init("dbtest", "app", TestClass.class);

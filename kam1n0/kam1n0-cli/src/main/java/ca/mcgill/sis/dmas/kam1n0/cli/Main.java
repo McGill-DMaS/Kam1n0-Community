@@ -91,7 +91,7 @@ public class Main {
 
 		Environment.init();
 		initOptions();
-
+		System.setSecurityManager(null);
 		if (args.length < 1) {
 			printBanner();
 			printOptions();
