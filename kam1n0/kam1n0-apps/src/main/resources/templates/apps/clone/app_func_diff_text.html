@@ -41,7 +41,7 @@
 			<div class="card-header" data-background-color="green"
 				id="headerSource">
 				<h4 class="title" style="font-size: 15px" id='page_title'>
-					<i class="fa fa-cloud"></i> Textual Difference View <span id="diff-title-menu" class='pull-right'></span><span id="diff-title" class='pull-right'></span>
+					<i class="fa fa-cloud"></i> Textual Difference View <span id="diff-title-menu" class='pull-right'><a class="dropdown-toggle pull-right" id="btn-cp-cmt" title="copy comments"  data-toggle="dropdown" style="cursor:pointer"><i class="material-icons">content_copy</i></a> </span><span id="diff-title" class='pull-right'></span>
 				</h4>
 			</div>
 			<div class="card-content" style="height: 100%; padding-bottom: 50px">
@@ -118,6 +118,7 @@
 			plotCommentsWithPrefix(cm_url, pa, 'l-')
 			plotCommentsWithPrefix(cm_url, pb, 'r-')
 			initForm(cm_url);
+			setUpTextHighlights('#btn-cp-cmt', 'r-p');
 		}
 		
 		function build(normalize=false, arch='metapc'){

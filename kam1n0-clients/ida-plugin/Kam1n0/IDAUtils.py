@@ -14,17 +14,23 @@
 #  * limitations under the License.
 #  *******************************************************************************/
 
-import idaapi
-import idc
-import idautils
-import ida_name
-from ida_name import calc_gtn_flags
-import os
-import inspect
-import struct
 import binascii
+import inspect
+import os
+import struct
 import sys
-from collections import namedtuple
+from collections import namedtuple, defaultdict
+import operator
+
+import ida_bytes
+import ida_funcs
+import ida_kernwin
+import ida_lines
+import ida_name
+import idaapi
+import idautils
+import idc
+from ida_name import calc_gtn_flags
 
 ALL_ICONS = {'ICON_SEARCH': "search",
              'ICON_SEARCH_MULTIPLE': "search_multiple",
@@ -71,6 +77,7 @@ def execute(cmd=''):
 def sync_wrap(func):
     def wrapper(*args, **kwargs):
         rvs = []
+
         def run():
             rv = func(*args, **kwargs)
             rvs.append(rv)
@@ -141,9 +148,9 @@ def _get_arch():
     if info.is_64bit():
         arch['size'] = "b64"
     if idaapi.cvar.inf.version >= 700:
-        arch['endian'] = "be" if idaapi.cvar.inf.is_be() else "le";
+        arch['endian'] = "be" if idaapi.cvar.inf.is_be() else "le"
     else:
-        arch['endian'] = "be" if idaapi.cvar.inf.mf else "le";
+        arch['endian'] = "be" if idaapi.cvar.inf.mf else "le"
     if info.procName.lower().startswith('mips'):
         arch['type'] = 'mips'
     if info.procName.lower().startswith('68330'):
@@ -175,7 +182,8 @@ def _get_api(sea):
             api_flags = idc.get_func_attr(tmp_api_address, idc.FUNCATTR_FLAGS)
             if api_flags & idaapi.FUNC_LIB is True \
                     or api_flags & idaapi.FUNC_THUNK:
-                tmp_api_name = idc.get_name(tmp_api_address, ida_name.GN_VISIBLE | calc_gtn_flags(0, tmp_api_address))
+                tmp_api_name = idc.get_name(
+                    tmp_api_address, ida_name.GN_VISIBLE | calc_gtn_flags(0, tmp_api_address))
                 if tmp_api_name:
                     api.append(tmp_api_name)
             else:
@@ -214,7 +222,6 @@ def _get_ida_func_surrogate(func, arch):
         s = idc.get_bytes(bb.start_ea, bb.end_ea - bb.start_ea)
         if s is not None:
             block['bytes'] = "".join("{:02x}".format(c) for c in s)
-
 
         instructions = list()
         oprTypes = list()
@@ -299,7 +306,7 @@ def get_selected_code(sea, eea):
     block['name'] = 'loc_' + format(sea, 'x').upper()
     dat = {}
     block['dat'] = dat
-    s = idc.get_bytes(sea, eea -sea)
+    s = idc.get_bytes(sea, eea - sea)
     if s is not None:
         block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
     instructions = list()
@@ -345,12 +352,12 @@ def _iter_extra_comments(ea, start):
 
 def get_comments(ea):
     comments = []
-    text = idc.get_cmt(ea,1)
+    text = idc.get_cmt(ea, 1)
     if text and len(text) > 0:
         comments.append({'type': 'repeatable', 'comment': text,
                          'offset': str(hex(ea)).rstrip("L").upper().replace(
                              "0X", "0x")})
-    text = idc.get_cmt(ea,0)
+    text = idc.get_cmt(ea, 0)
     if text and len(text) > 0:
         comments.append({'type': 'regular', 'comment': text,
                          'offset': str(hex(ea)).rstrip("L").upper().replace(
@@ -366,3 +373,125 @@ def get_comments(ea):
                          'offset': str(hex(ea)).rstrip("L").upper().replace(
                              "0X", "0x")})
     return comments
+
+
+def get_range():
+    '''Return the range of the selection.
+
+    If there is no selection the range is set to start and end of the current
+    function.
+    To get the comments for a single line, part of the line must be selected.
+    '''
+    has_selection, start_ea, end_ea = ida_kernwin.read_range_selection(
+        None)
+    if has_selection:
+        return start_ea, end_ea, False
+    else:
+        ea = ida_kernwin.get_screen_ea()
+
+        if ida_kernwin.get_highlight(ida_kernwin.get_current_viewer()):
+            return ea, ea, False
+        else:
+            f = ida_funcs.get_func(ea)
+            if f:
+                return f.start_ea, f.end_ea, True
+            else:
+                return None, None, None
+
+
+def get_comments_in_selected_range():
+    """ return comments in the selected region
+        - Get the range for which to copy comments
+        - Get the function comments if the the start of the range is a function
+        - Get every type of comments for each address in the range
+        - Put the comments in the clipboard as a JSON string
+    """
+    cmts = defaultdict(list)
+    start, end, is_func = get_range()
+    cmts['is_func'] = is_func
+
+    if start is None:
+        print("PowerClipboard Error: No selection or cursor not inside a function.")
+        return 0
+
+    # Get function comments if the first address is the start of a function
+    if start == idc.get_func_attr(start, idc.FUNCATTR_START):
+        # 0: Regular comments, 1: Repeatable comments
+        for repeatable in range(2):
+            cmt = idc.get_func_cmt(start, repeatable)
+            if cmt != "":
+                cmts['function'].append((0, cmt, repeatable))
+
+    for head in idautils.Heads(start, end):
+        # Get regular comments, repeatable or not
+        # 0: Regular comments, 1: Repeatable comments
+        for repeatable in range(2):
+            cmt = idc.GetCommentEx(head, repeatable)
+            if cmt:
+                cmts['regular'].append((head - start, cmt, repeatable))
+
+        # Get Anterior lines
+        # Skipped if the address is the beginning of the segment because
+        # there's a lot of junk
+        if head != idc.get_segm_attr(head, idc.SEGATTR_START):
+            for i in range(ida_lines.get_first_free_extra_cmtidx(head, ida_lines.E_PREV) - ida_lines.E_PREV):
+                cmt = ida_lines.get_extra_cmt(head, ida_lines.E_PREV + i)
+                if cmt:
+                    cmts['anterior'].append((head - start, cmt, i))
+
+        # Get Posterior lines
+        for i in range(ida_lines.get_first_free_extra_cmtidx(head, ida_lines.E_NEXT) - ida_lines.E_NEXT):
+            cmt = ida_lines.get_extra_cmt(head, ida_lines.E_NEXT + i)
+            if cmt:
+                cmts['posterior'].append((head - start, cmt, i))
+    return cmts
+
+
+def ctx_in_disassembly_view(ctx):
+    return ctx.form_type == ida_kernwin.BWN_DISASM
+
+
+def set_comments(cmts, ignore_offset_error=False):
+    """[summary] 
+    Args:
+        cmts ([type]): [description]
+    """
+    offset = operator.itemgetter(0)
+    comment = operator.itemgetter(1)
+    repeatable = operator.itemgetter(2)
+    index = operator.itemgetter(2)
+
+    # get starting addr:
+    start = idc.get_func_attr(idc.get_screen_ea(
+    ), idc.FUNCATTR_START) if cmts['is_func'] else idc.get_screen_ea()
+
+    # Verify that all comments offsets match the beginning of an instruction.
+    if not ignore_offset_error:
+        for values in cmts.values():
+            if isinstance(values, list):
+                for cmt in values:
+                    if not idc.is_head(
+                            idc.get_full_flags(start + offset(cmt))):
+                        return False
+
+    # Set function comments if present
+    for cmt in cmts['function']:
+        ida_funcs.set_func_cmt(ida_funcs.get_func(
+            start), comment(cmt), repeatable(cmt))
+
+    # Set regular comment if present
+    for cmt in cmts['regular']:
+        ida_bytes.set_cmt(start + offset(cmt),
+                          comment(cmt), repeatable(cmt))
+
+    # Set anterior lines if present
+    for cmt in cmts['anterior']:
+        ida_lines.update_extra_cmt(
+            start + offset(cmt), ida_lines.E_PREV + index(cmt), comment(cmt))
+
+    # Set posterior lines if present
+    for cmt in cmts['posterior']:
+        ida_lines.update_extra_cmt(
+            start + offset(cmt), ida_lines.E_NEXT + index(cmt), comment(cmt))
+
+    return True
