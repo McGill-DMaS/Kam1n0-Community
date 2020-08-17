@@ -422,7 +422,7 @@ def get_comments_in_selected_range():
             if cmt != "":
                 cmts['function'].append((0, cmt, repeatable))
 
-    for head in idautils.Heads(start, end):
+    for head in idautils.Heads(start, end+1):
         # Get regular comments, repeatable or not
         # 0: Regular comments, 1: Repeatable comments
         for repeatable in range(2):
