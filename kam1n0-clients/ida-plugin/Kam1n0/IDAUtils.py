@@ -390,7 +390,7 @@ def get_range():
         ea = ida_kernwin.get_screen_ea()
 
         if ida_kernwin.get_highlight(ida_kernwin.get_current_viewer()):
-            return ea, ea, False
+            return ea, ea+1, False
         else:
             f = ida_funcs.get_func(ea)
             if f:
@@ -422,7 +422,7 @@ def get_comments_in_selected_range():
             if cmt != "":
                 cmts['function'].append((0, cmt, repeatable))
 
-    for head in idautils.Heads(start, end+1):
+    for head in idautils.Heads(start, end):
         # Get regular comments, repeatable or not
         # 0: Regular comments, 1: Repeatable comments
         for repeatable in range(2):
