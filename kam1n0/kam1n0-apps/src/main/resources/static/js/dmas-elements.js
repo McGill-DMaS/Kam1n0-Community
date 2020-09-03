@@ -347,6 +347,9 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
 									"right": 0,
 									"bottom": 0,
 									"left": 0
+								},
+								"colors": {
+                                  				"segmentStroke": "#000000"
 								}
 							},
 							"tooltips": {
@@ -696,6 +699,9 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
 									"right": 0,
 									"bottom": 0,
 									"left": 0
+								},
+								"colors": {
+                                  				"segmentStroke": "#000000"
 								}
 							},
 							"tooltips": {
