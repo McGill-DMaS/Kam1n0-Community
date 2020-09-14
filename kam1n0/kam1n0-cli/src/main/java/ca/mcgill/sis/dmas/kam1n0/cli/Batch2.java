@@ -67,7 +67,8 @@ public class Batch2 {
 	private static Logger logger = LoggerFactory.getLogger(Batch2.class);
 
 	// Any simple value would do, as long as this can't be a valid filename
-	private static String filterValueForIndexingOnly = "*";
+	private static String filterValueForIndexingOnly = "**";
+	private static String filterValueForReuseIndexProcessAll = "*";
 
 	public static class HeatMapData {
 		public double[][] similarity;
@@ -269,7 +270,7 @@ public class Batch2 {
 			Counter c = Counter.zero();
 			Counter tf = Counter.zero();
 
-			if (!filterFilename.isEmpty()) {
+			if (!filterFilename.isEmpty() && !filterFilename.equals(filterValueForReuseIndexProcessAll)) {
 				ds.setProcessingFilter(m -> m._3().getName().equals(filterFilename));
 			}
 
