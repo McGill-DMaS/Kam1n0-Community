@@ -128,7 +128,7 @@ else:
     data['architecture']['endian'] = "be" if idaapi.cvar.inf.mf else "le";
 if info.procName.lower().startswith('mips'):
     data['architecture']['type'] = 'mips'
-if info.procName.lower().startswith('68330') or info.procName.lower().startsWith('68k'):
+if info.procName.lower().startswith('68330') or info.procName.lower().startswith('68k'):
     data['architecture']['type'] = 'mc68'
 
 data['ida_compiler'] = idaapi.get_compiler_name(info.cc.id)
