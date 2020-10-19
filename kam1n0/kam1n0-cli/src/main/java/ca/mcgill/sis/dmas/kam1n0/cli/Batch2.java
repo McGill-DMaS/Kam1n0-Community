@@ -280,6 +280,8 @@ public class Batch2 {
 				Counter ind = Counter.zero();
 				x.functions.parallelStream().forEach(xf -> {
 
+					Date before = new Date();
+
 					ind.inc();
 					tf.inc();
 					List<FunctionCloneEntry> fres;
@@ -290,8 +292,11 @@ public class Batch2 {
 						return;
 					}
 
+					Date after = new Date();
+					long processTimeMs = after.getTime() - before.getTime();
+
 					System.out.println("" + ind.getVal() + "/" + x.functions.size() + " " + c.getVal() + "/" + ds.size()
-							+ "/" + tf.getVal() + " " + xf.functionName + " " + fres.size());
+							+ "/" + tf.getVal() + " " + xf.functionName + " " + fres.size() + " dt:" + processTimeMs);
 
 					ds.vals.stream().forEach(t3 -> {
 
