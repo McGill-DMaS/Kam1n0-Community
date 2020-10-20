@@ -70,6 +70,15 @@ public class Batch2 {
 	private static String filterValueForIndexingOnly = "**";
 	private static String filterValueForReuseIndexProcessAll = "*";
 
+	private static int maxFindCloneRetriesOnError = 10;
+
+	private static class FunctionCloneSearchResult {
+        public List<FunctionCloneEntry> foundClones;
+
+		// wall-clock time (not CPU time), and only for last successful attempt if it was retried
+        public long processTimeMs;
+    }
+
 	public static class HeatMapData {
 		public double[][] similarity;
 		public List<String> labels;
@@ -187,6 +196,44 @@ public class Batch2 {
 
 	}
 
+
+	/**
+	 * This is a workaround for the Spark/Cassandra/Docker stack that seems to have random connection failures once
+	 * every few hours (occurs on less than 0.1% of searches). No cause was ever identified yet. Retrying the clone
+	 * search normally just works.
+	 *
+	 * @param functionModel function clone search model
+	 * @param targetFunction function to search clones for
+	 * @return found clones, or null if all retry attempts failed.
+	 */
+	private static FunctionCloneSearchResult detectClonesWithRetries(FunctionCloneDetector functionModel, Function targetFunction, int maxAttempts) {
+
+		long attemptStartTime = 0;
+		int attempt = 0;
+		List<FunctionCloneEntry> foundClones = null;
+
+		while (foundClones == null && attempt < maxFindCloneRetriesOnError) {
+			attemptStartTime = new Date().getTime();
+			attempt++;
+
+			try {
+				foundClones = functionModel.detectClonesForFunc(-1l, xf, 0.5, 200, true);
+			} catch (Exception e1) {
+				if (attempt < maxAttempts) {
+					logger.warn(String.format("Failed to detect clone for %s, on attempt %d/%d. Will retry.",
+							targetFunction.functionName, attempt, maxAttempts), e1);
+				} else {
+					throw e1;
+				}
+			}
+		}
+
+		FunctionCloneSearchResult result = new FunctionCloneSearchResult();
+		result.foundClones = foundClones;
+		result.processTimeMs = new Date().getTime() - attemptStartTime;
+		return result;
+	}
+
 	public static void process(String path, String resPath, String filterFilename, SparkInstance spark, Model choice,
 			CassandraInstance cassandra) throws Exception {
 
@@ -280,23 +327,21 @@ public class Batch2 {
 				Counter ind = Counter.zero();
 				x.functions.parallelStream().forEach(xf -> {
 
-					Date before = new Date();
-
 					ind.inc();
 					tf.inc();
-					List<FunctionCloneEntry> fres;
+
+					FunctionCloneSearchResult searchResult;
 					try {
-						fres = fmodel.detectClonesForFunc(-1l, xf, 0.5, 200, true);
+						searchResult = detectClonesWithRetries(fmodel, xf, maxFindCloneRetriesOnError);
 					} catch (Exception e1) {
-						logger.error("Failed to detect clone", e1);
+						logger.error(String.format("Failed to detect clone for %s, after %d attempt(s). Similarity result will be wrong for this file.",
+								xf.functionName, maxFindCloneRetriesOnError), e1);
 						return;
 					}
 
-					Date after = new Date();
-					long processTimeMs = after.getTime() - before.getTime();
-
-					System.out.println("" + ind.getVal() + "/" + x.functions.size() + " " + c.getVal() + "/" + ds.size()
-							+ "/" + tf.getVal() + " " + xf.functionName + " " + fres.size() + " dt:" + processTimeMs);
+					System.out.format("%d/%d %d/%d/%d %s %d dt:%d",
+							ind.getVal(), x.functions.size(), c.getVal(), ds.size(), tf.getVal(),
+							xf.functionName, searchResult.foundClones.size(), searchResult.processTimeMs);
 
 					ds.vals.stream().forEach(t3 -> {
 
@@ -304,7 +349,7 @@ public class Batch2 {
 						String y_name = t3._2();
 
 						int y_ind = ds.labelMap.get(y_name);
-						OptionalDouble val = fres.stream().filter(e -> e.binaryId == y_id)
+						OptionalDouble val = searchResult.foundClones.stream().filter(e -> e.binaryId == y_id)
 								.mapToDouble(e -> e.similarity).max();
 
 						if (val.isPresent())
