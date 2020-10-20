@@ -168,7 +168,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 					.filter(tuple -> !avoidSameBinary || (tuple._2().binaryId != function.binaryId))
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
-			// logger.info("b_to_b {}", b_to_b.count());
+			//logger.info("kam182 b_to_b {}", b_to_b.count());
 			int fc = finalFuncLength.count;
 			if (!spark.localMode) {
 				// (keyed: srcfuncid -> (tar, src, score)
