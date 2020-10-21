@@ -206,7 +206,7 @@ public class Batch2 {
 	 * @param targetFunction function to search clones for
 	 * @return found clones, or null if all retry attempts failed.
 	 */
-	private static FunctionCloneSearchResult detectClonesWithRetries(FunctionCloneDetector functionModel, Function targetFunction, int maxAttempts) {
+	private static FunctionCloneSearchResult detectClonesWithRetries(FunctionCloneDetector functionModel, Function targetFunction, int maxAttempts) throws Exception {
 
 		long attemptStartTime = 0;
 		int attempt = 0;
@@ -217,7 +217,7 @@ public class Batch2 {
 			attempt++;
 
 			try {
-				foundClones = functionModel.detectClonesForFunc(-1l, xf, 0.5, 200, true);
+				foundClones = functionModel.detectClonesForFunc(-1l, targetFunction, 0.5, 200, true);
 			} catch (Exception e1) {
 				if (attempt < maxAttempts) {
 					logger.warn(String.format("Failed to detect clone for %s, on attempt %d/%d. Will retry.",
@@ -339,7 +339,7 @@ public class Batch2 {
 						return;
 					}
 
-					System.out.format("%d/%d %d/%d/%d %s %d dt:%d",
+					System.out.format("%d/%d %d/%d/%d %s %d dt:%d\n",
 							ind.getVal(), x.functions.size(), c.getVal(), ds.size(), tf.getVal(),
 							xf.functionName, searchResult.foundClones.size(), searchResult.processTimeMs);
 
