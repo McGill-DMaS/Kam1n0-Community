@@ -75,7 +75,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 	private static Logger logger = LoggerFactory.getLogger(BlockIndexerLshKLAdaptive.class);
 
-	// Spark tuning magic number from experimentation.
+	// Spark tuning magic number, found from experimentation.
 	// Number of partitions for 'hid_tblk' has to be tuned
 	//  - too much items per partition can easily lead to out-of-memory exceptions
 	//  - too few items just creates more and more shuffling overhead between Spark cores
@@ -272,11 +272,12 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	}
 
 	/**
+	 * Query the best clones for every basic block of a function.
 	 *
-	 * @param rid
-	 * @param blks
-	 * @param links
-	 * @param topK
+	 * @param rid   Repository ID  (Cassandra)
+	 * @param blks  target blocks to find clone for
+	 * @param links target links between block
+	 * @param topK  keep only the top topK matchin blocks (for each matched block in blks)
 	 * @return
 	 */
 	@Override
@@ -284,9 +285,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			int topK) {
 
 		String functionName = blks.isEmpty() ? "Unknown_empty_function" : blks.get(0).functionName;
+		//logger.info("kam182 {} blks {} items", functionName, blks.size() );
+
+		// total number of instructions?
 		int length = blks.stream().mapToInt(blk -> blk.codes.size()).sum();
-		List<VecObjectBlock> objs = blks.stream().map(tar -> new VecObjectBlock(tar, featureGenerator))
-				.collect(Collectors.toList());
+
+		// Convert all target BB into their vector representation (+ normalized assembly)
+		List<VecObjectBlock> targetBlocksAsVectors =
+				blks.stream().map(tar -> new VecObjectBlock(tar, featureGenerator)).collect(Collectors.toList());
 
 		// hid->tbid
 		// hids
@@ -312,45 +318,92 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// tp._1).collect(Collectors.toCollection(HashSet::new));
 
 		// hid->info
+		// TODO: compare with above length . total number of instructions?
 		int blk_size = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
-		// new VecInfoBlockFilter(blk_size, topK)
-		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 = index
-				// .query(rid, objs, topK, null);
-				.query(rid, objs, topK, new VecInfoBlockFilter(blk_size, topK * 10));
 
+		// Initial query, for each block of the function, get topK*10 potential clones (based on Adaptive Locally
+		// Sensitive Hashing), to be filtered out later down to topK matches.
+		// - we can`t compare blocks for similarity until we fetch them from the DB, but fetching all of time for
+		//   further comparison is prohibitive
+		// - instead we query block 'more likely to be clones' based on some 'peerSize' metric (what is that?) in
+		//   VecInfoBlockFilter
+		// - We get more than topK in this first query, so that we can extract the real topK best clones later on. Using
+		//   *10 is a magic number here.
+		// - topK parameter itself (the fourth parameter) is NOT used in current ALSH indexer.
+		// TODO: understand the VecInfoBlockFilter metric and fix above comment
+		// TODO: figure out where 10 comes from
+		// TODO: remove unsed parameter from ALSH.query to reduce confusion?
+		//
+		// Return is in two parts:
+		//  ._1: list (target block ID, targetBlkVectorInfo)  the matched subset of targetBlocksAsVectors
+		//  ._2: list of "buckets" (VecEntry is a bucket) for potential sources candidates (potential cones), and
+		//          each VecEntry has: hid, list of corresponding source vec-BBs, etc.
+		// Note: this matching by ALSH is based on hashes.
+		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =
+				index.query(rid, targetBlocksAsVectors, topK, new VecInfoBlockFilter(blk_size, topK * 10));
+
+		// TODO: possible improvement: move 'avoidSameBinary' here instead of in caller.
+		// Get all functions ID from target binary, something like
+		// 		function_ids_to_avoid = blks.stream().map(b->b.function_id).collect(Collectors.toSet())
+		// Then remove all buckets with those function IDs but only if avoidSameBinary
+		// Note: this won't work right away since all BB here are from the same function. Need to get in caller the
+		// list of all functions ID to filter out.
+		// Also, indexer like this one are not expected to do that, each caller does it as they wish. Will have to see
+		// what that means for other indexers.
+
+
+
+		// Extract matched target blocks as a list( pair<hash_id, targetBlk> )
+		// each hash_id may associate to many blocks if those blocks are 'normalized-identical'
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(tp2._1.stream().map(tp -> {
 			return new Tuple2<>(tp._1, tp._2.block);
 		}).collect(Collectors.toList()), tp2._1.size() / MAX_HID_TBLK_PER_PARTITION + 1);
 		//logger.info("kam182 {} hid_tblk {} items, {} partitions", functionName, hid_tblk.count(), hid_tblk.getNumPartitions());
 
-		// @SuppressWarnings("unused")
-		// List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> tmp = tp2._2.collect();
-
+		// Extract matched sources blocks as a list( pair(hash_id, sourceBlkVecInfo) )
+		// each hash_id may associate to many blocks if those blocks are 'normalized-identical'
 		JavaPairRDD<Long, VecInfoBlock> hid_info = tp2._2.flatMapToPair(entry -> entry.vids.stream()
 				.map(info -> new Tuple2<>(entry.hashId, info)).collect(Collectors.toList()).iterator());
+		//logger.info("kam182 {} hid_info {} items, {} partitions", functionName, hid_info.count(), hid_info.getNumPartitions());
+		// TODO: check if that should be partitioned here instead in original hid_info query (ALSH.java). Could create
+		//			large partitions if topK is large and some hash ID has a large number of corresponding blocks
 
-		// filter:
-		// hid->(tblk, info)
+
+		// Join the above two on their hash IDs, in a map( hashId -> list(pair(trgBlk, srcBlkInfo)) )
+		// That is, all matched pairs of target/source blocks with the same hashId.
 		int junctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_info.getNumPartitions());
 		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info, junctionNumPartitions);
 		//logger.info("kam182 {} jointed {} items, {} partitions", functionName, jointed.count(), jointed.getNumPartitions());
 
+		// Pre-filtering : filter the list of matched source blocks. Remove those that have less chances (see filtering
+		// criteria in collectAndFilter2) to be matched in the 'reducer' part of the general algorithm . This is
+		// actually a filtering of source blocks, but we apply it on 'jointed' since we need target block info for filtering.
+		//
+		// Result: list( pair(hashID, srcBlkId) )     (we only keep block ID, no more need for all the VecInfo)
+		// Note: the same pair can occur several time since that source block may have been matched to many target blocks.
 		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(rid, jointed, links, length, topK);
 		//logger.info("kam182 {} hid_sbid {} items, {} partitions", functionName, hid_sbid.count(), hid_sbid.getNumPartitions());
 
+		// Get all unique source blocks left after above filter (we only had block 'vector' and ID so far, actual block
+		// data is in a separate DB table that we query here).
+		// Result: list( pair(sourceBlkId,sourceBlk) )
 		HashSet<Long> sids = new HashSet<>(hid_sbid.map(tp -> tp._2).collect());
-
-		// if (debug)
-		// logger.info("sids {} func {} size {} blks {}", sids.size(),
-		// blks.get(0).functionName, length, blks.size());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 		//logger.info("kam182 {} sbid_sblk {} items, {} partitions", functionName, sbid_sblk.count(), sbid_sblk.getNumPartitions());
 
+
+		//  hid_tblk * his_sbid => (hid, (tblk, sbid))
+		//   => sbid -> tblk
+		// sbid -> tblk  *  sbid_sblk  =>  (sbid, (tblk, sblk))
+		//   => (tblk, sblk)
 		int firstJunctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_sbid.getNumPartitions());
 		int secondJunctionNumPartitions = Math.max(firstJunctionNumPartitions, sbid_sblk.getNumPartitions());
+
 		JavaRDD<Tuple2<Block, Block>> tblk_sblk = hid_tblk.join(hid_sbid, firstJunctionNumPartitions)
-				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1)).join(sbid_sblk, secondJunctionNumPartitions).map(tp -> tp._2);
+				.mapToPair(tp -> new Tuple2<Long, Block>(tp._2._2, tp._2._1))
+				.join(sbid_sblk, secondJunctionNumPartitions)
+				.map(tp -> tp._2);
 		//logger.info("kam182 {} tblk_sblk {} items, {} partitions", functionName, tblk_sblk.count(), tblk_sblk.getNumPartitions());
 
 		return tblk_sblk.map(tp -> new Tuple3<>(tp._1, tp._2, 1d));
