@@ -381,8 +381,10 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		//
 		// Result: list( pair(hashID, srcBlkId) )     (we only keep block ID, no more need for all the VecInfo)
 		// Note: the same pair can occur several time since that source block may have been matched to many target blocks.
-		JavaPairRDD<Long, Long> hid_sbid = this.collectAndFilter2(rid, jointed, links, length, topK);
-		//logger.info("kam182 {} hid_sbid {} items, {} partitions", functionName, hid_sbid.count(), hid_sbid.getNumPartitions());
+		JavaPairRDD<Long, Long> hid_sbid_withDups = this.collectAndFilter2(rid, jointed, links, length, topK);
+		//logger.info("kam182 {} hid_sbid {} items, {} partitions", functionName, hid_sbid_withDups.count(), hid_sbid_withDups.getNumPartitions());
+		JavaPairRDD<Long, Long> hid_sbid = hid_sbid_withDups.distinct();
+		//logger.info("kam182 {} distinct hid_sbid {} items, {} partitions", functionName, hid_sbid.count(), hid_sbid.getNumPartitions());
 
 		// Get all unique source blocks left after above filter (we only had block 'vector' and ID so far, actual block
 		// data is in a separate DB table that we query here).
