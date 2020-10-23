@@ -81,7 +81,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	//  - too few items just creates more and more shuffling overhead between Spark cores
 	// This number is well below numbers that would cause OOM (about 1000) and well above values that would start
 	// wasting resources (less than 10 for very large RDDs).
-	private static final int MAX_HID_TBLK_PER_PARTITION = 50;
+	private static final int MAX_HID_TBLK_PER_PARTITION = 250;
 
 	private transient SparkInstance sparkInstance;
 	private transient AsmObjectFactory objectFactory;
@@ -428,7 +428,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// Get all unique source blocks left after above filter (we only had block 'vector' and ID so far, actual block
 		// data is in a separate DB table that we query here).
 		// Result: list( pair(sourceBlkId,sourceBlk) )
-		List<Long> sids = sbid_tblk.keys().distinct().collect();
+		Set<Long> sids = new HashSet<>(sbid_tblk.keys().collect());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 		//logger.info("kam182 {} sbid_sblk {} items, {} partitions", functionName, sbid_sblk.count(), sbid_sblk.getNumPartitions());
