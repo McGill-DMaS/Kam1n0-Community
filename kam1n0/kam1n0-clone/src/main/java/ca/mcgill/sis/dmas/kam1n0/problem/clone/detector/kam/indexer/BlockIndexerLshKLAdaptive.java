@@ -122,7 +122,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
 		// get all the valid hids to a list
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), topK, null)._2
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), null)._2
 				.collect();
 
 		infos.forEach(entry -> {
@@ -274,14 +274,13 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 	/**
 	 * Query the best clones for every basic block of a function.
+	 * See external documentation for explanations and data-flow: /documentation/others/alsh-df.drawio.png
 	 *
 	 * @param rid   Repository ID  (Cassandra)
 	 * @param blks  target blocks to find clone for
 	 * @param links target links between block
 	 * @param topK  keep only the top topK matching blocks (for each matched block in blks)
 	 * @return Matched clones as (target, source, similarity) where similarity is always 1.0 at this point.
-	 *
-	 * @see External documentation for explanations and data-flow: /documentation/others/alsh-df.drawio.png
 	 */
 	@Override
 	public JavaRDD<Tuple3<Block, Block, Double>> queryAsRdds(long rid, List<Block> blks, Set<Tuple2<Long, Long>> links,
