@@ -214,7 +214,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	}
 
 	public <E extends VecObject<T, K>> Tuple2<List<Tuple2<Long, E>>, JavaRDD<VecEntry<T, K>>> query(long rid,
-			List<? extends E> objs, int topK, Function<List<T>, List<T>> filter) {
+			List<? extends E> objs, Function<List<T>, List<T>> filter) {
 		List<Tuple2<Long, E>> hid_tbid_l = this.index_bucket.collectHids(rid, objs, this::hash);
 		HashSet<Long> hids = hid_tbid_l.stream().map(tp -> tp._1).collect(Collectors.toCollection(HashSet::new));
 
