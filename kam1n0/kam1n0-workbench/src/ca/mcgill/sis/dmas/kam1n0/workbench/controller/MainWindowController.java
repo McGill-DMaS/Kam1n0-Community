@@ -248,6 +248,8 @@ public class MainWindowController {
 	@FXML
 	Button stopButton;
 	@FXML
+	Button resetButton;
+	@FXML
 	MaterialDesignIconView aboutBtn;
 	@FXML
 	MaterialDesignIconView closeBtn;
@@ -271,6 +273,7 @@ public class MainWindowController {
 	private void setDisableAll(boolean value) {
 		startButton.setDisable(value);
 		stopButton.setDisable(value);
+		resetButton.setDisable(value);
 		propertyTable.setDisable(value);
 	}
 
@@ -287,6 +290,13 @@ public class MainWindowController {
 		stopButton.setDisable(false);
 		app.connector.startEngine(propertyFile.getText().trim());
 		tabPane.getSelectionModel().select(1);
+	}
+
+	@FXML
+	public void handleReset(ActionEvent event) {
+		propertyTable.setItems(app.connector.getKamPropertyBoundings(app.connector.KAM1N0_PROPERTIES_ORIGINAL_DEFAULT));
+		enableTableViewMenu.set(true);
+		handleSave();
 	}
 
 	@FXML
