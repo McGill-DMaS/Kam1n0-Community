@@ -263,6 +263,10 @@ public class LearnerAsm2VecNew implements Serializable {
 		gradientDecend(funcs, trainDocMap, tknTotal, param.optm_aphaUpdateInterval, true, param.optm_iteration,
 				param.optm_parallelism);
 	}
+	
+	public void cont_train(Iterable<FuncTokenized> funcs) throws InterruptedException, ExecutionException {
+		gradientDecend(funcs, trainDocMap, tknTotal, param.optm_aphaUpdateInterval, true,  param.optm_iteration, param.optm_parallelism);
+	}
 
 	public Map<String, double[]> infer(List<FuncTokenized> funcs) {
 		alpha = param.optm_initAlpha;

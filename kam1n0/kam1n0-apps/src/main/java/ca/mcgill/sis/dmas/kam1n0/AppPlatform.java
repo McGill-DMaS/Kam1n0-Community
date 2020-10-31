@@ -5,6 +5,7 @@ import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationConfiguration;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfoSummary.ApplicationSummary;
+import ca.mcgill.sis.dmas.kam1n0.app.adata.BinaryDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.FunctionCommentWrapper;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.FunctionDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.scheduling.LocalDmasJobInfo;

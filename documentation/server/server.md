@@ -3,21 +3,31 @@
 * [Kam1n0 Tutorial](#tutorial)
   * [Configure and start engine](#configure-and-start-engine)
   * [Register an account and login](#register-an-account-and-login)
-  * [Create an application](#create-an-application)
-  * [Share an application](#share-an-application)
-  * [Preparing the data](#preparing-the-data)
-  * [Get the application URL for IDA Pro Plugin](#get-the-application-url-for-ida-pro-plugin)
-  * [Index binary files](#index-binary-files)
-  * [Search with an assembly function](#search-with-an-assembly-function)
-    * [Flow graph view](#flow-graph-view)
-    * [Text diff view](#text-diff-view)
-    * [Clone group view](#clone-group-view)
-  * [Search with a binary file](#search-with-a-binary-file)
-  * [Browse a clone search result](#browse-a-clone-search-result)
-    * [The summary boxes](#the-summary-boxes)
-    * [Details](#details)
+  * [Clone search](#clone-search-asm-clone)
+    * [Create an application](#create-an-application)
+    * [Share an application](#share-an-application)
+    * [Preparing the data](#preparing-the-data)
+    * [Get the application URL for IDA Pro Plugin](#get-the-application-url-for-ida-pro-plugin)
+    * [Index binary files](#index-binary-files)
+    * [Search with an assembly function](#search-with-an-assembly-function)
+      * [Flow graph view](#flow-graph-view)
+      * [Text diff view](#text-diff-view)
+      * [Clone group view](#clone-group-view)
+    * [Search with a binary file](#search-with-a-binary-file)
+    * [Browse a clone search result](#browse-a-clone-search-result)
+      * [The summary boxes](#the-summary-boxes)
+      * [Details](#details)
 
-
+  * [Clone search (asm2vec)](#clone-search-asm2vec)
+    * [Create an application](#create-an-application-1)
+    * [Share an application](#share-an-application-1)
+    * [Preparing the data](#preparing-the-data-1)
+    * [Get the application URL for IDA Pro Plugin](#get-the-application-url-for-ida-pro-plugin-1)
+    * [Index binary files](#index-binary-files-1)
+    * [Search with an assembly function](#search-with-an-assembly-function-1)
+      * [Flow graph view](#flow-graph-view-1)
+      * [Text diff view](#text-diff-view-1)
+    * [Search with a binary file](#search-with-a-binary-file-1)
 
 ## Configure and start engine
 After you start Kam1n0 workbench, you will see a control panel. In this step, you need to set the appropriate values for all properties. If you installed kam1n0 on a system boot disk, you need to run the workbench as administrator to edit the properties. The main property to edit is kam1n0.data.path. If you use kam1n0 server in Windows operating systems, the kam1n0.ida.home will be automatically recognized; If you use kam1n0 server in Linux, you need to correctly set the value of kam1n0.ida.home. Then you can start the engine.
@@ -38,13 +48,16 @@ After you register an account, you can login using the username and password and
 
 ![](images/IuunWz5.png)
 
-## Create an application
 
-The next thing to do is create an APP. So far, you can choose from the three kinds of Application: asm2vec-clone, asm-clone, and sym1n0-clone and customize your settings. General Information can be edited again later and Application Settings will be fixed.
+## Clone search (asm-clone)
+
+### Create an application
+
+The next thing to do is create an APP. You can choose from the three kinds of clone search application: asm2vec-clone, asm-clone, and sym1n0-clone and customize your settings. General Information can be edited again later and Application Settings will be fixed.
 
 ![](images/g5cqoTz.png)
 
-## Share an application
+### Share an application
 
 If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
 
@@ -53,18 +66,18 @@ If you want to share your APP with another user, you can edit it and grant read/
 ![](images/fxAsWtm.png)
 
 
-## Preparing the data
+### Preparing the data
 
 Suppose we have two binary files ```libpng-1.7.0b54.dll``` from libpng and  ```zlib-1.2.7.dll``` from zlib. These two files are included in the `example.zip` file in our release. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish. We try to index both of them  and search the first one ```libpng-1.7.0b54.dll``` against it.
 
 
-## Get the application URL for IDA Pro Plugin
+### Get the application URL for IDA Pro Plugin
 
 Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
 
 ![](images/plugin_link.png)
 
-## Index binary files
+### Index binary files
 
 By clicking `INDEXING` on the homepage of the APP, you will see the interface for indexing. You can browse your folders to find the files you want to index or drag them to the rectangle area in the page. After that, click the `INDEX` button.
 
@@ -78,7 +91,7 @@ If no error occurs, you will find the new indexed binary files in the `Binary Br
 
 ![](images/index-result.png)
 
-## Search with an assembly function
+### Search with an assembly function
 
 Next, we want to search an assembly function against the repository. By clicking `FUNCTIONS SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process.
 
@@ -96,26 +109,26 @@ For each retrieved function, you can see the similarity, `Flow Graph View`, `Tex
 
  ![](images/searchviews.png)
 
-### Flow graph view
+#### Flow graph view
 
 `Flow Graph View` explores the cloned control flow graph structure between two functions. The cloned areas are highlighted in different convex hubs. As you can see in this example, even though two functions have different entry blocks, they share several cloned subgraphs. Each is highlighted using a convex hub with a different color. Currently, we ignore blocks with a single instruction. Both graphs can be zoomed in/out and dragged. We provide a scroll (blue) for each of them.
 
 ![](images/flow.png)
 
-### Text diff view
+#### Text diff view
 
 `Text Diff View` tries to fully align two assembly functions using a basic string alignment algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion while the ones with a green background mean addition.
 ![](images/diff.png)
 
 
-### Clone group view
+#### Clone group view
 
 `Clone Group View` lists different cloned subgraphs and compares their differences. The panel below the two text columns lists the cloned subgraphs as cloned groups. Each group consists of pairs of cloned basic blocks between two functions. These basic blocks belong to the same group since they can be connected in the control flow. By clicking on each clone pair, the above two text views will jump to the corresponding basic blocks and compare their differences using string alignment.
 
 ![](images/group.png)
 
 
-## Search with a binary file
+### Search with a binary file
 
 You can see the interface for searching with a binary file by clicking `BINARY COMPOSITION` on the homepage of the APP. Select a binary file through browsing or dragging. Then, set the searching parameters which is similar to search with an assembly function. After you click `ANALYZE`, the searching process begins.
 
@@ -125,7 +138,7 @@ This process may take a while. And you can leave the page and check the progress
 
 ![](images/progress.png)
 
-## Browse a clone search result
+### Browse a clone search result
 
 After Kam1n0 completes a search query with a binary file, you can see it from the result file list on your user homepage. The `.kam` file contains all the details about the query and the search results. The `.kam` file can be found at %repository_directory%/UserFiles/. Specifically, the file contains several B-Tree which indexes the following information:
 
@@ -141,19 +154,106 @@ You can edit the name of the result file by clicking its name.
 
 You can see the result by clicking `OPEN`.
 
-### The summary boxes
+#### The summary boxes
 
 In `SUMMARY` section of the result page, you can see the boxes which provide statistics about clones between the query and a binary file in the repository. In this example, we can see that for libpng we find 441 (99%) clones with similarity more than 0.6. For ```zlib-1.2.7.dll```, we find 63 clones (17%) with similarity more than 0.6. We know that the query is exactly the same binary as the binary file ```libpng-1.7.0b54.dll``` in the repository. Kam1n0 skips assembly functions with a length less than 2 lines; therefore, we do not get a 100% similarity here.
 
 ![](images/summary.png)
 
 
-### Details
+#### Details
 
 By clicking `DETAILS`, you can see an address bar on the left which displays a list of assembly functions from the submitted query. Each line of the address bar is clickable. By clicking a function, the retrieved source functions for it are shown on the right and the interface is similar to the result for function search.
 
 ![](images/details.png)
 
- The background color of a specific function in the address bar indicates that Kam1n0 finds a clone in the repository belongs to a specific binary file. By clicking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
+ The background color of a specific function in the address bar indicates that Kam1n0 finds a clone in the repository belongs to a specific binary file. By licking `FILTERS` on the top, you can filter the function list by name or binary. The mapping between color and binary name can also be found in it.
 
 ![](images/filters.png)
+
+## Clone search (asm2vec)
+
+### Create an application
+
+`asm2vec-clone` is another APP for clone search. The general idea is to first apply representation learning to automically generate an embedding vector for each assembly function, and then perform a search on the vectors. To create an APP, select `asm2vec-clone` and customize your settings.
+
+![](images/creation_app.PNG)
+
+### Share an application
+If you want to share your APP with another user, you can edit it and grant read/write right to the user you specify.
+
+![](images/edit_app.PNG)
+
+![](images/share_app.PNG)
+
+### Preparing the data
+Suppose we have some binary files : `libz.so.1.2.11-gcc-g-Ox-m32-fno-pic.bin`, these files are included in the example.zip file in our release in the sub-folder `asm2vec`. We suggest you to try them first as to be consistent with the following descriptions. You may index other binary files later as you wish.
+
+### Get the application URL for IDA Pro Plugin
+Enter the APP by clicking the Permanent Link of the APP. Then You can see the URL for IDA Pro Plugin. Right-click it and choose "copy link address".
+
+![](images/get_url.PNG)
+
+### Index binary files
+By clicking `INDEXING` on the homepage of the APP, you will see the interface for indexing. You can browse your folders to find the files you want to index or drag them to the rectangle area in the page. After that, click the `REBUILD INDEX WITH ALL BINARIES IN REPOSITORY` button.
+
+![](images/indexing_app.PNG)
+
+You can see the progress bars are being created continuously with displayed messages.
+
+![](images/progress_app.PNG)
+
+If no error occurs, you will find the new indexed binary files in the Binary Browser table after you refresh the page (as shown in the figure below).
+
+![](images/binary_app.PNG)
+
+### Search with an assembly function
+Next, we want to search an assembly function against the repository. By clicking `FUNCTION SEARCH` on the homepage of the APP, you will see the interface for searching. You can enter or copy-and-paste an assembly function/fragment into the box. Then you can set the number of functions you want to retrieve (Top-k), the threshold of similarity to filter the source functions and whether to avoid search from the binary file the function belongs to. By clicking `SEARCH`, you start the searching process. Here, we provide you `adler32.txt` as an assembly code function example.
+
+![](images/assembly_function_search.PNG)
+
+A new page will pop up. If this is the first time you search with an assembly function, make sure you always allow pop-ups from the server.
+
+![](images/allow_pop_ups.PNG)
+
+After the process finishes, the page will refresh and the result will be present. You can sort the result, filter the result by binary or name, and download the result in JSON form.
+
+![](images/clone_graph1.PNG)
+
+For each retrieved function, you can see the similarity, `Flow Graph View`, `Text Diff View`, `Clone Group View` by clicking the corresponding icon. You can also see the `Clone Graph` by clicking the handler on the right.
+
+![](images/clone_graph2.PNG)
+
+#### Flow graph view
+`Flow Graph View` explores the cloned control flow graph structure between two functions. In asm2vec, we convert every assembly function into a vector. We can only tell two functions (two vectors) are similar, but we can't tell which parts of them are similar. Therefore, it can't show the convex hubs like it did with asm-clone. 
+
+![](images/flow_graph_asm2vec.PNG)
+
+#### Text diff view
+
+`Text Diff View` tries to fully align two assembly functions using a basic string alignment algorithm. It is useful to compare two functions with a high degree of similarity. The lines with a red background mean deletion while the ones with a green background mean addition. 
+
+![](images/text_diff.PNG)
+
+### Search with a binary file
+You can see the interface for searching with a binary file by clicking `BINARY COMPOSITION` on the homepage of the APP. Select a binary file through browsing or dragging. Then, set the searching parameters which is similar to search with an assembly function. After you click `ANALYZE`, the searching process begins.
+
+![](images/binary_compo.PNG)
+![](images/running_jobs_asm2vec.PNG)
+
+### Browse a clone search result
+
+After Kam1n0 completes a search query with a binary file, you can see it from the result file list on your user homepage. The `.kam` file contains all the details about the query and the search results. The `.kam` file can be found at %repository_directory%/UserFiles/. Specifically, the file contains several B-Tree which indexes the following information:
+
+* the assembly functions of the query
+* the assembly functions of all the involved assembly functions in the repository
+* the clone details
+
+![](images/result_files_asm2vec.PNG)
+
+You can edit the name of the result file by clicking its name.
+
+![](images/edit_name_asm2vec.PNG)
+
+You can see the result by clicking `OPEN`.
+

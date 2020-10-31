@@ -37,7 +37,7 @@ textarea:-ms-input-placeholder {
 }
 </style>
 
-	<h4>Search for Assembly Functions</h4>
+	<h4>Search for an Assembly Function</h4>
 
 	<div class="row">
 		<div class="col-sm-1"></div>
@@ -51,7 +51,7 @@ textarea:-ms-input-placeholder {
 							</i>
 							</span>
 							<div class="form-group label-floating">
-								<label class="control-label">Examples</label> <select
+								<label class="control-label">Example</label> <select
 									id="clone-func-example" class="form-control">
 									<option selected="true"></option>
 									<option th:each="example:${model.examples}"
@@ -64,7 +64,7 @@ textarea:-ms-input-placeholder {
 						<div class="input-group">
 							<span class="input-group-addon"> <i class="material-icons">settings</i>
 							</span>
-							<div class="form-group  label-floating">
+							<div class="form-group  label-floating"  data-toggle="tooltip" title="Only show the Top-K most similar assembly functions">
 								<label class="control-label">Top-K</label> <input type="text"
 									class="form-control" value="10" name="topk" /> <span
 									class="material-input"></span>
@@ -75,7 +75,7 @@ textarea:-ms-input-placeholder {
 						<div class="input-group">
 							<span class="input-group-addon"> <i class="material-icons">vertical_align_bottom</i>
 							</span>
-							<div class="form-group label-floating">
+							<div class="form-group label-floating"  data-toggle="tooltip" title="The threshold of minimal similarity to consider two assembly functions are clones of each other">
 								<label class="control-label">Threshold</label> <input
 									type="text" class="form-control" value="-1" name="threshold" />
 								<span class="material-input"></span>
@@ -87,7 +87,7 @@ textarea:-ms-input-placeholder {
 							<div class="form-group label-floating">
 								<div class="checkbox">
 									<label style="font-size:9pt; margin-left:10px"> <input type="checkbox" 
-										name="avoidSameBinary" /> Avoid Same Binary
+										name="avoidSameBinary" /> Exclude results from the same binary
 									</label>
 								</div>
 							</div>
@@ -100,7 +100,7 @@ textarea:-ms-input-placeholder {
 				<div class="form-group">
 					<textarea id="inputboxSymbolic" type="text" name="func"
 						title="Enter/paste your assembly code function here. Currently, we cannot parse complete assembly code files."
-						placeholder="Enter/paste your assembly code function here. Currently, we cannot parse complete assembly code files."
+						placeholder="Enter/paste your assembly code function here. Currently, we cannot parse a complete assembly code file."
 						rows="21" wrap="hard" autocomplete="off" spellcheck="false"></textarea>
 				</div>
 				<button class='btn btn-primary pull-right' id="func-clone-btn ">

@@ -27,7 +27,7 @@
 			<items>
 				<AnchorPane minHeight="50.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
 					<children>
-					<Label layoutX="5.0" layoutY="7.0" prefHeight="17.0" prefWidth="506.0" text="Edit Server Properties (double click to edit, press enter to commit and right cilck for options):" AnchorPane.leftAnchor="5.0" />
+					<Label layoutX="5.0" layoutY="7.0" prefHeight="17.0" prefWidth="506.0" text="Edit Server Properties (Double Click to Edit, Press Enter to Commit and Right-Cilck for Options):" AnchorPane.leftAnchor="5.0" />
 					<TableView fx:id="propertyTable" editable="true" layoutX="1.0" layoutY="79.0" prefHeight="235.0" prefWidth="565.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                     
 	                    <columns>
@@ -37,7 +37,8 @@
                     </TableView>
                     <JFXButton fx:id="startButton" layoutX="439.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Start" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="72.0" />
 					<JFXButton fx:id="stopButton" layoutX="505.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Stop" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="6.0" />
-                    <MaterialDesignIconView fx:id="browseBtn" glyphName="FOLDER" size="18" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="6.0" />
+					<JFXButton fx:id="resetButton" layoutX="505.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleReset" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Reset" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="138.0" />
+					<MaterialDesignIconView fx:id="browseBtn" glyphName="FOLDER" size="18" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="6.0" />
                     <TextField fx:id="propertyFile" layoutX="48.0" layoutY="321.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="28.0" />
 					</children>
 				</AnchorPane>

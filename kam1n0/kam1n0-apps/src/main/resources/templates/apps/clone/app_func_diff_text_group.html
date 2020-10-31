@@ -149,7 +149,7 @@ textarea {
     	var fun_isVex = isVexCode(fun);
         $holder.html('');
         for (var i = 0; i < fun.nodes.length; ++i) {
-            $holder.append($('<div class="sep">').html("#" + fun.nodes[i].name));
+            $holder.append($('<div class="sep">').html(fun.nodes[i].name));
             var tbl = $('<table class=\'block\' id=\'' + fun.nodes[i].blockID + '\'>');
             var tblb = tbl.append('<tbody>');
             tbl.data('block', fun.nodes[i]);
@@ -292,7 +292,7 @@ textarea {
             var ulip = $('<ul>');
             lip.append(
                     $('<span>').append(
-                            $('<i class=\'fa fa-folder\'>')).append('  Group #' + i)
+                            $('<i class=\'fa fa-folder\'>')).append('  Group ' + i)
             ).append(ulip);
             for (var j = 0; j < cloneSet.length; ++j) {
                 var $li = $('<li style=\'cursor:pointer;\'>').append(
@@ -742,7 +742,7 @@ textarea {
                                     }
                                     $form.remove();
                                 }).append('close'))
-                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown supported'))
+                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown Supported'))
                 )
         );
         var $editArea = $form.find('textarea');

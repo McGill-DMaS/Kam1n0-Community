@@ -39,6 +39,7 @@ public class Kam1n0Connector {
 	private Console console;
 	private String KAM1N0_APP;
 	public String KAM1N0_PROPERTIES_DEFAULT;
+	public String KAM1N0_PROPERTIES_ORIGINAL_DEFAULT;
 
 	public Kam1n0Connector(String kam1n0HomePath, SimpleLogger logger, Console console) {
 		this.logger = logger;
@@ -47,6 +48,7 @@ public class Kam1n0Connector {
 		if (new File(KAM1N0_APP).exists())
 			logger.info("Found distribution kam1n0-server.jar");
 		this.KAM1N0_PROPERTIES_DEFAULT = kam1n0HomePath + "/kam1n0.properties";
+		this.KAM1N0_PROPERTIES_ORIGINAL_DEFAULT = kam1n0HomePath + "/kam1n0.original.properties";
 		if (new File(KAM1N0_PROPERTIES_DEFAULT).exists()) {
 			KAM1N0_PROPERTIES_DEFAULT = new File(KAM1N0_PROPERTIES_DEFAULT).getAbsolutePath();
 			logger.info("Found default configuration kam1n0.properties");

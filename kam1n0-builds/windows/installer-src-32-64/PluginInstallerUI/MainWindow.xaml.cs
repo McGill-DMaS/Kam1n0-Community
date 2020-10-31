@@ -114,7 +114,7 @@ namespace PluginInstallerUI
                     this.Dispatcher.BeginInvoke(new Action(() => {
                         this.insLbl.IsEnabled = false;
                         this.insLbl.Visibility = Visibility.Hidden;
-                        this.insLblTlt.Content = "We found existing Kam1n0 packages in your computer.";
+                        this.insLblTlt.Content = "Existing Kam1n0 packages were found on your system.";
                         this.insLblBtn.Visibility = Visibility.Hidden;
                     }));
 
@@ -128,13 +128,13 @@ namespace PluginInstallerUI
         {
             if (operation.Equals(Operation.Install))
             {
-                updateBtn("Installation Completed.");
-                updateMsg("Installation Completed.");
+                updateBtn("Installation Completed");
+                updateMsg("Installation Completed");
             }
             else
             {
-                updateBtn("Application Uninstalled.");
-                updateMsg("Application Uninstalled.");
+                updateBtn("Application Uninstalled");
+                updateMsg("Application Uninstalled");
             }
             this.running = false;
         }
@@ -182,7 +182,7 @@ namespace PluginInstallerUI
             {
                 this.installBtn.Content = "Installing...";
                 if (!CheckIfIsIdaPluginsFolder(this.insLbl.Text)) {
-                    MessageBox.Show("The selected directory does not contains a IDA distribution. Please choose another directory.", "Warning", MessageBoxButton.OK);
+                    MessageBox.Show("The selected folder does not contain an IDA Pro installation. Please select another folder.", "Warning", MessageBoxButton.OK);
                     this.Dispatcher.BeginInvoke(new Action(() => { this.installBtn.IsEnabled = true; }));
                     updateBtn("Agree and Install All");
                     return;
@@ -249,5 +249,9 @@ namespace PluginInstallerUI
             return candidates[1];
         }
 
+        private void logger_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

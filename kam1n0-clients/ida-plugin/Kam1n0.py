@@ -13,9 +13,10 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  *******************************************************************************/
-
-import Kam1n0.Plugin as kp
-
-
-def PLUGIN_ENTRY():
-    return kp.kam1n0_t()
+import idaapi
+res = idaapi.get_plugin_options("kam1n0")
+if res != 'noinit':
+    import Kam1n0.Plugin as kp
+    
+    def PLUGIN_ENTRY():
+        return kp.kam1n0_t()

@@ -135,6 +135,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 			oblk.blockId = blk.id;
 			oblk.callingBlocks = blk.call;
 			oblk.codes = new ArrayList<>(blk.asmLines());
+			oblk.oprTypes = new ArrayList<>(blk.oprTypes);
 			oblk.codesSize = oblk.codes.size();
 			oblk.funcCodeSize = ofunc.codeSize;
 			oblk.functionId = func.id;

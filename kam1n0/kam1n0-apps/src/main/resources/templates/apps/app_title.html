@@ -12,8 +12,8 @@
 			</div>
 			<div class="card-footer">
 				<div class="stats">
-					<span><i class="fa fa-plug"></i> Plug-in accessible URL: <a style="bottom:0" th:text="${model.basicInfo.calculatePrefix()}" th:href="${model.basicInfo.calculatePrefix()}"></a></span>
-					<i class="material-icons">access_time</i> created at <span
+					<span><i class="fa fa-plug"></i> Plug-in Accessible URL: <a style="bottom:0" th:text="${model.basicInfo.calculatePrefix()}" th:href="${model.basicInfo.calculatePrefix()}"></a></span>
+					<i class="material-icons">access_time</i> Created on <span
 						th:text="${#dates.format(model.basicInfo.creationDate, 'dd-MMM-yyyy')}"></span> 
 				</div>
 			</div>

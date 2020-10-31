@@ -1,16 +1,13 @@
 package ca.mcgill.sis.dmas.kam1n0.app;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.mcgill.sis.dmas.kam1n0.app.adata.BlockDataUnit;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +61,7 @@ public abstract class ApplicationHandler {
 	protected UserController userController;
 
 	@Autowired
-	private ApplicationInfoValidatorUpdated validator;
+	public ApplicationInfoValidatorUpdated validator;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -74,6 +71,7 @@ public abstract class ApplicationHandler {
 	public final static String FRAG_APP_BIN_LIST = "apps/app_binary_list";
 	public final static String FRAG_APP_FUNC_FLOW = "apps/app_func_flow";
 	public final static String FRAG_APP_FUNC_TEXT = "apps/app_func_text";
+	public final static String FRAG_APP_BIN_DEL = "apps/delete_bin";
 
 	public ModelAndView getHomeModelAndViewImpl(long appId) {
 		ApplicationInfoSummary summary = meta.getInfoSummary(appId);
@@ -89,7 +87,6 @@ public abstract class ApplicationHandler {
 	public final ModelAndFragment getBinaryListFragment(ApplicationInfo info) {
 		return new ModelAndFragment(FRAG_APP_BIN_LIST, info);
 	}
-
 	public List<Binary> getBinaries(long appId) {
 		return meta.getBinaries(appId);
 	}
@@ -145,6 +142,25 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final List<BinaryDataUnit> getBinInfos(@PathVariable("appId") long appId) {
 		return this.getBinaries(appId).stream().map(BinaryDataUnit::new).collect(Collectors.toList());
+	}
+
+
+
+	@Prioritize
+	@RequestMapping(value = "/{appId:.+}/delBin", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> delCluster(@PathVariable("appId") long appId, @RequestParam("id") long binaryId, Model model) {
+		try {
+			BinaryDataUnit bin = new BinaryDataUnit(this.meta.getBinary(appId, binaryId));
+			this.meta.getFunctions(appId, binaryId).stream().map(func -> this.meta.getFunction(appId,func.functionId)).forEach(func -> {func.nodes.stream().forEach(blk->{this.meta.delBlock(appId,Long.parseLong(blk.blockID));});});
+			this.meta.getFunctions(appId, binaryId).stream().forEach(func -> this.meta.delFunction(appId,func.functionId));
+			this.meta.delBinary(appId,binaryId);
+			return ImmutableMap.of();
+
+		} catch (Exception e) {
+			logger.error("Failed to delete the binary file.", e);
+			return ImmutableMap.of("error", "Failed to delete the binary file.");
+		}
 	}
 
 	@Prioritize
@@ -262,7 +278,7 @@ public abstract class ApplicationHandler {
 			model.addAttribute("applicationTypes", AppPlatform.appTypes.keySet());
 			model.addAttribute("appConfForm", info.configuration.createView());
 			model.addAttribute("edit", true);
-			return MVCUtils.wrapAuthenticatedHomePage("Edit an application.", "Please edit the required details.",
+			return MVCUtils.wrapAuthenticatedHomePage("Edit the Application.", "Please edit the required information.",
 					new ModelAndFragment(AppController.FRAG_APP_CONF, model));
 		} catch (Exception e) {
 			logger.error("Failed to create application form..", e);

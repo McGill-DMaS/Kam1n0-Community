@@ -118,7 +118,7 @@ public class ApplicationInfo implements Serializable {
 
 	public String applicationType;
 
-	public String title;
+	public String title = "default title";
 
 	public String name;
 

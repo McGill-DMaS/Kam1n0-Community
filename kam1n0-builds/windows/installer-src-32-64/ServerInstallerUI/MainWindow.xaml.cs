@@ -100,7 +100,7 @@ namespace ServerInstallerUI
                     this.Dispatcher.BeginInvoke(new Action(() => {
                         this.insLbl.IsEnabled = false;
                         this.insLbl.Visibility = Visibility.Hidden;
-                        this.insLblTil.Content = "We found existing Kam1n0 packages in your computer.";
+                        this.insLblTil.Content = "Existing Kam1n0 packages were found on your system.";
                         this.insLblBtn.Visibility = Visibility.Hidden;
                     }));
                     
@@ -114,12 +114,12 @@ namespace ServerInstallerUI
         {
             if (operation.Equals(Operation.Install))
             {
-                updateBtn("Installation Completed.");
-                updateMsg("Installation Completed.");
+                updateBtn("Installation Completed");
+                updateMsg("Installation Completed");
             }
             else {
-                updateBtn("Application Uninstalled.");
-                updateMsg("Application Uninstalled.");
+                updateBtn("Application Uninstalled");
+                updateMsg("Application Uninstalled");
             }
             this.running = false;
         }
@@ -199,6 +199,16 @@ namespace ServerInstallerUI
             double windowHeight = this.Height;
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void logger_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 

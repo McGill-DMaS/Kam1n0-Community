@@ -2,20 +2,20 @@
 
 <h1> <img src="documentation/others/kam1n0.png" width="45" />   What Is Kam1n0 v2? </h1>
 
-![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square&maxAge=86400) 
+![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square&maxAge=86400)
 ![GitHub (pre-)release](https://img.shields.io/badge/kam1n0%20release-v2.0.0-orange.svg?style=flat-square&maxAge=86400)
 ![Github All Releases](https://img.shields.io/github/downloads/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/total.svg?style=flat-square&&maxAge=86400)
 ![JDK](https://img.shields.io/badge/JDK%2FJSE-8-brightgreen.svg?style=flat-square&maxAge=86400)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&maxAge=86400)
 
 
-**_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It allows a user to first index a (large) collection of binaries into different repositories and provide different analytic services such as clone search. It supports multi-tenancy access and management of assembly repositories by using the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: **_Asm-Clone_**, **_Sym1n0_**, and **_Asm2Vec_**. New application type can be further added to the platform. 
+**_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It allows a user to first index a (large) collection of binaries into different repositories and provide different analytic services such as clone search and classification. It supports multi-tenancy access and management of assembly repositories by using the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: **_Asm-Clone_**, **_Sym1n0_**, and **_Asm2Vec_**, and an **_executable classification_** based on _Asm2Vec_. New application type can be further added to the platform.
 
 <p align="center">
-  <img src="documentation/others/stack.png"/> 
+  <img src="documentation/others/stack.png"/>
 </p>
 
-A user can create multiple application instances. An application instance can be shared among a specific group of users. The application repository read-write access and on-off status can be controlled by the application owner. Kam1n0 v2.x server can serve the applications concurrently using several shared resource pools. 
+A user can create multiple application instances. An application instance can be shared among a specific group of users. The application repository read-write access and on-off status can be controlled by the application owner. Kam1n0 v2.x server can serve the applications concurrently using several shared resource pools.
 
 
 Kam1n0 was developed by [Steven H. H. Ding](http://stevending.net/) and [Miles Q. Li](http://milesqli.github.io/) under the supervision of [Benjamin C. M. Fung](http://dmas.lab.mcgill.ca/fung/) of the [Data Mining and Security Lab](http://dmas.lab.mcgill.ca/) at McGill University in Canada. It won the second prize at the [Hex-Rays Plug-In Contest 2015](https://hex-rays.com/contests/2015/). If you find Kam1n0 useful, please cite our paper:
@@ -41,7 +41,7 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 
 <p align="center">
-  <img src="documentation/others/asm-clone.png"/> 
+  <img src="documentation/others/asm-clone.png"/>
 </p>
 
 
@@ -49,27 +49,27 @@ Asm-Clone applications try to solve the efficient subgraph search problem (i.e. 
 
 Semantic clone search by differentiated fuzz testing and constraint solving. An efficient and scalable dynamic-static hybrid approach (<1s average query time and <100ms average index time with 1.5M functions). Given a target function (the one on the left as shown below), it can identify the cloned subgraphs among other functions in the repository (the one on the right as shown below). Support visualization of abstract syntax graph.
 * Application Type: Sym1n0 (v2 only)
-* Clone search by both symbolic execution and concrete execution. 
+* Clone search by both symbolic execution and concrete execution.
 * Differentiate functions based on their different I/O behavior.
-* Clone search conducted on the abstract syntax graph constructed from Vex IR (powered by LibVex). 
+* Clone search conducted on the abstract syntax graph constructed from Vex IR (powered by LibVex).
   * \+ Clone search across different assembly code families.
-    * For example, indexed x86 binaries but the query is ARM code. 
+    * For example, indexed x86 binaries but the query is ARM code.
   * \+ Subgraph clone search.
   * \+ Support a wide range of families throub LibVex.
     * x86, AMD64, MIPS32, MIPS64, PowerPC32, PowerPC64, ARM32, and ARM64.
   * \+ An efficient dynamic-static hybrid approach.
   * \+ Ideal for analyzing firmware compiled for different processors.
   * \- Sensitive to heavy graph manipulation (such as a full flattening).
-  * \- Sensitive to large scale breakdown of basic block integrity. 
+  * \- Sensitive to large scale breakdown of basic block integrity.
 
 
 
 <p align="center">
-  <img src="documentation/others/sym1n0.png"/> 
+  <img src="documentation/others/sym1n0.png"/>
 </p>
 
 
-## Ams2Vec
+## Asm2Vec
 
 Asm2Vec leverages representation learning. It understands the lexical semantic relationship of assembly code. For example, `xmm*` registers are semantically related to vector operations such as `addps`. `memcpy` is similar to `strcpy`. The graph below shows different assembly functions compiled from the same source code of `gmpz_tdiv_r_2exp` in libgmp. From left to right, the assembly functions are compiled with GCC O0 option, GCC O3 option, O-LLVM obfuscator Control Flow Graph, Flattening option, and LLVM obfuscator Bogus Control Flow Graph option. Asm2Vec can **_statically_** identify them as clones.
 
@@ -80,7 +80,7 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
   * \+ State-of-the-art for clone search against code optimization.
     * (>0.8 accuracy between O0 and O3, >0.94 accuracy between O2 and O3)
   * \+ Even better result than the most recent dynamic approach.
-  * \+ Much more efficient than recent dynamic approaches. 
+  * \+ Much more efficient than recent dynamic approaches.
   * \+ Do not need to define the architecture. It self-learns by reading large volume of code.
   * \+ Static approach: efficient and scalable.
   * \- No subgraphs.
@@ -88,26 +88,27 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
   * \- Static approach: cannot recognize jump table, etc.
 
 
+
 <p align="center">
-  <img src="documentation/others/asm2vec.png"/> 
+  <img src="documentation/others/asm2vec.png"/>
 </p>
 
 ## Platform Overview
 
-The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a material design. In general, each user has an application list, a running-job list, and a result file list. 
-* Application list shows the application instances owned by the user and shared by the others. 
+The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a material design. In general, each user has an application list, a running-job list, and a result file list.
+* Application list shows the application instances owned by the user and shared by the others.
 * Running-job list shows the running progress for a large query (such as chrome.dll) and indexing procedure.
-* Result file list displays the saved results. 
-More details of the UI design can be found in our detailed [tutorial](#documentation). 
+* Result file list displays the saved results.
+More details of the UI design can be found in our detailed [tutorial](#documentation).
 
 <p align="center">
-  <img src="documentation/others/pic2.png"/> 
+  <img src="documentation/others/pic2.png"/>
 </p>
 
 
 #  Installation Instruction
 
-The current release of Kam1n0 consists of two installers: the core server and IDA Pro plug-in. 
+The current release of Kam1n0 consists of two installers: the core server and IDA Pro plug-in.
 
 <table>
   <tr>
@@ -153,7 +154,7 @@ The Kam1n0 core engine is purely written in Java. You need the following depende
 
 * [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
   * Java9 and Java10 are not supported at this moment.
-* [Optional] The latest version of IDA Pro with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary. 
+* [Optional] The latest version of IDA Pro with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary.
 
 Download the ```Kam1n0-Server.msi``` file from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path. IDA Pro is optional if the server does not have to deal with any disassembling. In other words, the client side  uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. Kam1n0 server will automatically detect your IDA Pro by looking for the default application that you used to open `.i64` file.
 
@@ -161,16 +162,16 @@ Download the ```Kam1n0-Server.msi``` file from our [release page](https://github
 
 The Kam1n0 IDA Pro plug-in is written in Python for the logic and in HTML/JavaScript for the rendering. The following dependencies are required for its installation:
 
-* [Required] IDA Pro (>6.7) with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary. 
+* [Required] IDA Pro (>6.7) with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary.
 
 
-Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins folder which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.95/plugins```. The installer will detect and validate the path. 
+Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the plug-in and runtime. Please note that the plug-in has to be installed in the IDA Pro plugins folder which is located at ```$IDA_PRO_PATH$/plugins```. For example, on Windows, the path could be ```C:/Program Files (x86)/IDA 6.95/plugins```. The installer will detect and validate the path.
 
 ## Setting Up Kam1n0 on Ubuntu/Debian-based systems
 
 * Ensure you have the **Oracle** version of Java 8. (Not default-jdk in apt, and not Java 8 or 9.)
     * Add Oracle's PPA and then update your package repository: `sudo add-apt-repository ppa:webupd8team/java`
-        * If you encounter any errors (such as `~webupd8team not found`), if you are on a proxy, make sure you set and export your `http_proxy` and `https_proxy` environment variables, and then try again with the `-E` option on sudo. Additionally, if you are getting a 'add-apt repository command not found error, try: `sudo apt install -y software-properties-common`. 
+        * If you encounter any errors (such as `~webupd8team not found`), if you are on a proxy, make sure you set and export your `http_proxy` and `https_proxy` environment variables, and then try again with the `-E` option on sudo. Additionally, if you are getting a 'add-apt repository command not found error, try: `sudo apt install -y software-properties-common`.
     * Afterwards: `sudo apt-get update`, and `sudo apt-get install oracle-java8-installer`
         * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-8-oracle`
 
@@ -219,7 +220,7 @@ The assembly code repositories and configuration files used in previous versions
     * [User Interface](documentation/ida-pro-plugin/ida-pro-plugin.md#user-interface)
     * [Synchronization](documentation/ida-pro-plugin/ida-pro-plugin.md#synchronization)
     * [Two-way Communication](documentation/ida-pro-plugin/ida-pro-plugin.md#communication)
-    
+
 # Development
 Clone the latest stable branch (don't forget `--recursive`!):
 ```bash
@@ -229,8 +230,8 @@ git clone --recursive -b master2.x --single-branch https://github.com/McGill-DMa
 ## Importing the project.
 IntelliJ: Import the root /kam1n0/kam1n0/ as a maven project. All the submodules will be loaded accordingly.
 EclipseEE: Add the cloned git repository to the git view. Import all maven projects from the git repository.
-You may need to modify the classpath to address any error. 
-All the resources path are dynamically modified when running inside an IDE 
+You may need to modify the classpath to address any error.
+All the resources path are dynamically modified when running inside an IDE
 (through the kam1n0-resources submodule).
 
 To build the project:
@@ -241,7 +242,7 @@ mvn -DskipTests package
 ```
 The resulting binaries can be found in /kam1n0/build-bins/
 
-To run the test code, you will need to first download `chromedriver.exe` from http://chromedriver.chromium.org/ and add its *absolute* path into an environment variable named `webdriver.chrome.driver`. It is also required that there is a chrome browser installed in the system. The test code will launch a browser instance to test the UI interfaces. The complete testing procedure will take approximately 3 hours. 
+To run the test code, you will need to first download `chromedriver.exe` from http://chromedriver.chromium.org/ and add its *absolute* path into an environment variable named `webdriver.chrome.driver`. It is also required that there is a chrome browser installed in the system. The test code will launch a browser instance to test the UI interfaces. The complete testing procedure will take approximately 3 hours.
 
 ```
 cd /kam1n0/kam1n0
@@ -251,16 +252,16 @@ mvn -DforkMode=never test
 ```
 
 These commands only compiles java with pre-compiled wheels of libvex and z3. It works out-of-the-box.
-The build of libvex and z3 is platform-dependent. We use a fork of libvex from Angr. 
+The build of libvex and z3 is platform-dependent. We use a fork of libvex from Angr.
 More serious build scripts as well as installers for windows/linux can be found under /kam1n0-builds/
 
 * kam1n0: The server's source code.
-* kam1n0-builds: Installer source code and scripts to build the distribution. 
-* kam1n0-clients: The clients' source code. 
+* kam1n0-builds: Installer source code and scripts to build the distribution.
+* kam1n0-clients: The clients' source code.
 
 ## Binary Releases
 
-We have a Jenkin server for contineous development and delivery. Latest stable release will be posted here. Periodically we will synchronize our internal experimental branch with this repository. 
+We have a Jenkin server for contineous development and delivery. Latest stable release will be posted here. Periodically we will synchronize our internal experimental branch with this repository.
 
 
 ## Licensing
@@ -280,5 +281,3 @@ Copyright 2014-2019 McGill University and the Researchers. All rights reserved.
 ![image](https://img.shields.io/badge/Acknowledgement-NVIDIA%20Corporation%20for%20donating%20the%20Titan%20Xp%20used%20for%20this%20research-blue.svg?style=for-the-badge)
 
 ![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill%20Univrsity-red.svg?style=for-the-badge)
-
-

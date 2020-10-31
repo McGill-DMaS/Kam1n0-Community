@@ -23,20 +23,25 @@ import pickle
 from .utilities.CloneConnector import CloneConnector
 from .forms.ConnectionManagementForm import ConnectionManagementForm
 from .forms.SelectionForm import SelectionForm
+import ida_kernwin
 
 from . import IDAUtils
-
 
 class Kam1n0PluginManager:
     def __init__(self):
         self.connector = None
+        ida_kernwin.create_menu("Kam1n0Menu", "Kam1n0", "View")
         self.actions = list()
         self.conf_dir = os.path.expanduser("~") + "/Kam1n0"
         if not os.path.exists(self.conf_dir):
             os.makedirs(self.conf_dir)
         self.icons = IDAUtils.load_icons_as_dict()
+
         self.configuration = self.get_configuration()
         self.setup_default_connection()
+
+        self.connection_management_form = ConnectionManagementForm(self)
+        self.selection_form = SelectionForm(self)
 
         global hooks
         hooks = Hooks()
@@ -67,7 +72,8 @@ class Kam1n0PluginManager:
                     msg_callback=IDAUtils.execute
                 )
         else:
-            self.configuration = dict()
+            if self.configuration is None:
+                self.configuration = {}
             self.configuration['apps'] = {}
             self.configuration['default-app'] = None
             self.connector = None
@@ -108,7 +114,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SEARCH,
             tooltip="Search current function",
             shortcut="Ctrl+Shift+s",
-            menuPath="Search/next code",
+            menuPath= "Kam1n0/",#"Search/next code",
             callback=self.query_current_func,
             args=None
         )
@@ -136,7 +142,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_INDEX,
             tooltip="Index current function",
             shortcut="Ctrl+Shift+k",
-            menuPath="Edit/Export data",
+            menuPath="Kam1n0/",
             callback=self.index_current_func,
             args=None
         )
@@ -150,7 +156,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_INDEX_MULTIPLE,
             tooltip="Index the selected functions",
             shortcut="Ctrl+Shift+j",
-            menuPath="Edit/Export data",
+            menuPath="Kam1n0/",
             callback=self.index_selected_func,
             args=None
         )
@@ -164,7 +170,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_CONN,
             tooltip="Manage connections",
             shortcut="",
-            menuPath="Edit/Kam1n0/",
+            menuPath="Kam1n0/",
             callback=self.open_cnn_manager,
             args=None
         )
@@ -178,7 +184,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SETT,
             tooltip="Manage applications",
             shortcut="",
-            menuPath="Edit/Kam1n0/",
+            menuPath="Kam1n0/",
             callback=self.open_user_home,
             args=None
         )
@@ -192,7 +198,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_COMP,
             tooltip="Composition analysis",
             shortcut="",
-            menuPath="Search/next code",
+            menuPath="Kam1n0/",
             callback=self.query_binary,
             args=None
         )
@@ -206,7 +212,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_FRAG,
             tooltip="Query a code fragment",
             shortcut="",
-            menuPath="Search/next code",
+            menuPath="Kam1n0/",
             callback=self.query_fragment,
             args=None
         )
@@ -229,24 +235,22 @@ class Kam1n0PluginManager:
         title = self._get_ctx_title(ctx)
         if title == "Functions window":
             if IDAUtils.is_hexrays_v7():
-                ida_funcs = [idaapi.getn_func(f_idx) for f_idx in
+                ida_funcs_t = [idaapi.getn_func(f_idx) for f_idx in
                              ctx.chooser_selection]
             else:
-                ida_funcs = [idaapi.getn_func(f_idx - 1) for f_idx in
+                ida_funcs_t = [idaapi.getn_func(f_idx - 1) for f_idx in
                              ctx.chooser_selection]
-            if self._get_connector() is not None:
-                self.connector.index(
-                    IDAUtils.get_as_single_surrogate(ida_funcs))
+            connector, ida_funcs, _, _, _, _ = self.select_funcs(ida_funcs_t, type='Index')
         else:
-            connector, ida_funcs, _, _, _ = self.select_funcs()
-            if ida_funcs is None:
-                return
-            if connector is None:
-                self.open_cnn_manager()
-                connector = self.connector
-            if connector is not None and ida_funcs is not None and len(ida_funcs) > 0:
-                self.connector.index(
-                    IDAUtils.get_as_single_surrogate(ida_funcs))
+            connector, ida_funcs, _, _, _, _ = self.select_funcs([], type='Index')
+
+        if ida_funcs is None:
+            return
+        if connector is None:
+            self.open_cnn_manager()
+            connector = self.connector
+        if connector is not None and ida_funcs is not None and len(ida_funcs) > 0:
+            connector.index(IDAUtils.get_as_single_surrogate(ida_funcs))
 
     def query_current_func(self, *_):
         func = IDAUtils.get_ida_func()
@@ -262,7 +266,8 @@ class Kam1n0PluginManager:
                 avoid_same_binary=self.get_conf_avoidSameBinary())
 
     def query_fragment(self, *_):
-        selection = idaapi.read_selection()
+        view = idaapi.get_current_viewer()
+        selection = idaapi.read_range_selection(view)
         content = ""
         if selection[0] is True:
             content = IDAUtils.get_selected_code(selection[1], selection[2])
@@ -277,45 +282,33 @@ class Kam1n0PluginManager:
         title = self._get_ctx_title(ctx)
         if title == "Functions window":
             if IDAUtils.is_hexrays_v7():
-                ida_funcs = [idaapi.getn_func(f_idx) for f_idx in
+                ida_funcs_t = [idaapi.getn_func(f_idx) for f_idx in
                              ctx.chooser_selection]
             else:
-                ida_funcs = [idaapi.getn_func(f_idx - 1) for f_idx in
+                ida_funcs_t = [idaapi.getn_func(f_idx - 1) for f_idx in
                              ctx.chooser_selection]
-            if self._get_connector() is not None:
-                if not self.get_conf_saveAsKam():
-                    self.connector.search_func(
-                        queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
-                        topk=self.get_conf_topk(),
-                        threshold=self.get_conf_threshold(),
-                        avoid_same_binary=self.get_conf_avoidSameBinary())
-                else:
-                    self.connector.search_binary(
-                        IDAUtils.get_as_single_surrogate(ida_funcs),
-                        self.get_conf_topk(),
-                        self.get_conf_threshold(),
-                        self.get_conf_avoidSameBinary())
+            connector, ida_funcs, threshold, topk, avoidSameBinary, saveAsKam = self.select_funcs(ida_funcs_t, type='Search')
         else:
-            connector, ida_funcs, threshold, topk, avoidSameBinary = self.select_funcs()
-            if ida_funcs is None:
-                return
-            if connector is None:
-                self.open_cnn_manager()
-                connector = self.connector
-            if connector is not None and ida_funcs is not None and len(
-                    ida_funcs) > 0:
-                if not self.get_conf_saveAsKam():
-                    connector.search_func(
-                        queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
-                        topk=topk,
-                        threshold=threshold,
-                        avoid_same_binary=avoidSameBinary)
-                else:
-                    self.connector.search_binary(
-                        IDAUtils.get_as_single_surrogate(ida_funcs),
-                        topk=topk,
-                        threshold=threshold,
-                        avoid_same_binary=avoid_same_binary)
+            connector, ida_funcs, threshold, topk, avoidSameBinary, saveAsKam = self.select_funcs([], type='Search')
+
+        if ida_funcs is None:
+            return
+        if connector is None:
+            self.open_cnn_manager()
+            connector = self.connector
+        if connector is not None and ida_funcs is not None and len(ida_funcs) > 0:
+            if not saveAsKam:
+                connector.search_func(
+                    queries=IDAUtils.get_as_multiple_surrogate(ida_funcs),
+                    topk=topk,
+                    threshold=threshold,
+                    avoid_same_binary=avoidSameBinary)
+            else:
+                connector.search_binary(
+                    IDAUtils.get_as_single_surrogate(ida_funcs),
+                    topk=topk,
+                    threshold=threshold,
+                    avoid_same_binary=avoidSameBinary)
 
     def query_binary(self, *_):
         print()
@@ -330,29 +323,32 @@ class Kam1n0PluginManager:
                                          self.get_conf_threshold(), self.get_conf_avoidSameBinary())
 
     def open_cnn_manager(self, *_):
-        form = ConnectionManagementForm(self)
-        form.Execute()
-        self.setup_default_connection()
-        self.save_configuration(self.configuration)
+        self.connection_management_form.OnStart()
+        if self.connection_management_form.exec():
+            self.save_configuration(self.configuration)
+            self.setup_default_connection()
 
     def open_user_home(self, *_):
         if self._get_connector() is not None:
             self.connector.open_user_home()
 
-    def select_funcs(self, disable_param=False):
-        selection_form = SelectionForm(self)
-        ok = selection_form.Execute()
-        ida_funcs = selection_form.selected_funcs
-        selected_key = selection_form.selected_app_key
-        threshold = selection_form.threshold
-        topk = selection_form.topk
-        avoidSameBinary = selection_form.avoidSameBinary
-        selection_form.Free()
-        app = None if selected_key is None else self.configuration['apps'][selected_key]
-        if ok and app is not None:
-            connector = CloneConnector(msg_callback=IDAUtils.execute, **app)
-            return connector, ida_funcs, threshold, topk, avoidSameBinary
-        return None, None, None, None, None
+    def select_funcs(self, ida_funcs, type='Search'):
+        self.selection_form.OnStart(ida_funcs, type)
+        if self.selection_form.exec():
+            ida_funcs = self.selection_form.selected_funcs
+            selected_key = self.selection_form.selected_app_key
+            threshold = self.selection_form.threshold
+            topk = self.selection_form.topk
+            avoidSameBinary = self.selection_form.avoidSameBinary
+            saveAsKam = self.selection_form.saveAsKam
+            if selected_key is None:
+                app = None
+            else:
+                app = self.configuration['apps'][selected_key]
+            if app:
+                connector = CloneConnector(msg_callback=IDAUtils.execute, **app)
+                return connector, ida_funcs, threshold, topk, avoidSameBinary, saveAsKam
+        return None, None, None, None, None, None
 
     def get_configuration(self):
         conf_file = self.conf_dir + '/plugin-conf.pk'

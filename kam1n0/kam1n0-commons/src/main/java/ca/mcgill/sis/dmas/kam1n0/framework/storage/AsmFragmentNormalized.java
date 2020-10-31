@@ -21,18 +21,25 @@ import java.util.List;
 public class AsmFragmentNormalized implements AsmFragment {
 
 	public List<List<String>> asmLines;
+	public List<List<Integer>> oprTypes;
 
 	@Override
 	public Iterator<List<String>> iterator() {
 		return asmLines.iterator();
 	}
 
-	public AsmFragmentNormalized(List<List<String>> lines) {
+	public AsmFragmentNormalized(List<List<String>> lines, List<List<Integer>> oprTypes) {
 		this.asmLines = lines;
+		this.oprTypes = oprTypes;
 	}
 
 	@Override
 	public List<List<String>> getAsmLines() {
 		return asmLines;
+	}
+
+	@Override
+	public List<List<Integer>> getOprTypes() {
+		return oprTypes;
 	}
 }
