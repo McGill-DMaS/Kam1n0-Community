@@ -46,6 +46,7 @@ import ca.mcgill.sis.dmas.kam1n0.app.util.ModelAndFragment;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy;
 import ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra.ObjectFactoryCassandra;
 
+
 @Controller
 public class AppController {
 
@@ -126,6 +127,21 @@ public class AppController {
 		appsFactory.put(global_key, info_old);
 		return true;
 	}
+	
+	public boolean updateFullApplicationInstance(ApplicationInfo info) {
+		// one can only update basic information (a copy):
+		ApplicationInfo info_old = getAppInfo(info.appId);
+		info_old.users_read = info.users_read;
+		info_old.users_wirte = info.users_wirte;
+		info_old.name = info.name;
+		info_old.title = info.title;
+		info_old.description = info.description;
+		info_old.isPrivate = info.isPrivate;
+		info_old.isOnline = info.isOnline;
+		info_old.setConfiguration(info.configuration);
+		appsFactory.put(global_key, info_old);
+		return true;
+	}
 
 	public ApplicationConfiguration getAppSpecificConfFrag(String type) throws Exception {
 		try {
@@ -150,7 +166,7 @@ public class AppController {
 				model.addAttribute("appConfForm", info.configuration.createView());
 			}
 			model.addAttribute("edit", false);
-			return MVCUtils.wrapAuthenticatedHomePage("Create an application.", "Please fill the required details.",
+			return MVCUtils.wrapAuthenticatedHomePage("Create an Application.", "Please fill the required information.",
 					new ModelAndFragment(FRAG_APP_CONF, model));
 		} catch (Exception e) {
 			AppPlatform.logger.error("Failed to create application form..", e);
@@ -170,7 +186,7 @@ public class AppController {
 				model.addAttribute("confObj", info);
 				model.addAttribute("applicationTypes", AppPlatform.appTypes.keySet());
 				model.addAttribute("edit", false);
-				return MVCUtils.wrapAuthenticatedHomePage("Create an application.", "Please edit the following errors.",
+				return MVCUtils.wrapAuthenticatedHomePage("Create an Application.", "Please correct the following errors.",
 						new ModelAndFragment(FRAG_APP_CONF, model));
 			}
 			info.owner = UserController.findUserName();
@@ -208,7 +224,7 @@ public class AppController {
 	@GetMapping("/userHome")
 	public ModelAndView createUserHome() {
 		try {
-			return MVCUtils.wrapAuthenticatedHomePage("App List", "Click on the permanent link to access.",
+			return MVCUtils.wrapAuthenticatedHomePage("Applications List", "Click on a link to access the corresponding application.",
 					createAppList(), userController.createProgressList(), userController.createFileList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
@@ -221,7 +237,7 @@ public class AppController {
 	public ModelAndView createProgressList() {
 		try {
 			return MVCUtils.wrapAuthenticatedHomePage("Job Details",
-					"Job details can also be found under your user home page.", userController.createProgressList());
+					"Job details can also be found on your user home page.", userController.createProgressList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
 			return MVCUtils.errorMV("Failed to create homepage. ");

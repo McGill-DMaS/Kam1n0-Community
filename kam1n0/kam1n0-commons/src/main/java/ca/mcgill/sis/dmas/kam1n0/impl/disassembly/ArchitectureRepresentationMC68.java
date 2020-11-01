@@ -380,7 +380,7 @@ public class ArchitectureRepresentationMC68 {
 				KamResourceLoader.writeFile("architectures/" + ar.processor + ".xml").getAbsolutePath());
 		AsmLineNormalizer normalizer = new AsmLineNormalizer(new NormalizationSetting(),
 				ArchitectureType.mc68.retrieveNormalizationResource());
-		System.out.println(normalizer.tokenizeAsmLine(Arrays.asList("", "fddiv.l", "d0", "a0")));
+//		System.out.println(normalizer.tokenizeAsmLine(Arrays.asList("", "fddiv.l", "d0", "a0")));
 
 		//
 		// FeatureConstructor constructor = new

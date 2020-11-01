@@ -31,19 +31,22 @@
 	background-color: transparent;
 }
 </style>
-	<div class="col-xs-6" style="height: 100%">
+	<div class="col-xs-12" style="height: 100%">
 		<div class="card" id="flowGraphSource" style="height: 100%">
 			<div class="card-header" data-background-color="green"
 				id="headerSource">
 				<h4 class="title" style="font-size: 15px">
-					<i class="fa fa-cloud"></i> Flow Graph (Target)  <span id="chartSource-title" class="small" style="color:white"></span>
+					<i class="fa fa-cloud"></i> Flow Graph View  <span id="clone-title" style="margin-left: 50px"></span>
 				</h4>
 			</div>
-			<div class="card-content" style="height: 100%; padding-bottom: 50px">
+            
+			<div class="card-content" id="card-body"
+				style="height: 100%; padding-bottom: 50px">
+			<div class="col-xs-6 no-padding" style="height: 100%; padding-bottom: 50px">
 				<div id="chartSource"
-					style="width: 100%; height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
+					style=" height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
 					<svg
-						style="width: 100%; height: 100%; background-color: white; padding: 0px;">
+						style="width: 100%;width: 100%; height: 100%; background-color: white; padding: 0px;">
                         <g />
                     </svg>
 					<div style="position: absolute; top: 30px; right: 0; height: 80%;"
@@ -56,21 +59,9 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-	<div class="col-xs-6" style="height: 100%">
-		<div class="card" id="flowGraphTarget"
-			style="height: 100%; padding-bottom: 50px">
-			<div class="card-header" data-background-color="green"
-				id="headerTarget">
-
-				<h4 class="title" style="font-size: 15px">
-					<i class="fa fa-cloud"></i> Flow Graph (Source) <span id="chartTarget-title" class="small" style="color:white"></span>
-				</h4>
-			</div>
-			<div class="card-content" style="height: 100%">
+			<div class="col-xs-6 no-padding" style="height: 100%" >
 				<div id="chartTarget"
-					style="width: 100%; height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
+					style=" height: 100%; min-height: 100px; overflow-y: hidden; overflow-x: hidden">
 					<svg
 						style="width: 100%; height: 100%; background-color: white; padding: 0px;">
                         <g />
@@ -84,6 +75,7 @@
 							data-slider-id="GC" />
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>
@@ -122,14 +114,30 @@
 				success : function(data) {
 					var pb_fun = data;
 					drawFlow(pb_fun, placeholderId, clonedParts, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-					$('#'+placeholderId+'-title').html(
-			        		   "[ " + pb_fun.functionName + " @ " + pb_fun.binaryName
-			                   + " ]"
-			        );
 				}
 			});
 		}
-
+        
+        function retrieve(functionId, callback) {
+			$.ajax({
+				type : 'GET',
+				dataType : 'json',
+				url : /*[[${model.prefix + 'func_flow'}]]*/"/",
+				data : {
+					id : functionId
+				},
+				success : function(data) {
+					callback(data);
+				}
+			});
+		}
+		function draw_title(pa, pb, normalize){
+			$('#clone-title').html(
+		            "[ " + pa.functionName + " @ " + pa.binaryName
+		            + " ]            compares to              [ " +
+		            pb.functionName + " @ " + pb.binaryName + "]"
+		    );
+        }
 		$(function() {
 			var data = window.opener.fin_result;
 			var fid1 = QueryString['id1'];
@@ -143,15 +151,25 @@
 
 			if (ind1 && ind2) {
 				fid2 = data.results[ind1].clones[ind2].functionId;
-				draw(fid2, clone_parts, 'chartTarget');
+				draw(fid2, clone_parts, 'chartTarget',ind1);
 				drawFlow(data.results[ind1].function, 'chartSource', clone_parts, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-				$('#chartSource-title').html(
-		        		   "[ " + data.results[ind1].function.functionName + " @ " + data.results[ind1].function.binaryName
+                
+                    
+				$('#clone-title').html(
+		        		   "[ " +  data.results[ind1].function.functionName + " @ " + data.results[ind1].function.binaryName
+		                   + " ] compares to [ " +  data.results[ind1].clones[ind2].functionName + " @ " + data.results[ind1].clones[ind2].binaryName
 		                   + " ]"
 		        );
+                
+                
 			} else if (fid1 && fid2) {
 				draw(fid1, clone_parts, 'chartSource');
 				draw(fid2, clone_parts, 'chartTarget');
+				retrieve(fid1, function(pa){
+					retrieve(fid2, function(pb){
+						draw_title(pa, pb, false);
+					});
+				});
 			}
 
 		})

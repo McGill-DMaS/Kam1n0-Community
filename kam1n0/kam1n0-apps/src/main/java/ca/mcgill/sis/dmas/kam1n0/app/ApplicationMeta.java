@@ -69,6 +69,27 @@ public abstract class ApplicationMeta {
 		return bins.collect();
 	}
 
+	public Binary getBinary(long appId,long binaryId) {
+		Binary bin = platform.objectFactory.obj_binaries.querySingleBaisc(appId,binaryId);
+		return bin;
+	}
+
+	public void delBinary(long appId,long binaryId) {
+		platform.objectFactory.obj_binaries.del(appId,binaryId);
+		return;
+	}
+
+	public void delFunction(long appId,long functionId) {
+		platform.objectFactory.obj_functions.del(appId,functionId);
+		return;
+	}
+
+
+	public void delBlock(long appId,long blockId) {
+		platform.objectFactory.obj_blocks.del(appId,blockId);
+		return;
+	}
+
 	public List<Function> getFunctions(long appId) {
 		JavaRDD<Function> funcs = platform.objectFactory.obj_functions.queryMultipleBaisc(appId);
 		if (funcs == null)

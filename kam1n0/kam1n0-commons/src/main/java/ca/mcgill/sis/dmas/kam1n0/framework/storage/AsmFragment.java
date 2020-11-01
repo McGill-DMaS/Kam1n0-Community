@@ -20,6 +20,7 @@ import java.util.List;
 
 public interface AsmFragment extends Iterable<List<String>> {
 	public List<List<String>> getAsmLines();
+	public List<List<Integer>> getOprTypes();
 
 	@Override
 	default Iterator<List<String>> iterator() {

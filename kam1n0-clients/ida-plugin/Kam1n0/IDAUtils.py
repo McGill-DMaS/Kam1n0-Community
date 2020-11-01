@@ -103,7 +103,7 @@ def get_not_lib_ida_func_indexes(funcs):
 
 def get_ida_func(ea=None):
     if ea is None:
-        func = idaapi.get_func(idc.ScreenEA())
+        func = idaapi.get_func(idc.get_screen_ea())
         if not func:
             return None
         else:
@@ -272,58 +272,97 @@ def get_as_multiple_surrogate(funcs=None):
 
 
 def get_selected_code(sea, eea):
-    code = [str(idc.GetDisasm(head), errors='replace') for head in
+    code = [idc.GetDisasm(head) for head in
             idautils.Heads(sea, eea)]
     surrogate = get_as_single_surrogate(get_ida_func(sea))
-    func = surrogate['functions'][0]
-    func['comments'] = []
-    func['blocks'] = []
-    func['sea'] = sea
-    func['eea'] = eea
-
-    block = dict()
-    block['id'] = 0
-    block['sea'] = sea
-    if surrogate['architecture']['type'] is 'arm':
-        # for arm; the last bit indicates thumb mode.
-        block['sea'] += idc.GetReg(sea, 'T')
-    block['eea'] = eea
-    block['name'] = 'loc_' + format(sea, 'x').upper()
-    dat = {}
-    block['dat'] = dat
-    s = idc.get_bytes(sea, eea -sea)
-    if s is not None:
-        block['bytes'] = "".join("{:02x}".format(ord(c)) for c in s)
-    instructions = list()
-    oprTypes = list()
-    for head in idautils.Heads(sea, eea):
-        func['comments'].extend(get_comments(head))
-        ins = list()
-        oprType = list()
-        ins.append(
-            str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
-        opr = idc.print_insn_mnem(head)
-        if opr == "":
+    block_number = 0
+    blocks = []
+    block_id_map = {}
+    for block in surrogate['functions'][0]['blocks']:
+        if block['sea'] >= eea or block['eea'] <= sea:
             continue
-        ins.append(opr)
-        for i in range(5):
-            opd = idc.print_operand(head, i)
-            tp = idc.get_operand_type(head, i)
-            if opd == "" or tp is None:
+        else:
+            block_id_map[block['id']] = block_number
+            block['id'] = block_number
+            block_number += 1
+            blocks.append(block)
+    for block in blocks:
+        block['call'] = [block_id_map[c] for c in block['call'] if c in block_id_map]
+    surrogate['functions'][0]['blocks'] = blocks    
+    
+    if surrogate['functions'][0]['see'] < eea:
+        endsea = surrogate['functions'][0]['see'] + 1
+        previous_endsea = surrogate['functions'][0]['see']
+        while endsea < eea:
+            new_surrogate = get_as_single_surrogate(get_ida_func(endsea))
+            if new_surrogate['functions'][0]['see'] == previous_endsea:
+                endsea += 1
                 continue
-            ins.append(opd)
-            oprType.append(tp)
-        instructions.append(ins)
-        oprTypes.append(oprType)
-
-        refs = list(idautils.DataRefsFrom(head))
-        for ref in refs:
-            dat[head] = binascii.hexlify(
-                struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
-    block['src'] = instructions
-    block['oprType'] = oprTypes
-    block['call'] = []
-    func['blocks'].append(block)
+            block_id_map = {}
+            blocks = []
+            for block in new_surrogate['functions'][0]['blocks']:
+                if block['sea'] > eea or block['eea'] < sea:
+                    continue
+                else:
+                    block_id_map[block['id']] = block_number
+                    block['id'] = block_number
+                    block_number += 1
+                    blocks.append(block)
+            for block in blocks:
+                block['call'] = [block_id_map[c] for c in block['call'] if c in block_id_map]
+            surrogate['functions'][0]['blocks'].extend(blocks)
+            endsea = new_surrogate['functions'][0]['see'] + 1
+            previous_endsea = new_surrogate['functions'][0]['see']
+    func = surrogate['functions'][0]
+    func['sea'] = sea
+    func['see'] = eea
+    
+    for block in func['blocks']:
+        changed = False
+        if block['sea'] < sea:
+            block['sea'] = sea
+            changed = True
+        if block['eea'] > eea:
+            block['eea'] = eea
+            changed = True
+        if changed:
+            s = idc.get_bytes(block['sea'], block['eea'] -block['sea'])
+            if s is not None:
+                block['bytes'] = "".join("{:02x}".format(c) for c in s)
+            if surrogate['architecture']['type'] is 'arm':
+                # for arm; the last bit indicates thumb mode.
+                block['sea'] += idc.GetReg(block['sea'], 'T')
+            block['name'] = 'loc_' + format(block['sea'], 'x').upper()
+            dat = {}
+            #block['dat'] = dat
+            instructions = list()
+            oprTypes = list()
+            for head in idautils.Heads(block['sea'], block['eea']):
+                func['comments'].extend(get_comments(head))
+                ins = list()
+                oprType = list()
+                ins.append(
+                    str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
+                opr = idc.print_insn_mnem(head)
+                if opr == "":
+                    continue
+                ins.append(opr)
+                for i in range(5):
+                    opd = idc.print_operand(head, i)
+                    tp = idc.get_operand_type(head, i)
+                    if opd == "" or tp is None:
+                        continue
+                    ins.append(opd)
+                    oprType.append(tp)
+                instructions.append(ins)
+                oprTypes.append(oprType)
+            
+                refs = list(idautils.DataRefsFrom(head))
+                for ref in refs:
+                    dat[head] = binascii.hexlify(
+                        struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
+            block['src'] = instructions
+            block['oprType'] = oprTypes
     return surrogate
 
 

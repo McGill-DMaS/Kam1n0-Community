@@ -93,7 +93,357 @@ function mergeCloneResult(dps){
 	
 }
 
+/*******************************************************************************
+ * 
+ * @param $container
+ * @param dataParsed
+ * @param callback
+ * @param iconsAndLinks
+ *            what icon and link should be added as prefix.
+ * @returns
+ */
+function CreateClusterCloneList($container, dataParsed, callback, icons, views, viewnames, isPercent=true, open_all=false, margin_top=-30){
+	
+		var interaction = false;
+		if(typeof send_msg != 'undefined')
+			interaction = true;
+	
+		$header = $("<div>", {'class': 'row', 'style': 'margin-left: 0; margin-right: 0; margin-top:' + margin_top + 'px;'})
+		$list = $("<div>", {'class': 'row', 'style': 'margin-left: 0; margin-right: 0;'})
+		$container.append($header)
+		$container.append($list)
+		
+		$select = $('<select>', {'class': 'form-control', 'placeholder':'sort'})
+		$search = $('<input>', {'class': 'form-control', 'type': 'text', 'placeholder': "Search (1s delay on keydown)"})
+		$download = $('<button>', {'class': 'btn btn-primary btn-simple btn-sm', 'style': 'font-size:10pt; top:-5px', 'title':'Download'}).append(
+				$('<i>', {'class': 'material-icons'}).text('file_download')
+		).append($('<span>').text(''))
+		$expandall = $('<button>', {'class': 'btn btn-primary btn-simple btn-sm', 'style': 'font-size:10pt; top:-5px', 'title':'Open All'}).append(
+				$('<i>', {'class': 'material-icons'}).text('add')
+		).append($('<span>').text(''))
+		$closeall = $('<button>', {'class': 'btn btn-primary btn-simple btn-sm', 'style': 'font-size:10pt; top:-5px', 'title':'Collapse All'}).append(
+				$('<i>', {'class': 'material-icons'}).text('remove')
+		).append($('<span>').text(''))
+		$header.append(
+				$("<div>", {'style': 'width: 200px', 'class': 'pull-left'}).append(
+						$("<div>", {'class': 'input-group'}).append(
+								$("<span>", {'class': 'input-group-addon'}).append(
+										$("<i>", {'class': 'material-icons'}).text('keyboard_arrow_right')
+								)
+						).append(
+								$("<div>", {'class': 'form-group label-floating'}).append(
+										$select
+								).append(
+										$('<span>', {'class': 'material-input'})
+								)
+						)
+				)
+		);
+		$header.append(
+				$("<div>", {'style': 'width: 250px', 'class': 'pull-left'}).append(
+						$("<div>", {'class': 'input-group'}).append(
+								$("<span>", {'class': 'input-group-addon'}).append(
+										$("<i>", {'class': 'material-icons'}).text('keyboard_arrow_right')
+								)
+						).append(
+								$("<div>", {'class': 'form-group label-floating'}).append(
+										$search
+								).append(
+										$('<span>', {'class': 'material-input'})
+								)
+						)
+				)
+		);
+		$header.append(
+				$("<div>", {'style': 'width: 30px',  'class': 'pull-left'}).append(
+						$("<div>", {'class': 'input-group'}).append(
+								$("<div>", {'class': 'form-group label-floating'}).append(
+										$download
+								).append(
+										$('<span>', {'class': 'material-input'})
+								)
+						)
+				)
+		);
+		$header.append(
+				$("<div>", {'style': 'width: 30px',  'class': 'pull-left'}).append(
+						$("<div>", {'class': 'input-group'}).append(
+								$("<div>", {'class': 'form-group label-floating'}).append(
+										$expandall
+								).append(
+										$('<span>', {'class': 'material-input'})
+								)
+						)
+				)
+		);
+		$header.append(
+				$("<div>", {'style': 'width: 30px',  'class': 'pull-left'}).append(
+						$("<div>", {'class': 'input-group'}).append(
+								$("<div>", {'class': 'form-group label-floating'}).append(
+										$closeall
+								).append(
+										$('<span>', {'class': 'material-input'})
+								)
+						)
+				)
+		);
+		
+		$menu = createDropDownMenu($header);
+		$menu.css('margin-top','35px')
+		$menu.removeClass('pull-right')
+		$menu.addClass('pull-left')
+		
+		function sort_by_name(a, b){
+			var a1 = this.get_node(a);
+            var b1 = this.get_node(b);
+            var alv = a1.a_attr['lvl'];
+            var blv = b1.a_attr['lvl'];
+            if (alv == blv && alv == 2){
+                return (a1.a_attr.per < b1.a_attr.per) ? 1 : -1;
+            } else if (alv == blv && alv == 1){
+            	var selvar = $select.val()
+            	if (selvar == 0)
+            		return (a1.a_attr.func.functionName > b1.a_attr.func.functionName) ? 1 : -1;
+            	if (selvar == 1)
+            		return (a1.a_attr.func.startAddress > b1.a_attr.func.startAddress) ? 1 : -1;
+            	if (selvar == 2)
+            		return (a1.a_attr.func.blockSize < b1.a_attr.func.blockSize) ? 1 : -1;
+            	if (selvar == 3)
+            		return (a1.a_attr.per < b1.a_attr.per) ? 1 : -1;
+            } else {
+            	return (alv < blv) ? 1 : -1;
+            }
+		}
 
+		
+		var bins = {};
+		
+		var treeData = [];
+        var root = {};
+        root.icon = false;
+        root.text = "<i class='fa fa-fw  fa-briefcase'></i>&nbsp;" + dataParsed.results[0].function.binaryName + "&nbsp;[" + dataParsed.results.length + " functions]";
+        root.children = [];
+        root.a_attr = {'lvl': 0};
+        treeData.push(root);
+        $.each(dataParsed.results, function( ind, val ) {
+            var node = {};
+            var percentage = 0;
+            node.children = [];
+            node.icon = false;
+            node.id = ind.toString();
+            $.each(val.clones, function(cind, clone){
+            	bins[clone.binaryId] = clone.binaryName;
+                var child = {};
+                var percentage = 0
+                percentage = isPercent?(clone.similarity * 100):clone.similarity;
+                percentage = Math.round(percentage * 100) / 100;
+                child.percentage = percentage;
+                var links = "";
+                for(var i = 0; i < icons.length; ++i)
+                	links += '<span title=\"'+ viewnames[i] +'\" onClick=\"javascript:window.open(\'' + views[i] + 
+                	'?id1='+ dataParsed.results[0].function.functionId + 
+                	"&id2=" + clone.functionId + 
+                	"&in1=" + ind + 
+                	"&in2=" + cind + 
+                	'\')\">' + icons[i] + '</span> ';
+                var prefix;
+                if(isPercent)
+                    prefix = "<div style='display:inline-block' class=\"sparkpie\" data-percent=\"" + percentage + "\"></div>&nbsp;" + links;
+                else
+                	prefix = "<span class=\"sparkpie\">" + percentage +"</span>&nbsp;" + links;
+                child.text = prefix + clone.functionName;
+                child.children = [];
+                child.icon = false;
+                node.children.push(child);
+                child.a_attr = {'data-pair':[ind, cind], 'per': percentage, 'lvl': 2, 'bid':clone.binaryId};
+                child.id = [ind, cind].toString();
+                child.lvl = 2
+            });
+            node.children.sort(function(a, b){return b.percentage - a.percentage;});
+            if(node.children[0] != null)
+                percentage = node.children[0].percentage;
+            var icon
+            if(isPercent)
+                icon = "<i class='fa fa-fw fa-sitemap'></i><div style='display:inline-block' class=\"sparkpie\" data-percent=\"" + percentage + "\"></div>&nbsp;";
+            else
+            	icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage +"</span>&nbsp;";
+            node.percentage = percentage;
+            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
+            node.lvl = 1;
+            node.a_attr = {'per': percentage, 'func':  val.function, 'lvl': 1};
+            root.children.push(node);
+        });
+
+        // root.children.sort(function(a, b){return b.percentage -
+		// a.percentage;});
+        
+        var tree_settings = {
+                'core' : {
+                    "themes" : { },
+                    "check_callback" : true,
+                    'data' : treeData
+                },
+                "plugins" : [ "search", "sort" ],
+                "sort" : sort_by_name,
+                "search":{
+                	"show_only_matches": true,
+                }
+        };
+        if(interaction){
+        	tree_settings["plugins"].push("contextmenu");
+        	tree_settings["contextmenu"] = {
+        			"items": function(node){
+        				var addr = parseInt(node.a_attr.func.startAddress);
+        				var addr = "0x" + addr.toString(16);
+        				var items = {
+        				        "jumpto": { 
+        				            label: "Jump to " + addr + " in IDA",
+        				            icon: "fa fa-fw fa-mail-reply",
+        				            action: function () {
+        				            	send_msg("jumpto("+addr +")");
+        				            }
+        				        }
+        				    };
+        				if(node.a_attr.lvl == 1)
+        					return items;
+        				return {};
+        			}
+        	}
+        }
+        
+
+        $list.
+        on('open_node.jstree', function (e, data) {
+        	if(isPercent){
+	            // if($('#'+data.node.id).find('.sparkpie canvas').length != 0)
+	            // $('#'+data.node.id).find('ul').find('.sparkpie').sparkline('html',
+	            // {type: 'pie', height: '1.2em', sliceColors:
+				// ['#dddddd','#dc3912'], tooltipFormatFieldlist: ['percent'],
+				// });
+	            // else
+	            // $('#'+data.node.id).find('.sparkpie').sparkline('html',
+	            // {type: 'pie', height: '1.2em', sliceColors:
+				// ['#dddddd','#dc3912'], tooltipFormatFieldlist: ['percent'],
+				// });
+        		 $('#'+data.node.id).find('ul').find('.sparkpie').each(function(index,item){
+        			if($(item).children().length<1)
+        		 	new d3pie(item, {
+							"size": {
+								"canvasWidth": 20,
+								"canvasHeight": 20,
+								"pieOuterRadius": "100%"
+							},
+							"labels" : {
+								"inner" :{
+									"format": "none"
+								},
+								"outer" :{
+									"format":"none"
+								}
+							},
+							"misc": {
+								"canvasPadding": {
+									"top": 0,
+									"right": 0,
+									"bottom": 0,
+									"left": 0
+								},
+								"colors": {
+                                  				"segmentStroke": "#000000"
+								}
+							},
+							"tooltips": {
+								"enabled": true,
+								"type": "placeholder",
+								"string": "{label}"
+							},
+							"data": {
+								"content": [
+									{ "label": "Similarity " +  $(item).data('percent') + "%", "value": 100-$(item).data('percent'), "color": "#ffffff" },
+									{ "label": "Similarity " +  $(item).data('percent') + "%", "value": $(item).data('percent'), "color": "#218812" },
+								]
+							}
+						});
+        		 });
+        	}
+        }).
+        on('changed.jstree', function (e, data) {
+            if(data.node.children.length == 0 && data.node.a_attr['data-pair'] != null){
+            	callback(data.node.a_attr['data-pair']);
+            }
+        }).
+        jstree(tree_settings
+        ).on('loaded.jstree', function() {
+        	if(open_all)
+        		$list.jstree('open_all');
+        });
+        
+        var to = false;
+        $search.keyup(function () {
+          if(to) { clearTimeout(to); }
+          to = setTimeout(function () {
+            var v = $search.val();
+            $list.jstree(true).search(v);
+          }, 1000);
+        });
+        $search.keyup(function(e){
+        	if(e.keyCode == 27) {
+        		 $(this).val('');
+            }
+        });
+        
+        $select.append(
+        	$('<option>', {'text':'Sort by Name', 'selected': 'true', 'value': 0})
+        ).append(
+        	$('<option>', {'text':'Sort by Start Effective Address', 'value': 1})
+        ).append(
+        	$('<option>', {'text':'Sort by Number of Blocks', 'value': 2})
+        ).append(
+            	$('<option>', {'text':'Sort by Similarity', 'value': 3})
+        ).on('change', function() {
+        	  $list.jstree(true).sort($list.jstree(true).get_node('#'), 1);
+        	  $list.jstree('close_all');
+        	  if(open_all)
+        		  $list.jstree('open_all');
+        });
+        $closeall.click(function(){ $list.jstree('close_all')});
+        $expandall.click(function(){ $list.jstree('open_all')});
+        
+        $download.click(function(){
+        	var wrapper = {'data':dataParsed, 'view': window.location.href }
+        	$("<a />", {
+        	    "download": "results.json",
+        	    "href" : "data:application/json," + encodeURIComponent(JSON.stringify(wrapper, null, 2))
+        	  }).appendTo("body")
+        	  .click(function() {
+        	     $(this).remove()
+        	  })[0].click()
+        });
+        
+        $box = createBinarySelectionMenu(bins);
+        console.log($box)
+        $menu.add_menu_item('Filter by Source Binaries', [$box])
+        $box.onselection = function(inverse_selected){
+        	if(inverse_selected.length == 0){
+        		 $list.jstree(true).show_all();
+        	}else{
+        		$($list.jstree().get_json($list, {
+        	          flat: true
+        	        })).each(function(index, value) {
+        	          if(value.a_attr.lvl==2 && inverse_selected.has(value.a_attr.bid)){
+        	        	  $list.jstree(true).hide_node(value);
+        	          }else{
+        	        	  $list.jstree(true).show_node(value);
+        	          }
+        	    });
+        		root = $list.jstree(true).get_node('#').children[0];
+        		$list.jstree(true).close_node(root);
+        		$list.jstree(true).open_node(root);
+        	}
+        }
+        $box.init()
+
+    }
 
 /*******************************************************************************
  * 
@@ -270,7 +620,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
             else
             	icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage +"</span>&nbsp;";
             node.percentage = percentage;
-            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] sea: " + val.function.startAddress;
+            node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
             node.lvl = 1;
             node.a_attr = {'per': percentage, 'func':  val.function, 'lvl': 1};
             root.children.push(node);
@@ -349,6 +699,9 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
 									"right": 0,
 									"bottom": 0,
 									"left": 0
+								},
+								"colors": {
+                                  				"segmentStroke": "#000000"
 								}
 							},
 							"tooltips": {
@@ -394,9 +747,9 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         $select.append(
         	$('<option>', {'text':'Sort by Name', 'selected': 'true', 'value': 0})
         ).append(
-        	$('<option>', {'text':'Sort by SEA', 'value': 1})
+        	$('<option>', {'text':'Sort by Start Effective Address', 'value': 1})
         ).append(
-        	$('<option>', {'text':'Sort by #Blocks', 'value': 2})
+        	$('<option>', {'text':'Sort by Number of Blocks', 'value': 2})
         ).append(
             	$('<option>', {'text':'Sort by Similarity', 'value': 3})
         ).on('change', function() {
@@ -411,7 +764,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         $download.click(function(){
         	var wrapper = {'data':dataParsed, 'view': window.location.href }
         	$("<a />", {
-        	    "download": "result.json",
+        	    "download": "results.json",
         	    "href" : URL.createObjectURL(new Blob([JSON.stringify(wrapper, null, 2)], {type: "application/octet-stream"}))
         	  }).appendTo("body")
         	  .click(function() {
@@ -858,7 +1211,7 @@ function drawFlow(func, placeholderId, cloneSets, code_key='srcCodes') {
                     });
     inner.selectAll(".node").attr("title", function (d) {
                     	if(typeof send_msg != 'undefined'){
-	        				return "Double-click to jump to IDA"
+	        				return "Double-click to jump in IDA Pro"
                     	}
                     }).each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
 
@@ -896,7 +1249,7 @@ function drawFlow(func, placeholderId, cloneSets, code_key='srcCodes') {
         for (var k = 0; k < cloneSet.length; ++k) {
             var clonePair = cloneSet[k];
             inner.selectAll("g.node").each(function (i, d) {
-                if (i == clonePair._1 || i == clonePair._2) {
+                if ((placeholderId=='chartSource'&&i == clonePair._1) || (placeholderId=='chartTarget'&&i == clonePair._2)) {
                     var m = this.transform.animVal[0]['matrix'];
                     var re = this.children[0];
 
@@ -1276,7 +1629,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                                 }
                                 $form.remove();
                             }).append('close'))
-                            .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown supported'))
+                            .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown Supported'))
             )
     );
     var $editArea = $form.find('textarea');

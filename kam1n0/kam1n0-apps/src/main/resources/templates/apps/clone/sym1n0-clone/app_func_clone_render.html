@@ -19,8 +19,8 @@ text {
 </style>
 	<div class="card-header" data-background-color="green">
 		<h4 class="title">
-			Clone Graph <small style="color: white">Double click the
-				nodes to show clone candidates.</small>
+			Clone Graph <small style="color: white">Double click on a
+				node to show the clone candidates.</small>
 		</h4>
 	</div>
 	<div class="card-content" style="height: 100%; padding-bottom: 50px">
@@ -64,9 +64,9 @@ text {
 					"<i class='fa fa-fw  fa-clone lnk'></i>",
 					"<i class='fa fa-fw  fa-file-code-o'></i>",
 					"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
-			var viewNames = [ "Flow graph comparison.",  "Flow graph comparison (VEX).", 
-			"Flow graph comparison (syntax tree).", "Full text alignment (ASM).", "Full text alignment (VEX).",
-					"Clone group alignment." ];
+			var viewNames = [ "Flow Graph View",  "Flow Graph View (VEX).", 
+			"Flow Graph View (syntax tree).", "Textual Difference View (ASM).", "Textual Difference View (VEX).",
+					"Clone Group View" ];
 
 			CreateCloneList($('#cloneList'), data, function(arg) {
 				console.log(arg);

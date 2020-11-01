@@ -1,17 +1,17 @@
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.kStart')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of different LSH functions to use at the bottom level">
 	<label for="kStart" class="col-sm-2 control-label">Starting k
-		value</label>
+		Value</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.kStart}" id="kStart"
-			placeholder="Starting k value (needs to be a multiplier of 4)." /> <span
+			placeholder="Starting k Value (needs to be a multiplier of 4)." /> <span
 			th:each="error : ${#fields.errors('configuration.kStart')}"
 			th:text="${error}" class="help-block" />
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.kMax')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Maximum number of different LSH functions to use at the top level">
 	<label for="kMax" class="col-sm-2 control-label">Maximum k
 		Value</label>
 	<div class="col-sm-10">
@@ -23,7 +23,7 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.mSplit')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of levels to split (i.e., the depth of ALSH tree)">
 	<label for="mSplit" class="col-sm-2 control-label">Splitting
 		Point m</label>
 	<div class="col-sm-10">
@@ -35,9 +35,9 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.l')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Number of ALSH trees">
 	<label for="lv" class="col-sm-2 control-label">Number of Trees
-		(l)</label>
+		l</label>
 	<div class="col-sm-10">
 		<input class="form-control" type="text"
 			th:field="${confObj.configuration.l}" id="lv" placeholder="L value" />
@@ -46,7 +46,7 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizationLevel')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizationLevel')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Normalization level">
 	<label for="normlv" class="col-sm-2 control-label">Normalization
 		Level</label>
 	<div class="col-sm-10">
@@ -64,12 +64,12 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeConstant')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeConstant')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Normalize constants or not">
 	<div class="col-sm-offset-2 col-sm-10">
 		<div class="checkbox">
 			<label> <input type="checkbox"
 				th:field="${confObj.configuration.normalizationSetting.normalizeConstant}" />
-				Normalize Constant
+				Normalize Constants
 			</label> <span
 				th:each="error : ${#fields.errors('configuration.normalizationSetting.normalizeConstant')}"
 				th:text="${error}" class="help-block" />
@@ -77,12 +77,12 @@
 	</div>
 </div>
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeOperation')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.normalizationSetting.normalizeOperation')} ?  'form-group has-error' : 'form-group' " data-toggle="tooltip" title="Normalize operations or not">
 	<div class="col-sm-offset-2 col-sm-10">
 		<div class="checkbox">
 			<label> <input type="checkbox"
 				th:field="${confObj.configuration.normalizationSetting.normalizeOperation}" />
-				Normalize Operation
+				Normalize Operations
 			</label> <span
 				th:each="error : ${#fields.errors('configuration.normalizationSetting.normalizeOperation')}"
 				th:text="${error}" class="help-block" />
@@ -91,7 +91,7 @@
 </div>
 
 <div class="form-group"
-	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' ">
+	th:class="${#fields.hasErrors('configuration.architectureType')} ?  'form-group has-error' : 'form-group' "  data-toggle="tooltip" title="Instruction set">
 	<label for="arch" class="col-sm-2 control-label">Instruction
 		Set</label>
 	<div class="col-sm-10">

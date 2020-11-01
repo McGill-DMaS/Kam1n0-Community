@@ -45,7 +45,7 @@ public class BinaryIndexProcedureLSHMR extends LocalDmasJobProcedure {
 
 	@Override
 	public void runProcedure(long appId, String appType, ApplicationResources res, String userName,
-			LocalJobProgress progress, Map<String, Object> dataMap) {
+							 LocalJobProgress progress, Map<String, Object> dataMap) {
 		try {
 			List<? extends Object> objs = getObj(KEY_FILES, dataMap);
 			CloneSearchResources ress = (CloneSearchResources) res;

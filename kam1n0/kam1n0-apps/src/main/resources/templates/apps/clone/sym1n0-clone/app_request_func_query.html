@@ -37,7 +37,7 @@ textarea:-ms-input-placeholder {
 }
 </style>
 
-	<h4>Search for Assembly Functions</h4>
+	<h4>Search for an Assembly Function</h4>
 
 	<div class="row">
 		<div class="col-sm-1"></div>
@@ -51,7 +51,7 @@ textarea:-ms-input-placeholder {
 							</i>
 							</span>
 							<div class="form-group label-floating">
-								<label class="control-label">Examples</label> <select
+								<label class="control-label">Example</label> <select
 									id="clone-func-example" class="form-control">
 									<option selected="true"></option>
 									<option th:each="example:${model.examples}"
@@ -131,7 +131,7 @@ textarea:-ms-input-placeholder {
 							<div class="form-group label-floating">
 								<div class="checkbox">
 									<label style="font-size:9pt; margin-left:10px"> <input type="checkbox" 
-										name="avoidSameBinary" /> Avoid Same Binary
+										name="avoidSameBinary" /> Exclude results from the same binary
 									</label>
 								</div>
 							</div>

@@ -168,7 +168,7 @@ for seg_ea in Segments():
             sblock['id'] = bblock.id
             sblock['sea'] = bblock.start_ea
             if data['architecture']['type'] == 'arm':
-                sblock['sea'] += GetReg(bblock.start_ea, 'T')
+                sblock['sea'] += get_sreg(bblock.start_ea, 'T')
             sblock['eea'] = bblock.end_ea
             sblock['name'] = 'loc_' + format(bblock.start_ea, 'x').upper()
             dat = {}
@@ -209,8 +209,7 @@ for seg_ea in Segments():
                 refdata = list(DataRefsFrom(head))
                 if len(refdata) > 0:
                     for ref in refdata:
-                        dat[head] = format(get_qword(ref), 'x')[::-1]
-
+                      dat[head] = format(get_qword(ref), 'x')[::-1]
             sblock['src'] = tlines
             sblock['oprType'] = oprTypes
 

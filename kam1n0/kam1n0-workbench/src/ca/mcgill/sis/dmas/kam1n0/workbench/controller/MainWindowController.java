@@ -110,7 +110,7 @@ public class MainWindowController {
 		propertyTable.setRowFactory(tv -> {
 			TableRow<PropertyBounding> row = new TableRow<>();
 			final ContextMenu contextMenu = new ContextMenu();
-			final MenuItem browseFileMenuItem = new MenuItem("Select a file as value");
+			final MenuItem browseFileMenuItem = new MenuItem("Select a File as Value");
 			browseFileMenuItem.setOnAction(env -> {
 				FileChooser chooser = new FileChooser();
 				chooser.setTitle("Select a file");
@@ -124,7 +124,7 @@ public class MainWindowController {
 				}
 			});
 			browseFileMenuItem.disableProperty().bind(row.emptyProperty());
-			final MenuItem browseDirMenuItem = new MenuItem("Select a directory as value");
+			final MenuItem browseDirMenuItem = new MenuItem("Select a Folder as Value");
 			browseDirMenuItem.setOnAction(env -> {
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("Select a directory");
@@ -138,10 +138,10 @@ public class MainWindowController {
 				}
 			});
 			browseDirMenuItem.disableProperty().bind(row.emptyProperty());
-			final MenuItem removeMenuItem = new MenuItem("Remove current property");
+			final MenuItem removeMenuItem = new MenuItem("Remove the Current Property");
 			removeMenuItem.setOnAction(ev -> propertyTable.getItems().remove(row.getItem()));
 			removeMenuItem.disableProperty().bind(row.emptyProperty());
-			final MenuItem newMenuItem = new MenuItem("Add new property");
+			final MenuItem newMenuItem = new MenuItem("Add a New Property");
 			newMenuItem.setOnAction(ev -> handleAdd(ev));
 			contextMenu.getItems().add(browseFileMenuItem);
 			contextMenu.getItems().add(browseDirMenuItem);
@@ -248,6 +248,8 @@ public class MainWindowController {
 	@FXML
 	Button stopButton;
 	@FXML
+	Button resetButton;
+	@FXML
 	MaterialDesignIconView aboutBtn;
 	@FXML
 	MaterialDesignIconView closeBtn;
@@ -271,6 +273,7 @@ public class MainWindowController {
 	private void setDisableAll(boolean value) {
 		startButton.setDisable(value);
 		stopButton.setDisable(value);
+		resetButton.setDisable(value);
 		propertyTable.setDisable(value);
 	}
 
@@ -287,6 +290,13 @@ public class MainWindowController {
 		stopButton.setDisable(false);
 		app.connector.startEngine(propertyFile.getText().trim());
 		tabPane.getSelectionModel().select(1);
+	}
+
+	@FXML
+	public void handleReset(ActionEvent event) {
+		propertyTable.setItems(app.connector.getKamPropertyBoundings(app.connector.KAM1N0_PROPERTIES_ORIGINAL_DEFAULT));
+		enableTableViewMenu.set(true);
+		handleSave();
 	}
 
 	@FXML
@@ -360,8 +370,8 @@ public class MainWindowController {
 			Image image = new Image(url);
 			ImageView iv1 = new ImageView(image);
 			message(iv1, "About Kam1n0",
-					"The software was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to LICENSE.txt for details.\r\n"
-							+ "\r\n" + "Copyright 2017 McGill University. All rights reserved.");
+					"Kam1n0 was developed by Steven H. H. Ding and Miles Q. Li under the supervision of Benjamin C. M. Fung at the McGill Data Mining and Security Lab. It is distributed under the Apache License Version 2.0. Please refer to LICENSE.txt for details.\r\n"
+							+ "\r\n" + "Copyright 2019 McGill University. All rights reserved.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -19,155 +19,150 @@ import os
 import idc
 from idaapi import Form, plugin_t
 from Kam1n0 import IDAUtils
+
 if IDAUtils.is_hexrays_v7():
     from idaapi import Choose as Choose
 else:
     from idaapi import Choose2 as Choose
 
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 
-class FunctionListView(Choose):
-    def __init__(self, title, all_funcs, flags=0):
-        Choose.__init__(self,
-                         title,
-                         [["Address", 12 | Choose.CHCOL_DEC],
-                          ["Function Name", 20 | Choose.CHCOL_PLAIN]],
-                         embedded=True, width=80, height=6, flags=flags
-                         )
-        self.all_funcs = all_funcs
-        self.PopulateItems()
-
-    def PopulateItems(self):
-        self.items = [[hex(x.start_ea), idc.get_func_name(x.start_ea)] for x
-                      in self.all_funcs]
-
-    def OnClose(self):
-        pass
-
-    def OnGetLine(self, n):
-        return self.items[n]
-
-    def OnSelectLine(self, n):
-        print(n)
-
-    def OnGetSize(self):
-        return len(self.items)
-
-
-class SelectionForm(Form):
-    def __init__(self, manager, disable_param=False):
-
-        self.disable_param = disable_param
-
-        self.all_funcs = IDAUtils.get_all_ida_funcs()
-        self.funcList = FunctionListView("asm", flags=Choose.CH_MULTI,
-                                         all_funcs=self.all_funcs)
-        self.selected_funcs = []
+class SelectionForm(QtWidgets.QDialog):
+    def __init__(self, manager, parent=None):
+        super(SelectionForm, self).__init__(parent)
 
         self.configuration = manager.configuration
+
+        self.setWindowFlags(
+            QtCore.Qt.WindowCloseButtonHint
+        )
+        self.setModal(True)
+
+        # Selection settings
+        self.select_all = QtWidgets.QCheckBox("Select All Functions")
+        self.skip_library = QtWidgets.QCheckBox("Skip Library Functions")
+
+        # Search settings
+        self.threshold_line_edit = QtWidgets.QLineEdit()
+        self.topk_line_edit = QtWidgets.QLineEdit()
+        self.exclude_check_box = QtWidgets.QCheckBox()
+        self.kam_check_box = QtWidgets.QCheckBox()
+
+        # Connector
+        connector_label = QtWidgets.QLabel("Application")
+        self.connector_combo = QtWidgets.QComboBox()
+        self.connector_combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+
+        # Controls
+        self.continue_button = QtWidgets.QPushButton('Continue')
+        self.cancel_button = QtWidgets.QPushButton('Cancel')
+
+        spacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
+        choose_group = QtWidgets.QGroupBox()
+        hlayout = QtWidgets.QHBoxLayout()
+        hlayout.addWidget(self.select_all)
+        hlayout.addWidget(self.skip_library)
+        choose_group.setLayout(hlayout)
+
+        search_form_layout = QtWidgets.QFormLayout()
+        search_form_layout.setHorizontalSpacing(10)
+        search_form_layout.setVerticalSpacing(5)
+        search_form_layout.addRow(QtWidgets.QLabel("Threshold"), self.threshold_line_edit)
+        search_form_layout.addRow(QtWidgets.QLabel("Top-K"), self.topk_line_edit)
+        search_form_layout.addRow(QtWidgets.QLabel("Exclude Results from the Same Binary"), self.exclude_check_box)
+        search_form_layout.addRow(QtWidgets.QLabel("Save multiple queries as .kam file"), self.kam_check_box)
+
+        self.search_group = QtWidgets.QGroupBox('Configuration')
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addItem(search_form_layout)
+        self.search_group.setLayout(vbox)
+
+        connector_layout = QtWidgets.QHBoxLayout()
+        connector_layout.addItem(spacer)
+        connector_layout.addWidget(connector_label)
+        connector_layout.addItem(spacer)
+        connector_layout.addWidget(self.connector_combo)
+        connector_layout.addItem(spacer)
+
+        control_layout = QtWidgets.QHBoxLayout()
+        control_layout.addItem(spacer)
+        control_layout.addWidget(self.continue_button)
+        control_layout.addWidget(self.cancel_button)
+        control_layout.addItem(spacer)
+
+        main_layout = QtWidgets.QVBoxLayout()
+        main_layout.addWidget(choose_group)
+        main_layout.addWidget(self.search_group)
+        main_layout.addItem(connector_layout)
+        main_layout.addItem(control_layout)
+        self.setLayout(main_layout)
+
+        self.cancel_button.clicked.connect(self.OnCancel)
+        self.continue_button.clicked.connect(self.OnContinue)
+
+    def OnContinue(self):
+        if self.select_all.isChecked() and self.skip_library.isChecked():
+            all_func = IDAUtils.get_all_ida_funcs()
+            self.selected_funcs = [all_func[x] for x in IDAUtils.get_not_lib_ida_func_indexes(all_func)]
+        elif self.select_all.isChecked():
+            self.selected_funcs = IDAUtils.get_all_ida_funcs()
+        elif self.selected_funcs is not None and self.skip_library.isChecked():
+            self.selected_funcs = [self.selected_funcs[x] for x in IDAUtils.get_not_lib_ida_func_indexes(self.selected_funcs)]
+        elif self.selected_funcs is not None:
+            pass
+        else:
+            self.selected_funcs = []
+
+        try:
+            self.selected_app_key = list(self.configuration['apps'].keys())[self.connector_combo.currentIndex()]
+        except:
+            self.selected_app_key = None
+        self.threshold = float(self.threshold_line_edit.text())
+        self.topk = int(self.topk_line_edit.text())
+        self.avoidSameBinary = self.exclude_check_box.isChecked()
+        self.saveAsKam = self.kam_check_box.isChecked()
+
+        self.accept()
+
+    def OnCancel(self):
+        self.close()
+
+    def UpdateDropDownList(self, idx=None):
         apps = list(self.configuration['apps'].keys())
         default_app = self.configuration['default-app']
-        if self.configuration['default-app'] is not None:
+        if default_app is not None:
             default_index = apps.index(default_app)
+            self.connector_combo.clear()
+            self.connector_combo.addItems(apps)
+            self.connector_combo.setCurrentIndex(default_index)
+            if idx:
+                self.listView.setCurrentItem(self.listView.topLevelItem(idx))
         else:
-            default_index = 0
-        self.selected_app_key = default_app
+            self.connector_combo.clear()
+            self.connector_combo.addItems(apps)
 
-        self.threshold = self.configuration['default-threshold']
-        self.topk = self.configuration['default-topk']
-        self.avoidSameBinary = self.configuration['default-avoidSameBinary']
+    def OnStart(self, selectedFun, type='Search'):
+        if type == 'Search':
+            self.setWindowTitle("Kam1n0 - Select Functions to Search")
+            self.search_group.setVisible(True)
+        elif type == 'Index':
+            self.setWindowTitle("Kam1n0 - Select Functions to Index")
+            self.search_group.setVisible(False)
+        else:
+            self.setWindowTitle("Kam1n0 - Search/Index")
 
-        Form.__init__(self,
-r"""BUTTON YES* Continue
-BUTTON CANCEL Cancel
-Kam1n0
-{FormChangeCb}
-Select Function:
-<(Use ctrl/shift + click to select multiple functions):{fvChooser}>
-<Select all functions:{chkSearchAll}><Skip library functions:{chkSkipLib}>{adSearchGroup}>
-Configuration
-<Threshold:{txtSim}>
-<TopK     :{txtTopK}>
-<Avoid Same Binary  :{chkSameBin}>{chkGroup}>
-<App   :{dpServer}>
-""", {
-                          'adSearchGroup': Form.ChkGroupControl(
-                              ["chkSearchAll", "chkSkipLib"]),
-                          'FormChangeCb': Form.FormChangeCb(
-                              self.OnFormChange),
-                          'txtSim': Form.StringInput(
-                              swidth=25,
-                              tp=Form.FT_ASCII,
-                              value=str(
-                                  self.threshold)),
-                          'txtTopK': Form.StringInput(
-                              swidth=25,
-                              tp=Form.FT_ASCII,
-                              value=str(self.topk)),
-                          'chkGroup': Form.ChkGroupControl(
-                              ("chkSameBin", "")),
-                          'dpServer': Form.DropdownListControl(
-                              swidth=45,
-                              width=45,
-                              selval=default_index,
-                              items=apps,
-                              readonly=True),
-                          'fvChooser': Form.EmbeddedChooserControl(
-                              self.funcList)
-                      })
-        self.Compile()
+        self.UpdateDropDownList()
+        self.threshold_line_edit.setText(str(self.configuration['default-threshold']))
+        self.topk_line_edit.setText(str(self.configuration['default-topk']))
+        self.exclude_check_box.setChecked(self.configuration['default-avoidSameBinary'])
+        self.kam_check_box.setChecked(self.configuration['default-saveAsKam'])
+        self.skip_library.setChecked(False)
 
-    def OnFormChange(self, fid):
-
-        if fid == -1:
-            # self.EnableField(self.txtProtocol, False)
-            # select the default connection
-            self.SetControlValue(self.chkSameBin, self.avoidSameBinary)
-
-        if fid == self.fvChooser.id:
-            return 1
-
-        if fid == self.chkSkipLib.id:
-            if self.GetControlValue(self.chkSkipLib) == 1:
-                self.SetControlValue(self.chkSearchAll, 0)
-                self.SetControlValue(self.fvChooser,
-                                     IDAUtils.get_not_lib_ida_func_indexes(
-                                         self.all_funcs))
-                self.activated = True
-
-        if fid == self.chkSearchAll.id:
-            if self.GetControlValue(self.chkSearchAll) == 1:
-                self.SetControlValue(self.chkSkipLib, 0)
-                self.SetControlValue(self.fvChooser,
-                                     list(range(len(self.all_funcs))))
-                self.activated = True
-
-        if fid == self.dpServer:
-            if len(list(self.configuration['apps'].keys())) > 0:
-                # update self.cnn
-                selected_ind = self.GetControlValue(self.dpServer)
-                self.selected_app_key = \
-                    list(self.configuration['apps'].keys())[selected_ind]
-
-        if fid == self.txtSim:
-            self.threshold = float(self.GetControlValue(self.txtSim))
-
-        if fid == self.txtTopK:
-            self.topk = int(self.GetControlValue(self.txtTopK))
-
-        if fid == self.chkSameBin:
-            self.avoidSameBinary = bool(
-                self.GetControlValue(self.chkSameBin)
-            )
-
-
-        if fid == -2:
-            func_indexes = self.GetControlValue(self.fvChooser)
-            if self.all_funcs is not None:
-                funcs = [self.all_funcs[x] for x in func_indexes]
-                if len(funcs) < 1:
-                    print("number of selected functions is less than 1")
-                else:
-                    self.selected_funcs = funcs
-
-        return 1
+        if selectedFun:
+            self.selected_funcs = selectedFun
+            self.select_all.setChecked(False)
+        else:
+            self.selected_funcs = []
+            self.select_all.setChecked(True)

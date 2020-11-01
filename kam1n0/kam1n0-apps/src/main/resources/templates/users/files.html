@@ -49,7 +49,7 @@
 										style="font-size: 8pt" th:text="${file.size + ' bytes'}"></small>
 								</h2>
 								<h2 th:inline="text" th:if="${!file.preparing}">
-									This file is ready.<small style="font-size: 8pt"
+									This file is ready. <small style="font-size: 8pt"
 										th:text="${file.size + ' bytes'}"></small>
 								</h2>
 
@@ -118,10 +118,10 @@
 					<button type="button" class="close" data-dismiss="modal"
 						aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="modalStopLabel">Warning: Deleting
-						Result File</h4>
+						a Result File</h4>
 				</div>
 				<div class="modal-body">
-					<p>Are you sure to delete your result file?</p>
+					<p>Are you sure you want to delete this result file?</p>
 					<p id="modalDelFile-msg" class="text-danger"></p>
 
 				</div>
