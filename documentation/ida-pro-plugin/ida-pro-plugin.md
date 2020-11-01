@@ -159,7 +159,7 @@ In the original IDA Pro plug-in, calling IDA SDK functions in the rendering wind
 
 The user interface consists of two parts:
 * The native ```idaapi``` forms and controls: the Connection Management Form, the Select Function to Search Form, and the Select Function to Index Form.
-* Unlike the Kam1n0 v1.x plug-in for IDA Por, the new plugin directly uses the web page from Kam1n0 server. They share the same set of UI for better code maintainability. 
+* Unlike the Kam1n0 v1.x plug-in for IDA Pro, the new plugin directly uses the web page from Kam1n0 server. They share the same set of UI for better code maintainability. 
 
 ## Synchronization
 
