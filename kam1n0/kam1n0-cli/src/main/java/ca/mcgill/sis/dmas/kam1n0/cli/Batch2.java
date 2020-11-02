@@ -75,7 +75,7 @@ public class Batch2 {
 	private static class FunctionCloneSearchResult {
         public List<FunctionCloneEntry> foundClones;
 
-		// wall-clock time (not CPU time), and only for last successful attempt if it was retried
+		// wall-clock time (not CPU time), and only for the last (successful) attempt if it was retried
         public long processTimeMs;
     }
 

@@ -221,7 +221,6 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 		// hid->info
 		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(
 				rid, hids, false, filter, MAX_HIDS_PER_PARTITION);// .cache();
-		//logger.info("kam182 hid_info {} BUCKETS, {} partitions", hid_info.count(), hid_info.getNumPartitions());
 
 		return new Tuple2<>(hid_tbid_l, hid_info);
 	}

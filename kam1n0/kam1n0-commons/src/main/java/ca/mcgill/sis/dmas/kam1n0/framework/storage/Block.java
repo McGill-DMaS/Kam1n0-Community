@@ -51,8 +51,8 @@ public class Block implements AsmFragment, Serializable {
 	@AsString
 	public List<Long> callingBlocks;
 
-	// Note: not clear at all what this is actually. In some cases it seems to be  the number of blocks in a function,
-	// while in other cases this is the number of blocks with more than one (or one group of?) assembly lines.
+	// Note: not clear what this is actually. In some cases it seems to be  the number of blocks in a function,
+	// while in other cases this is the number of blocks with more than one (or one group of?) assembly line.
 	// TODO: clear that up
 	public int peerSize;
 

@@ -287,7 +287,6 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			int topK) {
 
 		String functionName = blks.isEmpty() ? "Unknown_empty_function" : blks.get(0).functionName;
-		//logger.info("kam182 {} blks {} items", functionName, blks.size() );
 
 		int functionInstructionCount = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
 
@@ -335,27 +334,20 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		//       code (partition only the buckets), could create large partitions here if topK is large and some hash
 		//       ID has a large number of corresponding blocks.
 
-		//logger.info("kam182 {} hid_tblk {} items, {} partitions", functionName, hid_tblk.count(), hid_tblk.getNumPartitions());
-		//logger.info("kam182 {} hid_info {} items, {} partitions", functionName, hid_info.count(), hid_info.getNumPartitions());
-
 
 		int junctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_info.getNumPartitions());
 		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info, junctionNumPartitions);
-		//logger.info("kam182 {} jointed {} items, {} partitions", functionName, jointed.count(), jointed.getNumPartitions());
 
 		JavaPairRDD<Long, Block> sbid_tblk = this.collectAndFilter2(rid, jointed, links, functionInstructionCount, topK);
-		//logger.info("kam182 {} sbid_tblk {} items, {} partitions", functionName, sbid_tblk.count(), sbid_tblk.getNumPartitions());
 
 		Set<Long> sids = new HashSet<>(sbid_tblk.keys().collect());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
 				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
-		//logger.info("kam182 {} sbid_sblk {} items, {} partitions", functionName, sbid_sblk.count(), sbid_sblk.getNumPartitions());
 
 		int finalJunctionNumPartitions = Math.max(sbid_tblk.getNumPartitions(), sbid_sblk.getNumPartitions());
 		JavaRDD<Tuple3<Block, Block, Double>> result = sbid_tblk
 				.join(sbid_sblk, finalJunctionNumPartitions)
 				.map(tp -> new Tuple3<>(tp._2._1, tp._2._2, 1d));
-		//logger.info("kam182 {} result {} items, {} partitions", functionName, result.count(), result.getNumPartitions());
 
 		return result;
 	}
