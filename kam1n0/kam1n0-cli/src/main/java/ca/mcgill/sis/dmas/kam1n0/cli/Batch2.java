@@ -422,12 +422,27 @@ public class Batch2 {
 					filterFilename = "";
 				}
 
-				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", filterFilename.isEmpty(), false);
+				boolean useTemporaryCassandraDB = !md.equals(Model.cassandra) && filterFilename.isEmpty();
+
+				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", useTemporaryCassandraDB, false);
 				cassandra.init();
-				SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
-				spark.init();
-				cassandra.setSparkInstance(spark);
-				Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
+
+				if (!md.equals(Model.cassandra)) {
+					SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
+					spark.init();
+					cassandra.setSparkInstance(spark);
+					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
+				} else {
+					Batch2.
+					logger.info("No processing. Only running local cassandra server from database in current working directory.");
+
+					System.out.println("You may now use external tools on Cassandra database.");
+					System.out.println("Press Enter to terminate server");
+					Scanner scanner = new Scanner(System.in);
+					scanner.nextLine();
+
+					logger.info("Termination requested. Waiting for Cassandra to exit...");
+				}
 			} catch (Exception e) {
 				logger.info("Failed to process " + Arrays.toString(args), e);
 			}
