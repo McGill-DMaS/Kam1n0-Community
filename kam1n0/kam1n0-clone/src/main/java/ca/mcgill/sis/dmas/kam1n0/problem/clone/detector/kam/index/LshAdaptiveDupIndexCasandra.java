@@ -90,12 +90,14 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ " PRIMARY KEY ((" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID + ")" //
 						+ ");");
 
-				logger.info("Creating view {}.{}", this.databaseName, _ADAPTIVE_HASH_VIEW);
-				session.execute("CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
-						+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
-						+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
-						+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
-						+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND + ");");
+				if (!this.sparkInstance.localMode) {
+					logger.info("Creating view {}.{}", this.databaseName, _ADAPTIVE_HASH_VIEW);
+					session.execute("CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
+							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
+							+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
+							+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
+							+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND + ");");
+				}
 			});
 		} else {
 			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
@@ -264,7 +266,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 					session -> {
 						return hashIds.parallelStream().map(hid -> {
 							return session.execute(QueryBuilder.select(selection)
-									.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
+									.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)) //
 									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
 						}).filter(row -> row != null).map(row -> {
 							VecEntry<T, K> vec = new VecEntry<T, K>();
