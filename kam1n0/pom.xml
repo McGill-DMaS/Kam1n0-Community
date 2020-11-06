@@ -6,7 +6,7 @@
 	<version>${kam1n0.version}</version>
 	<packaging>pom</packaging>
 	<properties>
-		<kam1n0.version>2.0.1004</kam1n0.version>
+		<kam1n0.version>2.0.10050-flow182.no_hash_view</kam1n0.version>
 		<java.version>1.8</java.version>
 		<kam1n0.jar.name>kam1n0-server</kam1n0.jar.name>
 		<output.dir>${user.dir}/build-bins/</output.dir>
