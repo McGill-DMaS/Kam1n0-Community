@@ -103,7 +103,7 @@ public class Batch2 {
 	}
 
 	public static enum Model {
-		asm2vec, asmbin2vec, sym1n0, asmclone,
+		asm2vec, asmbin2vec, sym1n0, asmclone, cassandra
 	}
 
 	public static class Dataset implements Iterable<BinaryMultiParts> {
@@ -441,8 +441,9 @@ public class Batch2 {
 					Scanner scanner = new Scanner(System.in);
 					scanner.nextLine();
 
-					logger.info("Termination requested. Waiting for Cassandra to exit...");
+					logger.info("Termination requested. Cassandra should automatically exit in a moment.");
 				}
+
 			} catch (Exception e) {
 				logger.info("Failed to process " + Arrays.toString(args), e);
 			}

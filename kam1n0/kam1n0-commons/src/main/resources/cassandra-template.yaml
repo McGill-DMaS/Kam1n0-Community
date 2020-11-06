@@ -42,7 +42,7 @@ column_index_size_in_kb: 64
 compaction_throughput_mb_per_sec: 16
 endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch
 dynamic_snitch: true
-dynamic_snitch_update_interval_in_ms: 100 
+dynamic_snitch_update_interval_in_ms: 100
 dynamic_snitch_reset_interval_in_ms: 600000
 dynamic_snitch_badness_threshold: 0.0
 request_scheduler: org.apache.cassandra.scheduler.NoScheduler
