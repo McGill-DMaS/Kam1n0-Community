@@ -41,7 +41,7 @@
 			<div class="card-header" data-background-color="green"
 				id="headerSource">
 				<h4 class="title" style="font-size: 15px">
-					<i class="fa fa-cloud"></i> Text View: <span id="diff-title"></span>
+					<i class="fa fa-cloud"></i> Text View: <span id="diff-title"></span><a class="dropdown-toggle pull-right" id="btn-cp-cmt" title="copy comments"  data-toggle="dropdown" style="cursor:pointer"><i class="material-icons">content_copy</i></a> 
 				</h4>
 			</div>
 			<div class="card-content" style="height: 100%; padding-bottom: 50px">
@@ -102,6 +102,7 @@
 					drawText(pb_fun, 'diff-title', 'diff-table');
 					plotCommentSingle(cm_url, pb_fun)
 					initForm(cm_url);
+					setUpTextHighlights('#btn-cp-cmt', '');
 				}
 			});
 		}
