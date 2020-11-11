@@ -77,10 +77,18 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 				session.execute("CREATE KEYSPACE if not exists " + databaseName + " WITH "
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
-				logger.info("Creating table {}.{}", this.databaseName, _ADAPTIVE_HASH);
-				// session.execute("create type " + databaseName + ".ventry (fid
-				// bigint, bid bigint, bl int, ps int);");
-				session.execute("create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
+
+				// TODO: is that enough to check for spark.localMode if we want to know if Cassandra is on a single cluster
+				String tombstoneManagementTable = "";
+				String tombstoneManagementView = "";
+				if (sparkInstance.localMode) {
+					String base = " WITH COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
+							"AND gc_grace_seconds = ";
+					tombstoneManagementTable = base + "15";
+					tombstoneManagementView = base + "0";
+				}
+
+				String createTableStatement = "create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
 						+ _APP_ID + " bigint," //
 						+ _ADAPTIVE_HASH_HASHID + " bigint, " //
 						+ _ADAPTIVE_HASH_IND + " int, " //
@@ -88,16 +96,18 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ _ADAPTIVE_HASH_SHARED_INFO + " text, " //
 						+ _ADAPTIVE_HASH_VIDS + " set<text>, " //
 						+ " PRIMARY KEY ((" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID + ")" //
-						+ ");");
+						+ ")" + tombstoneManagementTable + ";";
+				logger.info("Creating table {}.{} with {}", this.databaseName, _ADAPTIVE_HASH, createTableStatement);
+				session.execute(createTableStatement);
 
-				if (!this.sparkInstance.localMode) {
-					logger.info("Creating view {}.{}", this.databaseName, _ADAPTIVE_HASH_VIEW);
-					session.execute("CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
-							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
-							+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
-							+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
-							+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND + ");");
-				}
+				String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
+						+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
+						+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
+						+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
+						+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND
+						+ ")" + tombstoneManagementView + ";";
+				logger.info("Creating view {}.{} with {}", this.databaseName, _ADAPTIVE_HASH_VIEW, createViewStatement);
+				session.execute(createViewStatement);
 			});
 		} else {
 			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
@@ -266,7 +276,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 					session -> {
 						return hashIds.parallelStream().map(hid -> {
 							return session.execute(QueryBuilder.select(selection)
-									.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)) //
+									.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
 									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
 						}).filter(row -> row != null).map(row -> {
 							VecEntry<T, K> vec = new VecEntry<T, K>();
