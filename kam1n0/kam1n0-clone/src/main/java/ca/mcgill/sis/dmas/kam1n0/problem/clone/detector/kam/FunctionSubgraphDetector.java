@@ -196,6 +196,8 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				// indexer.dump("C:\\delivery\\tmp\\");
 				// logger.info("finished {}", function.functionName);
 			}
+
+			// TODO: filter topK results, right now we may have up to topK*3 results
 		}
 
 		return results;

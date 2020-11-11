@@ -22,7 +22,7 @@ public class VecInfoBlock extends VecInfo {
 	public Long blockId;
 	public Integer blockLength;
 	public Long[] calls;
-	public int peerSize;
+	public int peerSize;	// TODO: can be total function block count or instruction count. clear that up.
 	public int funcLength;
 	
 	

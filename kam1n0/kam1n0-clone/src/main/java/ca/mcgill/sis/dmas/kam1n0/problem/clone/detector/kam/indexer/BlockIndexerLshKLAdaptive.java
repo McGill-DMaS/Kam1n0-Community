@@ -301,9 +301,10 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// hid: hash id
 
 		// Initial query, for each block of the function, get topK*10 potential clones (based on Adaptive Locally
-		// Sensitive Hashing), to be filtered out later down to topK matches.
-		// TODO: understand the VecInfoBlockFilter metric and fix above comment as need be
-		// TODO: figure out where 10 comes from
+		// Sensitive Hashing), to be filtered out later down to topK matches. Current result are ranked and filtered
+		// according to similarity in instruction count between source and target functions where blocks are from.
+		// This is an optimization filtering: we could keep all results instead of topK*10, but we assume that there is
+		// little chance to match many linked BB from functions with very dissimilar function (i.e. they won't end up in final topK).
 		//
 		// Return is in two parts:
 		//  ._1: list (target block ID, targetBlkVectorInfo)  the matched subset of targetBlocksAsVectors
@@ -312,17 +313,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// Note: this matching by ALSH is based on hashes.
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =
 				index.query(rid, objs, new VecInfoBlockFilter(functionInstructionCount, topK * 10));
-		// TODO: no matter the 'avoidSameBinary' parameter, should we at least filter out matches from the same function ID?
-		//       and would that be in VecInfoBlockFilter or straight in the query?
-
-		// TODO: possible improvement: move 'avoidSameBinary' here instead of in caller.
-		// Get all functions ID from target binary, something like
-		// 		function_ids_to_avoid = blks.stream().map(b->b.function_id).collect(Collectors.toSet())
-		// Then remove all buckets with those function IDs but only if avoidSameBinary
-		// Note: this 	won't work right away since all BB here are from the same function. Need to get in caller the
-		// list of all functions ID to filter out.
-		// Also, indexer like this one are not expected to do that, each caller does it as they wish. Will have to see
-		// what that means for other indexers.
+		// TODO: no matter the 'avoidSameBinary' parameter, we should at least filter out matches from the same function ID
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(
 				tp2._1.stream().map(tp -> new Tuple2<>(tp._1, tp._2.block)).collect(Collectors.toList()),
