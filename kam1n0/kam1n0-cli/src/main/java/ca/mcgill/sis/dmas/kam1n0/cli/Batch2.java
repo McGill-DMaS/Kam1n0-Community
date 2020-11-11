@@ -273,7 +273,12 @@ public class Batch2 {
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
 		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
-			fmodel.index(-1l, ds, new LocalJobProgress());
+			fmodel.index(-1l, ds, new LocalJobProgress(), completedBinaryIndex -> {
+				if ((completedBinaryIndex+1) % 10 == 0) {
+					cassandra.waitForCompactionTasksCompletion();
+				}
+				return null;
+			});
 		}
 
 		double[][] matrix = new double[ds.size()][ds.size()];
@@ -433,7 +438,6 @@ public class Batch2 {
 					cassandra.setSparkInstance(spark);
 					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
 				} else {
-					Batch2.
 					logger.info("No processing. Only running local cassandra server from database in current working directory.");
 
 					System.out.println("You may now use external tools on Cassandra database.");
@@ -441,8 +445,10 @@ public class Batch2 {
 					Scanner scanner = new Scanner(System.in);
 					scanner.nextLine();
 
-					logger.info("Termination requested. Cassandra should automatically exit in a moment.");
+					logger.info("Termination requested.");
 				}
+
+				cassandra.close();
 
 			} catch (Exception e) {
 				logger.info("Failed to process " + Arrays.toString(args), e);

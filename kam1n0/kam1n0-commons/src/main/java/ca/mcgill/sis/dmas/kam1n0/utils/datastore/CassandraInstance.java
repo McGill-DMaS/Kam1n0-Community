@@ -21,14 +21,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.concurrent.*;
 
+import com.codahale.metrics.Gauge;
 import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.db.WindowsFailedSnapshotTracker;
+import org.apache.cassandra.metrics.CassandraMetricsRegistry;
 import org.apache.cassandra.service.CassandraDaemon;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.spark.SparkConf;
@@ -270,6 +271,44 @@ public class CassandraInstance {
 		return swt.value;
 	}
 
+	/**
+	 * Poll cassandra metrics every second until there are no more pending compaction tasks. There might be a better
+	 * way to do that.
+	 */
+	public void waitForCompactionTasksCompletion() {
+		if ( isEmbedded) {
+			Gauge<Map<String, Map<String, Integer>>> gauge =
+					CassandraMetricsRegistry.Metrics.getGauges().get("org.apache.cassandra.metrics.Compaction.PendingTasksByTableName");
+			if (gauge != null) {
+				Map<String, Map<String, Integer>> keyspaceTableTasks = gauge.getValue();
+				Map<String, Map<String, Integer>> previousTasks = new HashMap<>();
+				while (!keyspaceTableTasks.isEmpty()) {
+
+					if (!keyspaceTableTasks.equals(previousTasks)) {
+						previousTasks.clear();
+						logger.info("Waiting for compaction tasks to finish on following tables:");
+						for (Map.Entry<String, Map<String, Integer>> keyspace : keyspaceTableTasks.entrySet()) {
+							for (Map.Entry<String, Integer> table : keyspace.getValue().entrySet()) {
+								logger.info("    {}: {}", keyspace.getKey() + "." + table.getKey(), table.getValue());
+							}
+							Map<String, Integer> keyspaceCopy = new HashMap<>();
+							keyspaceCopy.putAll(keyspace.getValue());
+							previousTasks.put(keyspace.getKey(), keyspaceCopy);
+						}
+					}
+
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						// code for stopping current task so thread stops
+					}
+					keyspaceTableTasks = gauge.getValue();
+				}
+			}
+		}
+	}
+
 	public void init() {
 		if (inMem)
 			return;
@@ -322,7 +361,9 @@ public class CassandraInstance {
 			return true;
 		if (isEmbedded) {
 			try {
-				service.shutdownNow();
+				logger.info("Shutting down embedded Cassandra.");
+				this.waitForCompactionTasksCompletion();
+				service.shutdown();
 				cassandra.stop();
 				cassandra.deactivate();
 				return true;
