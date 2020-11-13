@@ -86,6 +86,10 @@ public class CassandraInstance {
 		return this.inMem;
 	}
 
+	public boolean isEmbedded() {
+		return this.inMem;
+	}
+
 	public List<Tuple2<String, String>> getSparkConfiguration() {
 		return Arrays.asList(new Tuple2<String, String>("spark.cassandra.connection.host", host),
 				new Tuple2<String, String>("spark.cassandra.connection.port", Integer.toString(port)),
@@ -272,13 +276,18 @@ public class CassandraInstance {
 	}
 
 	/**
-	 * Poll cassandra metrics every second until there are no more pending compaction tasks. There might be a better
-	 * way to do that.
+	 * Polls cassandra metrics every second until there are no more pending compaction tasks (there could be a better
+	 * way to do that). Also, it logs the list of tables with pending compaction tasks everytime that list changes (i.e
+	 * when one or more tasks are completed).
+	 *
+	 * This is only for an embedded Cassandra. In memory or on a distributed cluster, this returns immediately.
 	 */
 	public void waitForCompactionTasksCompletion() {
-		if ( isEmbedded) {
+		if (isEmbedded) {
+			@SuppressWarnings("unchecked")
 			Gauge<Map<String, Map<String, Integer>>> gauge =
 					CassandraMetricsRegistry.Metrics.getGauges().get("org.apache.cassandra.metrics.Compaction.PendingTasksByTableName");
+
 			if (gauge != null) {
 				Map<String, Map<String, Integer>> keyspaceTableTasks = gauge.getValue();
 				Map<String, Map<String, Integer>> previousTasks = new HashMap<>();
@@ -291,9 +300,7 @@ public class CassandraInstance {
 							for (Map.Entry<String, Integer> table : keyspace.getValue().entrySet()) {
 								logger.info("    {}: {}", keyspace.getKey() + "." + table.getKey(), table.getValue());
 							}
-							Map<String, Integer> keyspaceCopy = new HashMap<>();
-							keyspaceCopy.putAll(keyspace.getValue());
-							previousTasks.put(keyspace.getKey(), keyspaceCopy);
+							previousTasks.put(keyspace.getKey(), new HashMap<>(keyspace.getValue()));
 						}
 					}
 
@@ -301,7 +308,6 @@ public class CassandraInstance {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
-						// code for stopping current task so thread stops
 					}
 					keyspaceTableTasks = gauge.getValue();
 				}

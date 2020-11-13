@@ -65,8 +65,8 @@ public abstract class FunctionCloneDetector {
 	 *            Reporting progress.
 	 * @throws Exception
 	 */
-	public void index(long rid, Iterable<? extends BinaryMultiParts> binaries, LocalJobProgress progress,
-					  java.util.function.Function<Integer, Void> indexedBinaryNotifier) throws Exception {
+	public void index(long rid, Iterable<? extends BinaryMultiParts> binaries, LocalJobProgress progress)
+			throws Exception {
 		int total = Iterables.size(binaries);
 		int binIndx = 1;
 		StageInfo stage_binary = progress.nextStage(this.getClass());
@@ -89,30 +89,22 @@ public abstract class FunctionCloneDetector {
 
 				partIndx++;
 			}
-
-			if ( indexedBinaryNotifier != null ) {
-				indexedBinaryNotifier.apply(binIndx);
-			}
 			binIndx++;
 			stage_part.complete();
 		}
 		stage_binary.complete();
 	}
 
-	public void index(long rid, Iterable<? extends BinaryMultiParts> binaries, LocalJobProgress progress) throws Exception {
-		this.index(rid, binaries, progress, null);
-	}
-
 	public final void index(long rid, List<Binary> binaries, LocalJobProgress progress) throws Exception {
 		List<BinaryMultiParts> mulitParts = binaries.stream().map(binary -> binary.converToMultiPart())
 				.collect(Collectors.toList());
-		this.index(rid, mulitParts, progress, null);
+		this.index(rid, mulitParts, progress);
 	}
 
 	public final void index(long rid, LocalJobProgress progress, Binary... binaries) throws Exception {
 		List<BinaryMultiParts> mulitParts = Arrays.stream(binaries).map(binary -> binary.converToMultiPart())
 				.collect(Collectors.toList());
-		this.index(rid, mulitParts, progress, null);
+		this.index(rid, mulitParts, progress);
 	}
 
 	public final List<FunctionCloneEntry> detectClonesForFunc(long rid, Function function, double threadshold, int topK,

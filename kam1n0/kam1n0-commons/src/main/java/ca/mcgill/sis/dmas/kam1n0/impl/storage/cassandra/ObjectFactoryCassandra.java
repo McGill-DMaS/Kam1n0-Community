@@ -162,11 +162,10 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				String key_defs = getKeyDefinition();
 				// create table (CF)
 
-				// TODO: is that enough to check for spark.localMode if we want to know if Cassandra is on a single
-				// cluster?
 				String tombstoneManagement = "";
-				if (spark.localMode) {
-					tombstoneManagement = "WITH COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
+				if (cassandra.isEmbedded()) {
+					tombstoneManagement = "WITH " +
+							"COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
 							"AND gc_grace_seconds = 0";
 				}
 

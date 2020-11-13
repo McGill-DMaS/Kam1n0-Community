@@ -273,12 +273,7 @@ public class Batch2 {
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
 		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
-			fmodel.index(-1l, ds, new LocalJobProgress(), completedBinaryIndex -> {
-				if ((completedBinaryIndex+1) % 10 == 0) {
-					cassandra.waitForCompactionTasksCompletion();
-				}
-				return null;
-			});
+			fmodel.index(-1l, ds, new LocalJobProgress());
 		}
 
 		double[][] matrix = new double[ds.size()][ds.size()];

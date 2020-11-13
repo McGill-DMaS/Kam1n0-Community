@@ -216,6 +216,8 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		List<Tuple2<Long, Tuple2<Block, VecInfoBlock>>> hid_tbid_Map = hid_tblk_info.collect();
 
+		// Rank source functions from which there are matching pairs
+
 		final HashMap<Long, Double> counter = new HashMap<>();
 		// logger.info("{} pairs", hid_tbid_Map.size());
 		hid_tbid_Map.stream().forEach(tp -> counter.compute(tp._2()._2().functionId, (k, v) -> {
@@ -235,8 +237,16 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			else
 				return v + val;
 		}));
+
 		Ranker<Long> filtered = new Ranker<>();
 		counter.entrySet().stream().forEach(ent -> filtered.push(ent.getValue(), ent.getKey()));
+
+		// Why topK * 3:
+		//  - here we only have single block matches (target block - source block). The "reducing" stage later on will
+		//    combine target blocks et source blocks to produce subgraph matches instead of only block matches
+		//  - we match blocks frm source and target functions that are more likely to produce good subgraph matches
+		//  - To keep topK subgraph at the end, we need more that topK candidate source functions, and topK*3 seems
+		//    fine in that regard.
 		HashSet<Long> valids = filtered.getTopK(topK * 3).stream().map(ent -> ent.value)
 				.collect(Collectors.toCollection(HashSet::new));
 		// List<Entry<Long, Double>> ls =

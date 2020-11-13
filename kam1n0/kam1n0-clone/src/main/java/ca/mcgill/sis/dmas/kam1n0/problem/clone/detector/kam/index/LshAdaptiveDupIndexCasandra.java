@@ -78,10 +78,9 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
 
-				// TODO: is that enough to check for spark.localMode if we want to know if Cassandra is on a single cluster
 				String tombstoneManagementTable = "";
 				String tombstoneManagementView = "";
-				if (sparkInstance.localMode) {
+				if (cassandraInstance.isEmbedded()) {
 					String base = " WITH COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
 							"AND gc_grace_seconds = ";
 					tombstoneManagementTable = base + "15";

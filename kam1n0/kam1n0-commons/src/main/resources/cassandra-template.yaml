@@ -39,7 +39,7 @@ thrift_max_message_length_in_mb: 2047
 incremental_backups: false
 snapshot_before_compaction: false
 column_index_size_in_kb: 64
-compaction_throughput_mb_per_sec: 16
+compaction_throughput_mb_per_sec: 0
 endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch
 dynamic_snitch: true
 dynamic_snitch_update_interval_in_ms: 100
