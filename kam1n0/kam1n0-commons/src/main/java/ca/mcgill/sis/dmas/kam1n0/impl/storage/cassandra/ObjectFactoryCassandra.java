@@ -248,24 +248,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 					logger.error("Failed to set field " + info + "with value", e);
 				}
 			if (async) {
-				CompletionStage<CqlSession> sessionStage = CqlSession.builder().withLocalDatacenter("datacenter1").buildAsync();
-				// Chain one async operation after another:
-				String finalStringQuery = query.toString();
-				CompletionStage<AsyncResultSet> responseStage =
-						sessionStage.thenCompose(
-								session -> session.executeAsync(finalStringQuery));
-
-
-				// Perform an action once a stage is complete:
-				responseStage.whenComplete(
-						(version, error) -> {
-							if (error != null) {
-								logger.error("Failed to put value.", error);
-							} else {
-							}
-							sessionStage.thenAccept(CqlSession::closeAsync);
-						});
-
+				executeAsync(query);
 			} else {
 				sess.execute(query.toString());
 			}
@@ -275,6 +258,22 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				sess.executeAsync(inc_stm.bind(rid));
 			}
 		});
+	}
+
+	private void executeAsync(RegularInsert query) {
+		var sessionStage = CqlSession.builder().buildAsync();
+		var finalStringQuery = query.toString();
+		CompletionStage<AsyncResultSet> responseStage =
+				sessionStage.thenCompose(
+						session -> session.executeAsync(finalStringQuery));
+
+		responseStage.whenComplete(
+				(version, error) -> {
+					if (error != null) {
+						logger.error("Failed to put value.", error);
+					}
+					sessionStage.thenAccept(CqlSession::closeAsync);
+				});
 	}
 
 	private JavaRDD<T> get(long rid, String[] fields, Object... keys) {

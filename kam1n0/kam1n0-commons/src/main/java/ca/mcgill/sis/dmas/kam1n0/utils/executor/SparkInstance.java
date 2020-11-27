@@ -205,8 +205,7 @@ public class SparkInstance {
 
 	public void init() {
 		context = new JavaSparkContext(getConf());
-		context.statusTracker();
-		tracker = context.statusTracker();;
+		tracker = context.statusTracker();
 
 		scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(() -> {
