@@ -44,8 +44,7 @@ build-bins
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
-.idea/misc.xml
-modules.xml
+
 *.iml
 *.ipr
 
@@ -81,6 +80,14 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+### Intellij+iml Patch ###
+# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
+
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
 
 ### Maven ###
 target/

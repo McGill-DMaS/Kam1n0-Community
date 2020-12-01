@@ -23,12 +23,14 @@ import pickle
 from .utilities.CloneConnector import CloneConnector
 from .forms.ConnectionManagementForm import ConnectionManagementForm
 from .forms.SelectionForm import SelectionForm
+import ida_kernwin
 
 from . import IDAUtils
 
 class Kam1n0PluginManager:
     def __init__(self):
         self.connector = None
+        ida_kernwin.create_menu("Kam1n0Menu", "Kam1n0", "View")
         self.actions = list()
         self.conf_dir = os.path.expanduser("~") + "/Kam1n0"
         if not os.path.exists(self.conf_dir):
@@ -70,6 +72,8 @@ class Kam1n0PluginManager:
                     msg_callback=IDAUtils.execute
                 )
         else:
+            if self.configuration is None:
+                self.configuration = {}
             self.configuration['apps'] = {}
             self.configuration['default-app'] = None
             self.connector = None
@@ -110,7 +114,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SEARCH,
             tooltip="Search current function",
             shortcut="Ctrl+Shift+s",
-            menuPath="Search/next code",
+            menuPath= "Kam1n0/",#"Search/next code",
             callback=self.query_current_func,
             args=None
         )
@@ -138,7 +142,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_INDEX,
             tooltip="Index current function",
             shortcut="Ctrl+Shift+k",
-            menuPath="Edit/Export data",
+            menuPath="Kam1n0/",
             callback=self.index_current_func,
             args=None
         )
@@ -152,7 +156,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_INDEX_MULTIPLE,
             tooltip="Index the selected functions",
             shortcut="Ctrl+Shift+j",
-            menuPath="Edit/Export data",
+            menuPath="Kam1n0/",
             callback=self.index_selected_func,
             args=None
         )
@@ -166,7 +170,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_CONN,
             tooltip="Manage connections",
             shortcut="",
-            menuPath="Edit/Kam1n0/",
+            menuPath="Kam1n0/",
             callback=self.open_cnn_manager,
             args=None
         )
@@ -180,7 +184,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SETT,
             tooltip="Manage applications",
             shortcut="",
-            menuPath="Edit/Kam1n0/",
+            menuPath="Kam1n0/",
             callback=self.open_user_home,
             args=None
         )
@@ -194,7 +198,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_COMP,
             tooltip="Composition analysis",
             shortcut="",
-            menuPath="Search/next code",
+            menuPath="Kam1n0/",
             callback=self.query_binary,
             args=None
         )
@@ -208,7 +212,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_FRAG,
             tooltip="Query a code fragment",
             shortcut="",
-            menuPath="Search/next code",
+            menuPath="Kam1n0/",
             callback=self.query_fragment,
             args=None
         )

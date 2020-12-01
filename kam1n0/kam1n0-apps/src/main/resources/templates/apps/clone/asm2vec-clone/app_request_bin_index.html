@@ -134,20 +134,26 @@
           }
         }
 		// indexing:
-		var files_to_index;
+		var files_to_index=[];
 		$(function() {
 			var dropZone = document.getElementById('index-drop-zone');
 			var uploadForm = document.getElementById('index-upload-input');
 
 			var startUpload = function(files) {
-				console.log(files)
-				files_to_index = files;
+				console.log(files);
+                n_pre = files_to_index.length;
+                if(files_to_index==[])
+                    {files_to_index = files;}
+                else
+				    files_to_index = $.merge(files_to_index,files);
+				console.log("files_to_index");
+				console.log(files_to_index);
 
-				$("#index-file-table").find("tr:gt(0)").remove();
+				//$("#index-file-table").find("tr:gt(0)").remove();
 				for (var i = 0; i < files.length; i++) {
 					var file = files[i];
 					var row = $('<tr>');
-					row.append($('<td>').append(i));
+					row.append($('<td>').append(i+n_pre));
 					row.append($('<td>').append(file.name));
 					row.append($('<td>').append(file.type));
 					row.append($('<td>').append(
@@ -182,9 +188,9 @@
 			$("#reindex-btn")
 					.click(
 							function() {
-								document.getElementById('index-upload-input').files = files_to_index;
+								//document.getElementById('index-upload-input').files = files_to_index;
 								var formData = new FormData();
-								$.each($('#index-upload-input')[0].files,
+								$.each(files_to_index,//$('#index-upload-input')[0].files,
 										function(i, file) {
 											formData.append('files', file);
 										});

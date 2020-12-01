@@ -37,7 +37,8 @@
                     </TableView>
                     <JFXButton fx:id="startButton" layoutX="439.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Start" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="72.0" />
 					<JFXButton fx:id="stopButton" layoutX="505.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Stop" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="6.0" />
-                    <MaterialDesignIconView fx:id="browseBtn" glyphName="FOLDER" size="18" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="6.0" />
+					<JFXButton fx:id="resetButton" layoutX="505.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleReset" prefHeight="25.0" prefWidth="54.0" styleClass="button-raised" text="Reset" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="138.0" />
+					<MaterialDesignIconView fx:id="browseBtn" glyphName="FOLDER" size="18" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="6.0" />
                     <TextField fx:id="propertyFile" layoutX="48.0" layoutY="321.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="28.0" />
 					</children>
 				</AnchorPane>

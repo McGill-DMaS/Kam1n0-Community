@@ -226,7 +226,7 @@ public class AppController {
 	@GetMapping("/userHome")
 	public ModelAndView createUserHome() {
 		try {
-			return MVCUtils.wrapAuthenticatedHomePage("Application List", "Click on a link to access the corresponding application.",
+			return MVCUtils.wrapAuthenticatedHomePage("Applications List", "Click on a link to access the corresponding application.",
 					createAppList(), userController.createProgressList(), userController.createFileList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);

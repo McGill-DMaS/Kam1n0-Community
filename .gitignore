@@ -1,3 +1,4 @@
+
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -23,6 +24,9 @@ kam1n0-bin-win/
 .classpath
 .project
 .settings
+
+# Visual Studio
+.vs/
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+iml,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+iml,maven
