@@ -15,8 +15,8 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.addAll;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
+
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.typeConverter;
 
@@ -26,20 +26,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
+
 
 import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.LineSequenceWriter;
 import ca.mcgill.sis.dmas.io.Lines;
 import ca.mcgill.sis.dmas.io.collection.Counter;
-import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.indexer.VecInfoBlock;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import scala.Tuple2;
@@ -118,9 +117,9 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			Counter counter = new Counter();
 			return vecs.stream().parallel()
 					.map(vec -> new Tuple2<>(vec,
-							session.execute(QueryBuilder.select(_ADAPTIVE_HASH_HASHID)
-									.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId))).one()))
+							session.execute(QueryBuilder.selectFrom(databaseName, _ADAPTIVE_HASH).column(_ADAPTIVE_HASH_HASHID)
+									.whereColumn(_APP_ID).isEqualTo(literal(rid)) //
+									.whereColumn(_ADAPTIVE_HASH_HASHID).isEqualTo(literal(vec.hashId)).build()).one()))
 					//
 					.map(tp -> {
 						if (info != null) {
@@ -139,20 +138,21 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							this.calFullKey(vec);
 							if (vec.fullKey.length != 0) {
 								session.executeAsync(QueryBuilder.insertInto(databaseName, _ADAPTIVE_HASH)//
-										.value(_APP_ID, rid) //
-										.value(_ADAPTIVE_HASH_HASHID, vec.hashId)//
-										.value(_ADAPTIVE_HASH_IND, vec.ind)
-										.value(_ADAPTIVE_HASH_FULLKEY, ByteBuffer.wrap(vec.fullKey))
-										.value(_ADAPTIVE_HASH_SHARED_INFO, shared)//
-										.value(_ADAPTIVE_HASH_VIDS, vals));
+										.value(_APP_ID, literal(rid)) //
+										.value(_ADAPTIVE_HASH_HASHID, literal(vec.hashId))//
+										.value(_ADAPTIVE_HASH_IND, literal(vec.ind))
+										.value(_ADAPTIVE_HASH_FULLKEY, literal(ByteBuffer.wrap(vec.fullKey)))
+										.value(_ADAPTIVE_HASH_SHARED_INFO, literal(shared))//
+										.value(_ADAPTIVE_HASH_VIDS, literal(vals)).build());
 							}
 
 							return vec;
 						} else {
 							session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_HASH)
-									.with(addAll(_ADAPTIVE_HASH_VIDS, vals)) //
-									.where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId)));
+									.append(_ADAPTIVE_HASH_VIDS,literal(vals))
+									.whereColumn(_APP_ID).isEqualTo(literal(rid)) //
+									.whereColumn(_ADAPTIVE_HASH_HASHID).isEqualTo(literal(vec.hashId))
+									.build());
 							return null;
 						}
 					}).filter(vec -> vec != null).collect(Collectors.toList());
@@ -263,14 +263,15 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			List<VecEntry<T, K>> collected = this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
 					session -> {
 						return hashIds.parallelStream().map(hid -> {
-							return session.execute(QueryBuilder.select(selection)
-									.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
+							return session.execute(QueryBuilder.selectFrom(databaseName, _ADAPTIVE_HASH_VIEW)
+									.columns(selection)
+									.whereColumn(_APP_ID).isEqualTo(literal(rid)) //
+									.whereColumn(_ADAPTIVE_HASH_HASHID).isEqualTo(literal(hid)).build()).one();
 						}).filter(row -> row != null).map(row -> {
 							VecEntry<T, K> vec = new VecEntry<T, K>();
 							vec.hashId = row.getLong(0);
 							vec.ind = row.getInt(1);
-							ByteBuffer bb = row.getBytes(2);
+							ByteBuffer bb = row.getByteBuffer(2);
 							vec.fullKey = new byte[bb.remaining()];
 							bb.get(vec.fullKey);
 							if (!excludeBlockIds) {
@@ -339,8 +340,8 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public void clear(long rid) {
 		try {
 			this.cassandraInstance.doWithSession(sess -> {
-				sess.executeAsync(QueryBuilder.delete().from(databaseName, _ADAPTIVE_HASH)//
-						.where(eq(_APP_ID, rid)));
+				sess.executeAsync(QueryBuilder.deleteFrom(databaseName, _ADAPTIVE_HASH)//
+						.whereColumn(_APP_ID).isEqualTo(literal(rid)).build());
 			});
 		} catch (Exception e) {
 			logger.error("Failed to delete the index.", e);

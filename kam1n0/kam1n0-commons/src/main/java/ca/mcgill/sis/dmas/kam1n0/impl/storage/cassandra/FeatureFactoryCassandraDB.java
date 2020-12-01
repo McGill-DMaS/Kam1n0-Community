@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Session;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.index.FeatureVecFactory;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.index.FeatureVec;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
@@ -56,14 +56,12 @@ public class FeatureFactoryCassandraDB extends FeatureVecFactory {
 
 	@Override
 	public void init() {
-		instance.doWithCluster(spark_Instance.getConf(), cluster -> {
-			KeyspaceMetadata keysapce = cluster.getMetadata().getKeyspace(databaseName);
+		instance.doWithSession(spark_Instance.getConf(), session -> {
+			KeyspaceMetadata keysapce = session.getMetadata().getKeyspace(databaseName).get();
 
 			if (keysapce == null || keysapce.getTable(databaseName) == null) {
 
 				logger.info("Creating table: {}.{}", databaseName, _VEC_B);
-
-				Session session = cluster.connect();
 
 				session.execute("CREATE KEYSPACE IF NOT EXISTS " + databaseName + " WITH "
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
@@ -88,8 +86,9 @@ public class FeatureFactoryCassandraDB extends FeatureVecFactory {
 		try {
 			instance.doWithSession(spark_Instance.getConf(), session -> {
 				for (FeatureVec vec : vecs) {
-					session.execute("INSERT INTO " + databaseName + "." + _VEC_B + " (" + _VEC_B_KEY + "," + _VEC_B_VEC
-							+ ") VALUES (?, ?)", vec.key, ByteBuffer.wrap(SerializationUtils.serialize(vec)));
+					PreparedStatement statement = session.prepare("INSERT INTO " + databaseName + "." + _VEC_B + " (" + _VEC_B_KEY + "," + _VEC_B_VEC
+							+ ") VALUES (?, ?)");
+					session.execute(statement.bind(vec.key, ByteBuffer.wrap(SerializationUtils.serialize(vec))));
 				}
 			});
 			return true;
@@ -102,10 +101,9 @@ public class FeatureFactoryCassandraDB extends FeatureVecFactory {
 	@Override
 	public List<FeatureVec> getVecs(Set<Long> keys) {
 		return instance.doWithSessionWithReturn(spark_Instance.getConf(), session -> {
-			return session.execute(
-					"SELECT " + _VEC_B_VEC + " FROM " + databaseName + "." + _VEC_B + " WHERE " + _VEC_B_KEY + " IN ?",
-					keys).all().stream().map(row -> {
-				ByteBuffer data = row.getBytes(0);
+			PreparedStatement statement = session.prepare("SELECT " + _VEC_B_VEC + " FROM " + databaseName + "." + _VEC_B + " WHERE " + _VEC_B_KEY + " IN ?");
+			return session.execute( statement.bind(keys)).all().stream().map(row -> {
+				ByteBuffer data = row.getByteBuffer(0);
 				byte[] result = new byte[data.remaining()];
 				data.get(result);
 				FeatureVec vec = SerializationUtils.deserialize(result);
@@ -132,7 +130,8 @@ public class FeatureFactoryCassandraDB extends FeatureVecFactory {
 	public boolean dropVec(List<Long> keys) {
 		try {
 			instance.doWithSession(spark_Instance.getConf(), session -> {
-				session.execute("DELETE FROM " + databaseName + "." + _VEC_B + " where " + _VEC_B_KEY + " in ?", keys);
+				PreparedStatement statement = session.prepare("DELETE FROM " + databaseName + "." + _VEC_B + " where " + _VEC_B_KEY + " in ?");
+				session.execute(statement.bind(keys));
 			});
 			return true;
 		} catch (Exception e) {

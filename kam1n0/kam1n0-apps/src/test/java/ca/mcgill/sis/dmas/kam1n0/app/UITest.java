@@ -1,7 +1,6 @@
 package ca.mcgill.sis.dmas.kam1n0.app;
 
 import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;

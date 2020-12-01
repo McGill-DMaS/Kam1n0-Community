@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;

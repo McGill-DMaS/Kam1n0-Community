@@ -27,15 +27,11 @@ concurrent_writes: 32
 storage_port: $STORAGE_PORT$
 listen_address: 127.0.0.1
 rpc_address: 127.0.0.1
-rpc_port: 9160
-start_rpc: false
 start_native_transport: true
 native_transport_port: $PORT$
 rpc_keepalive: true
 disk_access_mode: standard
-thrift_framed_transport_size_in_mb: 2047
 native_transport_max_frame_size_in_mb: 2047
-thrift_max_message_length_in_mb: 2047
 incremental_backups: false
 snapshot_before_compaction: false
 column_index_size_in_kb: 64
@@ -45,8 +41,6 @@ dynamic_snitch: true
 dynamic_snitch_update_interval_in_ms: 100 
 dynamic_snitch_reset_interval_in_ms: 600000
 dynamic_snitch_badness_threshold: 0.0
-request_scheduler: org.apache.cassandra.scheduler.NoScheduler
-index_interval: 128
-disk_access_mode: standard
 commitlog_segment_size_in_mb: 128
 read_request_timeout_in_ms: 65000
+enable_materialized_views: true

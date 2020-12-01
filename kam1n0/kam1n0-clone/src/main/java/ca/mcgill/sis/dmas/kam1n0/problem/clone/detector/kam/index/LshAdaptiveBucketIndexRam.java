@@ -16,7 +16,6 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;

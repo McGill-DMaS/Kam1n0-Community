@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.spark.api.java.JavaPairRDD;
 
-import ca.mcgill.sis.dmas.env.LocalJobProgress;
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.binary.DmasByteOperation;
