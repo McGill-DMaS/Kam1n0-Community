@@ -87,7 +87,7 @@ public class CassandraInstance {
 	}
 
 	public boolean isEmbedded() {
-		return this.inMem;
+		return this.isEmbedded;
 	}
 
 	public List<Tuple2<String, String>> getSparkConfiguration() {

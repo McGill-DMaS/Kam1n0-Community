@@ -275,6 +275,7 @@ public class Batch2 {
 		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
 			fmodel.index(-1l, ds, new LocalJobProgress());
 		}
+		cassandra.waitForCompactionTasksCompletion();
 
 		double[][] matrix = new double[ds.size()][ds.size()];
 		for (double[] row : matrix)
