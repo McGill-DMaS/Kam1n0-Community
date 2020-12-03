@@ -323,7 +323,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// Note: this matching by ALSH is based on hashes.
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =
 				index.query(rid, objs, new VecInfoBlockFilter(functionInstructionCount, topK * 10));
-		// TODO: no matter the 'avoidSameBinary' parameter, we should at least filter out matches from the same function ID
+		// TODO: (Kam1n0-210) no matter the 'avoidSameBinary' parameter, we should at least filter out matches from the same function ID
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(
 				tp2._1.stream().map(tp -> new Tuple2<>(tp._1, tp._2.block)).collect(Collectors.toList()),

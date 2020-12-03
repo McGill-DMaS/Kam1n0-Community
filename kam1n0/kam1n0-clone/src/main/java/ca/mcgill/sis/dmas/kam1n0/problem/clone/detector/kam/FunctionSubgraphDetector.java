@@ -197,7 +197,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				// logger.info("finished {}", function.functionName);
 			}
 
-			// TODO: filter topK results, right now we may have up to topK*3 results
+			// FIXME: (KAM1N0-206) filter topK results, right now we may have up to topK*3 results
 		}
 
 		return results;
