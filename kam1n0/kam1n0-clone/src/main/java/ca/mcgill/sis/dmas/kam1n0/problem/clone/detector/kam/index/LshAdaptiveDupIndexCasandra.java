@@ -28,6 +28,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.BuiltStatement;
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +68,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 
 	// classes:
 	public static final String _ADAPTIVE_HASH = "ADAPTIVE_HASH".toLowerCase();
-	public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
+	//public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
 
 	// properties:
 	public static final String _APP_ID = "rid0";
@@ -78,15 +85,6 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
 
-				String tombstoneManagementTable = "";
-				String tombstoneManagementView = "";
-				if (cassandraInstance.isEmbedded()) {
-					String base = " WITH COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
-							"AND gc_grace_seconds = ";
-					tombstoneManagementTable = base + "15";
-					tombstoneManagementView = base + "0";
-				}
-
 				String createTableStatement = "create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
 						+ _APP_ID + " bigint," //
 						+ _ADAPTIVE_HASH_HASHID + " bigint, " //
@@ -94,19 +92,20 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ _ADAPTIVE_HASH_FULLKEY + " blob, " //
 						+ _ADAPTIVE_HASH_SHARED_INFO + " text, " //
 						+ _ADAPTIVE_HASH_VIDS + " set<text>, " //
-						+ " PRIMARY KEY ((" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID + ")" //
-						+ ")" + tombstoneManagementTable + ";";
+//						+ " PRIMARY KEY ((" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID + ")" //
+						+ " PRIMARY KEY ((" + _APP_ID + "," + _ADAPTIVE_HASH_HASHID + ")," + _ADAPTIVE_HASH_IND + ")" //
+						+ ");";
 				logger.info("Creating table {}.{} with {}", this.databaseName, _ADAPTIVE_HASH, createTableStatement);
 				session.execute(createTableStatement);
 
-				String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
-						+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
-						+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
-						+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
-						+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND
-						+ ")" + tombstoneManagementView + ";";
-				logger.info("Creating view {}.{} with {}", this.databaseName, _ADAPTIVE_HASH_VIEW, createViewStatement);
-				session.execute(createViewStatement);
+//				String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
+//						+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
+//						+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
+//						+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
+//						+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND
+//						+ ")" + tombstoneManagementView + ";";
+//				logger.info("Creating view {}.{} with {}", this.databaseName, _ADAPTIVE_HASH_VIEW, createViewStatement);
+//				session.execute(createViewStatement);
 			});
 		} else {
 			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
@@ -163,7 +162,8 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_HASH)
 									.with(addAll(_ADAPTIVE_HASH_VIDS, vals)) //
 									.where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId)));
+									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId))
+									.and(eq(_ADAPTIVE_HASH_IND, vec.ind)));
 							return null;
 						}
 					}).filter(vec -> vec != null).collect(Collectors.toList());
@@ -275,7 +275,8 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 					session -> {
 						return hashIds.parallelStream().map(hid -> {
 							return session.execute(QueryBuilder.select(selection)
-									.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
+	//								.from(databaseName, _ADAPTIVE_HASH_VIEW).where(eq(_APP_ID, rid)) //
+									.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid))
 									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
 						}).filter(row -> row != null).map(row -> {
 							VecEntry<T, K> vec = new VecEntry<T, K>();
@@ -286,6 +287,10 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							bb.get(vec.fullKey);
 							if (!excludeBlockIds) {
 								Set<String> vids = row.getSet(3, String.class);
+//								int approxSize = vids.stream().mapToInt(s -> s.length()).sum();
+//								if ( approxSize > 100 * 1048576 ) {
+//									logger.warn("kam182 vids {} {}", vec.hashId, approxSize);
+//								}
 								List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
 								if (filter != null) {
 									ls = filter.apply(ls);
@@ -304,7 +309,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 		} else {
 			return javaFunctions(this.sparkInstance.getContext())
 					//
-					.cassandraTable(databaseName, _ADAPTIVE_HASH_VIEW)
+					.cassandraTable(databaseName, _ADAPTIVE_HASH)
 					//
 					.select(selection)//
 					.where(_APP_ID + " = ? AND " + _ADAPTIVE_HASH_HASHID + " in ?", rid, hashIds)//

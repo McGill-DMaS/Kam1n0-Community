@@ -162,15 +162,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				String key_defs = getKeyDefinition();
 				// create table (CF)
 
-				String tombstoneManagement = "";
-				if (cassandra.isEmbedded()) {
-					tombstoneManagement = "WITH " +
-							"COMPACTION = {'class': 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : 'true'} " +
-							"AND gc_grace_seconds = 0";
-				}
-
 				String query = "create table if not exists " + name_db + "." + name_cl + " (" + attr_defs_str + ","
-						+ key_defs + ") " + tombstoneManagement + ";";
+						+ key_defs + ");";
 				logger.info("Issuing query {}", query);
 				session.execute(query);
 			});
