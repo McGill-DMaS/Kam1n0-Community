@@ -161,7 +161,6 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				// setup keys
 				String key_defs = getKeyDefinition();
 				// create table (CF)
-
 				String query = "create table if not exists " + name_db + "." + name_cl + " (" + attr_defs_str + ","
 						+ key_defs + ");";
 				logger.info("Issuing query {}", query);

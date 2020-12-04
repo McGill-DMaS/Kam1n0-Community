@@ -66,6 +66,9 @@ public class CassandraInstance {
 	public static final int DEFAULT_PORT = 9042;
 	public static final int DEFAULT_STORAGE_PORT = 7000;
 
+	public static final int maxWaitForNewCompactionTasksToStartMs = 5000;
+	public static final int compactionTaskStatusPollingInterval = 1000;
+
 	public int port = DEFAULT_PORT;
 	public int port_storage = DEFAULT_STORAGE_PORT;
 	public String clusterName = StringResources.STR_EMPTY;
@@ -276,11 +279,9 @@ public class CassandraInstance {
 	}
 
 	/**
-	 * Polls cassandra metrics every second until there are no more pending compaction tasks (there could be a better
-	 * way to do that). Also, it logs the list of tables with pending compaction tasks everytime that list changes (i.e
-	 * when one or more tasks are completed).
-	 *
-	 * This is only for an embedded Cassandra. In memory or on a distributed cluster, this returns immediately.
+	 * Polls cassandra metrics until there are no more pending compaction tasks. Also, it logs the list of tables with
+	 * pending/running compaction tasks everytime that list changes (i.e when one or more tasks are completed or
+	 * added). This is only for an embedded Cassandra. In memory or on a distributed cluster, this returns immediately.
 	 */
 	public void waitForCompactionTasksCompletion() {
 		if (isEmbedded) {
@@ -289,28 +290,46 @@ public class CassandraInstance {
 					CassandraMetricsRegistry.Metrics.getGauges().get("org.apache.cassandra.metrics.Compaction.PendingTasksByTableName");
 
 			if (gauge != null) {
-				Map<String, Map<String, Integer>> keyspaceTableTasks = gauge.getValue();
+				Map<String, Map<String, Integer>> remainingTasks = gauge.getValue();
 				Map<String, Map<String, Integer>> previousTasks = new HashMap<>();
-				while (!keyspaceTableTasks.isEmpty()) {
 
-					if (!keyspaceTableTasks.equals(previousTasks)) {
+				int remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartMs;
+				if ( remainingTasks.isEmpty() ) {
+					logger.info("Waiting at most {} seconds for potential compaction tasks to be triggered",
+							maxWaitForNewCompactionTasksToStartMs / 1000.0);
+				}
+
+				while (!remainingTasks.isEmpty() || remainingGracePeriodAfterLastCompaction >= 0) {
+
+					if (!remainingTasks.equals(previousTasks)) {
 						previousTasks.clear();
-						logger.info("Waiting for compaction tasks to finish on following tables:");
-						for (Map.Entry<String, Map<String, Integer>> keyspace : keyspaceTableTasks.entrySet()) {
-							for (Map.Entry<String, Integer> table : keyspace.getValue().entrySet()) {
-								logger.info("    {}: {}", keyspace.getKey() + "." + table.getKey(), table.getValue());
+						if ( !remainingTasks.isEmpty() ) {
+							logger.info("Waiting for compaction tasks to finish on following tables:");
+							for (Map.Entry<String, Map<String, Integer>> keyspaceTasks : remainingTasks.entrySet()) {
+								for (Map.Entry<String, Integer> tableTasks : keyspaceTasks.getValue().entrySet()) {
+									String fullTableName = keyspaceTasks.getKey() + "." + tableTasks.getKey();
+									logger.info("    {}: {}", fullTableName, tableTasks.getValue());
+								}
+								previousTasks.put(keyspaceTasks.getKey(), new HashMap<>(keyspaceTasks.getValue()));
 							}
-							previousTasks.put(keyspace.getKey(), new HashMap<>(keyspace.getValue()));
+						} else {
+							logger.info("Compaction tasks completed. Now waiting at most {} seconds for additional compaction tasks to be triggered",
+									maxWaitForNewCompactionTasksToStartMs / 1000.0);
+							remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartMs;
 						}
+					} else if (remainingTasks.isEmpty()) {
+						remainingGracePeriodAfterLastCompaction -= compactionTaskStatusPollingInterval;
 					}
 
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(compactionTaskStatusPollingInterval);
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
-					keyspaceTableTasks = gauge.getValue();
+					remainingTasks = gauge.getValue();
 				}
+
+				logger.info("Done with database compaction.");
 			}
 		}
 	}
