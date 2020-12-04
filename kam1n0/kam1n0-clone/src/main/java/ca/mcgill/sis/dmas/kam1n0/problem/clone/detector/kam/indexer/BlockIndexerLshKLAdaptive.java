@@ -92,15 +92,33 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public BlockIndexerLshKLAdaptive() {
 	}
 
+	/**
+	 *
+	 * @param sparkInstance
+	 * @param cassandraInstance
+	 * @param objectFactory
+	 * @param featureGenerator
+	 * @param startK
+	 * @param maxK
+	 * @param L
+	 * @param m
+	 * @param type
+	 * @param inMem
+	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 *                              an existing indexer DB, must be the same than when it was created (must depend on
+	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
+	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
+	 *                              ignored.
+	 */
 	public BlockIndexerLshKLAdaptive(SparkInstance sparkInstance, CassandraInstance cassandraInstance,
 			AsmObjectFactory objectFactory, FeatureConstructor featureGenerator, int startK, int maxK, int L, int m,
-			HashSchemaTypes type, boolean inMem) {
+			HashSchemaTypes type, boolean inMem, boolean singleUserApplication) {
 		super(sparkInstance);
 		this.objectFactory = objectFactory;
 		this.featureGenerator = featureGenerator;
 		this.sparkInstance = sparkInstance;
 		this.index = new ALSH<>(sparkInstance, cassandraInstance, featureGenerator.featureElements, startK, maxK, L, m,
-				type, inMem, "asm_block");
+				type, inMem, "asm_block", singleUserApplication);
 	}
 
 	@Override
