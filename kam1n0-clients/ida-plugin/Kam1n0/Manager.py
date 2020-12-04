@@ -16,15 +16,20 @@
 #  * limitations under the License.
 #  *******************************************************************************/
 
-import os
+import collections
 import json
-import idaapi
+import operator
+import os
 import pickle
-from .utilities.CloneConnector import CloneConnector
-from .forms.ConnectionManagementForm import ConnectionManagementForm
-from .forms.SelectionForm import SelectionForm
+
+import ida_kernwin
+import idaapi
+from PyQt5 import QtGui
 
 from . import IDAUtils
+from .forms.ConnectionManagementForm import ConnectionManagementForm
+from .forms.SelectionForm import SelectionForm
+from .utilities.CloneConnector import CloneConnector
 
 
 class Kam1n0PluginManager:
@@ -37,6 +42,7 @@ class Kam1n0PluginManager:
         self.icons = IDAUtils.load_icons_as_dict()
         self.configuration = self.get_configuration()
         self.setup_default_connection()
+        self.clipboard = QtGui.QGuiApplication.clipboard()
 
         global hooks
         hooks = Hooks()
@@ -71,7 +77,7 @@ class Kam1n0PluginManager:
             self.configuration['apps'] = {}
             self.configuration['default-app'] = None
             self.connector = None
-            
+
         if 'default-threshold' not in self.configuration:
             self.configuration['default-threshold'] = 0.01
 
@@ -80,7 +86,7 @@ class Kam1n0PluginManager:
 
         if 'default-avoidSameBinary' not in self.configuration:
             self.configuration['default-avoidSameBinary'] = False
-            
+
         if 'default-saveAsKam' not in self.configuration:
             self.configuration['default-saveAsKam'] = False
 
@@ -92,7 +98,7 @@ class Kam1n0PluginManager:
 
     def get_conf_avoidSameBinary(self):
         return self.configuration['default-avoidSameBinary']
-        
+
     def get_conf_saveAsKam(self):
         return self.configuration['default-saveAsKam']
 
@@ -122,7 +128,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SEARCH_MULTIPLE,
             tooltip="Search the selected functions",
             shortcut="Ctrl+Shift+a",
-            menuPath= "",            #"Search/next code",
+            menuPath="",  # "Search/next code",
             callback=self.query_selected_func,
             args=None
         )
@@ -205,10 +211,41 @@ class Kam1n0PluginManager:
             name="Query fragment",
             icon=self.icons.ICON_FRAG,
             tooltip="Query a code fragment",
-            shortcut="",
+            shortcut="Ctrl-Shift-F",
             menuPath="Search/next code",
             callback=self.query_fragment,
             args=None
+        )
+        self.actions.append(action)
+        if not action.register_action(False):
+            return 1
+
+        # clipboard:
+        action = ActionWrapper(
+            id="Kam1n0:copyComment",
+            name="Copy Comment",
+            icon=self.icons.ICON_FRAG,
+            tooltip="Copy comments in selected region",
+            shortcut="Ctrl-Shift-C",
+            menuPath="Edit/Kam1n0/",
+            callback=self.copy_comments,
+            args=None,
+            update_lambda=IDAUtils.ctx_in_disassembly_view
+        )
+        self.actions.append(action)
+        if not action.register_action(False):
+            return 1
+
+        action = ActionWrapper(
+            id="Kam1n0:pasteComment",
+            name="Paste Comment",
+            icon=self.icons.ICON_FRAG,
+            tooltip="Paste comments in selected region",
+            shortcut="Ctrl-Shift-V",
+            menuPath="Edit/Kam1n0/",
+            callback=self.past_comments,
+            args=None,
+            update_lambda=IDAUtils.ctx_in_disassembly_view
         )
         self.actions.append(action)
         if not action.register_action(False):
@@ -365,10 +402,41 @@ class Kam1n0PluginManager:
         with open(conf_file, 'wb') as f:
             pickle.dump(conf, f, pickle.HIGHEST_PROTOCOL)
 
+    def copy_comments(self, ctx):
+        '''Processes the copy action.
+        '''
+        self.clipboard.setText(json.dumps(
+            IDAUtils.get_comments_in_selected_range()))
+        return 0
+
+    def past_comments(self, ctx):
+        '''Processes the paste action.
+
+        - Make sure the clipboard contains a JSON string
+        - Validate that comments offsets correspond to the start of instructions
+        - Set the comments for all the addresses.
+        - Refresh the dissassembly view.
+        '''
+        try:
+            cmts = collections.defaultdict(
+                list, json.loads(self.clipboard.text()))
+        except ValueError:
+            print("PowerClipboard Error: Clipboard content is invalid.")
+            return 0
+
+        if IDAUtils.set_comments(cmts, ignore_offset_error=False):
+            print('comment pasted')
+            return 1
+        elif ida_kernwin.ask_yn(-1, "Unaligned offsets. Proceed anyway?") == 1:
+            if IDAUtils.set_comments(cmts, ignore_offset_error=True):
+                print('comment pasted')
+                return 1
+        return 0
+
 
 class ActionWrapper(idaapi.action_handler_t):
     def __init__(self, id, name, icon, tooltip, shortcut, menuPath, callback,
-                 args=None):
+                 args=None, update_lambda=None):
         idaapi.action_handler_t.__init__(self)
         self.id = id
         self.name = name
@@ -378,6 +446,7 @@ class ActionWrapper(idaapi.action_handler_t):
         self.menuPath = menuPath
         self.callback = callback
         self.args = args
+        self.update_lambda = update_lambda
 
     def register_action(self, add_to_toolbar=True):
         action_desc = idaapi.action_desc_t(
@@ -410,8 +479,12 @@ class ActionWrapper(idaapi.action_handler_t):
             self.callback(ctx, self.args)
         return 1
 
-    def update(self, arg):
-        return idaapi.AST_ENABLE_ALWAYS
+    def update(self, ctx):
+        if not self.update_lambda:
+            return idaapi.AST_ENABLE_ALWAYS
+        if self.update_lambda(ctx):
+            return idaapi.AST_ENABLE_FOR_WIDGET
+        return idaapi.AST_DISABLE_FOR_WIDGET
 
 
 class Hooks(idaapi.UI_Hooks):
