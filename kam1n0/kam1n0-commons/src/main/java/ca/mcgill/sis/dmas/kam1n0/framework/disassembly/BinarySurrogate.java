@@ -140,7 +140,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 			oblk.funcCodeSize = ofunc.codeSize;
 			oblk.functionId = func.id;
 			oblk.functionName = func.name;
-			oblk.peerSize = func.blocks.size();
+			oblk.peerSize = func.blocks.size();		// Warning, this is the number of *blocks* here, not instructions!
 			oblk.bytes = StringResources.converteByteString(blk.bytes);
 			oblk.sea = blk.sea;
 			oblk.dat = blk.dat;
@@ -157,13 +157,6 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 	}
 
 	public List<Function> toFunctions() {
-		return this.functions //
-				.stream() //
-				.map(this::toFunction) //
-				.collect(Collectors.toList());
-	}
-
-	public List<Function> toFunctionsWithFilter(Predicate<? super FunctionSurrogate> predicate) {
 		return this.functions //
 				.stream() //
 				.map(this::toFunction) //

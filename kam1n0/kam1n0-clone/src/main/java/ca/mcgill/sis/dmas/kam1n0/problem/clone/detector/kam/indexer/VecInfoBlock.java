@@ -22,7 +22,14 @@ public class VecInfoBlock extends VecInfo {
 	public Long blockId;
 	public Integer blockLength;
 	public Long[] calls;
-	public int peerSize;	// TODO: can be total function block count or instruction count. clear that up.
+
+	/**
+	 * Definition of 'peer' is application/model-specific. By default it is the number of blocks in the function the
+	 * block belongs to, but this can also be the number of instructions in some or all blocks of that function.
+	 * Since this data can be persisted, the same application/model be used to create the data and to process it.
+	 */
+	public int peerSize;
+
 	public int funcLength;
 	
 	

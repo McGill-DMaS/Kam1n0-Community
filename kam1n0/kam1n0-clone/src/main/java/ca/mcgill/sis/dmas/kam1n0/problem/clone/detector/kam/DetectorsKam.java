@@ -68,7 +68,7 @@ public class DetectorsKam {
 						1, // l
 						30, // m
 						HashSchemaTypes.SimHash, true, true), //
-				1, // min block length
+				1, // Ignore single-line blocks for matching
 				false);// best 256-1024-1-30-4
 		// detector.fixTopK = 10;
 		return detector;
@@ -96,7 +96,7 @@ public class DetectorsKam {
 	 */
 	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(
 			SparkInstance sparkInstance, CassandraInstance cassandraInstance, AsmObjectFactory factory,
-			AsmProcessor processor, int startK, int K, int L, int m, int minBlckLength, boolean singleUserApplication) {
+			AsmProcessor processor, int startK, int K, int L, int m, int largestBlockLengthToIgnore, boolean singleUserApplication) {
 		return new FunctionSubgraphDetector(//
 				factory, //
 				sparkInstance, //
@@ -109,7 +109,7 @@ public class DetectorsKam {
 						K, //
 						L, //
 						m, HashSchemaTypes.SimHash, false, singleUserApplication), //
-				minBlckLength, //
+				largestBlockLengthToIgnore, //
 				false);//
 	}
 
