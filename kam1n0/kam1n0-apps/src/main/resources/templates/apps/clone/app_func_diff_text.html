@@ -115,10 +115,11 @@
 		    
 			var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
 			drawTextDiff(pa, pb, 'diff-title', 'diff-table', 'l-', 'r-', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-			plotCommentsWithPrefix(cm_url, pa, 'l-')
-			plotCommentsWithPrefix(cm_url, pb, 'r-')
+            plotCommentsWithPrefix(cm_url, pa, 'l-');
+            plotCommentsWithPrefix(cm_url, pb, 'r-');
 			initForm(cm_url);
-			setUpTextHighlights('#btn-cp-cmt', 'r-p');
+            setUpTextHighlights('#btn-cp-cmt', 'r-p');
+            setUpTextHighlights('#btn-cp-cmt', "\\+r-p");
 		}
 		
 		function build(normalize=false, arch='metapc'){
