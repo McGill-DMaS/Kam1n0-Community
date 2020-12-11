@@ -45,7 +45,7 @@ public class IOEntry {
 		this.calls = blk.callingBlocks;
 
 		// Note: blk.peerSize is by default the number of basic block in the function, but in theory could also be
-		// something else like an instruction count. This depend on the caller. See peerSize definition.
+		// something else like an instruction count. This depends on the caller. See peerSize definition.
 		this.funcSize = blk.peerSize;
 	}
 
