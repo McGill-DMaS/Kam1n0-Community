@@ -299,7 +299,7 @@ public class CassandraInstance {
 							maxWaitForNewCompactionTasksToStartMs / 1000.0);
 				}
 
-				while (!remainingTasks.isEmpty() || remainingGracePeriodAfterLastCompaction >= 0) {
+				while (!remainingTasks.isEmpty() || remainingGracePeriodAfterLastCompaction > 0) {
 
 					if (!remainingTasks.equals(previousTasks)) {
 						previousTasks.clear();
