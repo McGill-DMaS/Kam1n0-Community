@@ -133,24 +133,25 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			// if (false) {
 			// indexer.queryAsRdd(target, threshold, topK)
 			List<Tuple2<Block, Double>> blks = indexer.query(rid, vBlks.get(0), threshold, topK);
-			results = blks.stream().map(ent -> {
-				FunctionCloneEntry entry = new FunctionCloneEntry();
-				entry.binaryId = ent._1.binaryId;
-				entry.binaryName = ent._1.binaryName;
-				entry.functionId = ent._1.functionId;
-				entry.functionName = ent._1.functionName;
-				entry.similarity = ent._2;
-				Tuple3<Long, Long, Double> tp = new Tuple3<Long, Long, Double>(vBlks.get(0).blockId, ent._1.blockId,
-						ent._2);
-				entry.clonedParts.add(new HashSet<>(Arrays.asList(tp)));
-				return entry;
-			}).collect(Collectors.toList());
-
+			results = blks.stream()
+					.filter(ent -> !avoidSameBinary || ent._1.binaryId != function.binaryId)
+					.map(ent -> {
+						FunctionCloneEntry entry = new FunctionCloneEntry();
+						entry.binaryId = ent._1.binaryId;
+						entry.binaryName = ent._1.binaryName;
+						entry.functionId = ent._1.functionId;
+						entry.functionName = ent._1.functionName;
+						entry.similarity = ent._2;
+						Tuple3<Long, Long, Double> tp = new Tuple3<Long, Long, Double>(vBlks.get(0).blockId, ent._1.blockId,
+								ent._2);
+						entry.clonedParts.add(new HashSet<>(Arrays.asList(tp)));
+						return entry;
+					}).collect(Collectors.toList());
 		} else {
 
 			// convert (tar, src, score) to (srcfuncid, (tar, src, score))
-			JavaRDD<Tuple2<Long, Tuple3<Block, Block, Double>>> b_to_b = indexer//
-					.queryAsRdds(rid, vBlks, links, topK)//
+			JavaRDD<Tuple2<Long, Tuple3<Block, Block, Double>>> b_to_b = indexer
+					.queryAsRdds(rid, vBlks, links, topK)
 					.filter(tuple -> !avoidSameBinary || (tuple._2().binaryId != function.binaryId))
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
