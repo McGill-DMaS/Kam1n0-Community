@@ -308,10 +308,6 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 							bb.get(vec.fullKey);
 							if (!excludeBlockIds) {
 								Set<String> vids = row.getSet(3, String.class);
-								int approxSize = vids.stream().mapToInt(s -> s.length()).sum();
-								if ( approxSize > 10 * 1048576 ) {
-									logger.warn("kam182 vids {} {}", vec.hashId, approxSize);
-								}
 								List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
 								if (filter != null) {
 									ls = filter.apply(ls);
