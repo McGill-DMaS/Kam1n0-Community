@@ -75,17 +75,8 @@ public class DetectorsKam {
 	}
 
 	/**
-	 * Cassandra version
+	 * Cassandra version (as opposed to "all in RAM" version)
 	 * 
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param factory
-	 * @param processor
-	 * @param startK
-	 * @param K
-	 * @param L
-	 * @param m
-	 * @param minBlckLength
 	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying

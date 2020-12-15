@@ -93,17 +93,6 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	}
 
 	/**
-	 *
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param objectFactory
-	 * @param featureGenerator
-	 * @param startK
-	 * @param maxK
-	 * @param L
-	 * @param m
-	 * @param type
-	 * @param inMem
 	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying

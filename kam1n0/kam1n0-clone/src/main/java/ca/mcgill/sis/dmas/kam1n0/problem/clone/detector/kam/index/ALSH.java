@@ -53,16 +53,6 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private int L = 1;
 
 	/**
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param features
-	 * @param startingK
-	 * @param maxK
-	 * @param L
-	 * @param m
-	 * @param type
-	 * @param inMem
-	 * @param name
 	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
