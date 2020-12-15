@@ -140,8 +140,9 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
 		// get all the valid hids to a list
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), null)._2
-				.collect();
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), blockList ->
+			blockList.stream().filter(matchedBlock -> matchedBlock.functionId != blk.functionId).collect(Collectors.toList())
+		)._2.collect();
 
 		infos.forEach(entry -> {
 			double score = index.distApproximate(entry, obj);
@@ -275,14 +276,16 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 				.mapToPair(tp -> new Tuple2<>(tp._2._2.blockId, tp._2._1));
 	}
 
-	public static class VecInfoBlockFilter implements Serializable, Function<List<VecInfoBlock>, List<VecInfoBlock>> {
+	private static class VecInfoBlockFilter implements Serializable, Function<List<VecInfoBlock>, List<VecInfoBlock>> {
 
 		private static final long serialVersionUID = -5140694331617864078L;
-		public int blk_size;
+		public long functionId;
+		public int functionInstructionCount;
 		public int topK;
 
-		public VecInfoBlockFilter(int blk_size, int topK) {
-			this.blk_size = blk_size;
+		public VecInfoBlockFilter(long functionId, int functionInstructionCount, int topK) {
+			this.functionId = functionId;
+			this.functionInstructionCount = functionInstructionCount;
 			this.topK = topK;
 		}
 
@@ -291,11 +294,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		@Override
 		public List<VecInfoBlock> apply(List<VecInfoBlock> ls) {
-			if (ls.size() < this.topK)
-				return ls;
+			if (ls.size() < topK) {
+				return ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId).collect(Collectors.toList());
+			}
+
 			Ranker<VecInfoBlock> rk = new Ranker<>();
-			ls.stream().forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - this.blk_size), vb));
-			return rk.getTopK(this.topK).stream().map(ent -> ent.value).collect(Collectors.toList());
+			ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId)
+					.forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - functionInstructionCount), vb));
+			return rk.getTopK(topK).stream().map(ent -> ent.value).collect(Collectors.toList());
 		}
 
 	}
@@ -314,8 +320,11 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public JavaRDD<Tuple3<Block, Block, Double>> queryAsRdds(long rid, List<Block> blks, Set<Tuple2<Long, Long>> links,
 			int topK) {
 
-		String functionName = blks.isEmpty() ? "Unknown_empty_function" : blks.get(0).functionName;
+		if (blks.isEmpty()) {
+			return sparkInstance.getContext().emptyRDD();
+		}
 
+		long functionId = blks.get(0).functionId;
 		int functionInstructionCount = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
 
 		// Convert all target BB into their vector representation (+ normalized assembly)
@@ -340,8 +349,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		//          each VecEntry has: hid, list of corresponding source vec-BBs, etc.
 		// Note: this matching by ALSH is based on hashes.
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =
-				index.query(rid, objs, new VecInfoBlockFilter(functionInstructionCount, topK * 10));
-		// TODO: (Kam1n0-210) no matter the 'avoidSameBinary' parameter, we should at least filter out matches from the same function ID
+				index.query(rid, objs, new VecInfoBlockFilter(functionId, functionInstructionCount, topK * 10));
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(
 				tp2._1.stream().map(tp -> new Tuple2<>(tp._1, tp._2.block)).collect(Collectors.toList()),
