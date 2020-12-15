@@ -329,9 +329,9 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// Sensitive Hashing), to be filtered out later down to topK matches. Current result are ranked and filtered
 		// according to similarity in instruction count between source and target functions where blocks are from.
 		// This is an optimization filtering: we could keep all results instead of topK*10, but we assume that there is
-		// little chance to match many linked BB from functions with very dissimilar function (i.e. they won't end up in final topK).
+		// little chance to match many linked BB from very dissimilar functions (i.e. they won't end up in final topK).
 		//
-		// Return is in two parts:
+		// Returned value is in two parts:
 		//  ._1: list (target block ID, targetBlkVectorInfo)  the matched subset of targetBlocksAsVectors
 		//  ._2: list of "buckets" (VecEntry is a bucket) for potential sources candidates (potential cones), and
 		//          each VecEntry has: hid, list of corresponding source vec-BBs, etc.

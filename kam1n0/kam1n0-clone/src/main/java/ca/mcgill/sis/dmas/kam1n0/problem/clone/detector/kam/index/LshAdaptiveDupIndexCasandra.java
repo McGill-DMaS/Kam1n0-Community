@@ -78,7 +78,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
 
 	// properties:
-	public static final String _APP_ID = "rid0";	// always the same and irrelevant when if 'singleUserApplication'
+	public static final String _APP_ID = "rid0";	// always the same and irrelevant if 'singleUserApplication'
 	public static final String _ADAPTIVE_HASH_HASHID = "hashid";
 	public static final String _ADAPTIVE_HASH_IND = "ind";
 	public static final String _ADAPTIVE_HASH_FULLKEY = "full_key";
@@ -381,8 +381,8 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 				if (singleUserApplication) {
 					sess.executeAsync(QueryBuilder.truncate(databaseName, _ADAPTIVE_HASH));
 				} else {
-					sess.executeAsync(QueryBuilder.delete().from(databaseName, _ADAPTIVE_HASH)//
-							.where(eq(_APP_ID, rid)));
+					sess.executeAsync(QueryBuilder.delete()
+							.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)));
 				}
 			});
 		} catch (Exception e) {
