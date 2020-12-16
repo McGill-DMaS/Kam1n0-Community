@@ -231,7 +231,7 @@ for seg_ea in Segments():
             del data['functions']
             data['functions'] = list()
 
-with open('%s.tmp%d.json' % (file_name, batchCount), 'w') as outfile:
+with open('%s.tmp%d.json' % (file_name, batchCount), 'w', encoding='utf-8') as outfile:    
     json.dump(data, outfile, ensure_ascii=False)
 
 idc.qexit(0)#Exit(0)
