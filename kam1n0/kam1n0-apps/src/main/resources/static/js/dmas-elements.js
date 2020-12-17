@@ -1487,7 +1487,10 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
     $('.diff-line-num').hover(
         function () {
-            $(this).find('span.commenter').addClass('selected');
+            var $row = $('#' + $(this).attr('id'));
+            var $row_data = $row.data('cm');
+            if ($row_data == undefined)
+                $(this).find('span.commenter').addClass('selected');
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
         }
@@ -1525,12 +1528,7 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
     }, function (data) {
         $.each(data, function (ind, ent) {
             var $row = $('#' + prefix + ent.functionOffset);
-            var $row_data = $row.data('cm');
-            if ($row_data)
-                $row_data.push(ent);
-            else
-                $row_data = [ent];
-            $row.data('cm', $row_data);
+
             if (!type_filters.has(ent.type))
                 return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
@@ -1547,6 +1545,10 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
 }
 
 function createCommentRowSingle(cm, url, prefix) {
+    var $row = $('#' + prefix + cm.functionOffset);
+    var $row_data = $row.data('cm');
+    $row_data = [cm];
+    $row.data('cm', $row_data);
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
     if (typeof send_msg != 'undefined' && prefix == 'r-')
@@ -1636,21 +1638,22 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                         data,
                         function (dataParsed) {
                             if (dataParsed) {
-
-                                if (dataParsed.error && dataParsed.error.contains('Failed')) {
+                                if (dataParsed.error && dataParsed.error.includes('Failed')) {
                                     alert(dataParsed.error);
                                     return;
-                                } else if (dataParsed.error) {
-                                    // index new func;
-                                    if (confirm('Failed to persist this comment. This function is not indexed in the database. Do you want to index it now?')) {
-                                        external.IndexFunc(currentFun, function (msg) { alert(msg) });
-                                    }
+															  
+													  
+																																								
+																									  
+									 
                                 }
                                 dataParsed = dataParsed.result;
 
                                 var $row = $form.prev();
                                 $form.remove();
-                                createCommentRowSingle(dataParsed, url, prefix, addr).insertAfter($row);
+                                var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
+                                var $row = $('#' + prefix + dataParsed.functionOffset);
+                                $row.next().append($cmbox);				   
                             }
                         }
                     );

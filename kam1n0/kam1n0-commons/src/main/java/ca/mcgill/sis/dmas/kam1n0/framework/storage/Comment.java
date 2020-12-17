@@ -44,7 +44,7 @@ public class Comment implements Serializable {
 	
 	@ObjectFactoryMultiTenancy.KeyedSecondary(index = 3)
 	@AsString
-	public CommentType type = CommentType.repeatable;
+	public CommentType type = CommentType.regular;
 
 	public Comment() {
 	}
@@ -59,3 +59,5 @@ public class Comment implements Serializable {
 	}
 
 }
+
+
