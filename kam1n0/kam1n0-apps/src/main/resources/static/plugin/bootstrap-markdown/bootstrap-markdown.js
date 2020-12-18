@@ -468,7 +468,7 @@
           callbackContent;
 
       if (this.$isPreview == true) {
-        // Avoid sequenced element creation on missused scenario
+        // Avoid sequenced element creation on misused scenario
         // @see https://github.com/toopay/bootstrap-markdown/issues/170
         return this;
       }
