@@ -166,6 +166,7 @@ div.cmbox-posterior {
 div.cmbox-regular {
 	    background-color: white;
 	    border-left: solid 2px gray;
+	    white-space: pre;
 }
 
 div.cmbox-repeatable {

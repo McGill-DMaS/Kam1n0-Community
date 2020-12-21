@@ -436,6 +436,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 	public final ModelAndView diffFuncText(@PathVariable("appId") long appId) {
 		try {
 			ApplicationInfoSummary summary = meta.getInfoSummary(appId);
+			summary.appAttrs.put("useMarkdown", System.getProperty("kam1n0.web.markdown", "true"));
 			return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(VIEW_CLONE_FUNC_DIFF_TEXT, summary));
 		} catch (Exception e) {
 			logger.error("Failed creating func diff view.", e);
@@ -447,6 +448,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 	public final ModelAndView diffFuncTextGroup(@PathVariable("appId") long appId) {
 		try {
 			ApplicationInfoSummary summary = meta.getInfoSummary(appId);
+			summary.appAttrs.put("useMarkdown", System.getProperty("kam1n0.web.markdown", "true"));
 			return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(VIEW_CLONE_FUNC_DIFF_TEXT_GROUP, summary));
 		} catch (Exception e) {
 			logger.error("Failed creating func diff view.", e);

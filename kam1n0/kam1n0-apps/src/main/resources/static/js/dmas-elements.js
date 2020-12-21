@@ -1545,6 +1545,13 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
 }
 
 function createCommentRowSingle(cm, url, prefix) {
+
+    if (typeof useMarkdown == "undefined") {
+        if (sessionStorage) {
+            useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
+        }
+    }
+
     var $row = $('#' + prefix + cm.functionOffset);
     var $row_data = $row.data('cm');
     $row_data = [cm];
@@ -1582,7 +1589,6 @@ function createCommentRowSingle(cm, url, prefix) {
                     );
                 })
             )
-
             .append($('<span class=\"pull-right delete\">')
                 .append($('<i class=\"fa fa-edit\">'))
                 .click(function () {
@@ -1605,7 +1611,7 @@ function createCommentRowSingle(cm, url, prefix) {
                 })
             )
             .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
-                .append(markdown.toHTML(cm.comment))
+            .append(useMarkdown == "true" ? markdown.toHTML(cm.comment) : convertToHTML(cm.comment))
             )
     );
     if (prefix == 'l-' && (cm.type === 'posterior' || cm.type === 'anterior')) {
@@ -1615,16 +1621,56 @@ function createCommentRowSingle(cm, url, prefix) {
     return $tr;
 }
 
+function convertToHTML(input_str) {
+	var input_str;
+	var text_input;
+	var output_html="";
+	var counter;
+
+	text_input=input_str.trim();
+	if (text_input.length > 0){
+		output_html+="<p>";
+		for (counter=0; counter < text_input.length; counter++){
+			switch (text_input[counter]){
+				case '\n':
+                    output_html+="<br>";
+					break;
+                case '&':
+					output_html+="&amp;";
+					break;
+				case '"':
+					output_html+="&quot;";
+					break;
+				case '>':
+					output_html+="&gt;";
+					break;
+				case '<':
+					output_html+="&lt;";
+					break;
+				default:
+					output_html+=text_input[counter];
+			}
+		}
+		output_html+="</p>";
+	}
+	return output_html;
+}
+
 function createFormSingle(url, addr, funId, comObj, prefix) {
     var $form = $('<tr class=\"comForm\">');
     if (prefix == 'r-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
     }
+    if (typeof useMarkdown == "undefined") {
+        if (sessionStorage) {
+            useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
+        }
+    }
     $form.append(
         $('<td colspan=\"2\">').append(
             $('<div>')
-                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%\">'))
+                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">'))
                 .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
                     var cm = $form.find('textarea').val();
                     var data = {
@@ -1641,11 +1687,6 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                                 if (dataParsed.error && dataParsed.error.includes('Failed')) {
                                     alert(dataParsed.error);
                                     return;
-															  
-													  
-																																								
-																									  
-									 
                                 }
                                 dataParsed = dataParsed.result;
 
@@ -1665,13 +1706,16 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                     }
                     $form.remove();
                 }).append('close'))
-                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown Supported'))
+                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">')
+                .append(useMarkdown == "true" ? 'Markdown Supported' : ''))
         )
     );
     var $editArea = $form.find('textarea');
-    if (comObj != null)
-        $editArea.val(toMarkdown(comObj.comment));
-    $editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+    if(comObj != null)
+        $editArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
+    if (useMarkdown == "true")
+        $editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+
     if (prefix == 'l-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
