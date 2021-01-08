@@ -57,7 +57,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 
 	private Indexer<Block> indexer;
 
-	private int blockLengthLimit = 1;
+	private int largestBlockLengthToIgnore = 1;
 	private int debugLevel = 0;
 	private double basicCloneThreshold = 0.05;
 	private SparkInstance spark = null;
@@ -65,9 +65,9 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 	public int fixTopK = -1;
 
 	public FunctionSubgraphDetector(AsmObjectFactory factory, SparkInstance instance, Indexer<Block> indexer,
-			int blockLengthLimit, boolean debug) {
+			int largestBlockLengthToIgnore, boolean debug) {
 		super(factory);
-		this.blockLengthLimit = blockLengthLimit;
+		this.largestBlockLengthToIgnore = largestBlockLengthToIgnore;
 		if (debug) {
 			debugLevel = 1;
 		}
@@ -75,33 +75,12 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 		this.spark = instance;
 	}
 
-	ListMultimap<Long, String> reverse = ArrayListMultimap.create();
-
 	@Override
 	protected void indexFuncsToBeImplByChildren(long rid, List<Binary> binaries, LocalJobProgress progress)
 			throws Exception {
 
-		List<Block> blks = binaries.stream().flatMap(bin -> bin.functions.stream()).flatMap(func -> {
-			int size = 0;
-			for (Block block : func)
-				if (block.getAsmLines().size() > blockLengthLimit)
-					size += block.getAsmLines().size();
-			for (Block block : func)
-				block.peerSize = size;
-			// block.peerSize = func.blocks.size();
-			return func.blocks.stream().filter(blk -> blk.getAsmLines().size() > blockLengthLimit);
-		}).collect(Collectors.toList());
-
-		// List<Block> blks = binaries//
-		// .stream()//
-		// .flatMap(bin -> bin.functions//
-		// .stream()) //
-		// .flatMap(func -> func.blocks//
-		// .stream())//
-		// .filter(blk -> blk.getAsmLines().size() > blockLengthLimit)//
-		// .collect(Collectors.toList());
-
-		indexer.index(rid, blks, progress);
+		convertBlocksPeerSizeToSizeableBlocksLineCount(binaries);
+		indexer.index(rid, getSizableBlocks(binaries), progress);
 	}
 
 	@Override
@@ -123,7 +102,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			// if(blkLength != blk.codesSize)
 			// logger.info("Incosistnent size {} vs {}", blkLength, blk.codesSize);
 			// System.out.println(blk.blockName + "," + blk.codesSize);
-			if (blkLength > blockLengthLimit) {
+			if (blkLength > largestBlockLengthToIgnore) {
 				vBlks.add(blk);
 				finalFuncLength.inc(blkLength);
 			}
@@ -147,7 +126,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			// if (false) {
 			// indexer.queryAsRdd(target, threshold, topK)
 			List<Tuple2<Block, Double>> blks = indexer.query(rid, vBlks.get(0), threshold, topK);
-			results = blks.stream().map(ent -> {
+			results = blks.stream().filter(ent -> !avoidSameBinary || ent._1.binaryId != function.binaryId).map(ent -> {
 				FunctionCloneEntry entry = new FunctionCloneEntry();
 				entry.binaryId = ent._1.binaryId;
 				entry.binaryName = ent._1.binaryName;
@@ -196,14 +175,16 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				// indexer.dump("C:\\delivery\\tmp\\");
 				// logger.info("finished {}", function.functionName);
 			}
+
+			// FIXME: (KAM1N0-206) filter topK results, right now we may have up to topK*3 results
 		}
 
 		return results;
 	}
 
 	public String params() {
-		return StringResources.JOINER_TOKEN.join("detector=", this.getClass().getSimpleName(), "blockLengthLimit=",
-				blockLengthLimit, "basicCloneThreshold=", basicCloneThreshold, "indexer=", indexer.params());
+		return StringResources.JOINER_TOKEN.join("detector=", this.getClass().getSimpleName(), "largestBlockLengthToIgnore=",
+				largestBlockLengthToIgnore, "basicCloneThreshold=", basicCloneThreshold, "indexer=", indexer.params());
 	}
 
 	@Override
@@ -225,4 +206,48 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 	public void clear(long rid) {
 		this.indexer.clear(rid);
 	}
+
+	/**
+	 * A 'sizeable' block is defined as a block with more than largestBlockLengthToIgnore instructions
+'	 */
+	private boolean isASizeableBlock(Block block) {
+		return block.getAsmLines().size() > largestBlockLengthToIgnore;
+	}
+
+
+	/**
+	 * In-place conversion of all functions blocks within binaries. Conversion is idempotent. Each block peerSize is
+	 * is converted to total number of instructions in the functions it belongs to, but only counting instructions
+	 * from 'sizeable' blocks.
+	 *
+	 * @param binaries list of binaries to modify
+	 */
+	private void convertBlocksPeerSizeToSizeableBlocksLineCount(List<Binary> binaries) {
+		for (Binary bin : binaries) {
+			for (Function func : bin.functions) {
+				int sizeableBlocksLineCount = 0;
+				for (Block block : func) {
+					if (isASizeableBlock(block)) {
+						sizeableBlocksLineCount += block.getAsmLines().size();
+					}
+				}
+
+				for (Block block : func) {
+					block.peerSize = sizeableBlocksLineCount;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return all sizeable blocks from all functions from all binaries
+	 */
+	private List<Block> getSizableBlocks(List<Binary> binaries) {
+		return binaries.stream().flatMap(bin -> bin.functions.stream()).flatMap(func -> {
+			return func.blocks.stream().filter(blk -> isASizeableBlock(blk));
+		}).collect(Collectors.toList());
+	}
+
+
+
 }
