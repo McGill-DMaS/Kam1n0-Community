@@ -26,21 +26,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.Row;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
 import ca.mcgill.sis.dmas.io.LineSequenceWriter;
 import ca.mcgill.sis.dmas.io.Lines;
 import ca.mcgill.sis.dmas.io.collection.Counter;
-import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.indexer.VecInfoBlock;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import scala.Tuple2;
@@ -50,27 +47,23 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 
 	private String databaseName;
 	private CassandraInstance cassandraInstance;
-	private boolean singleUserApplication;
+	private boolean isSingleUserApplication;
 
 	private static Logger logger = LoggerFactory.getLogger(LshAdaptiveDupIndexCasandra.class);
 
 	/**
-	 *
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param databaseName
-	 * @param singleUserApplication   When set, adaptive_hash table is partitioned by hash ID instead of applicationID,
+	 * @param isSingleUserApplication   When set, adaptive_hash table is partitioned by hash ID instead of applicationID,
 	 * 	  							  which is more efficient and does not require adaptive_hash_view anymore.
 	 * 	  							  This may only be set for single-user/app cases, and must be the same value when
 	 * 	  							  creating and re-using a database. Note: 'appliation ID' ('rid0' column) is still
 	 * 	  							  stored in the DB (as a clustering key) for code compatibility.
 	 */
 	public LshAdaptiveDupIndexCasandra(SparkInstance sparkInstance, CassandraInstance cassandraInstance,
-			String databaseName, boolean singleUserApplication) {
+			String databaseName, boolean isSingleUserApplication) {
 		super(sparkInstance);
 		this.databaseName = databaseName;
 		this.cassandraInstance = cassandraInstance;
-		this.singleUserApplication = singleUserApplication;
+		this.isSingleUserApplication = isSingleUserApplication;
 	}
 
 	// classes:
@@ -78,7 +71,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
 
 	// properties:
-	public static final String _APP_ID = "rid0";	// always the same and irrelevant if 'singleUserApplication'
+	public static final String _APP_ID = "rid0";	// always the same and irrelevant if 'isSingleUserApplication'
 	public static final String _ADAPTIVE_HASH_HASHID = "hashid";
 	public static final String _ADAPTIVE_HASH_IND = "ind";
 	public static final String _ADAPTIVE_HASH_FULLKEY = "full_key";
@@ -92,7 +85,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
 
-				String primaryKey = singleUserApplication ? "(" + _ADAPTIVE_HASH_HASHID + ")," + _APP_ID
+				String primaryKey = isSingleUserApplication ? "(" + _ADAPTIVE_HASH_HASHID + ")," + _APP_ID
 						: "(" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID;
 
 				String createTableStatement = "create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
@@ -107,7 +100,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 				logger.info("Creating table {}.{} with {}", this.databaseName, _ADAPTIVE_HASH, createTableStatement);
 				session.execute(createTableStatement);
 
-				if (!singleUserApplication) {
+				if (!isSingleUserApplication) {
 					String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
 							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
 							+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
@@ -125,10 +118,10 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			boolean hasView = cassandraInstance.checkColumnFamilies(
 					this.sparkInstance.getConf(), this.databaseName, _ADAPTIVE_HASH_VIEW);
 
-			if (hasView == singleUserApplication) {
+			if (hasView == isSingleUserApplication) {
 				throw new RuntimeException(databaseName + "." + _ADAPTIVE_HASH + " was created as a "
 						+ (hasView ? "multi" : "single") + "-user application DB, but tried to be opened as a "
-						+ (singleUserApplication ? "single" : "multi") + "-user application DB");
+						+ (isSingleUserApplication ? "single" : "multi") + "-user application DB");
 			}
 		}
 	}
@@ -290,7 +283,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 		else
 			selection = selectAllInfo;
 
-		String dbToQuery = singleUserApplication ? _ADAPTIVE_HASH : _ADAPTIVE_HASH_VIEW;
+		String dbToQuery = isSingleUserApplication ? _ADAPTIVE_HASH : _ADAPTIVE_HASH_VIEW;
 
 		if (sparkInstance.localMode) {
 			List<VecEntry<T, K>> collected = this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
@@ -374,7 +367,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public void clear(long rid) {
 		try {
 			this.cassandraInstance.doWithSession(sess -> {
-				if (singleUserApplication) {
+				if (isSingleUserApplication) {
 					sess.executeAsync(QueryBuilder.truncate(databaseName, _ADAPTIVE_HASH));
 				} else {
 					sess.executeAsync(QueryBuilder.delete()

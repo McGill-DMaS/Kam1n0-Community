@@ -53,14 +53,14 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private int L = 1;
 
 	/**
-	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
 	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
 	 *                              ignored.
 	 */
 	public ALSH(SparkInstance sparkInstance, CassandraInstance cassandraInstance, List<String> features, int startingK,
-			int maxK, int L, int m, HashSchemaTypes type, boolean inMem, String name, boolean singleUserApplication) {
+			int maxK, int L, int m, HashSchemaTypes type, boolean inMem, String name, boolean isSingleUserApplication) {
 		this.startingK = startingK;
 		this.maxK = maxK;
 
@@ -71,7 +71,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			this.index_bucket = new LshAdaptiveBucketIndexCassandra(sparkInstance, cassandraInstance, startingK, maxK,
 					m, ALSH::nextDepth, name + "_adaptivelsh");
 			this.index_deduplication = new LshAdaptiveDupIndexCasandra<>(sparkInstance, cassandraInstance,
-					name + "_adaptivelsh", singleUserApplication);
+					name + "_adaptivelsh", isSingleUserApplication);
 		}
 
 		this.L = L;

@@ -66,8 +66,8 @@ public class CassandraInstance {
 	public static final int DEFAULT_PORT = 9042;
 	public static final int DEFAULT_STORAGE_PORT = 7000;
 
-	public static final int maxWaitForNewCompactionTasksToStartMs = 5000;
-	public static final int compactionTaskStatusPollingInterval = 1000;
+	public static final int maxWaitForNewCompactionTasksToStartInMs = 5000;
+	public static final int compactionStatusPollingIntervalInMs = 1000;
 
 	public int port = DEFAULT_PORT;
 	public int port_storage = DEFAULT_STORAGE_PORT;
@@ -293,10 +293,10 @@ public class CassandraInstance {
 				Map<String, Map<String, Integer>> remainingTasks = gauge.getValue();
 				Map<String, Map<String, Integer>> previousTasks = new HashMap<>();
 
-				int remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartMs;
+				int remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartInMs;
 				if ( remainingTasks.isEmpty() ) {
 					logger.info("Waiting at most {} seconds for potential compaction tasks to be triggered",
-							maxWaitForNewCompactionTasksToStartMs / 1000.0);
+							maxWaitForNewCompactionTasksToStartInMs / 1000.0);
 				}
 
 				while (!remainingTasks.isEmpty() || remainingGracePeriodAfterLastCompaction > 0) {
@@ -314,15 +314,15 @@ public class CassandraInstance {
 							}
 						} else {
 							logger.info("Compaction tasks completed. Now waiting at most {} seconds for additional compaction tasks to be triggered",
-									maxWaitForNewCompactionTasksToStartMs / 1000.0);
-							remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartMs;
+									maxWaitForNewCompactionTasksToStartInMs / 1000.0);
+							remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartInMs;
 						}
 					} else if (remainingTasks.isEmpty()) {
-						remainingGracePeriodAfterLastCompaction -= compactionTaskStatusPollingInterval;
+						remainingGracePeriodAfterLastCompaction -= compactionStatusPollingIntervalInMs;
 					}
 
 					try {
-						Thread.sleep(compactionTaskStatusPollingInterval);
+						Thread.sleep(compactionStatusPollingIntervalInMs);
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}

@@ -77,7 +77,7 @@ public class DetectorsKam {
 	/**
 	 * Cassandra version (as opposed to "all in RAM" version)
 	 * 
-	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
 	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
@@ -87,7 +87,7 @@ public class DetectorsKam {
 	 */
 	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(
 			SparkInstance sparkInstance, CassandraInstance cassandraInstance, AsmObjectFactory factory,
-			AsmProcessor processor, int startK, int K, int L, int m, int largestBlockLengthToIgnore, boolean singleUserApplication) {
+			AsmProcessor processor, int startK, int K, int L, int m, int largestBlockLengthToIgnore, boolean isSingleUserApplication) {
 		return new FunctionSubgraphDetector(//
 				factory, //
 				sparkInstance, //
@@ -99,7 +99,7 @@ public class DetectorsKam {
 						startK, //
 						K, //
 						L, //
-						m, HashSchemaTypes.SimHash, false, singleUserApplication), //
+						m, HashSchemaTypes.SimHash, false, isSingleUserApplication), //
 				largestBlockLengthToIgnore, //
 				false);//
 	}

@@ -16,15 +16,8 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.indexer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -93,7 +86,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	}
 
 	/**
-	 * @param singleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
 	 *                              an existing indexer DB, must be the same than when it was created (must depend on
 	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
 	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
@@ -101,13 +94,13 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	 */
 	public BlockIndexerLshKLAdaptive(SparkInstance sparkInstance, CassandraInstance cassandraInstance,
 			AsmObjectFactory objectFactory, FeatureConstructor featureGenerator, int startK, int maxK, int L, int m,
-			HashSchemaTypes type, boolean inMem, boolean singleUserApplication) {
+			HashSchemaTypes type, boolean inMem, boolean isSingleUserApplication) {
 		super(sparkInstance);
 		this.objectFactory = objectFactory;
 		this.featureGenerator = featureGenerator;
 		this.sparkInstance = sparkInstance;
 		this.index = new ALSH<>(sparkInstance, cassandraInstance, featureGenerator.featureElements, startK, maxK, L, m,
-				type, inMem, "asm_block", singleUserApplication);
+				type, inMem, "asm_block", isSingleUserApplication);
 	}
 
 	@Override
@@ -282,7 +275,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		@Override
 		public List<VecInfoBlock> apply(List<VecInfoBlock> ls) {
-			if (ls.size() < topK) {
+			if (ls.size() < this.topK) {
 				return ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId).collect(Collectors.toList());
 			}
 
@@ -299,7 +292,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	 * See external documentation for explanations and data-flow: /documentation/others/alsh-df.drawio.png
 	 *
 	 * @param rid   Repository ID  (Cassandra)
-	 * @param blks  target blocks to find clone for
+	 * @param blks  target blocks to find clone for, must be from the same function.
 	 * @param links target links between block
 	 * @param topK  keep only the top topK matching blocks (for each matched block in blks)
 	 * @return Matched clones as (target, source, similarity) where similarity is always 1.0 at this point.
@@ -308,11 +301,12 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public JavaRDD<Tuple3<Block, Block, Double>> queryAsRdds(long rid, List<Block> blks, Set<Tuple2<Long, Long>> links,
 			int topK) {
 
-		if (blks.isEmpty()) {
+		Optional<Block> anyBlock = blks.stream().findAny();
+		if (!anyBlock.isPresent()) {
 			return sparkInstance.getContext().emptyRDD();
 		}
 
-		long functionId = blks.get(0).functionId;
+		long functionId = anyBlock.get().functionId;
 		int functionInstructionCount = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
 
 		// Convert all target BB into their vector representation (+ normalized assembly)
