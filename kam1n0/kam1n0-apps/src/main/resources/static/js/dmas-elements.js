@@ -1623,38 +1623,38 @@ function createCommentRowSingle(cm, url, prefix) {
 }
 
 function convertToHTML(input_str) {
-	var input_str;
-	var text_input;
-	var output_html="";
-	var counter;
+    var input_str;
+    var text_input;
+    var output_html="";
+    var counter;
 
-	text_input=input_str.trim();
-	if (text_input.length > 0){
-		output_html+="<p>";
-		for (counter=0; counter < text_input.length; counter++){
-			switch (text_input[counter]){
-				case '\n':
+    text_input=input_str.trim();
+    if (text_input.length > 0){
+        output_html+="<p>";
+        for (counter=0; counter < text_input.length; counter++){
+            switch (text_input[counter]){
+                case '\n':
                     output_html+="<br>";
-					break;
+                    break;
                 case '&':
-					output_html+="&amp;";
-					break;
-				case '"':
-					output_html+="&quot;";
-					break;
-				case '>':
-					output_html+="&gt;";
-					break;
-				case '<':
-					output_html+="&lt;";
-					break;
-				default:
-					output_html+=text_input[counter];
-			}
-		}
-		output_html+="</p>";
-	}
-	return output_html;
+                    output_html+="&amp;";
+                    break;
+                case '"':
+                    output_html+="&quot;";
+                    break;
+                case '>':
+                    output_html+="&gt;";
+                    break;
+                case '<':
+                    output_html+="&lt;";
+                    break;
+                default:
+                    output_html+=text_input[counter];
+            }
+        }
+        output_html+="</p>";
+    }
+    return output_html;
 }
 
 function createFormSingle(url, addr, funId, comObj, prefix) {
