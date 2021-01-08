@@ -150,8 +150,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 
 		ofunc.numBlocks = ofunc.blocks.size();
 		ofunc.comments = func.comments.stream().map(cmm -> {
-			String content = cmm.comment.replaceAll("(\r\n|\n)", "\n\n");
-			return new Comment(func.id, content, cmm.type, new Date().getTime(), "user_ida", cmm.offset);
+			return new Comment(func.id, cmm.comment, cmm.type, new Date().getTime(), "user_ida", cmm.offset);
 		}).collect(Collectors.toList());
 		return ofunc;
 	}

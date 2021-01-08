@@ -66,7 +66,6 @@
 			</div>
 		</div>
 	</div>
-
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		var QueryString = function() {
@@ -115,10 +114,11 @@
 		    
 			var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
 			drawTextDiff(pa, pb, 'diff-title', 'diff-table', 'l-', 'r-', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-			plotCommentsWithPrefix(cm_url, pa, 'l-')
-			plotCommentsWithPrefix(cm_url, pb, 'r-')
+            plotCommentsWithPrefix(cm_url, pa, 'l-');
+            plotCommentsWithPrefix(cm_url, pb, 'r-');
 			initForm(cm_url);
-			setUpTextHighlights('#btn-cp-cmt', 'r-p');
+            setUpTextHighlights('#btn-cp-cmt', 'r-p');
+            setUpTextHighlights('#btn-cp-cmt', "\\+r-p");
 		}
 		
 		function build(normalize=false, arch='metapc'){
@@ -147,23 +147,20 @@
 		}
 
 		$(function() {
-			
-			
+			var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
+
+			if (localStorage) {
+				sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+			}
+
 			$menu = createDropDownMenu($('#diff-title-menu'));
 			tp = createCommentDropDownMenu(true);
 			$menu.add_menu_item('Show Comments', tp.items)
 			// $menu.add_menu_item('Normalization', createNormalizationSettingMenu(build))
 			$menu.complete()
 			build()
-			
-			
-			
 		})
 
 		/*]]>*/
 	</script>
 </div>
-
-
-
-

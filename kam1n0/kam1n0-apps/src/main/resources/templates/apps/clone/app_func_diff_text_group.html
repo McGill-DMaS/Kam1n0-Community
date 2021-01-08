@@ -47,6 +47,15 @@ span.lselected {
 	cursor: row-resize;
 }
 
+div.rowbbody{
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 12px;
+}
+
+div.cmbox{
+	line-height: 14px;
+}
+
 textarea {
 	width: 100%;
 }
@@ -64,8 +73,8 @@ textarea {
 			<div class="card-content" id="card-body"
 				style="height: 100%; padding-bottom: 50px">
 
-				<div id="bbody" class="row"
-					style="padding: 0; margin-left: 10px; margin-right: 10px; height: 100%">
+				<div id="bbody" class="row rowbbody"
+					style="padding: 0; margin-left: 10px; margin-right: 10px; height: 100%;">
 					<div id="clone-text-left-scroller" style="overflow-y: scroll;"
 						class="col-xs-6 no-padding">
 						<div id="clone-text-left"></div>
@@ -662,10 +671,15 @@ textarea {
 
     // create comment form:
     function createForm($rowBeforeInsert, currentLine, currentFun, comObj) {
+        if (typeof useMarkdown == "undefined") {
+        	if (sessionStorage) {
+            	useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
+        	}
+    	}
         var $form = $('<tr class=\"comForm\">').append(
                 $('<td colspan=\"2\">').append(
                         $('<div>')
-                                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\">'))
+                                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"line-height:14px\">'))
                                 .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
                                     var cm = $form.find('textarea').val();
                                     var data = {
@@ -742,17 +756,25 @@ textarea {
                                     }
                                     $form.remove();
                                 }).append('close'))
-                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">').append('Markdown Supported'))
+                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">')
+                                .append(useMarkdown == "true" ? 'Markdown Supported' : ''))
                 )
         );
         var $editArea = $form.find('textarea');
         if(comObj != null)
-            $editArea.val(toMarkdown(comObj.comment));
-        $editArea.markdown({autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true});
+            $editArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
+		if (useMarkdown == "true")
+			$editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+
         return $form;
     }
 
     function createCommentRow(cm){
+        if (typeof useMarkdown == "undefined") {
+        	if (sessionStorage) {
+            	useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
+        	}
+    	}
         var $tr = $('<tr class=\"cmrow\">').append(
                 $('<td colspan=\"2\">')
                         .append($('<span class=\"pull-right delete\">')
@@ -820,7 +842,7 @@ textarea {
                                 })
                 )
                         .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
-                                .append(markdown.toHTML( cm.comment ))
+                                .append(useMarkdown == "true" ? markdown.toHTML(cm.comment) : convertToHTML(cm.comment))
                 )
         );
         return $tr;
@@ -999,11 +1021,13 @@ textarea {
         $(document).unbind('mousemove');
     });
 
+    $(function() {
+		var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
 
-
-
-
-
+		if (localStorage) {
+			sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+		}
+	})
 
 		/*]]>*/
 	</script>

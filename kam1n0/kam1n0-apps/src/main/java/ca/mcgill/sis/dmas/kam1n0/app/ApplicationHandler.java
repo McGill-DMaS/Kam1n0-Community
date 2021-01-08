@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import ca.mcgill.sis.dmas.kam1n0.app.adata.BlockDataUnit;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Cluster;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +38,6 @@ import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.ArchitectureType;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizationResource;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizer;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.NormalizationSetting;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Comment;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 
 /**
  * All the APP services follow path:
@@ -234,7 +231,7 @@ public abstract class ApplicationHandler {
 			comment.comment = content;
 			comment.userName = UserController.findUserName();
 			meta.putComment(appId, comment);
-			return ImmutableMap.of("result", comment);
+			return ImmutableMap.of("result", new CommentResult(comment));
 		} catch (Exception e) {
 			logger.error("Failed put commnet.", e);
 			return ImmutableMap.of("error", "Failed to update the comment.");

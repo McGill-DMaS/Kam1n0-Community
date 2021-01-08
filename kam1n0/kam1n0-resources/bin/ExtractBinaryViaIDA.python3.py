@@ -33,23 +33,22 @@ def _iter_extra_comments(ea, start):
     lines = [line if line else '' for line in lines]
     return "\n".join(lines)
 
+def _append_comments(ea, comments, type, text):
+    if text and len(text) > 0:
+        comments.append({'type':type, 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
 
-def get_comments(ea):
+# anterior comment with offset is equal to first_segment_address will be exclude
+def get_comments(ea, first_segment_address):
     comments = []
-    text = idc.get_cmt(ea,1) #RptCmt(ea)
-    if text and len(text) > 0:
-        comments.append({'type':'repeatable', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
-    text = idc.get_cmt(ea,0)#Comment(ea)
-    if text and len(text) > 0:
-        comments.append({'type':'regular', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
-    text = _iter_extra_comments(ea, idaapi.E_PREV)
-    if text and len(text) > 0:
-        comments.append({'type':'anterior', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
-    text = _iter_extra_comments(ea, idaapi.E_NEXT)
-    if text and len(text) > 0:
-        comments.append({'type':'posterior', 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
-    return comments
+    _append_comments(ea, comments, 'repeatable', idc.get_cmt(ea, 1)) #RptCmt(ea)
+    _append_comments(ea, comments, 'regular', idc.get_cmt(ea, 0)) #Comment(ea)
 
+    anteriorComment = _iter_extra_comments(ea, idaapi.E_PREV)
+    if ea != first_segment_address:
+        _append_comments(ea, comments, 'anterior', anteriorComment)
+
+    _append_comments(ea, comments, 'posterior', _iter_extra_comments(ea, idaapi.E_NEXT))
+    return comments
 
 def get_apis(func_addr):
     calls = 0
@@ -137,7 +136,13 @@ data['functions'] = list()
 batchSize = int(os.getenv('K_BATCHSIZE', 10000))
 print('batch size: %d' % batchSize)
 batchCount = 0
+first_segment_address = ""
+
 for seg_ea in Segments():
+
+    if not first_segment_address:
+        first_segment_address = get_segm_start(seg_ea)
+
     for function_ea in Functions(get_segm_start(seg_ea), get_segm_end(seg_ea)):#Functions(SegStart(seg_ea), SegEnd(seg_ea)):
         f_name = get_func_name(function_ea) #GetFunctionName(function_ea)
         function = dict()
@@ -159,7 +164,7 @@ for seg_ea in Segments():
 
         # comments
         function['comments'] = []
-        function['comments'].extend(get_comments(function_ea))
+        function['comments'].extend(get_comments(function_ea, first_segment_address))
 
         # basic bloc content
         for bblock in funcfc:
@@ -184,7 +189,7 @@ for seg_ea in Segments():
                 print(sblock['name'])
 
             for head in Heads(bblock.start_ea, bblock.end_ea):
-                function['comments'].extend(get_comments(head))
+                function['comments'].extend(get_comments(head, first_segment_address))
                 tline = list()
                 oprType = list()
                 tline.append(
@@ -226,7 +231,7 @@ for seg_ea in Segments():
             del data['functions']
             data['functions'] = list()
 
-with open('%s.tmp%d.json' % (file_name, batchCount), 'w') as outfile:
+with open('%s.tmp%d.json' % (file_name, batchCount), 'w', encoding='utf-8') as outfile:    
     json.dump(data, outfile, ensure_ascii=False)
 
 idc.qexit(0)#Exit(0)
