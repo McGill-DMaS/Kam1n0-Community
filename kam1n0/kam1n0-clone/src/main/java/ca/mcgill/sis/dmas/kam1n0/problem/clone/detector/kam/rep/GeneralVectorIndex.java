@@ -24,7 +24,7 @@ public class GeneralVectorIndex {
 			int maxK, int L, int m, HashSchemaTypes type, boolean inMem) {
 		List<String> features = IntStream.range(0, dim).mapToObj(ind -> "feature-" + ind).collect(Collectors.toList());
 		this.index = new ALSH<>(sparkInstance, cassandraInstance, features, startK, maxK, L, m, type, inMem,
-				"vec_alsh");
+				"vec_alsh", false);
 		this.index.init();
 	}
 

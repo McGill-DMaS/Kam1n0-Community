@@ -257,7 +257,7 @@ public class Batch2 {
 			model = new Asm2VecCloneDetectorIntegration(factory, param);
 		} else if (choice == Model.asmclone) {
 			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(spark, cassandra, factory,
-					processor, 16, 1024, 1, 30, 1);
+					processor, 16, 1024, 1, 30, 1, true);
 		} else if (choice == Model.sym1n0) {
 			Kam1n0SymbolicModule.setup();
 			LogicGraphFactory logicFactory = LogicGraphFactory.init(spark, cassandra, "batch2t", "sym1n0");
@@ -275,6 +275,8 @@ public class Batch2 {
 		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
 			fmodel.index(-1l, ds, new LocalJobProgress());
 		}
+		logger.info("Indexing completed.");
+		cassandra.waitForCompactionTasksCompletion();
 
 		double[][] matrix = new double[ds.size()][ds.size()];
 		for (double[] row : matrix)
@@ -433,7 +435,6 @@ public class Batch2 {
 					cassandra.setSparkInstance(spark);
 					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
 				} else {
-					Batch2.
 					logger.info("No processing. Only running local cassandra server from database in current working directory.");
 
 					System.out.println("You may now use external tools on Cassandra database.");
@@ -441,8 +442,10 @@ public class Batch2 {
 					Scanner scanner = new Scanner(System.in);
 					scanner.nextLine();
 
-					logger.info("Termination requested. Cassandra should automatically exit in a moment.");
+					logger.info("Termination requested.");
 				}
+
+				cassandra.close();
 
 			} catch (Exception e) {
 				logger.info("Failed to process " + Arrays.toString(args), e);

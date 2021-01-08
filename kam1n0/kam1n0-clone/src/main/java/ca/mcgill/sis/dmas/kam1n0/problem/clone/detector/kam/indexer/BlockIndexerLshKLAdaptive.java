@@ -16,15 +16,8 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.indexer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -92,15 +85,22 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public BlockIndexerLshKLAdaptive() {
 	}
 
+	/**
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 *                              an existing indexer DB, must be the same than when it was created (must depend on
+	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
+	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
+	 *                              ignored.
+	 */
 	public BlockIndexerLshKLAdaptive(SparkInstance sparkInstance, CassandraInstance cassandraInstance,
 			AsmObjectFactory objectFactory, FeatureConstructor featureGenerator, int startK, int maxK, int L, int m,
-			HashSchemaTypes type, boolean inMem) {
+			HashSchemaTypes type, boolean inMem, boolean isSingleUserApplication) {
 		super(sparkInstance);
 		this.objectFactory = objectFactory;
 		this.featureGenerator = featureGenerator;
 		this.sparkInstance = sparkInstance;
 		this.index = new ALSH<>(sparkInstance, cassandraInstance, featureGenerator.featureElements, startK, maxK, L, m,
-				type, inMem, "asm_block");
+				type, inMem, "asm_block", isSingleUserApplication);
 	}
 
 	@Override
@@ -122,8 +122,9 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
 		// get all the valid hids to a list
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), null)._2
-				.collect();
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), blockList ->
+			blockList.stream().filter(matchedBlock -> matchedBlock.functionId != blk.functionId).collect(Collectors.toList())
+		)._2.collect();
 
 		infos.forEach(entry -> {
 			double score = index.distApproximate(entry, obj);
@@ -235,8 +236,17 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			else
 				return v + val;
 		}));
+
+		// Rank source functions (not blocks) from which there are matching pairs
 		Ranker<Long> filtered = new Ranker<>();
 		counter.entrySet().stream().forEach(ent -> filtered.push(ent.getValue(), ent.getKey()));
+
+		// Why topK * 3:
+		//  - here we only have single block matches (target block - source block). The "reducing" stage later on will
+		//    combine target blocks and source blocks to produce subgraph matches instead of only block matches
+		//  - we match blocks from source and target functions that are more likely to produce good subgraph matches
+		//  - To keep topK subgraph at the end, we need more that topK candidate source functions, and topK*3 was
+		//    deemed a "fine fudge factor" in that regard.
 		HashSet<Long> valids = filtered.getTopK(topK * 3).stream().map(ent -> ent.value)
 				.collect(Collectors.toCollection(HashSet::new));
 		// List<Entry<Long, Double>> ls =
@@ -247,14 +257,16 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 				.mapToPair(tp -> new Tuple2<>(tp._2._2.blockId, tp._2._1));
 	}
 
-	public static class VecInfoBlockFilter implements Serializable, Function<List<VecInfoBlock>, List<VecInfoBlock>> {
+	private static class VecInfoBlockFilter implements Serializable, Function<List<VecInfoBlock>, List<VecInfoBlock>> {
 
 		private static final long serialVersionUID = -5140694331617864078L;
-		public int blk_size;
+		public long functionId;
+		public int functionInstructionCount;
 		public int topK;
 
-		public VecInfoBlockFilter(int blk_size, int topK) {
-			this.blk_size = blk_size;
+		public VecInfoBlockFilter(long functionId, int functionInstructionCount, int topK) {
+			this.functionId = functionId;
+			this.functionInstructionCount = functionInstructionCount;
 			this.topK = topK;
 		}
 
@@ -263,11 +275,14 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		@Override
 		public List<VecInfoBlock> apply(List<VecInfoBlock> ls) {
-			if (ls.size() < this.topK)
-				return ls;
+			if (ls.size() < this.topK) {
+				return ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId).collect(Collectors.toList());
+			}
+
 			Ranker<VecInfoBlock> rk = new Ranker<>();
-			ls.stream().forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - this.blk_size), vb));
-			return rk.getTopK(this.topK).stream().map(ent -> ent.value).collect(Collectors.toList());
+			ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId)
+					.forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - functionInstructionCount), vb));
+			return rk.getTopK(topK).stream().map(ent -> ent.value).collect(Collectors.toList());
 		}
 
 	}
@@ -277,7 +292,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	 * See external documentation for explanations and data-flow: /documentation/others/alsh-df.drawio.png
 	 *
 	 * @param rid   Repository ID  (Cassandra)
-	 * @param blks  target blocks to find clone for
+	 * @param blks  target blocks to find clone for, must be from the same function.
 	 * @param links target links between block
 	 * @param topK  keep only the top topK matching blocks (for each matched block in blks)
 	 * @return Matched clones as (target, source, similarity) where similarity is always 1.0 at this point.
@@ -286,8 +301,12 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	public JavaRDD<Tuple3<Block, Block, Double>> queryAsRdds(long rid, List<Block> blks, Set<Tuple2<Long, Long>> links,
 			int topK) {
 
-		String functionName = blks.isEmpty() ? "Unknown_empty_function" : blks.get(0).functionName;
+		Optional<Block> anyBlock = blks.stream().findAny();
+		if (!anyBlock.isPresent()) {
+			return sparkInstance.getContext().emptyRDD();
+		}
 
+		long functionId = anyBlock.get().functionId;
 		int functionInstructionCount = blks.stream().mapToInt(blk -> (int) blk.codesSize).sum();
 
 		// Convert all target BB into their vector representation (+ normalized assembly)
@@ -301,28 +320,18 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		// hid: hash id
 
 		// Initial query, for each block of the function, get topK*10 potential clones (based on Adaptive Locally
-		// Sensitive Hashing), to be filtered out later down to topK matches.
-		// TODO: understand the VecInfoBlockFilter metric and fix above comment as need be
-		// TODO: figure out where 10 comes from
+		// Sensitive Hashing), to be filtered out later down to topK matches. Current result are ranked and filtered
+		// according to similarity in instruction count between source and target functions where blocks are from.
+		// This is an optimization filtering: we could keep all results instead of topK*10, but we assume that there is
+		// little chance to match many linked BB from very dissimilar functions (i.e. they won't end up in final topK).
 		//
-		// Return is in two parts:
+		// Returned value is in two parts:
 		//  ._1: list (target block ID, targetBlkVectorInfo)  the matched subset of targetBlocksAsVectors
 		//  ._2: list of "buckets" (VecEntry is a bucket) for potential sources candidates (potential cones), and
 		//          each VecEntry has: hid, list of corresponding source vec-BBs, etc.
 		// Note: this matching by ALSH is based on hashes.
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =
-				index.query(rid, objs, new VecInfoBlockFilter(functionInstructionCount, topK * 10));
-		// TODO: no matter the 'avoidSameBinary' parameter, should we at least filter out matches from the same function ID?
-		//       and would that be in VecInfoBlockFilter or straight in the query?
-
-		// TODO: possible improvement: move 'avoidSameBinary' here instead of in caller.
-		// Get all functions ID from target binary, something like
-		// 		function_ids_to_avoid = blks.stream().map(b->b.function_id).collect(Collectors.toSet())
-		// Then remove all buckets with those function IDs but only if avoidSameBinary
-		// Note: this 	won't work right away since all BB here are from the same function. Need to get in caller the
-		// list of all functions ID to filter out.
-		// Also, indexer like this one are not expected to do that, each caller does it as they wish. Will have to see
-		// what that means for other indexers.
+				index.query(rid, objs, new VecInfoBlockFilter(functionId, functionInstructionCount, topK * 10));
 
 		JavaPairRDD<Long, Block> hid_tblk = sparkInstance.getContext().parallelizePairs(
 				tp2._1.stream().map(tp -> new Tuple2<>(tp._1, tp._2.block)).collect(Collectors.toList()),

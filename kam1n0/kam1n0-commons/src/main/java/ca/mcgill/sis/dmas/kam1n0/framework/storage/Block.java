@@ -51,9 +51,11 @@ public class Block implements AsmFragment, Serializable {
 	@AsString
 	public List<Long> callingBlocks;
 
-	// Note: not clear what this is actually. In some cases it seems to be  the number of blocks in a function,
-	// while in other cases this is the number of blocks with more than one (or one group of?) assembly line.
-	// TODO: clear that up
+	/**
+	 * Definition of 'peer' is application/model-specific. By default it is the number of blocks in the function the
+	 * block belongs to, but this can also be the number of instructions in some or all blocks of that function.
+	 * Since this data can be persisted, the same application/model be used to create the data and to process it.
+	 */
 	public int peerSize;
 
 	public long functionId;

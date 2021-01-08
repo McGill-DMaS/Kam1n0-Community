@@ -31,7 +31,6 @@ public class FunctionCloneEntryForWeb implements Serializable {
 	public String functionName = StringResources.STR_EMPTY;
 	public String binaryId;
 	public String binaryName = StringResources.STR_EMPTY;
-	public int numBbs = 0;
 	public int codeSize = 0;
 	public double similarity = -1;
 	public FunctionDataUnit actualFunc = null;
@@ -57,7 +56,6 @@ public class FunctionCloneEntryForWeb implements Serializable {
 		this.binaryId = Long.toString(entry.binaryId);
 		this.binaryName = entry.binaryName;
 		this.similarity = entry.similarity;
-		this.numBbs = (int) entry.numBbs;
 		this.codeSize = (int) entry.codeSize;
 
 		clonedParts = entry.clonedParts.stream() //
@@ -66,20 +64,6 @@ public class FunctionCloneEntryForWeb implements Serializable {
 						.map(tp -> new Tupe(Long.toString(tp._1()), Long.toString(tp._2())))//
 						.collect(Collectors.toCollection(ArrayList::new)))
 				.collect(Collectors.toCollection(ArrayList::new));
-
-	}
-
-	public FunctionCloneEntryForWeb(FunctionDataUnit func, double similarity, int numbbs) {
-		this.actualFunc = func;
-		this.similarity = similarity;
-
-		this.functionId = func.functionId;
-		this.functionName = func.functionName;
-		this.binaryId = func.binaryId;
-		this.binaryName = func.binaryName;
-
-		this.numBbs = numbbs;
-		this.codeSize = func.codeSize;
 
 	}
 
