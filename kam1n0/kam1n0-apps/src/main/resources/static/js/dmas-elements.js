@@ -1584,7 +1584,8 @@ function createCommentRowSingle(cm, url, prefix) {
                                 alert(data.error);
                                 return;
                             }
-                            $sp.parent().parent().parent().remove();
+                            $sp.parent().parent().remove();
+                            $row.data('cm', null);
                         }
                     );
                 })
