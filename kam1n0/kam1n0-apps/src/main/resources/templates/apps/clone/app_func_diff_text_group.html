@@ -833,12 +833,9 @@ textarea {
 
                                     var currentLine = $lineNumberRow.attr('id');
                                     var currentFun = $crow.parent().parent().data('block').functionId;
-                                    createForm($crow.prev(),
-                                            currentLine,
-                                            currentFun,
-                                            cm
-                                    ).insertAfter($crow.prev());
-                                    $crow.remove();
+									var $form = createForm($crow.prev(), currentLine, currentFun, cm).insertAfter($crow.prev());
+									$form.find("textarea").focus();
+									$crow.remove();
                                 })
                 )
                         .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
@@ -870,7 +867,8 @@ textarea {
         }else{
             var currentLine = $(tspan).parent().text().replace('+', ' ');
             var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionId;
-            createForm($tspan.parent().parent(),currentLine,currentFun).insertAfter(row);
+			var $form = createForm($tspan.parent().parent(),currentLine,currentFun).insertAfter(row);
+			$form.find('textarea').focus();
         }
     }
 

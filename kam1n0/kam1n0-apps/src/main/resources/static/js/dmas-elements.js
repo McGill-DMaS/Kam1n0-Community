@@ -1517,6 +1517,7 @@ function initForm(url) {
         }
         var $form = createFormSingle(url, $rd.text().replace('+', ''), $rd.data('func').functionId, null, $rd.data('prefix'))
         $form.insertAfter($rd.parent());
+        $form.find('textarea').focus();
     });
 }
 
@@ -1595,9 +1596,9 @@ function createCommentRowSingle(cm, url, prefix) {
                 .click(function () {
                     var $btn = $(this);
                     var $crow = $btn.parent().parent();
-                    $form = createFormSingle(
-                        url, cm.functionOffset, cm.functionId, cm, prefix);
+                    $form = createFormSingle(url, cm.functionOffset, cm.functionId, cm, prefix);
                     $form.insertAfter($crow);
+                    $form.find('textarea').focus();
                     $crow.remove();
                 })
             )
