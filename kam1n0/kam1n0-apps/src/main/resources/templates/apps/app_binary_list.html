@@ -1,3 +1,11 @@
+<style type="text/css">
+    .notactive {
+        pointer-events: none;
+        cursor: default;
+        background-color: lightgrey;
+    }
+</style>
+
 <div class="row">
 	<div class="col-sm-10 middle">
 		<div class="card">
@@ -6,8 +14,12 @@
 			</div>
 			<div class="card-content">
 				<div id="jstree" style="height: 350px; overflow-y: scroll"></div>
+				<a id="file-delete"
+				   class="btn btn-sm pull-right href-file-del notactive"
+				   style="width: 100px" data-toggle="modal">Delete
+				</a>
 				<button class="btn btn-xs pull-right" style="margin-top: 10px"
-					onclick="$('#jstree').jstree('close_all');">
+						onclick="$('#jstree').jstree('close_all');">
 					<i class="fa fa-minus" aria-hidden="true"></i> Collapse all
 				</button>
 
@@ -21,25 +33,32 @@
 				var url_bin =  /*[[${model.calculatePrefix() + 'bin_info/'}]]*/'/';
 				var url_func_flow = /*[[${model.calculatePrefix() + 'func_flow_show/'}]]*/'/';
 				var url_func_text = /*[[${model.calculatePrefix() + 'func_text_show/'}]]*/'/';
-		     	var toBeDeleted;
+				var toBeDeleted;
+
+				$(".href-file-del").click(function (ev) {
+					if (toBeDeleted) {
+                        $('#warning-words').text($('#warning-words').attr('value') + toBeDeleted.text + '?');
+						$('#modalDelFile').modal('show');
+                    }
+                });
+
 				// 6 create an instance when the DOM is ready
 				$('#jstree').on('changed.jstree', function (e, data) {
-					if(data.selected.length > 0){
-						var node = data.instance.get_node(data.selected[0]);
-						if(!(node.parent == '#')){
-							window.open(url_func_text + "?id=" + node.id);
-							window.open(url_func_flow + "?id=" + node.id);
-						}
-                        else{
-                        toBeDeleted = node.id;
-                        $('#modalDelFile').modal({
-                              keyboard: false,
-                              focus: true,
-                              show: true
-                            })
+					if (data.selected.length > 0) {
+						toBeDeleted = null;
+                        $(".href-file-del").addClass("notactive");
+                        $(".href-file-del").removeClass("btn-danger");
+                        var node = data.instance.get_node(data.selected[0]);
+                        if (!(node.parent == '#')) {
+                            window.open(url_func_text + "?id=" + node.id);
+                            window.open(url_func_flow + "?id=" + node.id);
+						} else {
+							$(".href-file-del").removeClass("notactive");
+                            $(".href-file-del").addClass("btn-danger");
+                            toBeDeleted = node;
                         }
-					}
-				  }).jstree({
+                    }
+                }).jstree({
 					'core' : {
 						'data' : function(obj, cb) {
 							$.get(obj.id === '#' ? url_bin : url_func, {
@@ -72,46 +91,46 @@
 							});
 						}
 					}});
-                    
+
     		    $('#btn-conf-file-del').click(function() {
-			    if (toBeDeleted) {
-                    $('#warning-words').text("Please wait for the deletion to finish. It will automatically refresh as soon as it is done.");
-                    $('#btn-conf-close').hide();
-                    $('#btn-conf-file-del').hide();
-			    	$.post(/*[[${model.calculatePrefix() + 'delBin'}]]*/, {id: toBeDeleted}, function(){location.reload();})
-			    }
+					if (toBeDeleted) {
+						$('#warning-words').text("Please wait for the deletion to finish. It will automatically refresh as soon as it is done.");
+						$('#btn-conf-close').hide();
+						$('#btn-conf-file-del').hide();
+                        $.post(/*[[${model.calculatePrefix() + 'delBin'}]]*/, { id: toBeDeleted.id }, function () { location.reload(); });
+                    } else {
+                        $('#modalDelFile').hide();
+                    }
 		        });
 			});
-            
-            
-    
+
 			/*]]>*/
 		</script>
 	</div>
-    
+
 	<div class="modal fade" data-backdrop="false" id="modalDelFile" tabindex="-1" role="dialog"
-		aria-labelledby="Delete App" aria-hidden="true">
+		 aria-labelledby="Delete App" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header warning">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
+            	<button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="modalStopLabel">Warning: Delete
 						an Indexed Binary File</h4>
 				</div>
 				<div class="modal-body">
-					<p id="warning-words">Are you sure you want to delete this binary file?</p>
+					<p id="warning-words" value="Are you sure you want to delete this binary file: "></p>
 					<p id="modalDelFile-msg" class="text-danger"></p>
 
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default btn-sm"
-						data-dismiss="modal" id="btn-conf-close">Close</button>
+							data-dismiss="modal" id="btn-conf-close">Close</button>
 					<button type="button" class="btn btn-warning btn-sm"
-						id="btn-conf-file-del">Confirm</button>
+							id="btn-conf-file-del">Confirm</button>
 				</div>
 			</div>
 		</div>
 	</div>
-    
+
 </div>

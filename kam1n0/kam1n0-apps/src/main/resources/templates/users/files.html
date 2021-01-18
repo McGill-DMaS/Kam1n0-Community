@@ -152,6 +152,7 @@
                 toBeDeleted = $(ev.target).attr('value');
                 console.log(toBeDeleted);
                 $('#modalDelFile-msg').text('');
+                $('#warning-words').text($('#warning-words').attr('value') + toBeDeleted + '?');
             });
 
             $('#btn-conf-file-del').click(function () {
