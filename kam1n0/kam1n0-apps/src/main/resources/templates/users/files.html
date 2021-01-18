@@ -13,6 +13,9 @@
             width: 300px;
         }
     -->
+    .modal-backdrop {
+        z-index: -1;
+    }
 </style>
 
 <div class="row" th:if="${!model.isEmpty()}">
@@ -77,10 +80,11 @@
                                     <a th:if="${file.preparing}"
                                        class="btn btn-danger pull-right btn-sm href-file-del"
                                        style="width: 100px" th:disabled="${file.preparing}">Delete</a>
-                                    <a th:if="${!file.preparing}"
+                                    <a id="file-delete"
+                                       th:if="${!file.preparing}"
                                        class="btn btn-danger pull-right btn-sm href-file-del"
                                        style="width: 100px" data-toggle="modal"
-                                       th:attr="lnk=${file.file}"
+                                       th:value="${file.file}"
                                        data-target="#modalDelFile">Delete</a>
                                 </div>
                             </div>
@@ -102,7 +106,7 @@
     </div>
     <!-- Modal Core -->
     <div class="modal fade" id="modalDelFile" tabindex="-1" role="dialog"
-         aria-labelledby="Delete App" aria-hidden="true">
+         aria-labelledby="Delete Result file" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header warning">
@@ -145,7 +149,7 @@
             var toBeDeleted;
             var currentEditableData;
             $(".href-file-del").click(function (ev) {
-                toBeDeleted = $(ev.target).attr('lnk');
+                toBeDeleted = $(ev.target).attr('value');
                 console.log(toBeDeleted);
                 $('#modalDelFile-msg').text('');
             });
@@ -187,6 +191,10 @@
                     var oldHRefWithoutFilename = fileNameItem.attr('href').substring(0, lastIndexOfOldFilename);
 
                     fileNameItem.attr('href', oldHRefWithoutFilename + newValue);
+
+                    var fileItemDelete = $("#file-delete[value='" + currentEditableData['oldValue'] + "']");
+                    fileItemDelete.attr('value', newValue);
+
                     currentEditableData = {};
                 }
             });
