@@ -1,276 +1,270 @@
 <div class="row">
-	<div th:if="${model.owned.isEmpty() and model.shared.isEmpty()}"
-		 class="discription text-center"
-		 style="font-size: 20pt; margin-top: 200px;">
-		You don't have any applications yet. Get started <a
-			href="/createApp">here</a>.
-	</div>
+    <div th:if="${model.owned.isEmpty() and model.shared.isEmpty()}"
+         class="discription text-center"
+         style="font-size: 20pt; margin-top: 200px;">
+        You don't have any applications yet. Get started <a
+            href="/createApp">here</a>.
+    </div>
 
-	<div class="col-sm-2"></div>
-	<div class="col-sm-10">
-
-		<style>
-.modal-backdrop {
-.modal-backdrop {
-	display: none
-}
-</style>
-
-		<div th:if="${!model.owned.isEmpty()}" class="timeline-centered">
-
-			<article class="timeline-entry" th:each="app : ${model.owned}">
-
-				<div class="timeline-entry-inner">
-					<time class="timeline-time" datetime="2014-01-10T03:45">
-						<span
-								th:text="${#dates.format(app.basicInfo.creationDate, 'dd-MMM-yyyy hh:mm')}"></span>
-					</time>
-
-					<div class="timeline-icon bg-success">
-						<i class="entypo-feather"></i>
-					</div>
-
-					<div class="timeline-label">
-						<div class="row">
-							<div class="col-sm-9">
-
-								<a th:if="${app.basicInfo.isPrivate}"><i
-										class="fa fa-lock pull-left"
-										title="Private. Only selected users can access."
-										style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
-								<a th:if="${!app.basicInfo.isPrivate}"><i
-										class="fa fa-unlock pull-left"
-										title="Public. All users can access."
-										style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
-
-								<h2>
-									<small style="font-size: 10pt">Permanent Link:</small>
-									<a th:href="@{${app.link}}">
-										<span th:text="${app.link}"></span>
-									</a>
-								</h2>
-								<h3 th:inline="text">
-									[[${app.basicInfo.name}]] <small style="font-size: 13pt;display: none;"
-																	 th:text="${app.basicInfo.title}"></small>
-								</h3>
-								<div class="togglebutton">
-									<label> <input type="checkbox" class="onlinebtn"
-												   th:checked="${app.basicInfo.isOnline}"
-												   th:attr="appId=${app.basicInfo.appId}" /> <span
-											th:if="${app.basicInfo.isOnline}">This application is online.</span> <span
-											th:if="${!app.basicInfo.isOnline}">This application is offline.</span>
-									</label>
-								</div>
-								<p style="font-size: 14px;"
-								   th:text="${app.basicInfo.description}"></p>
-							</div>
-							<div class="col-sm-3">
-								<div class="row">
-									<a th:href="${app.basicInfo.calculatePrefix() + 'editApp/'}"
-									   class="btn btn-primary pull-right  btn-sm"
-									   style="width: 100px">Edit</a>
-									<a class="btn btn-danger pull-right btn-sm href-del"
-									   style="width: 100px" data-toggle="modal"
-									   th:attr="lnk=${app.basicInfo.calculatePrefix() + '/del/'}"
-									   data-target="#myModal">Delete</a>
-								</div>
-								<div class="row">
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
-										Files</p>
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
-										Functions</p>
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
-										Blocks</p>
-								</div>
-							</div>
-							<div></div>
-
-						</div>
-					</div>
-				</div>
-
-			</article>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-10">
 
 
-			<article class="timeline-entry begin">
+        <div th:if="${!model.owned.isEmpty()}" class="timeline-centered">
 
-				<div class="timeline-entry-inner">
+            <article class="timeline-entry" th:each="app : ${model.owned}">
 
-					<div class="timeline-icon"
-						 style="-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">
-						<i class="entypo-flight"></i>
-					</div>
+                <div class="timeline-entry-inner">
+                    <time class="timeline-time" datetime="2014-01-10T03:45">
+                        <span
+                                th:text="${#dates.format(app.basicInfo.creationDate, 'dd-MMM-yyyy hh:mm')}"></span>
+                    </time>
 
-				</div>
+                    <div class="timeline-icon bg-success">
+                        <i class="entypo-feather"></i>
+                    </div>
 
-			</article>
+                    <div class="timeline-label">
+                        <div class="row">
+                            <div class="col-sm-9">
 
-		</div>
+                                <a th:if="${app.basicInfo.isPrivate}"><i
+                                        class="fa fa-lock pull-left"
+                                        title="Private. Only selected users can access."
+                                        style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
+                                <a th:if="${!app.basicInfo.isPrivate}"><i
+                                        class="fa fa-unlock pull-left"
+                                        title="Public. All users can access."
+                                        style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
 
-		<div th:if="${!model.shared.isEmpty()}" class="timeline-centered">
+                                <h2>
+                                    <small style="font-size: 10pt">Permanent Link:</small>
+                                    <a th:href="@{${app.link}}">
+                                        <span th:text="${app.link}"></span>
+                                    </a>
+                                </h2>
+                                <h3 th:inline="text">
+                                    [[${app.basicInfo.name}]] <small style="font-size: 13pt;display: none;"
+                                                                     th:text="${app.basicInfo.title}"></small>
+                                </h3>
+                                <div class="togglebutton">
+                                    <label> <input type="checkbox" class="onlinebtn"
+                                                   th:checked="${app.basicInfo.isOnline}"
+                                                   th:attr="appId=${app.basicInfo.appId}" /> <span
+                                            th:if="${app.basicInfo.isOnline}">This application is online.</span> <span
+                                            th:if="${!app.basicInfo.isOnline}">This application is offline.</span>
+                                    </label>
+                                </div>
+                                <p style="font-size: 14px;"
+                                   th:text="${app.basicInfo.description}"></p>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    <a th:href="${app.basicInfo.calculatePrefix() + 'editApp/'}"
+                                       class="btn btn-primary pull-right  btn-sm"
+                                       style="width: 100px">Edit</a>
+                                    <a class="btn btn-danger pull-right btn-sm href-del"
+                                       style="width: 100px" data-toggle="modal"
+                                       th:attr="lnk=${app.basicInfo.calculatePrefix() + '/del/'}"
+                                       data-target="#myModal">Delete</a>
+                                </div>
+                                <div class="row">
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
+                                        Files</p>
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
+                                        Functions</p>
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
+                                        Blocks</p>
+                                </div>
+                            </div>
+                            <div></div>
 
-			<article class="timeline-entry" th:each="app : ${model.shared}">
+                        </div>
+                    </div>
+                </div>
 
-				<div class="timeline-entry-inner">
-					<time class="timeline-time" datetime="2014-01-10T03:45">
-						<span
-								th:text="${#dates.format(app.basicInfo.creationDate, 'dd-MMM-yyyy hh:mm')}"></span>
-					</time>
-
-					<div class="timeline-icon bg-success">
-						<i class="entypo-feather"></i>
-					</div>
-
-					<div class="timeline-label">
-						<div class="row">
-							<div class="col-sm-9">
-
-								<a th:if="${app.basicInfo.isPrivate}"><i
-										class="fa fa-lock pull-left"
-										title="Private. Only selected users can access."
-										style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
-								<a th:if="${!app.basicInfo.isPrivate}"><i
-										class="fa fa-unlock pull-left"
-										title="Public. All users can access."
-										style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
-
-								<h2>
-									<small style="font-size: 10pt">Permanent link:</small>
-									<a th:href="@{${app.link}}"><span th:text="${app.link}"></span></a>
-								</h2>
-								<h3 th:inline="text">
-									[[${app.basicInfo.name}]]
-									<small style="font-size: 13pt" th:text="${app.basicInfo.title}"></small>
-								</h3>
-
-								<p style="font-size: 14px;" th:text="${app.basicInfo.description}"></p>
-							</div>
-							<div class="col-sm-3">
-								<div class="row">
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
-										Files</p>
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
-										Functions</p>
-									<p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
-										Blocks</p>
-									<p class="pull-right"
-									   th:text="${'Shared by: ' + app.basicInfo.owner}"></p>
-								</div>
-							</div>
-							<div></div>
-
-						</div>
-					</div>
-				</div>
-
-			</article>
+            </article>
 
 
-			<article class="timeline-entry begin">
+            <article class="timeline-entry begin">
 
-				<div class="timeline-entry-inner">
+                <div class="timeline-entry-inner">
 
-					<div class="timeline-icon"
-						 style="-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">
-						<i class="entypo-flight"></i>
-					</div>
+                    <div class="timeline-icon"
+                         style="-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">
+                        <i class="entypo-flight"></i>
+                    </div>
 
-				</div>
+                </div>
 
-			</article>
+            </article>
 
-		</div>
+        </div>
 
-	</div>
-	<!-- Modal Core -->
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
-		 aria-labelledby="Delete App" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header warning">
-					<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="myModalLabel">Warning: Deleting
-						Application Data</h4>
-				</div>
-				<div class="modal-body">
-					<p>Please enter the application name and your password to
-						confirm the deletion.</p>
-					<p id="modal-msg" class="text-danger"></p>
-					<form class="form-horizontal" id="appDeletionForm">
-						<div class="row">
-							<div class="col-md-5">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-											class="material-icons">keyboard_arrow_right </i>
-									</span>
-									<div class="form-group label-floating">
-										<label class="control-label">Application Name</label> <input
-											type="text" class="form-control" name="appName" /> <span
-											class="material-input"></span>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-5">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-											class="material-icons">keyboard_arrow_right </i>
-									</span>
-									<div class="form-group label-floating">
-										<label class="control-label">Password</label> <input
-											class="form-control" name="pwd" type="password" /> <span
-											class="material-input"></span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default btn-sm"
-							data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-warning btn-sm"
-							id="btn-conf-delete">Confirm</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script type="text/javascript">
-		/*<![CDATA[*/
-		$(document).ready(
-				function() {
-					$(".onlinebtn").change(
-							function() {
-								$.post('/toggleApp', {
-									appId : $(this).attr('appId'),
-									online : $(this).is(':checked')
-								})
-								var status = $(this).is(':checked') ? 'online'
-										: 'offline';
-								$(this).next().next().text(
-										'This App is ' + status);
-							});
+        <div th:if="${!model.shared.isEmpty()}" class="timeline-centered">
 
-					var toBeDeleted;
-					$(".href-del").click(function(ev) {
-						toBeDeleted = $(ev.target).attr('lnk');
-						console.log(toBeDeleted);
-						$('#modal-msg').text('');
-					});
-					$('#btn-conf-delete').click(
-							function() {
-								if (toBeDeleted) {
-									$.post(toBeDeleted, $("#appDeletionForm")
-											.serialize(), function(msg) {
-										if (msg.error) {
-											$('#modal-msg').text(msg.error);
-										} else {
-											location.reload();
-										}
-									})
-								}
-							});
-				});
-		/*]]>*/
-	</script>
+            <article class="timeline-entry" th:each="app : ${model.shared}">
+
+                <div class="timeline-entry-inner">
+                    <time class="timeline-time" datetime="2014-01-10T03:45">
+                        <span
+                                th:text="${#dates.format(app.basicInfo.creationDate, 'dd-MMM-yyyy hh:mm')}"></span>
+                    </time>
+
+                    <div class="timeline-icon bg-success">
+                        <i class="entypo-feather"></i>
+                    </div>
+
+                    <div class="timeline-label">
+                        <div class="row">
+                            <div class="col-sm-9">
+
+                                <a th:if="${app.basicInfo.isPrivate}"><i
+                                        class="fa fa-lock pull-left"
+                                        title="Private. Only selected users can access."
+                                        style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
+                                <a th:if="${!app.basicInfo.isPrivate}"><i
+                                        class="fa fa-unlock pull-left"
+                                        title="Public. All users can access."
+                                        style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
+
+                                <h2>
+                                    <small style="font-size: 10pt">Permanent link:</small>
+                                    <a th:href="@{${app.link}}"><span th:text="${app.link}"></span></a>
+                                </h2>
+                                <h3 th:inline="text">
+                                    [[${app.basicInfo.name}]]
+                                    <small style="font-size: 13pt" th:text="${app.basicInfo.title}"></small>
+                                </h3>
+
+                                <p style="font-size: 14px;" th:text="${app.basicInfo.description}"></p>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBinaries}]]
+                                        Files</p>
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numFunctions}]]
+                                        Functions</p>
+                                    <p class="text-right" style="margin-top: 5px" th:inline="text">[[${app.summary.numBasicBlocks}]]
+                                        Blocks</p>
+                                    <p class="pull-right"
+                                       th:text="${'Shared by: ' + app.basicInfo.owner}"></p>
+                                </div>
+                            </div>
+                            <div></div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+
+            <article class="timeline-entry begin">
+
+                <div class="timeline-entry-inner">
+
+                    <div class="timeline-icon"
+                         style="-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">
+                        <i class="entypo-flight"></i>
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+    <!-- Modal Core -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="Delete App" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header warning">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Warning: Deleting
+                        Application Data</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please enter the application name and your password to
+                        confirm the deletion.</p>
+                    <p id="modal-msg" class="text-danger"></p>
+                    <form class="form-horizontal" id="appDeletionForm">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-addon"> <i
+                                            class="material-icons">keyboard_arrow_right </i>
+                                    </span>
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Application Name</label> <input
+                                            type="text" class="form-control" name="appName" /> <span
+                                            class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-addon"> <i
+                                            class="material-icons">keyboard_arrow_right </i>
+                                    </span>
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Password</label> <input
+                                            class="form-control" name="pwd" type="password" /> <span
+                                            class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm"
+                            data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning btn-sm"
+                            id="btn-conf-delete">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(document).ready(
+                function() {
+                    $(".onlinebtn").change(
+                            function() {
+                                $.post('/toggleApp', {
+                                    appId : $(this).attr('appId'),
+                                    online : $(this).is(':checked')
+                                })
+                                var status = $(this).is(':checked') ? 'online'
+                                        : 'offline';
+                                $(this).next().next().text(
+                                        'This App is ' + status);
+                            });
+
+                    var toBeDeleted;
+                    $(".href-del").click(function(ev) {
+                        toBeDeleted = $(ev.target).attr('lnk');
+                        console.log(toBeDeleted);
+                        $('#modal-msg').text('');
+                    });
+                    $('#btn-conf-delete').click(
+                            function() {
+                                if (toBeDeleted) {
+                                    $.post(toBeDeleted, $("#appDeletionForm")
+                                            .serialize(), function(msg) {
+                                        if (msg.error) {
+                                            $('#modal-msg').text(msg.error);
+                                        } else {
+                                            location.reload();
+                                        }
+                                    })
+                                }
+                            });
+                });
+        /*]]>*/
+    </script>
 </div>
