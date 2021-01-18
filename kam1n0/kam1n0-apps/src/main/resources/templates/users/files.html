@@ -45,12 +45,12 @@
 									style="font-size: 15pt; color: black;" aria-hidden="true"></i></a>
 
 								<h2 th:inline="text" th:if="${file.preparing}">
-									This file is still under preparation. <small
-										style="font-size: 8pt" th:text="${file.size + ' bytes'}"></small>
+									This file is still under preparation. <small style="font-size: 8pt"
+										th:text="${#numbers.formatDecimal(file.size / (1024* 1024), 0, 2)} + ' MB'"></small>
 								</h2>
 								<h2 th:inline="text" th:if="${!file.preparing}">
 									This file is ready. <small style="font-size: 8pt"
-										th:text="${file.size + ' bytes'}"></small>
+										th:text="${#numbers.formatDecimal(file.size / (1024* 1024), 0, 2)} + ' MB'"></small>
 								</h2>
 
 								<h3 th:inline="text" style='font-size: 18pt'>
