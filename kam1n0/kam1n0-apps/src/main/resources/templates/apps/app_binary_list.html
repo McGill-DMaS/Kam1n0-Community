@@ -14,15 +14,22 @@
             </div>
             <div class="card-content">
                 <div id="jstree" style="height: 350px; overflow-y: scroll"></div>
-                <a id="file-delete"
-                   class="btn btn-sm pull-right href-file-del notactive"
-                   style="width: 100px" data-toggle="modal">Delete
-                </a>
-                <button class="btn btn-xs pull-right" style="margin-top: 10px"
-                        onclick="$('#jstree').jstree('close_all');">
-                    <i class="fa fa-minus" aria-hidden="true"></i> Collapse all
-                </button>
-
+                <div>
+                    <a id="file-delete"
+                       class="btn btn-sm pull-right href-file-del notactive"
+                       style="width: 100px" data-toggle="modal">
+                        Delete
+                    </a>
+                    <label for="sortOrderComboBox" style="margin-top: 12px">Sort Order</label>
+                    <select id="sortOrderComboBox" class="btn btn-xs" style="margin-top: 12px">
+                        <option value="0">Default</option>
+                        <option value="1">Alphabetic</option>
+                    </select>
+                    <button class="btn btn-xs pull-right" style="margin-top: 10px"
+                            onclick="$('#jstree').jstree('close_all');">
+                        <i class="fa fa-minus" aria-hidden="true"></i> Collapse all
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -30,10 +37,14 @@
             /*<![CDATA[*/
             $(function() {
                 var url_func = /*[[${model.calculatePrefix() + 'func_info/'}]]*/'/';
-                var url_bin =  /*[[${model.calculatePrefix() + 'bin_info/'}]]*/'/';
+                var url_bin = /*[[${model.calculatePrefix() + 'bin_info/'}]]*/'/';
                 var url_func_flow = /*[[${model.calculatePrefix() + 'func_flow_show/'}]]*/'/';
                 var url_func_text = /*[[${model.calculatePrefix() + 'func_text_show/'}]]*/'/';
                 var toBeDeleted;
+
+                $('#sortOrderComboBox').on('change', function () {
+                    $('#jstree').jstree(true).refresh();
+                });
 
                 $(".href-file-del").click(function (ev) {
                     if (toBeDeleted) {
@@ -59,6 +70,13 @@
                         }
                     }
                 }).jstree({
+                    "plugins": ["sort"],
+                    'sort': function (a, b) {
+                        if ($('#sortOrderComboBox').find(":selected").text() == 'Alphabetic')
+                            return this.get_node(a).text > this.get_node(b).text ? 1 : -1;
+                        else
+                            return this.get_node(a).id > this.get_node(b).id ? 1 : -1;
+                    },
                     'core' : {
                         'data' : function(obj, cb) {
                             $.get(obj.id === '#' ? url_bin : url_func, {
@@ -79,7 +97,6 @@
                                     }));
                                 else
                                     cb.call(this, $.map(data, function(val, i) {
-                                        var label = val.binaryName;
                                         var suffix = ' (' + val.blockSize + ' blocks)';
                                         return {
                                             'id' : val.functionId,
@@ -113,7 +130,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header warning">
-                <button type="button" class="close" data-dismiss="modal"
+                    <button type="button" class="close" data-dismiss="modal"
                             aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="modalStopLabel">Warning: Delete
                         an Indexed Binary File</h4>
