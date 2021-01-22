@@ -28,14 +28,14 @@ import static ca.mcgill.sis.dmas.kam1n0.app.UITestUtils.log;
 
 public class UITest {
 	private static ChromeDriver driver;
-	WebElement element;
+	private static File tmpDirectory;
 	List<String> errorStrings = Arrays.asList("SyntaxError", "EvalError", "ReferenceError", "RangeError", "TypeError",
 			"URIError");
 
 	@BeforeClass
 	public static void prepareServerAndBrowser() throws Exception {
 
-		UITestUtils.StartServer();
+		tmpDirectory = UITestUtils.StartServer();
 		// download from http://chromedriver.chromium.org/
 		// need to set webdriver.chrome.driver in env vars
 		String envp = System.getenv().get("webdriver.chrome.driver");
@@ -48,7 +48,10 @@ public class UITest {
         driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-		Thread.sleep(1000 * 60); // sleep for 60 seconds (take a rest).
+		Thread.sleep(1000 * 30); // sleep for 60 seconds (take a rest).
+
+		register();
+		login();
 	}
 
 	@AfterClass
@@ -57,7 +60,7 @@ public class UITest {
 		if (driver != null)
 			driver.quit();
 		UITestUtils.cleanUp();
-
+		tmpDirectory.delete();
 	}
 
 	public void assertNoJSError() {
@@ -69,7 +72,7 @@ public class UITest {
 		assertFalse(anyErr.size() > 0);
 	}
 
-	public void register() throws Exception {
+	public static void register() throws Exception {
 		log("Testing register...");
 		driver.get("http://127.0.0.1:8571/register");
 		driver.findElement(By.id("username")).sendKeys("admin");
@@ -81,7 +84,7 @@ public class UITest {
 		assertEquals(response, "successfully");
 	}
 
-	public void login() throws Exception {
+	public static void login() throws Exception {
 		log("Testing login...");
 		driver.get("http://127.0.0.1:8571/login");
 		driver.findElement(By.id("username")).sendKeys("admin");
@@ -183,9 +186,7 @@ public class UITest {
 		driver.get(userHomeURL);
 		assertTrue(driver.getCurrentUrl().endsWith("/userHome"));
 
-		WebElement open = driver.findElementByCssSelector(".href-file-open");
-		assertTrue(open.getAttribute("disabled") == null);
-		open.click();
+		driver.findElement(By.id("filename-change")); //driver.findElementByCssSelector(".href-file-open");
 		HashSet<String> handlers = new HashSet<>(driver.getWindowHandles());
 		assertTrue(handlers.size() == 2);
 		String original = driver.getWindowHandle();
@@ -265,6 +266,7 @@ public class UITest {
 
 	}
 
+	@Test
 	public void testDisassemblyFactory() throws Exception {
 		log("Testing disassembly factory...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -272,6 +274,7 @@ public class UITest {
 		indexToApp(ele, "test-cases/disassembly_test_case/", "index-btn");
 	}
 
+	@Test
 	public void testAsmClone() throws Exception {
 		log("Testing asm-clone...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -280,6 +283,7 @@ public class UITest {
 		searchExampleCode("Flow graph comparison.", "Full text alignment.", "Clone group alignment.");
 	}
 
+	@Test
 	public void testAsm2Vec() throws Exception {
 		log("Testing asm2vec...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -288,6 +292,7 @@ public class UITest {
 		searchExampleCode("Flow graph comparison.", "Full text alignment.");
 	}
 
+	@Test
 	public void testAsm2VecComposition() throws Exception {
 		log("Testing asm2vec...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -299,6 +304,7 @@ public class UITest {
 				"http://127.0.0.1:8571/userHome");
 	}
 
+	@Test
 	public void testSym1n0() throws Exception {
 		log("Testing sym1n0...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -309,6 +315,7 @@ public class UITest {
 				"Clone group alignment.");
 	}
 
+	@Test
 	public void testChromium() throws Exception {
 		log("Testing chrome indexing...");
 		driver.get("http://127.0.0.1:8571/userHome");
@@ -316,17 +323,4 @@ public class UITest {
 		indexToApp(ele, "test-cases/chrome-test/", "index-btn");
 		searchExampleCode("Flow graph comparison.", "Full text alignment.");
 	}
-
-	@Test
-	public void test_all_in_sequence() throws Exception {
-		register();
-		login();
-		testAsm2VecComposition();
-		testDisassemblyFactory();
-		testAsmClone();
-		testAsm2Vec();
-		testSym1n0();
-		testChromium();
-	}
-
 }

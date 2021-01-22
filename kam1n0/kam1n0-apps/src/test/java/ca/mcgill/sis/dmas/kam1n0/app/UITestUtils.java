@@ -22,7 +22,7 @@ public class UITestUtils {
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
 	}
 
-	public static void StartServer() throws Exception {
+	public static File StartServer() throws Exception {
 		File dataPath = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
 		dataPath.deleteOnExit();
 		log("Starting server on {}", dataPath.getAbsolutePath());
@@ -31,8 +31,10 @@ public class UITestUtils {
 		log("Bin directory is on {}", binLocation);
 		appProcess = builder.command("java", "-Xmx6G", "-Xss4m", "-Dkam1n0.ansi.enable=false",
 				"-Dkam1n0.spring.popup=false", "-Dlogging.level.org.springframework=INFO", "-jar",
-				binLocation + "/kam1n0-server.jar", "--start", "kam1n0.data.path", dataPath.getAbsolutePath())
+				binLocation + "kam1n0-server.jar", "--start", "kam1n0.data.path", dataPath.getAbsolutePath())
 				.inheritIO().start();
+
+		return dataPath;
 	}
 
 	public static void cleanUp() throws Exception {
