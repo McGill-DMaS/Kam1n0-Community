@@ -22,12 +22,14 @@ import static com.datastax.spark.connector.japi.CassandraJavaUtil.typeConverter;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.datastax.driver.core.TableMetadata;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +54,8 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	private static Logger logger = LoggerFactory.getLogger(LshAdaptiveDupIndexCasandra.class);
 
 	/**
-	 * @param isSingleUserApplication   When set, adaptive_hash table is partitioned by hash ID instead of applicationID,
-	 * 	  							  which is more efficient and does not require adaptive_hash_view anymore.
+	 * @param isSingleUserApplication   When set, adaptive_hash table is partitioned by hash ID instead of rid, which is
+	 * 	  							  more efficient in that case. Also, adaptive_hash_view is not required anymore.
 	 * 	  							  This may only be set for single-user/app cases, and must be the same value when
 	 * 	  							  creating and re-using a database. Note: 'appliation ID' ('rid0' column) is still
 	 * 	  							  stored in the DB (as a clustering key) for code compatibility.
@@ -71,22 +73,24 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
 
 	// properties:
-	public static final String _APP_ID = "rid0";	// always the same and irrelevant if 'isSingleUserApplication'
+	public static final String _APP_ID = "rid0";
 	public static final String _ADAPTIVE_HASH_HASHID = "hashid";
 	public static final String _ADAPTIVE_HASH_IND = "ind";
 	public static final String _ADAPTIVE_HASH_FULLKEY = "full_key";
 	public static final String _ADAPTIVE_HASH_VIDS = "vids";
 	public static final String _ADAPTIVE_HASH_SHARED_INFO = "share";
 
-	private void createSchema() {
+
+	private void createTable() {
+
+		String partitionKey = isSingleUserApplication ? _ADAPTIVE_HASH_HASHID : _APP_ID;
+		String clusteringKey = isSingleUserApplication ? _APP_ID : _ADAPTIVE_HASH_HASHID;
+
 		if (!cassandraInstance.checkColumnFamilies(this.sparkInstance.getConf(), this.databaseName, _ADAPTIVE_HASH)) {
 			this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 				session.execute("CREATE KEYSPACE if not exists " + databaseName + " WITH "
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
-
-				String primaryKey = isSingleUserApplication ? "(" + _ADAPTIVE_HASH_HASHID + ")," + _APP_ID
-						: "(" + _APP_ID + ")," + _ADAPTIVE_HASH_HASHID;
 
 				String createTableStatement = "create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
 						+ _APP_ID + " bigint," //
@@ -95,35 +99,60 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 						+ _ADAPTIVE_HASH_FULLKEY + " blob, " //
 						+ _ADAPTIVE_HASH_SHARED_INFO + " text, " //
 						+ _ADAPTIVE_HASH_VIDS + " set<text>, " //
-						+ " PRIMARY KEY (" + primaryKey + ")"
+						+ " PRIMARY KEY ((" + partitionKey + "), " + clusteringKey + ")"
 						+ ");";
 				logger.info("Creating table {}.{} with {}", this.databaseName, _ADAPTIVE_HASH, createTableStatement);
 				session.execute(createTableStatement);
+			});
+		} else {
+			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
 
-				if (!isSingleUserApplication) {
-					String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "//
-							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "//
+			List<String> existingPrimaryKey = cassandraInstance.doWithClusterWithReturn(this.sparkInstance.getConf(), cluster -> {
+						TableMetadata meta = cluster.getMetadata().getKeyspace(databaseName).getTable(_ADAPTIVE_HASH);
+						return meta.getPrimaryKey().stream().map(columnMeta -> columnMeta.getName()).collect(Collectors.toList());
+					}
+			);
+			List<String> expectedPrimaryKey = Arrays.asList(partitionKey, clusteringKey);
+
+			if (!existingPrimaryKey.equals(expectedPrimaryKey)) {
+				throw new RuntimeException("Existing " + databaseName + "." + _ADAPTIVE_HASH + " was created for a "
+						+ (isSingleUserApplication ? "multi" : "single") + "-user application DB and can't be re-used as a "
+						+ (isSingleUserApplication ? "single" : "multi") + "-user application DB");
+			}
+		}
+	}
+
+	private void createViewOnTable() {
+
+		boolean hasView = cassandraInstance.doWithClusterWithReturn(this.sparkInstance.getConf(), cluster -> {
+			return cluster.getMetadata().getKeyspace(databaseName).getMaterializedView(_ADAPTIVE_HASH_VIEW) != null;
+		});
+
+		if ( !hasView ) {
+			if (!isSingleUserApplication) {
+				this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
+					String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "
+							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "
 							+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
 							+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
 							+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND
 							+ ");";
 					logger.info("Creating view {}.{} with {}", this.databaseName, _ADAPTIVE_HASH_VIEW, createViewStatement);
 					session.execute(createViewStatement);
-				}
-
-			});
+				});
+			}
 		} else {
-			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
+			logger.info("Found view {}.{}", this.databaseName, _ADAPTIVE_HASH_VIEW);
 
-			boolean hasView = cassandraInstance.checkColumnFamilies(
-					this.sparkInstance.getConf(), this.databaseName, _ADAPTIVE_HASH_VIEW);
-
-			if (hasView == isSingleUserApplication) {
-				throw new RuntimeException(databaseName + "." + _ADAPTIVE_HASH + " was created as a "
-						+ (hasView ? "multi" : "single") + "-user application DB, but tried to be opened as a "
-						+ (isSingleUserApplication ? "single" : "multi") + "-user application DB");
+			if (isSingleUserApplication) {
+				throw new RuntimeException("Existing " + databaseName + " DB was already created for a multi-user application and can't be re-used in current single-user application");
 			}
 		}
+	}
+
+	private void createSchema() {
+		createTable();
+		createViewOnTable();
 	}
 
 	@Override
