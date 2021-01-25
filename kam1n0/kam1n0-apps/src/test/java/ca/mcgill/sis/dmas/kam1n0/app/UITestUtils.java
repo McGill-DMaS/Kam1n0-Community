@@ -1,7 +1,6 @@
 package ca.mcgill.sis.dmas.kam1n0.app;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -12,29 +11,28 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ca.mcgill.sis.dmas.env.StringResources;
-import ca.mcgill.sis.dmas.kam1n0.impl.disassembly.DisassemblyFactoryIDA;
+
+import static org.springframework.util.FileSystemUtils.deleteRecursively;
 
 public class UITestUtils {
 	private static Process appProcess;
-
+	private static File tempDirectory;
 	public static void log(String msg, Object... args) {
 		System.out.println(StringResources
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
 	}
 
-	public static File StartServer() throws Exception {
-		File dataPath = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
-		dataPath.deleteOnExit();
-		log("Starting server on {}", dataPath.getAbsolutePath());
+	public static void StartServer() throws Exception {
+		tempDirectory = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
+		//dataPath.deleteOnExit();
+		log("Starting server on {}", tempDirectory.getAbsolutePath());
 		ProcessBuilder builder = new ProcessBuilder();
 		String binLocation = System.getProperty("output.dir");
 		log("Bin directory is on {}", binLocation);
 		appProcess = builder.command("java", "-Xmx6G", "-Xss4m", "-Dkam1n0.ansi.enable=false",
 				"-Dkam1n0.spring.popup=false", "-Dlogging.level.org.springframework=INFO", "-jar",
-				binLocation + "kam1n0-server.jar", "--start", "kam1n0.data.path", dataPath.getAbsolutePath())
+				binLocation + "kam1n0-server.jar", "--start", "kam1n0.data.path", tempDirectory.getAbsolutePath())
 				.inheritIO().start();
-
-		return dataPath;
 	}
 
 	public static void cleanUp() throws Exception {
@@ -42,6 +40,7 @@ public class UITestUtils {
 		if (appProcess != null)
 			appProcess.destroyForcibly();
 
+		deleteRecursively(tempDirectory);
 	}
 	
 

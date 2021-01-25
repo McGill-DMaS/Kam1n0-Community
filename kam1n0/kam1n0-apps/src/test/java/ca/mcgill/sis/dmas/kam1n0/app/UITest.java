@@ -28,14 +28,13 @@ import static ca.mcgill.sis.dmas.kam1n0.app.UITestUtils.log;
 
 public class UITest {
 	private static ChromeDriver driver;
-	private static File tmpDirectory;
 	List<String> errorStrings = Arrays.asList("SyntaxError", "EvalError", "ReferenceError", "RangeError", "TypeError",
 			"URIError");
 
 	@BeforeClass
 	public static void prepareServerAndBrowser() throws Exception {
 
-		tmpDirectory = UITestUtils.StartServer();
+		UITestUtils.StartServer();
 		// download from http://chromedriver.chromium.org/
 		// need to set webdriver.chrome.driver in env vars
 		String envp = System.getenv().get("webdriver.chrome.driver");
@@ -60,7 +59,6 @@ public class UITest {
 		if (driver != null)
 			driver.quit();
 		UITestUtils.cleanUp();
-		tmpDirectory.delete();
 	}
 
 	public void assertNoJSError() {
@@ -322,5 +320,10 @@ public class UITest {
 		WebElement ele = createApp("/asm-clone");
 		indexToApp(ele, "test-cases/chrome-test/", "index-btn");
 		searchExampleCode("Flow graph comparison.", "Full text alignment.");
+	}
+
+	@Test
+	public void testNothing() throws Exception {
+		log("Testing testNothing...");
 	}
 }
