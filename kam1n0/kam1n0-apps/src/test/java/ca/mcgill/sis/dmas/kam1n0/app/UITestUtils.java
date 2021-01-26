@@ -37,12 +37,14 @@ public class UITestUtils {
 
 	public static void cleanUp() throws Exception {
 		log("Cleaning up...");
-		if (appProcess != null)
-			appProcess.destroyForcibly();
-
+		if (appProcess != null) {
+			appProcess.destroy();
+			if (appProcess.isAlive())
+				appProcess.destroyForcibly();
+		}
+		Thread.sleep(1000*30); // 30 seconds t
 		deleteRecursively(tempDirectory);
 	}
-	
 
 	/**
 	 * From
