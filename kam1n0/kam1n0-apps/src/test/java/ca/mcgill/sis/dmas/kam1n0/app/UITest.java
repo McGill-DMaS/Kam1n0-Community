@@ -7,11 +7,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,6 +22,8 @@ import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.res.KamResourceLoader;
@@ -35,19 +38,14 @@ public class UITest {
 	public static void prepareServerAndBrowser() throws Exception {
 
 		UITestUtils.StartServer();
-		// download from http://chromedriver.chromium.org/
-		// need to set webdriver.chrome.driver in env vars
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
-        ChromeOptions options = new ChromeOptions();
-		options.addArguments("--window-size=1920,1080");
-		options.setExperimentalOption("useAutomationExtension", false);
+		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--start-maximized");
+		options.setExperimentalOption("useAutomationExtension", false);
 		driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-		Thread.sleep(1000 * 30); // sleep for 60 seconds (take a rest).
+		Thread.sleep(1000 * 15); // sleep for 15 seconds (take a rest). Can be different on other computer.
 
 		register();
 		login();
@@ -55,7 +53,7 @@ public class UITest {
 
 	@AfterClass
 	public static void cleanUp() throws Exception {
-		log("Cleaning up...");
+		log("UITest Cleaning up...");
 		if (driver != null)
 			driver.quit();
 		UITestUtils.cleanUp();
@@ -71,13 +69,21 @@ public class UITest {
 	}
 
 	public static void register() throws Exception {
+
 		log("Testing register...");
 		driver.get("http://127.0.0.1:8571/register");
+
+		WebDriverWait wait = new WebDriverWait(driver,30);
+		wait.until(ExpectedConditions.urlContains("/register"));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+
 		driver.findElement(By.id("username")).sendKeys("admin");
 		driver.findElement(By.id("email")).sendKeys("admin@dmas.com");
 		driver.findElement(By.id("pw")).sendKeys("admin");
 		driver.findElement(By.id("aggreeTLicense1")).click();
 		driver.findElement(By.tagName("button")).click();
+
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("strong")));
 		String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
 		assertEquals(response, "successfully");
 	}
@@ -88,11 +94,15 @@ public class UITest {
 		driver.findElement(By.id("username")).sendKeys("admin");
 		driver.findElement(By.id("password")).sendKeys("admin");
 		driver.findElement(By.tagName("button")).click();
-		Thread.sleep(5000); // sleep for 5s
+
+		WebDriverWait wait = new WebDriverWait(driver,30);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
+
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
         log("{}", url);
 		driver.executeScript("$(\"li.dropdown > a\").click()");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h6")));
 		String userName = driver.findElement(By.tagName("h6")).getText().toLowerCase();
         log("{}", driver.getPageSource());
         log("{}", driver.findElement(By.tagName("body")).getText());
@@ -127,19 +137,21 @@ public class UITest {
 		List<File> bins = Arrays.asList(folder.listFiles()).stream().filter(f -> f.isFile())
 				.collect(Collectors.toList());
 		a_permanent_link.click();
-		Thread.sleep(5000);
+		WebDriverWait wait = new WebDriverWait(driver,30);
+		wait.until(ExpectedConditions.urlContains("/home"));
+
 		log("Current URL {}", driver.getCurrentUrl());
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
 
 		for (File bin : bins) {
 			driver.get(driver.getCurrentUrl());
-			// driver.findElement(By.cssSelector("a[href='#settings']")).click();
 			driver.executeScript("$(\"a[href='#settings']\").click()");
 			WebElement input = driver.findElement(By.id("index-upload-input"));
 			WebElement btn = driver.findElement(By.id(submit_btn_id));
 			input.sendKeys(bin.getAbsolutePath());
 			btn.click();
-			Thread.sleep(5000);
+
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.progress.active")));
 			boolean error = false;
 			do {
 				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
@@ -149,27 +161,27 @@ public class UITest {
 				if (prgs.size() == 0 || error)
 					break;
 			} while (true);
-			Thread.sleep(1000);
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-conf-index-close")));
 			btn = driver.findElement(By.id("btn-conf-index-close"));
 			btn.click();
-			Thread.sleep(1000);
 			assertFalse(error);
 		}
-
 	}
 
 	public void searchFile(File file, String userHomeURL) throws Exception {
 		log("Current URL {}", driver.getCurrentUrl());
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
-
 		driver.get(driver.getCurrentUrl());
-		// driver.findElement(By.cssSelector("a[href='#messages']")).click();
+
 		driver.executeScript("$(\"a[href='#messages']\").click()");
 		WebElement input = driver.findElement(By.id("search-upload-input"));
 		WebElement btn = driver.findElement(By.id("search-btn-binary"));
 		input.sendKeys(file.getAbsolutePath());
 		btn.click();
-		Thread.sleep(5000);
+
+		WebDriverWait wait = new WebDriverWait(driver,30);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.progress.active")));
+
 		boolean error = false;
 		do {
 			List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
@@ -314,6 +326,7 @@ public class UITest {
 				"Clone group alignment.");
 	}
 
+	@Ignore
 	@Test
 	public void testChromium() throws Exception {
 		log("Testing chrome indexing...");

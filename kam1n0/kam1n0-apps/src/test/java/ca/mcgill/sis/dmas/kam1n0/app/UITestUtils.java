@@ -36,14 +36,16 @@ public class UITestUtils {
 	}
 
 	public static void cleanUp() throws Exception {
-		log("Cleaning up...");
+		log("UITestUtils Start Cleaning up...");
 		if (appProcess != null) {
 			appProcess.destroy();
 			if (appProcess.isAlive())
 				appProcess.destroyForcibly();
 		}
-		Thread.sleep(1000*30); // 30 seconds t
+		Thread.sleep(1000*5); // 5 seconds
 		deleteRecursively(tempDirectory);
+
+		log("UITestUtils Cleaning up End.");
 	}
 
 	/**
