@@ -1,12 +1,11 @@
 package ca.mcgill.sis.dmas.kam1n0.app;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -85,4 +84,8 @@ public class UITestUtils {
 		wait.until(ExpectedConditions.stalenessOf(input));
 	}
 
+	public static void takeScreenshot(String pathname, WebDriver driver) throws IOException {
+		File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(src, new File(pathname));
+	}
 }

@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -151,7 +152,7 @@ public class UITest {
 			input.sendKeys(bin.getAbsolutePath());
 			btn.click();
 
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.progress.active")));
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.progress-label")));
 			boolean error = false;
 			do {
 				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
@@ -161,6 +162,9 @@ public class UITest {
 				if (prgs.size() == 0 || error)
 					break;
 			} while (true);
+
+			driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+			UITestUtils.takeScreenshot("C:\\DEV\\Kam1n0_test\\ScreenShot\\" + bin.getName(), driver);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-conf-index-close")));
 			btn = driver.findElement(By.id("btn-conf-index-close"));
 			btn.click();
@@ -203,16 +207,15 @@ public class UITest {
 		String original = driver.getWindowHandle();
 		handlers.remove(original);
 		driver.switchTo().window(handlers.stream().findAny().get());
-		Thread.sleep(5000);
+
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".card")));
 		List<WebElement> cards = driver.findElementsByCssSelector(".card");
 		log("{} cards", cards.size());
 		assertTrue(cards.size() > 0);
-		Thread.sleep(5000);
-		// driver.findElement(By.cssSelector("a[href='#details']")).click();
+
 		driver.executeScript("$(\"a[href='#details']\").click()");
-		// driver.executeScript("$(\"span[text()=\"adler32_z\"]).click()");
-		// driver.findElementByCssSelector("span[text() = \"adler32_z\"]").click();
 		driver.executeScript("$(\"span:contains('adler32_z')\").click()");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".fa-object-ungroup")));
 		List<WebElement> entries = driver.findElementsByCssSelector(".fa-object-ungroup");
 		log("{} entries", entries.size());
 		assertTrue(entries.size() > 0);
@@ -220,7 +223,6 @@ public class UITest {
 		driver.close();
 		driver.switchTo().window(original);
 		driver.get(userHomeURL);
-
 	}
 
 	public void searchExampleCode(String... views) throws Exception {
