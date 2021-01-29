@@ -3,21 +3,14 @@ package ca.mcgill.sis.dmas.kam1n0.app;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -74,7 +67,7 @@ public class UITest {
 		log("Testing register...");
 		driver.get("http://127.0.0.1:8571/register");
 
-		WebDriverWait wait = new WebDriverWait(driver,30);
+		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.urlContains("/register"));
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
 
@@ -96,7 +89,7 @@ public class UITest {
 		driver.findElement(By.id("password")).sendKeys("admin");
 		driver.findElement(By.tagName("button")).click();
 
-		WebDriverWait wait = new WebDriverWait(driver,30);
+		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
 
 		String url = driver.getCurrentUrl();
@@ -138,7 +131,7 @@ public class UITest {
 		List<File> bins = Arrays.asList(folder.listFiles()).stream().filter(f -> f.isFile())
 				.collect(Collectors.toList());
 		a_permanent_link.click();
-		WebDriverWait wait = new WebDriverWait(driver,30);
+		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.urlContains("/home"));
 
 		log("Current URL {}", driver.getCurrentUrl());
@@ -164,7 +157,6 @@ public class UITest {
 			} while (true);
 
 			driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-			UITestUtils.takeScreenshot("C:\\DEV\\Kam1n0_test\\ScreenShot\\" + bin.getName(), driver);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-conf-index-close")));
 			btn = driver.findElement(By.id("btn-conf-index-close"));
 			btn.click();
@@ -183,7 +175,7 @@ public class UITest {
 		input.sendKeys(file.getAbsolutePath());
 		btn.click();
 
-		WebDriverWait wait = new WebDriverWait(driver,30);
+		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.progress.active")));
 
 		boolean error = false;
@@ -214,6 +206,7 @@ public class UITest {
 		assertTrue(cards.size() > 0);
 
 		driver.executeScript("$(\"a[href='#details']\").click()");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(), 'adler32_z')]")));
 		driver.executeScript("$(\"span:contains('adler32_z')\").click()");
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".fa-object-ungroup")));
 		List<WebElement> entries = driver.findElementsByCssSelector(".fa-object-ungroup");
@@ -230,24 +223,38 @@ public class UITest {
 		log("Current URL {}", driver.getCurrentUrl());
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
 		driver.executeScript("$(\"a[href='#profile']\").click()");
-		// driver.findElement(By.cssSelector("a[href='#profile']")).click();
-		WebElement btn = driver.findElement(By.id("func-clone-btn "));
+
+
+		String mwh=driver.getWindowHandle();
+
+		WebDriverWait wait = new WebDriverWait(driver, 30);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("func-clone-btn")));
+
+		WebElement btn = driver.findElement(By.id("func-clone-btn"));
 		Select dropdown = new Select(driver.findElement(By.id("clone-func-example")));
 		dropdown.selectByIndex(1);
 		btn.click();
 
-		Thread.sleep(20000);
 		String parentWindowHandler = driver.getWindowHandle(); // Store your parent window
+		wait.until(ExpectedConditions.numberOfWindowsToBe(2));
 		Set<String> handles = new HashSet<>(driver.getWindowHandles());
 		handles.remove(parentWindowHandler);
+
 		for (String subWindowHandler : handles) {
-			driver.switchTo().window(subWindowHandler);
-			String url = driver.getCurrentUrl();
-			log("URL {}", url);
+			String url;
+			try {
+				driver.switchTo().window(subWindowHandler);
+				url = driver.getCurrentUrl();
+				log("URL {}", url);
+			} catch (WebDriverException e) {
+				wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+				continue;
+			}
+
 			if (url.endsWith("/search_func/")) {
+				wait.until(ExpectedConditions.numberOfWindowsToBe(2));
 				assertNoJSError();
-				log("Searching no JS error. But over time limit 10s");
-				throw new Exception("Search timeout error.");
+				log("Searching no JS error.");
 			} else if (url.endsWith("/search_func_render")) {
 				driver.executeScript("$(\"button[title='Open All']\").click()");
 				driver.findElement(By.cssSelector("button[title='Open All']")).click();
@@ -255,7 +262,6 @@ public class UITest {
 				for (String view : views) {
 					log("going to view {}", view);
 					driver.executeScript("$(\"span[title='" + view + "']\").slice(0,3).click()");
-					// driver.findElement(By.cssSelector("span[title='" + view + "']")).click();
 					driver.switchTo().window(subWindowHandler);
 				}
 
@@ -265,7 +271,6 @@ public class UITest {
 				for (String viewWindowHandler : viewHandles) {
 					WebDriver win = driver.switchTo().window(viewWindowHandler);
 					log("checking view {}", win.getTitle());
-					Thread.sleep(20000);
 					assertNoJSError();
 					driver.close();
 				}
@@ -276,7 +281,6 @@ public class UITest {
 		}
 
 		driver.switchTo().window(parentWindowHandler);
-
 	}
 
 	@Test
