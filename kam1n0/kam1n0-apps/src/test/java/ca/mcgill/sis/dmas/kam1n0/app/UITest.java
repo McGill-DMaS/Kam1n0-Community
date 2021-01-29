@@ -6,10 +6,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.logging.LogEntry;
@@ -34,6 +31,7 @@ public class UITest {
 		UITestUtils.StartServer();
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
+
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--start-maximized");
 		options.setExperimentalOption("useAutomationExtension", false);
@@ -48,9 +46,26 @@ public class UITest {
 	@AfterClass
 	public static void cleanUp() throws Exception {
 		log("UITest Cleaning up...");
-		if (driver != null)
+		if (driver != null) {
+
 			driver.quit();
+		}
+
 		UITestUtils.cleanUp();
+	}
+
+	@After
+	public void CloseAllPage(){
+		String parentWindowHandler = driver.getWindowHandle(); // Store your parent window
+		Set<String> handles = new HashSet<>(driver.getWindowHandles());
+		handles.remove(parentWindowHandler);
+
+		for (String windowHandler : handles) {
+			WebDriver win = driver.switchTo().window(windowHandler);
+			log("Close page:" + win.getTitle());
+			driver.close();
+		}
+		driver.switchTo().window(parentWindowHandler);
 	}
 
 	public void assertNoJSError() {
@@ -224,15 +239,16 @@ public class UITest {
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
 		driver.executeScript("$(\"a[href='#profile']\").click()");
 
-
-		String mwh=driver.getWindowHandle();
+		String mwh = driver.getWindowHandle();
 
 		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("func-clone-btn")));
 
-		WebElement btn = driver.findElement(By.id("func-clone-btn"));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("clone-func-example")));
 		Select dropdown = new Select(driver.findElement(By.id("clone-func-example")));
 		dropdown.selectByIndex(1);
+
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("func-clone-btn")));
+		WebElement btn = driver.findElement(By.id("func-clone-btn"));
 		btn.click();
 
 		String parentWindowHandler = driver.getWindowHandle(); // Store your parent window
