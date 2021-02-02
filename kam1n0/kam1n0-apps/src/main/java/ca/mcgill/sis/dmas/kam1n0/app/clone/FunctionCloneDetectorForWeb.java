@@ -16,12 +16,12 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import ca.mcgill.sis.dmas.kam1n0.utils.src.FormatMilliseconds;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,6 @@ import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneDetector;
-import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 
 public class FunctionCloneDetectorForWeb {
 
@@ -83,9 +82,10 @@ public class FunctionCloneDetectorForWeb {
 								func.blocks.size(), func.functionName);
 						if(counter.getVal() > gate.getVal()) {
 							gate.inc(100);
-							double eta = (System.currentTimeMillis() - start) / stage.progress / 1000 / 60;
-							double taken =  (System.currentTimeMillis() - start) / 1000 / 60;
-							stage.msg = omString + " Taken " + StringResources.FORMAT_AR2D.format(taken) + " mins. Finishing in " + StringResources.FORMAT_AR2D.format(eta - taken) + " mins.";
+							long eta = (long) ((System.currentTimeMillis() - start) / stage.progress);
+
+							long taken = System.currentTimeMillis() - start;
+							stage.msg = omString + " Taken " + FormatMilliseconds.ToReadableTime(taken) + ". Finishing in " + FormatMilliseconds.ToReadableTime(eta - taken) + ".";
 						}
 
 						try {
