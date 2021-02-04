@@ -17,6 +17,7 @@ package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -81,9 +82,10 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			ExecutableClassificationApplicationMeta meta = (ExecutableClassificationApplicationMeta)ress.meta;
 			ExecutableClassificationApplicationConfiguration conf = (ExecutableClassificationApplicationConfiguration)meta.getInfo(appId).configuration;
 			if (ress == null) {
-				logger.error("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				String errorMessage = MessageFormat.format("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				logger.error(errorMessage);
 				progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Invalid request");
-				progress.complete();
+				progress.complete(errorMessage);
 			}
 
 			StageInfo stage = null;
@@ -92,8 +94,8 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			List<? extends Object> objs = getObj(KEY_FILES, dataMap);
 			for(Object obj:objs)
 			{
-			  BinarySurrogateMultipart parts = null;
-			  try {
+				BinarySurrogateMultipart parts = null;
+				try {
 			         if (obj instanceof BinarySurrogate) {
 			         	BinarySurrogate surrogate = (BinarySurrogate) obj;
 			         	File surrogateFile = new File(surrogate.name);
@@ -126,70 +128,68 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			         		continue;
 				}
 
-			stage.progress = 0.5;
-			File resultFile = new File(Environment.getUserFolder(userName) + "/Composition-" + name + "-"
-					+ StringResources.timeString() + ".kam");
-			int blk_max_p = blk_max;
+				stage.progress = 0.5;
+				File resultFile = new File(Environment.getUserFolder(userName) + "/Composition-" + name + "-"
+						+ StringResources.timeString() + ".kam");
+				int blk_max_p = blk_max;
 
+				ExecutableClassificationApplicationMeta appMeta = (ExecutableClassificationApplicationMeta)(ress.meta);
+				List<Cluster> clusters = appMeta.clusterFactory.queryMultipleBaisc(appId).collect();
+				unit = new BinarySearchUnitForClassification(appId, resultFile);
 
-			ExecutableClassificationApplicationMeta appMeta = (ExecutableClassificationApplicationMeta)(ress.meta);
-			List<Cluster> clusters = appMeta.clusterFactory.queryMultipleBaisc(appId).collect();
-			unit = new BinarySearchUnitForClassification(appId, resultFile);
+				FileInfo info = FileInfo.readFileInfo(resultFile);
+				info.preparing = true;
+				info.task = this.getJobName();
+				info.appType = appType;
+				info.appId = appId;
+				info.save();
 
-			FileInfo info = FileInfo.readFileInfo(resultFile);
-			info.preparing = true;
-			info.task = this.getJobName();
-			info.appType = appType;
-			info.appId = appId;
-			info.save();
+				unit.setClusters(clusters);
 
-			unit.setClusters(clusters);
-			
-			unit.get_class_map(meta.classFactory.queryMultipleBaisc(appId).collect());
+				unit.get_class_map(meta.classFactory.queryMultipleBaisc(appId).collect());
 
-			DmasFileOperations.setFileAttribute(resultFile, "preparing", true);
-			DmasFileOperations.setFileAttribute(resultFile, "task", this.getJobName());
-			DmasFileOperations.setFileAttribute(resultFile, "appType", appType);
-			DmasFileOperations.setFileAttribute(resultFile, "appId", appId);
+				DmasFileOperations.setFileAttribute(resultFile, "preparing", true);
+				DmasFileOperations.setFileAttribute(resultFile, "task", this.getJobName());
+				DmasFileOperations.setFileAttribute(resultFile, "appType", appType);
+				DmasFileOperations.setFileAttribute(resultFile, "appId", appId);
 
-			int ind = 0;
-			try {
-			for (BinarySurrogate part : parts) {
+				int ind = 0;
+				try {
+					for (BinarySurrogate part : parts) {
+						part.functions = part.functions.stream()
+								.filter(func -> func.blocks.size() >= blk_min && func.blocks.size() < blk_max_p)
+								.collect(Collectors.toCollection(ArrayList::new));
+						if (progress.interrupted)
+							throw new Exception("This job is being interrupted.. cancelling job.");
 
-				part.functions = part.functions.stream()
-						.filter(func -> func.blocks.size() >= blk_min && func.blocks.size() < blk_max_p)
-						.collect(Collectors.toCollection(ArrayList::new));
-				if (progress.interrupted)
-					throw new Exception("This job is being interrupted.. cancelling job.");
+						ind++;
+						stage.updateMsg("Saving " + "part " + (ind) + "/" + parts.size);
+						unit.put(part);
+						stage.msg = "Analysing binary " + name + " part " + (ind) + "/" + parts.size;
+						FunctionCloneDataUnit cloneUnit = ress.detectFunctionClone(appId, part, threshold, top, avoidSameBinary,
+								progress, false);
+						unit.put(cloneUnit, ress.objectFactory, progress);
 
-				ind++;
-				stage.updateMsg("Saving " + "part " + (ind) + "/" + parts.size);
-				unit.put(part);
-				stage.msg = "Analysing binary " + name + " part " + (ind) + "/" + parts.size;
-				FunctionCloneDataUnit cloneUnit = ress.detectFunctionClone(appId, part, threshold, top, avoidSameBinary,
-						progress, false);
-				unit.put(cloneUnit, ress.objectFactory, progress);
+						stage.progress = ind * 0.5 / parts.size + 0.5;
+					}
+				} catch (Exception e) {
+						logger.error("Failed to disassemble binary file ", e);
+						continue;
+				}
+				stage.complete();
 
-				stage.progress = ind * 0.5 / parts.size + 0.5;
+				info.preparing = false;
+				info.save();
+				stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Summarizing clone data..");
+				//unit.writeToDist(name);
+				unit.updateSummary(appId, ress.objectFactory, stage);
+				stage.complete();
+				// unit.makeOffline(appId, ress.objectFactory, progress);
+				unit.close();
+				DmasFileOperations.setFileAttribute(resultFile, "preparing", false);
 			}
-		    } catch (Exception e) {
-         		logger.error("Failed to diassemble binary file ", e);
-         		continue;
-	        }
-			stage.complete();
 
-			info.preparing = false;
-			info.save();
-			stage = progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Summarizing clone data..");
-			//unit.writeToDist(name);
-			unit.updateSummary(appId, ress.objectFactory, stage);
-			stage.complete();
-			// unit.makeOffline(appId, ress.objectFactory, progress);
-			unit.close();
-			DmasFileOperations.setFileAttribute(resultFile, "preparing", false);
-
-			}
-			progress.complete();
+			progress.complete(null);
 			LocalDateTime after_test = LocalDateTime.now();  
 			Instant end_test = Instant.now();
 			logger.info("after test:"+dtf.format(after_test)+"    |    "+"Time taken: "+ Duration.between(start_test, end_test).toMillis() +" milliseconds"+"  \n");
@@ -202,7 +202,5 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			if (unit != null)
 				unit.close();
 		}
-
 	}
-
 }

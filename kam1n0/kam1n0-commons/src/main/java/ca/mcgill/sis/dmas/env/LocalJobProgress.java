@@ -39,6 +39,7 @@ public class LocalJobProgress {
 		public boolean completed = false;
 		public Object result = null;
 		public String appName;
+		public String errorMessage;
 		public long appId;
 	}
 
@@ -56,6 +57,7 @@ public class LocalJobProgress {
 		wrapper.result = result;
 		wrapper.appId = appId;
 		wrapper.appName = appName;
+		wrapper.errorMessage = errorMessage;
 		return wrapper;
 	}
 
@@ -63,6 +65,7 @@ public class LocalJobProgress {
 	public boolean interrupted = false;
 	public boolean completed = false;
 	public String appName;
+	public String errorMessage;
 	public long appId;
 
 	@JsonIgnore
@@ -158,7 +161,9 @@ public class LocalJobProgress {
 	}
 
 	
-	public void complete() {
+	public void complete(String errorMessage) {
+		if (errorMessage != null)
+			this.errorMessage = errorMessage;
 		this.completed = true;
 		if (this.completedHook != null)
 			this.completedHook.accept(this);

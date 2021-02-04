@@ -100,14 +100,13 @@
 		aria-labelledby="Indexing Finish" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header warning">
+				<div class="modal-header information">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="modalStopLabel">Indexing Completed</h4>
 				</div>
 				<div class="modal-body">
-					<p id="index-warning-words">The indexing has completed.</p>
-
+					<p id="index-warning-words" value="The indexing has completed"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default btn-sm"
@@ -201,21 +200,24 @@
 												if (data['error']) {
 													dmas_alert(data['error']);
 												} else {
-													$('#index-progress-holder')
-															.empty();
+													$('#index-progress-holder').empty();
 													queryBinaryIndexJobProgress(
 															'BinaryIndexProcedure',
 															'#index-progress-holder',
 															function(progress) {
-                                                            $('#modalIndexNotifyFinish').modal({
-                                                                keyboard: false,
-                                                                focus: true,
-                                                                show: true
-                                                                })
-                                                                //sleep(3000);
-																//location.reload();
-															});
-												}
+																if (progress.errorMessage != null) {
+																	dmas_alert($('#index-warning-words').attr('value') + ' with error: ' + progress.errorMessage + '.');
+																}
+																else {
+																	$('#index-warning-words').text($('#index-warning-words').attr('value') + ' with success.');
+																	$('#modalIndexNotifyFinish').modal({
+																		keyboard: false,
+																		focus: true,
+																		show: true
+																	});
+																}
+                                                            });
+                                                }
 											},
 											statusCode : {
 												500 : function() {
