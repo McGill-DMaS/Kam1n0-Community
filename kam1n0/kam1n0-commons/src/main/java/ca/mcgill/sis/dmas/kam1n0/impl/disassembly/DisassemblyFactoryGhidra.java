@@ -204,6 +204,7 @@ public class DisassemblyFactoryGhidra extends DisassemblyFactory {
 			List<File> parts = this.selectOutputFiles(binaryPath);
 			String[] arg = null;
 			if (parts == null || parts.size() < 1) {
+				logger.info("Binary surrogate. Not found for {}", binaryPath);
 				File ghidraProject = new File(binaryPath.substring(0, binaryPath.lastIndexOf(".")));
 				ghidraProject.mkdirs();
 				arg = new String[] { //

@@ -6,6 +6,13 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -327,7 +334,7 @@ public class UITest {
 
 	@Test
 	public void testAsm2VecComposition() throws Exception {
-		log("Testing asm2vec...");
+		log("Testing Asm2VecComposition...");
 		driver.get("http://127.0.0.1:8571/userHome");
 		WebElement ele = createApp("/asm2vec-clone");
 		indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
