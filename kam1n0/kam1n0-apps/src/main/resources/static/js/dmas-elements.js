@@ -1487,6 +1487,9 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
     $('.diff-line-num').hover(
         function () {
+            if ($(".comForm")[0]) {
+                return;
+            }
             var $row = $('#' + $(this).attr('id'));
             var $row_data = $row.data('cm');
             if ($row_data == undefined)
@@ -1576,7 +1579,8 @@ function createCommentRowSingle(cm, url, prefix) {
                         functionId: cm.functionId,
                         functionOffset: cm.functionOffset,
                         date: cm.date,
-                        comment: ""
+                        comment: "",
+                        type: cm.type
                     };
                     $.post(url,
                         data,
@@ -1594,12 +1598,17 @@ function createCommentRowSingle(cm, url, prefix) {
             .append($('<span class=\"pull-right delete\">')
                 .append($('<i class=\"fa fa-edit\">'))
                 .click(function () {
+                    if ($(".comForm")[0]) {
+                        return;
+                    }
                     var $btn = $(this);
                     var $crow = $btn.parent().parent();
                     $form = createFormSingle(url, cm.functionOffset, cm.functionId, cm, prefix);
                     $form.insertAfter($crow);
                     $form.find('textarea').focus();
                     $crow.remove();
+                    $("input[name=comment_type][value=" + cm.type + "]").prop('checked', true);
+					$form.find('textarea').focus();							   
                 })
             )
             .append(!interaction ? $('') : $('<span class=\"pull-right delete\">')
@@ -1673,13 +1682,51 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
         $('<td colspan=\"2\">').append(
             $('<div>')
                 .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">'))
+                .append($('<input>').prop({
+                    type: 'radio',
+                    id: 1,
+                    name: 'comment_type',
+                    value: "anterior"
+                }))
+                .append($('<label style="margin:5px">').prop({
+                    for: "1"
+                }).html("Anterior"))
+                .append($('<input>').prop({
+                    type: 'radio',
+                    id: 2,
+                    name: 'comment_type',
+                    value: "posterior"
+                }))
+                .append($('<label style="margin:5px">').prop({
+                    for: "2"
+                }).html("Posterior"))
+                .append($('<input>').prop({
+                    type: 'radio',
+                    id: 3,
+                    name: 'comment_type',
+                    value: "regular",
+                    checked: "true"
+                }))
+                .append($('<label style="margin:5px">').prop({
+                    for: "3"
+                }).html("Regular"))
+                .append($('<input>').prop({
+                    type: 'radio',
+                    id: 4,
+                    name: 'comment_type',
+                    value: "repeatable"
+                }))
+                .append($('<label style="margin:5px">').prop({
+                    for: "4"
+                }).html("Repeatable"))
                 .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
                     var cm = $form.find('textarea').val();
                     var data = {
                         functionId: funId,
                         functionOffset: addr,
                         date: comObj == null ? "" : comObj.date,
-                        comment: cm
+                        comment: cm,
+                        type: $("input[name=comment_type]:checked").val()
                     };
                     $.post(
                         url,

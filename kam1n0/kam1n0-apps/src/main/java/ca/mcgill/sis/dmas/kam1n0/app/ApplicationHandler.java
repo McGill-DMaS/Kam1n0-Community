@@ -214,7 +214,7 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final Map<String, Object> putComment(@PathVariable("appId") long appId,
 			@RequestParam("functionId") long functionId, @RequestParam("functionOffset") String functionOffset,
-			@RequestParam("date") String date, @RequestParam("comment") String content) {
+			@RequestParam("date") String date, @RequestParam("comment") String content, @RequestParam("type") String type) {
 		try {
 
 			if (content.length() > 0 && !meta.checkFunc(appId, functionId)) {
@@ -224,6 +224,7 @@ public abstract class ApplicationHandler {
 			Comment comment = new Comment();
 			comment.functionId = functionId;
 			comment.functionOffset = functionOffset.trim();
+			comment.type = Comment.CommentType.valueOf(type);
 			if (date.trim().length() > 0)
 				comment.date = Long.parseLong(date.trim());
 			else

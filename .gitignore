@@ -32,3 +32,5 @@ kam1n0-bin-win/
 /kam1n0-builds/windows/installer-src-32-64/PluginDistributionX86/GroupPlugin.wxs
 /kam1n0-builds/windows/installer-src-32-64/ServerDistribution/GroupDistribution.wxs
 /kam1n0/kam1n0-apps/src/main/resources/.idea/workspace.xml
+
+kam1n0/kam1n0-apps/debug.log
