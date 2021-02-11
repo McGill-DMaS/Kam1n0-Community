@@ -59,7 +59,7 @@
                                 </h2>
                                 <h3 th:inline="text" style='font-size: 16pt'>
                                     <span th:if="${file.preparing}" class='filename'>[[${file.file}]] </span>
-                                    <a id="filename-change" class ="editFilename" th:if="${!file.preparing}" th:href="@{${file.calculateRenderURL()}}" th:value="${file.file}">
+                                    <a id="filename-change" target="_blank" class ="editFilename" th:if="${!file.preparing}" th:href="@{${file.calculateRenderURL()}}" th:value="${file.file}">
                                         <span th:text="${file.file}"></span>
                                     </a>
                                     <br />
