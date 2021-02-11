@@ -173,6 +173,8 @@ public class UITest {
 				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
 				error = driver.findElementsByCssSelector("span.progress-label").stream()
 						.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
+				assertFalse(error);
+
 				Thread.sleep(1000);
 				if (prgs.size() == 0 || error)
 					break;
@@ -182,7 +184,6 @@ public class UITest {
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-conf-index-close")));
 			btn = driver.findElement(By.id("btn-conf-index-close"));
 			btn.click();
-			assertFalse(error);
 		}
 	}
 
@@ -334,7 +335,7 @@ public class UITest {
 
 	@Test
 	public void testAsm2VecComposition() throws Exception {
-		log("Testing Asm2VecComposition...");
+		log("Testing asm2VecComposition...");
 		driver.get("http://127.0.0.1:8571/userHome");
 		WebElement ele = createApp("/asm2vec-clone");
 		indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
@@ -355,7 +356,6 @@ public class UITest {
 				"Clone group alignment.");
 	}
 
-	@Ignore
 	@Test
 	public void testChromium() throws Exception {
 		log("Testing chrome indexing...");
@@ -363,10 +363,5 @@ public class UITest {
 		WebElement ele = createApp("/asm-clone");
 		indexToApp(ele, "test-cases/chrome-test/", "index-btn");
 		searchExampleCode("Flow graph comparison.", "Full text alignment.");
-	}
-
-	@Test
-	public void testNothing() throws Exception {
-		log("Testing testNothing...");
 	}
 }
