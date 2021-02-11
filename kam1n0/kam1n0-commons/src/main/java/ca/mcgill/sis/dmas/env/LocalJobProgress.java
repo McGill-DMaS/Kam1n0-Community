@@ -15,13 +15,11 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.env;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import ca.mcgill.sis.dmas.kam1n0.utils.src.FormatMilliseconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +114,7 @@ public class LocalJobProgress {
 		public void complete() {
 			progress = 1.0;
 			completed = true;
-			this.msg = this.msg + " [ completed in " + (System.currentTimeMillis() - startTime) + " ms ]";
+			this.msg = this.msg + " [ completed in " + FormatMilliseconds.ToReadableTime(System.currentTimeMillis() - startTime) + " ]";
 			if (enableLogging)
 				logger.info(this.msg);
 			if (enablePrint)
@@ -156,12 +154,10 @@ public class LocalJobProgress {
 		stages.add(stage);
 		return stage;
 	}
-
 	
 	public void complete() {
 		this.completed = true;
 		if (this.completedHook != null)
 			this.completedHook.accept(this);
 	}
-
 }
