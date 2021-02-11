@@ -16,6 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -65,9 +66,10 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
             boolean avoidSameBinary = getBoolean(KEY_FILTER, dataMap, true);
             CloneSearchResources ress = (CloneSearchResources) res;
             if (ress == null) {
-                logger.error("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+                String errorMessage = MessageFormat.format("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+                logger.error(errorMessage);
                 progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Invalid request");
-                progress.complete();
+                progress.complete(errorMessage);
             }
 
             StageInfo stage = null;
@@ -154,7 +156,7 @@ public class BinaryAnalysisProcedureCompositionAnalysis extends LocalDmasJobProc
                     progress.result = unit.file;
                 }
             }
-            progress.complete();
+            progress.complete(null);
 
         } catch (Exception e) {
             logger.error("Failed to process the " + getJobName() + " job from " + getJobName(), e);
