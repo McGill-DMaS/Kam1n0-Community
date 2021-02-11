@@ -248,8 +248,6 @@ public class UITest {
 		assertTrue(driver.getCurrentUrl().endsWith("/home"));
 		driver.executeScript("$(\"a[href='#profile']\").click()");
 
-		String mwh = driver.getWindowHandle();
-
 		WebDriverWait wait = new WebDriverWait(driver, 30);
 
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("clone-func-example")));

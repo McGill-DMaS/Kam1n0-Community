@@ -23,7 +23,6 @@ public class UITestUtils {
 
 	public static void StartServer() throws Exception {
 		tempDirectory = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
-		//dataPath.deleteOnExit();
 		log("Starting server on {}", tempDirectory.getAbsolutePath());
 		ProcessBuilder builder = new ProcessBuilder();
 		String binLocation = System.getProperty("output.dir");
