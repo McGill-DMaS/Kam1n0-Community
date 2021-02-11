@@ -73,6 +73,7 @@ public class UITest {
 			driver.close();
 		}
 		driver.switchTo().window(parentWindowHandler);
+		UITestUtils.deleteTempFiles();
 	}
 
 	public void assertNoJSError() {

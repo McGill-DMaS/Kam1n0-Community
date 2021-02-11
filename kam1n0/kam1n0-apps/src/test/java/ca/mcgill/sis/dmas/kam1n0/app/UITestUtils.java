@@ -88,4 +88,9 @@ public class UITestUtils {
 		File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(src, new File(pathname));
 	}
+
+	public static void deleteTempFiles() {
+		String tempFilesDirectory = tempDirectory.getAbsolutePath() + "\\tmp\\admin\\";
+		deleteRecursively(new File(tempFilesDirectory));
+	}
 }
