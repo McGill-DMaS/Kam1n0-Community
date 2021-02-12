@@ -173,7 +173,7 @@ for seg_ea in Segments():
             sblock['id'] = bblock.id
             sblock['sea'] = bblock.start_ea
             if data['architecture']['type'] == 'arm':
-                sblock['sea'] += GetReg(bblock.start_ea, 'T')
+                sblock['sea'] += idc.get_sreg(bblock.start_ea, 'T')
             sblock['eea'] = bblock.end_ea
             sblock['name'] = 'loc_' + format(bblock.start_ea, 'x').upper()
             dat = {}

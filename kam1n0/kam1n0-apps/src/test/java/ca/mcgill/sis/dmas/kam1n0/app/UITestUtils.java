@@ -4,44 +4,47 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ca.mcgill.sis.dmas.env.StringResources;
-import ca.mcgill.sis.dmas.kam1n0.impl.disassembly.DisassemblyFactoryIDA;
+
+import static org.springframework.util.FileSystemUtils.deleteRecursively;
 
 public class UITestUtils {
 	private static Process appProcess;
-
+	private static File tempDirectory;
 	public static void log(String msg, Object... args) {
 		System.out.println(StringResources
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
 	}
 
 	public static void StartServer() throws Exception {
-		File dataPath = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
-		dataPath.deleteOnExit();
-		log("Starting server on {}", dataPath.getAbsolutePath());
+		tempDirectory = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
+		log("Starting server on {}", tempDirectory.getAbsolutePath());
 		ProcessBuilder builder = new ProcessBuilder();
 		String binLocation = System.getProperty("output.dir");
 		log("Bin directory is on {}", binLocation);
 		appProcess = builder.command("java", "-Xmx6G", "-Xss4m", "-Dkam1n0.ansi.enable=false",
 				"-Dkam1n0.spring.popup=false", "-Dlogging.level.org.springframework=INFO", "-jar",
-				binLocation + "/kam1n0-server.jar", "--start", "kam1n0.data.path", dataPath.getAbsolutePath())
+				binLocation + "kam1n0-server.jar", "--start", "kam1n0.data.path", tempDirectory.getAbsolutePath())
 				.inheritIO().start();
 	}
 
 	public static void cleanUp() throws Exception {
-		log("Cleaning up...");
-		if (appProcess != null)
-			appProcess.destroyForcibly();
+		log("UITestUtils Start Cleaning up...");
+		if (appProcess != null) {
+			appProcess.destroy();
+			if (appProcess.isAlive())
+				appProcess.destroyForcibly();
+		}
+		Thread.sleep(1000*5); // 5 seconds
+		deleteRecursively(tempDirectory);
 
+		log("UITestUtils Cleaning up End.");
 	}
-	
 
 	/**
 	 * From
@@ -80,4 +83,13 @@ public class UITestUtils {
 		wait.until(ExpectedConditions.stalenessOf(input));
 	}
 
+	public static void takeScreenshot(String pathname, WebDriver driver) throws IOException {
+		File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(src, new File(pathname));
+	}
+
+	public static void deleteTempFiles() {
+		String tempFilesDirectory = tempDirectory.getAbsolutePath() + "\\tmp\\admin\\";
+		deleteRecursively(new File(tempFilesDirectory));
+	}
 }

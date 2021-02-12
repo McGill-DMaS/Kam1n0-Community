@@ -18,6 +18,7 @@ package ca.mcgill.sis.dmas.kam1n0.app.clone;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,9 +83,10 @@ public class BinaryIndexProcedureLSHMRforExecutableClassification extends LocalD
 			ClusterModel clusterModel = getObj(KEY_CLUSTER_METHOD, dataMap);
 			CloneSearchResources ress = (CloneSearchResources) res;
 			if (ress == null) {
-				logger.error("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				String errorMessage = MessageFormat.format("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				logger.error(errorMessage);
 				progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Invalid request");
-				progress.complete();
+				progress.complete(errorMessage);
 			}
 
 			/**
@@ -352,14 +354,13 @@ public class BinaryIndexProcedureLSHMRforExecutableClassification extends LocalD
 			fclass_dist.close();
 			*/
 
-			
-			progress.complete();
+			progress.complete(null);
     		//fout.close();
-
 		} catch (Exception e) {
-			logger.error("Failed to process the " + getJobName() + " job from " + userName, e);
+			String errorMessage = MessageFormat.format("Failed to process the " + getJobName() + " job from " + userName, e);
+			logger.error(errorMessage);
 			progress.nextStage(this.getClass(), "Failed to complete the job : " + e.getMessage());
-			progress.complete();
+			progress.complete(errorMessage);
 		}
 	}
 

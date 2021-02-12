@@ -30,7 +30,7 @@
 
 								<h2 th:inline="text">
 									[[${job.taskName}]] <small style="font-size: 8pt"
-										th:text="${job.runtime + ' milliseconds'}"></small>
+										th:text="${job.runtimeFormatted()}"></small>
 								</h2>
 								<div class="progress-holder"
 									th:attr="taskName=${job.taskName}"></div>

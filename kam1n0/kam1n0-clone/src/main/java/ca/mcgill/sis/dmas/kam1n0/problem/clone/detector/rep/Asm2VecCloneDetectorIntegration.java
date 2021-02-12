@@ -143,6 +143,7 @@ public class Asm2VecCloneDetectorIntegration extends FunctionCloneDetector imple
 	public void index(long rid, Iterable<? extends BinaryMultiParts> binaries, LocalJobProgress progress)
 			throws Exception {
 
+		StageInfo stage_root = progress.nextStage(Asm2VecCloneDetectorIntegration.class, "Indexing...");
 		Iterable<? extends BinaryMultiParts> oldBinaries = factory.browseBinary(rid);
 		// counting the multiparts extracted from binarySurrogateMultipart does not
 		// really load them into memory.
@@ -150,7 +151,6 @@ public class Asm2VecCloneDetectorIntegration extends FunctionCloneDetector imple
 		long totalParts = Iterables.size(binaries) + factory.obj_binaries.count(rid);
 		binaries = Iterables.concat(binaries, oldBinaries);
 
-		StageInfo stage_root = progress.nextStage(Asm2VecCloneDetectorIntegration.class, "Indexing...");
 		stage_root.progress = 0.2;
 		StageInfo stage = progress.nextStage(Asm2VecCloneDetectorIntegration.class, "Storing assembly objects...");
 		Iterable<Binary> bins = Iterables.concat(binaries);

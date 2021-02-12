@@ -16,6 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,10 @@ public class BinaryIndexProcedureLSHMR extends LocalDmasJobProcedure {
 			List<? extends Object> objs = getObj(KEY_FILES, dataMap);
 			CloneSearchResources ress = (CloneSearchResources) res;
 			if (ress == null) {
-				logger.error("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				String errorMessage = MessageFormat.format("Unmatched resource type {} but expected {}", res.getClass(), CloneSearchResources.class);
+				logger.error(errorMessage);
 				progress.nextStage(BinaryAnalysisProcedureCompositionAnalysis.class, "Invalid request");
-				progress.complete();
+				progress.complete(errorMessage);
 			}
 
 			/**
@@ -69,14 +71,16 @@ public class BinaryIndexProcedureLSHMR extends LocalDmasJobProcedure {
 						try {
 							parts = ress.disassembleIntoMultiPart(file, file.getName(), progress);
 						} catch (Exception e) {
-							logger.error("Failed to diassembly binary file " + file.getName(), e);
+							progress.errorMessage = MessageFormat.format("Failed to disassembly binary file " + file.getName(), e);
+							logger.error(progress.errorMessage);
 							return null;
 						}
 				} else if (obj instanceof BinarySurrogate) {
 					BinarySurrogate surrogate = (BinarySurrogate) obj;
 					parts = surrogate.toMultipart();
 				} else {
-					logger.error("Unexpected type {}. Skipped.", obj.getClass().getName());
+					progress.errorMessage = MessageFormat.format("Unexpected type {}. Skipped.", obj.getClass().getName());
+					logger.error(progress.errorMessage);
 					return null;
 				}
 				BinarySurrogateMultipart partsFinal = parts;
@@ -101,13 +105,13 @@ public class BinaryIndexProcedureLSHMR extends LocalDmasJobProcedure {
 
 			ress.indexBinary(appId, ls, progress);
 
-			progress.complete();
+			progress.complete(null);
 
 		} catch (Exception e) {
-			logger.error("Failed to process the " + getJobName() + " job from " + userName, e);
+			String errorMessage = MessageFormat.format("Failed to process the " + getJobName() + " job from " + userName, e);
+			logger.error(errorMessage);
 			progress.nextStage(this.getClass(), "Failed to complete the job : " + e.getMessage());
-			progress.complete();
+			progress.complete(errorMessage);
 		}
 	}
-
 }
