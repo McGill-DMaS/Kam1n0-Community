@@ -1492,7 +1492,14 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
             }
             var $row = $('#' + $(this).attr('id'));
             var $row_data = $row.data('cm');
-            if ($row_data == undefined)
+
+            var countType = 0;
+            for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+                if ($row_data != undefined && $row_data.hasOwnProperty(val))
+                    countType++;
+            }
+
+            if ($row_data == undefined || countType < all_cm_types.size)
                 $(this).find('span.commenter').addClass('selected');
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
@@ -1513,6 +1520,9 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
 
 function initForm(url) {
     $('span.commenter').click(function () {
+	    if ($(".comForm")[0]) {
+            return;
+        }
         var $rd = $(this).parent();
         if ($rd.parent().next().hasClass('comForm')) {
             $rd.parent().next().remove();
@@ -1558,7 +1568,11 @@ function createCommentRowSingle(cm, url, prefix) {
 
     var $row = $('#' + prefix + cm.functionOffset);
     var $row_data = $row.data('cm');
-    $row_data = [cm];
+	if ($row_data == null) {
+        $row_data = {}
+    }
+    $row_data[cm.type] = [cm];
+
     $row.data('cm', $row_data);
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
@@ -1607,6 +1621,16 @@ function createCommentRowSingle(cm, url, prefix) {
                     $form.insertAfter($crow);
                     $form.find('textarea').focus();
                     $crow.remove();
+
+                    var $row = $('#' + prefix + cm.functionOffset);
+
+                    var $row_data = $row.data('cm');
+                    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+                        if ($row_data != undefined && $row_data.hasOwnProperty(val) && val != cm.type) {
+                            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
+                            $("label[for=" + val + "]").addClass('disabled');
+                        }
+                    }
                     $("input[name=comment_type][value=" + cm.type + "]").prop('checked', true);
 					$form.find('textarea').focus();							   
                 })
@@ -1682,42 +1706,42 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
         $('<td colspan=\"2\">').append(
             $('<div>')
                 .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">'))
-                .append($('<input>').prop({
+                .append($('<input style="color:black">').prop({
                     type: 'radio',
-                    id: 1,
+                    id: 'anterior',
                     name: 'comment_type',
                     value: "anterior"
                 }))
-                .append($('<label style="margin:5px">').prop({
-                    for: "1"
+                .append($('<label style="margin:5px; color:black">').prop({
+                    for: "anterior"
                 }).html("Anterior"))
-                .append($('<input>').prop({
+                .append($('<input style="color:black">').prop({
                     type: 'radio',
-                    id: 2,
+                    id: 'posterior',
                     name: 'comment_type',
                     value: "posterior"
                 }))
-                .append($('<label style="margin:5px">').prop({
-                    for: "2"
+                .append($('<label style="margin:5px; color:black">').prop({
+                    for: "posterior"
                 }).html("Posterior"))
-                .append($('<input>').prop({
+                .append($('<input style="color:black">').prop({
                     type: 'radio',
-                    id: 3,
+                    id: 'regular',
                     name: 'comment_type',
                     value: "regular",
                     checked: "true"
                 }))
-                .append($('<label style="margin:5px">').prop({
-                    for: "3"
+                .append($('<label style="margin:5px; color:black">').prop({
+                    for: "regular"
                 }).html("Regular"))
-                .append($('<input>').prop({
+                .append($('<input style="color:black">').prop({
                     type: 'radio',
-                    id: 4,
+                    id: 'repeatable',
                     name: 'comment_type',
                     value: "repeatable"
                 }))
-                .append($('<label style="margin:5px">').prop({
-                    for: "4"
+                .append($('<label style="margin:5px; color:black">').prop({
+                    for: "repeatable"
                 }).html("Repeatable"))
                 .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
                     var cm = $form.find('textarea').val();
@@ -1741,9 +1765,17 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
 
                                 var $row = $form.prev();
                                 $form.remove();
-                                var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
                                 var $row = $('#' + prefix + dataParsed.functionOffset);
-                                $row.next().append($cmbox);				   
+                                if (dataParsed.comment) {
+                                    var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
+                                    $row.next().append($cmbox);
+                                } else {
+                                    var $row_data = $row.data('cm');
+                                    if ($row_data.hasOwnProperty(dataParsed.type)) {
+                                        delete $row_data[dataParsed.type];
+                                    }
+                                    $row.data('cm', $row_data);
+                                }
                             }
                         }
                     );
