@@ -1530,6 +1530,7 @@ function initForm(url) {
         }
         var $form = createFormSingle(url, $rd.text().replace('+', ''), $rd.data('func').functionId, null, $rd.data('prefix'))
         $form.insertAfter($rd.parent());
+        selectNewCommentType($rd.data('cm'));
         $form.find('textarea').focus();
     });
 }
@@ -1558,6 +1559,22 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
     });
 }
 
+function attachComment(row, cm) {
+    var $row_data = row.data('cm');
+    if ($row_data == null) {
+        $row_data = {}
+    }
+    $row_data[cm.type] = [cm];
+    row.data('cm', $row_data);
+}
+
+function detachComment(row, type) {
+    var $row_data = row.data('cm');
+
+    if ($row_data && $row_data.hasOwnProperty(type)) {
+        delete $row_data[type];
+    }
+}
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {
@@ -1567,13 +1584,8 @@ function createCommentRowSingle(cm, url, prefix) {
     }
 
     var $row = $('#' + prefix + cm.functionOffset);
-    var $row_data = $row.data('cm');
-	if ($row_data == null) {
-        $row_data = {}
-    }
-    $row_data[cm.type] = [cm];
-
-    $row.data('cm', $row_data);
+    attachComment($row, cm);
+	
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
     if (typeof send_msg != 'undefined' && prefix == 'r-')
@@ -1604,7 +1616,7 @@ function createCommentRowSingle(cm, url, prefix) {
                                 return;
                             }
                             $sp.parent().parent().remove();
-                            $row.data('cm', null);
+                            detachComment($row, data.result.type);
                         }
                     );
                 })
@@ -1623,15 +1635,7 @@ function createCommentRowSingle(cm, url, prefix) {
                     $crow.remove();
 
                     var $row = $('#' + prefix + cm.functionOffset);
-
-                    var $row_data = $row.data('cm');
-                    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
-                        if ($row_data != undefined && $row_data.hasOwnProperty(val) && val != cm.type) {
-                            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
-                            $("label[for=" + val + "]").addClass('disabled');
-                        }
-                    }
-                    $("input[name=comment_type][value=" + cm.type + "]").prop('checked', true);
+					selectCommentType($row.data('cm'), cm);
 					$form.find('textarea').focus();							   
                 })
             )
@@ -1691,6 +1695,52 @@ function convertToHTML(input_str) {
     return output_html;
 }
 
+function appendCommentType(divContainer) {
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        divContainer.append($('<input style="color:black">').prop({
+            type: 'radio',
+            id: val,
+            name: 'comment_type',
+            value: val
+        }));
+
+        divContainer.append($('<label style="margin:5px; color:black">').prop({
+            for: val
+        }).html(capitalize(val)));
+    }
+}
+
+function selectCommentType(row_data, cm) {
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if (row_data != undefined && row_data.hasOwnProperty(val) && val != cm.type) {
+            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
+            $("label[for=" + val + "]").addClass('disabled');
+        }
+    }
+
+    $("input[name=comment_type][value=" + cm.type + "]").prop('checked', true);
+}
+
+function selectNewCommentType(row_data) {
+    var isRegularExist = false;
+    var isRepeatableExist = false;
+
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if (row_data != undefined && row_data.hasOwnProperty(val)) {
+            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
+            $("label[for=" + val + "]").addClass('disabled');
+
+            if (val == 'regular') isRegularExist = true;
+            if (val == 'repeatable') isRepeatableExist = true;
+        }
+    }
+
+    if (!isRegularExist)
+        $("input[name=comment_type][value=regular]").prop('checked', true);
+    else if (!isRepeatableExist)
+        $("input[name=comment_type][value=repeatable]").prop('checked', true);
+
+}
 function createFormSingle(url, addr, funId, comObj, prefix) {
 
     var $form = $('<tr class=\"comForm\">');
@@ -1713,18 +1763,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
     $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
     $divContainer.append($textArea);
 
-    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
-        $divContainer.append($('<input style="color:black">').prop({
-            type: 'radio',
-            id: val,
-            name: 'comment_type',
-            value: val
-        }));
-
-        $divContainer.append($('<label style="margin:5px; color:black">').prop({
-            for: val
-        }).html(capitalize(val)));
-    }
+	appendCommentType($divContainer);
 
     $submitButton = $('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px"/>').html("Submit");
     $divContainer.append($submitButton);
@@ -1757,13 +1796,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                         var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
                         $row.next().append($cmbox);
                     } else {
-                        var $row_data = $row.data('cm');
-
-                        if ($row_data.hasOwnProperty(dataParsed.type)) {
-                            delete $row_data[dataParsed.type];
-                        }
-
-                        $row.data('cm', $row_data);
+						detachComment($row, dataParsed.type)
                     }
                 }
             }
@@ -1850,33 +1883,37 @@ function setUpTextHighlights(trigger, prefix) {
         highlighted.each(function (index, value) {
             let comments = $(value).data('cm');
             if (comments) {
-                for (commentInfo of comments) {
-                    if (!first_comment)
-                        first_comment = commentInfo;
-                    var type = commentInfo.type;
-                    var offset = 0;
-                    var isRepeatable = 0;
-                    if (commentInfo != first_comment) {
-                        offset = parseInt(commentInfo.functionOffset) - parseInt(first_comment.functionOffset);
-                    }
-                    if (type == "repeatable") {
-                        isRepeatable = 1;
-                        type = "regular"
-                    }
+                for (var currentType = all_cm_types.values(), val = null; val = currentType.next().value;) {
+                    if (comments[val]) {
+                        for (commentInfo of comments[val]) {
+                            if (!first_comment)
+                                first_comment = commentInfo;
+                            var type = commentInfo.type;
+                            var offset = 0;
+                            var isRepeatable = 0;
+                            if (commentInfo != first_comment) {
+                                offset = parseInt(commentInfo.functionOffset) - parseInt(first_comment.functionOffset);
+                            }
+                            if (type == "repeatable") {
+                                isRepeatable = 1;
+                                type = "regular"
+                            }
 
-                    if (!dict[type]) {
-                        dict[type] = []
-                    }
+                            if (!dict[type]) {
+                                dict[type] = []
+                            }
 
-                    if (type == "regular") {
-                        var com = commentInfo.comment.replace("\n\n", "\n")
-                        dict[type].push([offset, com, isRepeatable])
-                    } else {
-                        var lines = commentInfo.comment.split("\n\n");
-                        var lineNumber = 0;
-                        for (line of lines) {
-                            dict[type].push([offset, line, lineNumber])
-                            lineNumber++;
+                            if (type == "regular") {
+                                var com = commentInfo.comment.replace("\n\n", "\n")
+                                dict[type].push([offset, com, isRepeatable])
+                            } else {
+                                var lines = commentInfo.comment.split("\n\n");
+                                var lineNumber = 0;
+                                for (line of lines) {
+                                    dict[type].push([offset, line, lineNumber])
+                                    lineNumber++;
+                                }
+                            }
                         }
                     }
                 }
