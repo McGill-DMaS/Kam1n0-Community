@@ -1692,7 +1692,9 @@ function convertToHTML(input_str) {
 }
 
 function createFormSingle(url, addr, funId, comObj, prefix) {
+
     var $form = $('<tr class=\"comForm\">');
+
     if (prefix == 'r-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
@@ -1702,106 +1704,97 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         }
     }
-    $form.append(
-        $('<td colspan=\"2\">').append(
-            $('<div>')
-                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">'))
-                .append($('<input style="color:black">').prop({
-                    type: 'radio',
-                    id: 'anterior',
-                    name: 'comment_type',
-                    value: "anterior"
-                }))
-                .append($('<label style="margin:5px; color:black">').prop({
-                    for: "anterior"
-                }).html("Anterior"))
-                .append($('<input style="color:black">').prop({
-                    type: 'radio',
-                    id: 'posterior',
-                    name: 'comment_type',
-                    value: "posterior"
-                }))
-                .append($('<label style="margin:5px; color:black">').prop({
-                    for: "posterior"
-                }).html("Posterior"))
-                .append($('<input style="color:black">').prop({
-                    type: 'radio',
-                    id: 'regular',
-                    name: 'comment_type',
-                    value: "regular",
-                    checked: "true"
-                }))
-                .append($('<label style="margin:5px; color:black">').prop({
-                    for: "regular"
-                }).html("Regular"))
-                .append($('<input style="color:black">').prop({
-                    type: 'radio',
-                    id: 'repeatable',
-                    name: 'comment_type',
-                    value: "repeatable"
-                }))
-                .append($('<label style="margin:5px; color:black">').prop({
-                    for: "repeatable"
-                }).html("Repeatable"))
-                .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                    var cm = $form.find('textarea').val();
-                    var data = {
-                        functionId: funId,
-                        functionOffset: addr,
-                        date: comObj == null ? "" : comObj.date,
-                        comment: cm,
-                        type: $("input[name=comment_type]:checked").val()
-                    };
-                    $.post(
-                        url,
-                        data,
-                        function (dataParsed) {
-                            if (dataParsed) {
-                                if (dataParsed.error && dataParsed.error.includes('Failed')) {
-                                    alert(dataParsed.error);
-                                    return;
-                                }
-                                dataParsed = dataParsed.result;
 
-                                var $row = $form.prev();
-                                $form.remove();
-                                var $row = $('#' + prefix + dataParsed.functionOffset);
-                                if (dataParsed.comment) {
-                                    var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
-                                    $row.next().append($cmbox);
-                                } else {
-                                    var $row_data = $row.data('cm');
-                                    if ($row_data.hasOwnProperty(dataParsed.type)) {
-                                        delete $row_data[dataParsed.type];
-                                    }
-                                    $row.data('cm', $row_data);
-                                }
-                            }
-                        }
-                    );
-                }).append('submit'))
-                .append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                    if (comObj != null) {
-                        var $row = $form.prev();
-                        createCommentRowSingle(comObj, url, prefix, addr).insertAfter($row);
+    var $formContainer = $('<td colspan=\"2\"/>');
+    var $divContainer = $('<div/>');
+    $form.append($formContainer);
+    $formContainer.append($divContainer);
+
+    $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
+    $divContainer.append($textArea);
+
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        $divContainer.append($('<input style="color:black">').prop({
+            type: 'radio',
+            id: val,
+            name: 'comment_type',
+            value: val
+        }));
+
+        $divContainer.append($('<label style="margin:5px; color:black">').prop({
+            for: val
+        }).html(capitalize(val)));
+    }
+
+    $submitButton = $('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px"/>').html("Submit");
+    $divContainer.append($submitButton);
+
+    $submitButton.on('click', function (event) {
+        var cm = $form.find('textarea').val();
+        var data = {
+            functionId: funId,
+            functionOffset: addr,
+            date: comObj == null ? "" : comObj.date,
+            comment: cm,
+            type: $("input[name=comment_type]:checked").val()
+        };
+
+        $.post(
+            url,
+            data,
+            function (dataParsed) {
+                if (dataParsed) {
+                    if (dataParsed.error && dataParsed.error.includes('Failed')) {
+                        alert(dataParsed.error);
+                        return;
                     }
+                    dataParsed = dataParsed.result;
+
+                    var $row = $form.prev();
                     $form.remove();
-                }).append('close'))
-                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">')
-                .append(useMarkdown == "true" ? 'Markdown Supported' : ''))
-        )
-    );
-    var $editArea = $form.find('textarea');
-    if(comObj != null)
-        $editArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
+                    var $row = $('#' + prefix + dataParsed.functionOffset);
+                    if (dataParsed.comment) {
+                        var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
+                        $row.next().append($cmbox);
+                    } else {
+                        var $row_data = $row.data('cm');
+
+                        if ($row_data.hasOwnProperty(dataParsed.type)) {
+                            delete $row_data[dataParsed.type];
+                        }
+
+                        $row.data('cm', $row_data);
+                    }
+                }
+            }
+        );
+    });
+
+    $divContainer.append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
+        if (comObj != null) {
+            var $row = $form.prev();
+            createCommentRowSingle(comObj, url, prefix, addr).insertAfter($row);
+        }
+        $form.remove();
+    }).append('close'));
+
+    $divContainer.append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">'));
+    $divContainer.append(useMarkdown == "true" ? 'Markdown Supported' : '');
+
+    if (comObj != null)
+        $textArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
     if (useMarkdown == "true")
-        $editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+        $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
     if (prefix == 'l-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
     }
     return $form;
+}
+
+function capitalize(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
 function plotCommentSingle(url, func) {
