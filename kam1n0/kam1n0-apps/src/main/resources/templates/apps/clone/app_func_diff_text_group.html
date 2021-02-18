@@ -953,14 +953,6 @@ textarea {
         $(document).unbind('mousemove');
     });
 
-    $(function() {
-		var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
-
-		if (localStorage) {
-			sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
-		}
-	})
-
 		/*]]>*/
 	</script>
 </div>
