@@ -1487,7 +1487,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
     $('.diff-line-num').hover(
         function () {
-			hoverAdress(this);
+			hoverAddress(this);
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
         }
@@ -1505,7 +1505,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
 }
 
-function hoverAdress(element) {
+function hoverAddress(element) {
     if ($(".comForm")[0]) {
         return;
     }
