@@ -787,9 +787,16 @@ textarea {
     }
 
     function showCommentBox(tspan) {
+        if ($(".comForm")[0]) {
+            return;
+        }
         var $tspan = $(tspan);
         var row = $tspan.parent().parent();
-        if (row!=null && row.next() != null && row.next().hasClass('comForm')){
+
+        if (isAllCommentTypeExist(row))
+            return;
+
+        if (row != null && row.next() != null && row.next().hasClass('comForm')){
             row.next().remove();
         } else {
             var currentLine = $(tspan).parent().text().replace('+', ' ');

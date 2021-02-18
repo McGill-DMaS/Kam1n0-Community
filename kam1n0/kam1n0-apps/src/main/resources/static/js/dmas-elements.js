@@ -1509,6 +1509,12 @@ function hoverAdress(element) {
     if ($(".comForm")[0]) {
         return;
     }
+
+    if (!isAllCommentTypeExist(element))
+        $(element).find('span.commenter').addClass('selected');
+}
+
+function isAllCommentTypeExist(element) {
     var $row = $('#' + $(element).attr('id'));
     var $row_data = $row.data('cm');
 
@@ -1519,7 +1525,9 @@ function hoverAdress(element) {
     }
 
     if ($row_data == undefined || countType < all_cm_types.size)
-        $(element).find('span.commenter').addClass('selected');
+        return false;
+
+    return true;
 }
 
 function initForm(url) {
@@ -1528,6 +1536,9 @@ function initForm(url) {
             return;
         }
         var $rd = $(this).parent();
+        
+		if (isAllCommentTypeExist($rd))
+            return;
         if ($rd.parent().next().hasClass('comForm')) {
             $rd.parent().next().remove();
             return;
@@ -1539,16 +1550,16 @@ function initForm(url) {
     });
 }
 
-all_cm_types = new Set(['anterior', 'posterior', 'regular', 'repeatable']);
+all_cm_types = new Set(['regular', 'repeatable', 'anterior', 'posterior']); // order is important, set the default in UI
 
-function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
+function plotCommentsWithPrefix(url, fun, prefix) {
     $.get(url, {
         fid: fun.functionId
     }, function (data) {
         $.each(data, function (ind, ent) {
             var $row = $('#' + prefix + ent.functionOffset);
 
-            if (!type_filters.has(ent.type))
+            if (!all_cm_types.has(ent.type))
                 return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
             if (ent.type === 'anterior')
@@ -1726,25 +1737,19 @@ function selectCommentType(row_data, cm) {
 }
 
 function selectNewCommentType(row_data) {
-    var isRegularExist = false;
-    var isRepeatableExist = false;
+    var isChecked = false;
 
     for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
         if (row_data != undefined && row_data.hasOwnProperty(val)) {
             $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
             $("label[for=" + val + "]").addClass('disabled');
-
-            if (val == 'regular') isRegularExist = true;
-            if (val == 'repeatable') isRepeatableExist = true;
+        } else if (!isChecked) {
+            $("input[name=comment_type][value=" + val + "]").prop('checked', true);
+            isChecked = true;
         }
     }
-
-    if (!isRegularExist)
-        $("input[name=comment_type][value=regular]").prop('checked', true);
-    else if (!isRepeatableExist)
-        $("input[name=comment_type][value=repeatable]").prop('checked', true);
-
 }
+
 function createFormSingle(url, addr, funId, comObj, prefix) {
 
     var $form = $('<tr class=\"comForm\">');
