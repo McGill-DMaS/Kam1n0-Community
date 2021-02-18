@@ -175,32 +175,29 @@ textarea {
 	                        )
 	                );
 	            } else {
-	              $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
-                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
-                        )
-                );
+	                $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+                        $('<span class="o">').append(parts.slice(1, parts.length).join(' '))));
 	            }
-                $newRow.hover(
-                        function () {
-                            $(this).find('span.commenter').addClass('selected');
-                        }, function () {
-                            $(this).find('span.commenter').removeClass('selected');
-                        }
-                );
                 tblb.append($newRow);
             }
             $holder.append(tbl);
             tbl.data('top', tbl.position().top);
         }
 
+        $('.diff-line-num').hover(
+            function () {
+                hoverAdress(this.parentNode);
+            }, function () {
+                $(this).find('span.commenter').removeClass('selected');
+            }
+        );
     }
 
     function drawCommentForTable($left, $right){
-        var both = [$left, $right];
         var cms = {};
         var cm_left = $left.data('comments');
         var cm_right = $right.data('comments');
-        if(cm_left != null) {
+        if (cm_left != null) {
             for (var i = 0; i < cm_left.length; ++i) {
                 var $row = $('tr#' + cm_left[i][0]);
                 if (not_selected.has(cm_left[i][1].type))
@@ -212,7 +209,7 @@ textarea {
                 cms[$row.index()][0].push($cmr);
             }
         }
-        if(cm_right != null) {
+        if (cm_right != null) {
             for (var i = 0; i < cm_right.length; ++i) {
                 var $row = $('tr#' + cm_right[i][0]);
                 if (not_selected.has(cm_right[i][1].type))
@@ -311,9 +308,7 @@ textarea {
                 ulip.append($li);
                 $li.data('clone', cloneSet[j]);
 
-
                 var block_left, block_right;
-
 
                 $li.click(function (ev) {
 
@@ -429,13 +424,6 @@ textarea {
 	                                                $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
 	                                        ))
                                 }
-                                $newRowLeft.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
                                 cache.push([$newRowLeft]);
                                 addr_ind_a++;
                                 if (index == -1)
@@ -459,13 +447,6 @@ textarea {
 	                                            )
 	                                    );
                                     }
-                                    $newRowRight.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     addr_ind_b++;
                                     cache[index].push($newRowRight);
                                     index++;
@@ -495,21 +476,7 @@ textarea {
 	                                            )
 	                                    );
                                     }
-                                    $newRowLeft.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     tbl_left.append($newRowLeft);
-                                    $newRowRight.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     tbl_right.append($newRowRight);
                                 }
                             } else {
@@ -529,7 +496,7 @@ textarea {
                                 var $newRowLeft = $('<tr id=\'' + addr_a[addr_ind_a]+ '\'>');
                                 var parts = line.split(' ');
                                 $newRowLeft.append($('<td class=\'diff-line-num\'>').append(addr_a[addr_ind_a++]).append($('<span class=\'commenter\'>').append('+')));
-                                if(!a_isVex){
+                                if (!a_isVex){
 	                                $newRowLeft.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
 	                                                $('<span class="m">').append(parts[0])
 	                                        ).append(' ').append(
@@ -543,7 +510,7 @@ textarea {
 	                                );
                                 }
                                 $newRowRight.append($('<td class=\'diff-line-num\'>').append(addr_b[addr_ind_b++]).append($('<span class=\'commenter\'>').append('+')));
-                                if(!b_isVex){
+                                if (!b_isVex){
 	                                $newRowRight.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
 	                                                $('<span class="m">').append(parts[0])
 	                                        ).append(' ').append(
@@ -556,23 +523,9 @@ textarea {
 	                                        )
 	                                );
                                 }
-                                $newRowLeft.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
-                                tbl_left.append($newRowLeft);
-                                $newRowRight.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
-                                tbl_right.append($newRowRight);
 
+                                tbl_left.append($newRowLeft);
+                                tbl_right.append($newRowRight);
                             }
                         }
                     }// end of for each diff
@@ -611,6 +564,13 @@ textarea {
 
         holder.append(divlist);
 
+        $('.diff-line-num').hover(
+            function () {
+                hoverAdress(this.parentNode);
+            }, function () {
+                $(this).find('span.commenter').removeClass('selected');
+            }
+        );
 
         $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
         $('.tree li.parent_li > span').on('click', function (e) {
@@ -624,49 +584,6 @@ textarea {
             }
             e.stopPropagation();
         });
-    }
-
-    function OLDattachComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            map = [];
-            $table.data('comments',map);
-        }
-        map.push([comment.functionOffset, comment]);
-    }
-
-    function updateComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            return;
-        }
-        var indexToRemove = -1;
-        $.each(map, function(ind, ent){
-            if(ent[0] == comment.functionOffset){
-                if(ent[1].functionId == comment.functionId &&
-                        ent[1].date == comment.date) {
-                    ent[1] = comment;
-                }
-            }
-        });
-    }
-
-    function removeComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            return;
-        }
-        var indexToRemove = -1;
-        $.each(map, function(ind, ent){
-            if(ent[0] == comment.functionOffset){
-                if(ent[1].functionId == comment.functionId &&
-                ent[1].date == comment.date) {
-                    indexToRemove = ind;
-                }
-            }
-        });
-        if(indexToRemove!=-1)
-            map.splice(indexToRemove , 1);
     }
 
     // create comment form:
@@ -713,13 +630,14 @@ textarea {
 
                         var $row = $form.prev();
                         $form.remove();
-                        createCommentRow(dataParsed).insertAfter($row);
-                        var tbl = $row.parent().parent();
-                        if (comObj == null)
-                            OLDattachComment(tbl, dataParsed);
-                        else
-                            updateComment(tbl, dataParsed);
-
+                        
+                        if (dataParsed.comment) {
+                            attachComment($row, dataParsed);
+                            createCommentRow(dataParsed).insertAfter($row);
+                        } else {
+                            detachComment($row, dataParsed.type)
+                        }
+												 
                         // find prev row that has line number (not comment row)
                         var $lineNumberRow = $row;
                         while ($lineNumberRow != null &&
@@ -781,6 +699,7 @@ textarea {
             	useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         	}
     	}
+		var $row = $('#' + cm.functionOffset);
         var $tr = $('<tr class=\"cmrow\">').append(
                 $('<td colspan=\"2\">')
                         .append($('<span class=\"pull-right delete\">')
@@ -792,7 +711,7 @@ textarea {
                                     	functionOffset: cm.functionOffset,
                                     	date: cm.date,
                                         comment: "",
-                                        type: 'regular'
+                                        type: cm.type
                                     };
                                     $.post(
                                     	/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
@@ -802,9 +721,9 @@ textarea {
                                     			dmas_alert(data.error);
                                     			return;
                                     		}
+											detachComment($row, data.result.type);
                                             var $lineNumberRow = $sp.parent().parent().prev();
-                                            while($lineNumberRow != null &&
-                                            $lineNumberRow.find('td.diff-line-num').length == 0){
+                                            while ($lineNumberRow != null && $lineNumberRow.find('td.diff-line-num').length == 0){
                                                 $lineNumberRow = $lineNumberRow.prev();
                                             }
                                             if($lineNumberRow == null)
@@ -821,7 +740,6 @@ textarea {
                                                 var $opositeElement = $opositeContainer.find('td.selected:eq(' + $sp.parent().parent().index() + ')');
                                                 $opositeElement.parent().remove();
                                             }
-                                            removeComment($sp.parent().parent().parent().parent(), cm);
                                             $sp.parent().parent().remove();
                                         }
                                     );
@@ -844,6 +762,7 @@ textarea {
                                     var $form = createForm(currentLine, currentFun, cm).insertAfter($crow.prev());
                                     $form.find("textarea").focus();
                                     $crow.remove();
+									selectCommentType($lineNumberRow.data('cm'), cm);
                                 })
                 )
                         .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
@@ -876,6 +795,7 @@ textarea {
             var currentLine = $(tspan).parent().text().replace('+', ' ');
             var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionId;
             var $form = createForm(currentLine, currentFun).insertAfter(row);
+			selectNewCommentType(row.data('cm'));
             $form.find('textarea').focus();
         }
     }
@@ -887,11 +807,10 @@ textarea {
     		$.each(data, function(ind, ent){
     			if(ent.functionOffset.length < 1)
     				return;
-                var $row = $holder.find('tr#'+ent.functionOffset);
+                var $row = $holder.find('tr#' + ent.functionOffset);
                 var $cmbox = createCommentRow(ent);
                 $cmbox.insertAfter($row);
-                var $tbl = $row.parent().parent();
-                OLDattachComment($tbl, ent);
+                attachComment($row, ent);
             });
     	});
     }

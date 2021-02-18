@@ -1487,20 +1487,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
     $('.diff-line-num').hover(
         function () {
-            if ($(".comForm")[0]) {
-                return;
-            }
-            var $row = $('#' + $(this).attr('id'));
-            var $row_data = $row.data('cm');
-
-            var countType = 0;
-            for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
-                if ($row_data != undefined && $row_data.hasOwnProperty(val))
-                    countType++;
-            }
-
-            if ($row_data == undefined || countType < all_cm_types.size)
-                $(this).find('span.commenter').addClass('selected');
+			hoverAdress(this);
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
         }
@@ -1516,6 +1503,23 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
         cache = [];
         index = -1;
     }
+}
+
+function hoverAdress(element) {
+    if ($(".comForm")[0]) {
+        return;
+    }
+    var $row = $('#' + $(element).attr('id'));
+    var $row_data = $row.data('cm');
+
+    var countType = 0;
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if ($row_data != undefined && $row_data.hasOwnProperty(val))
+            countType++;
+    }
+
+    if ($row_data == undefined || countType < all_cm_types.size)
+        $(element).find('span.commenter').addClass('selected');
 }
 
 function initForm(url) {
