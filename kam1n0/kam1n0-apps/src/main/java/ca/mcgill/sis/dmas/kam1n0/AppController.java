@@ -230,7 +230,7 @@ public class AppController {
 					createAppList(), userController.createProgressList(), userController.createFileList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			return MVCUtils.errorMV("Failed to create home page with applications list. ");
 		}
 	}
 
@@ -242,7 +242,8 @@ public class AppController {
 					"Job details can also be found on your user home page.", userController.createProgressList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			logger.error("Failed to create userProgress. ", e);
+			return MVCUtils.errorMV("Failed to create home page with job progess. ");
 		}
 	}
 
@@ -253,8 +254,8 @@ public class AppController {
 			return MVCUtils.wrapAuthenticatedHomePage("File Details",
 					"File details can also be found under your user home page.", userController.createFileList());
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			logger.error("Failed to create userFiles. ", e);
+			return MVCUtils.errorMV("Failed to create home page with file details. ");
 		}
 	}
 
@@ -273,7 +274,7 @@ public class AppController {
 				return ImmutableMap.of("error", "Not found.");
 			return ImmutableMap.of("progress", progress.toWrapper(inds, -1));
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
+			logger.error("Failed to create JobProgress. ", e);
 			return ImmutableMap.of("error", "Failed to get job progress. Internal error.");
 		}
 	}

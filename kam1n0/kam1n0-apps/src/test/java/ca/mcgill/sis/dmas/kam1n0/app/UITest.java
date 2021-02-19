@@ -43,7 +43,7 @@ public class UITest {
 		options.setExperimentalOption("useAutomationExtension", false);
 		driver = new ChromeDriver(options);
 
-		Thread.sleep(1000 * 30); // sleep for 30 seconds (take a rest). Can be different on other computer.
+		Thread.sleep(1000 * 40); // sleep for 40 seconds (take a rest). Can be different on other computer.
 
 		register();
 		login();
@@ -215,7 +215,7 @@ public class UITest {
 		driver.get(userHomeURL);
 		assertTrue(driver.getCurrentUrl().endsWith("/userHome"));
 
-		WebElement element =  driver.findElement(By.id("filename-change")); //driver.findElementByCssSelector(".href-file-open");
+		WebElement element =  driver.findElementByCssSelector(".href-file-open");
 		element.click();
 		HashSet<String> handlers = new HashSet<>(driver.getWindowHandles());
 		assertTrue(handlers.size() == 2);
