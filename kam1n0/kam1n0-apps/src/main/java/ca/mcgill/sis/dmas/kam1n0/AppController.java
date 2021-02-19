@@ -241,7 +241,6 @@ public class AppController {
 			return MVCUtils.wrapAuthenticatedHomePage("Job Details",
 					"Job details can also be found on your user home page.", userController.createProgressList());
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
 			logger.error("Failed to create userProgress. ", e);
 			return MVCUtils.errorMV("Failed to create home page with job progess. ");
 		}
