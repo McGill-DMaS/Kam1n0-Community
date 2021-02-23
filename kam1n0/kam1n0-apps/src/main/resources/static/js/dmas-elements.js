@@ -1579,6 +1579,15 @@ function attachComment(row, cm) {
     if ($row_data == null) {
         $row_data = {}
     }
+
+    for (type in $row_data) {
+        for (currentComment of $row_data[type]) {
+            if (currentComment.date == cm.date.toString()) {
+                delete $row_data[type];
+                break;
+            }
+        }
+    }
     $row_data[cm.type] = [cm];
     row.data('cm', $row_data);
 }

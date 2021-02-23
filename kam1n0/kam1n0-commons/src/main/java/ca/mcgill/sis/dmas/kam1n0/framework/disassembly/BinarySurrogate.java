@@ -69,7 +69,7 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 	public Architecture architecture = new Architecture();
 
 	private static ObjectMapper mapper = new ObjectMapper();
-
+	private long currentFuncDate;
 	@Override
 	public int hashCode() {
 		return Long.hashCode(hash);
@@ -149,10 +149,16 @@ public class BinarySurrogate implements Iterable<FunctionSurrogate> {
 		});
 
 		ofunc.numBlocks = ofunc.blocks.size();
+		currentFuncDate = new Date().getTime();
 		ofunc.comments = func.comments.stream().map(cmm -> {
-			return new Comment(func.id, cmm.comment, cmm.type, new Date().getTime(), "user_ida", cmm.offset);
+			return new Comment(func.id, cmm.comment, cmm.type, getCurrentFuncDate(), "user_ida", cmm.offset);
 		}).collect(Collectors.toList());
 		return ofunc;
+	}
+
+	public long getCurrentFuncDate()
+	{
+		return currentFuncDate--;
 	}
 
 	public List<Function> toFunctions() {
