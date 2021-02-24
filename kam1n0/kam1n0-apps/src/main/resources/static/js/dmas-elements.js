@@ -1510,10 +1510,23 @@ function hoverAddress(element) {
         return;
     }
 
-    if (!isAllCommentTypeExist(element))
+    if (!isAllCommentTypeExist(element) && isFunctionInDatabase(element)) {
+        $(element).addClass('pointerCursor');
+        $(element).find('span.commenter').addClass('pointerCursor');
         $(element).find('span.commenter').addClass('selected');
+    }
 }
 
+function isFunctionInDatabase(element) {
+
+    if ($(element).attr('id').slice(0, 2) == 'r-' && right_function_in_database)
+        return true;
+
+    if ($(element).attr('id').slice(0, 2) == 'l-' && left_function_in_database)
+        return true;
+
+    return false;
+}
 function isAllCommentTypeExist(element) {
     var $row = $('#' + $(element).attr('id'));
     var $row_data = $row.data('cm');
@@ -1537,7 +1550,7 @@ function initForm(url) {
         }
         var $rd = $(this).parent();
         
-		if (isAllCommentTypeExist($rd))
+        if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
             return;
         if ($rd.parent().next().hasClass('comForm')) {
             $rd.parent().next().remove();
@@ -1551,8 +1564,17 @@ function initForm(url) {
 }
 
 all_cm_types = new Set(['regular', 'repeatable', 'anterior', 'posterior']); // order is important, set the default in UI
+right_function_in_database = undefined;
+left_function_in_database = undefined;									   
 
 function plotCommentsWithPrefix(url, fun, prefix) {
+
+    if (!right_function_in_database && prefix == "r-")
+        right_function_in_database = fun.functionInDatabase;
+
+    if (!left_function_in_database && prefix == "l-")
+        left_function_in_database = fun.functionInDatabase;
+		
     $.get(url, {
         fid: fun.functionId
     }, function (data) {

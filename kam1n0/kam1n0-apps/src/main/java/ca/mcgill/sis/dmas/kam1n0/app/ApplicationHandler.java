@@ -133,7 +133,7 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final List<FunctionDataUnit> getFunctionInfos(@PathVariable("appId") long appId,
 			@RequestParam("id") long binaryId) {
-		return this.meta.getFunctions(appId, binaryId).stream().map(func -> new FunctionDataUnit(func, true))
+		return this.meta.getFunctions(appId, binaryId).stream().map(func -> new FunctionDataUnit(func, true, true))
 				.collect(Collectors.toList());
 	}
 
