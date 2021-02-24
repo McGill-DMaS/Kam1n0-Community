@@ -1487,10 +1487,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
     $('.diff-line-num').hover(
         function () {
-            var $row = $('#' + $(this).attr('id'));
-            var $row_data = $row.data('cm');
-            if ($row_data == undefined)
-                $(this).find('span.commenter').addClass('selected');
+			hoverAddress(this);
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
         }
@@ -1508,29 +1505,61 @@ function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, nor
     }
 }
 
+function hoverAddress(element) {
+    if ($(".comForm")[0]) {
+        return;
+    }
+
+    if (!isAllCommentTypeExist(element))
+        $(element).find('span.commenter').addClass('selected');
+}
+
+function isAllCommentTypeExist(element) {
+    var $row = $('#' + $(element).attr('id'));
+    var $row_data = $row.data('cm');
+
+    var countType = 0;
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if ($row_data != undefined && $row_data.hasOwnProperty(val))
+            countType++;
+    }
+
+    if ($row_data == undefined || countType < all_cm_types.size)
+        return false;
+
+    return true;
+}
+
 function initForm(url) {
     $('span.commenter').click(function () {
+	    if ($(".comForm")[0]) {
+            return;
+        }
         var $rd = $(this).parent();
+        
+		if (isAllCommentTypeExist($rd))
+            return;
         if ($rd.parent().next().hasClass('comForm')) {
             $rd.parent().next().remove();
             return;
         }
         var $form = createFormSingle(url, $rd.text().replace('+', ''), $rd.data('func').functionId, null, $rd.data('prefix'))
         $form.insertAfter($rd.parent());
+        selectNewCommentType($rd.data('cm'));
         $form.find('textarea').focus();
     });
 }
 
-all_cm_types = new Set(['anterior', 'posterior', 'regular', 'repeatable']);
+all_cm_types = new Set(['regular', 'repeatable', 'anterior', 'posterior']); // order is important, set the default in UI
 
-function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
+function plotCommentsWithPrefix(url, fun, prefix) {
     $.get(url, {
         fid: fun.functionId
     }, function (data) {
         $.each(data, function (ind, ent) {
             var $row = $('#' + prefix + ent.functionOffset);
 
-            if (!type_filters.has(ent.type))
+            if (!all_cm_types.has(ent.type))
                 return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
             if (ent.type === 'anterior')
@@ -1545,6 +1574,31 @@ function plotCommentsWithPrefix(url, fun, prefix, type_filters = all_cm_types) {
     });
 }
 
+function attachComment(row, cm) {
+    var $row_data = row.data('cm');
+    if ($row_data == null) {
+        $row_data = {}
+    }
+
+    for (type in $row_data) {
+        for (currentComment of $row_data[type]) {
+            if (currentComment.date == cm.date.toString()) {
+                delete $row_data[type];
+                break;
+            }
+        }
+    }
+    $row_data[cm.type] = [cm];
+    row.data('cm', $row_data);
+}
+
+function detachComment(row, type) {
+    var $row_data = row.data('cm');
+
+    if ($row_data && $row_data.hasOwnProperty(type)) {
+        delete $row_data[type];
+    }
+}
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {
@@ -1554,9 +1608,8 @@ function createCommentRowSingle(cm, url, prefix) {
     }
 
     var $row = $('#' + prefix + cm.functionOffset);
-    var $row_data = $row.data('cm');
-    $row_data = [cm];
-    $row.data('cm', $row_data);
+    attachComment($row, cm);
+	
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
     if (typeof send_msg != 'undefined' && prefix == 'r-')
@@ -1576,7 +1629,8 @@ function createCommentRowSingle(cm, url, prefix) {
                         functionId: cm.functionId,
                         functionOffset: cm.functionOffset,
                         date: cm.date,
-                        comment: ""
+                        comment: "",
+                        type: cm.type
                     };
                     $.post(url,
                         data,
@@ -1586,7 +1640,7 @@ function createCommentRowSingle(cm, url, prefix) {
                                 return;
                             }
                             $sp.parent().parent().remove();
-                            $row.data('cm', null);
+                            detachComment($row, data.result.type);
                         }
                     );
                 })
@@ -1594,12 +1648,19 @@ function createCommentRowSingle(cm, url, prefix) {
             .append($('<span class=\"pull-right delete\">')
                 .append($('<i class=\"fa fa-edit\">'))
                 .click(function () {
+                    if ($(".comForm")[0]) {
+                        return;
+                    }
                     var $btn = $(this);
                     var $crow = $btn.parent().parent();
                     $form = createFormSingle(url, cm.functionOffset, cm.functionId, cm, prefix);
                     $form.insertAfter($crow);
                     $form.find('textarea').focus();
                     $crow.remove();
+
+                    var $row = $('#' + prefix + cm.functionOffset);
+					selectCommentType($row.data('cm'), cm);
+					$form.find('textarea').focus();							   
                 })
             )
             .append(!interaction ? $('') : $('<span class=\"pull-right delete\">')
@@ -1658,8 +1719,50 @@ function convertToHTML(input_str) {
     return output_html;
 }
 
+function appendCommentType(divContainer) {
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        divContainer.append($('<input style="color:black">').prop({
+            type: 'radio',
+            id: val,
+            name: 'comment_type',
+            value: val
+        }));
+
+        divContainer.append($('<label style="margin:5px; color:black">').prop({
+            for: val
+        }).html(capitalize(val)));
+    }
+}
+
+function selectCommentType(row_data, cm) {
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if (row_data != undefined && row_data.hasOwnProperty(val) && val != cm.type) {
+            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
+            $("label[for=" + val + "]").addClass('disabled');
+        }
+    }
+
+    $("input[name=comment_type][value=" + cm.type + "]").prop('checked', true);
+}
+
+function selectNewCommentType(row_data) {
+    var isChecked = false;
+
+    for (var type = all_cm_types.values(), val = null; val = type.next().value;) {
+        if (row_data != undefined && row_data.hasOwnProperty(val)) {
+            $("input[name=comment_type][value=" + val + "]").prop('disabled', true);
+            $("label[for=" + val + "]").addClass('disabled');
+        } else if (!isChecked) {
+            $("input[name=comment_type][value=" + val + "]").prop('checked', true);
+            isChecked = true;
+        }
+    }
+}
+
 function createFormSingle(url, addr, funId, comObj, prefix) {
+
     var $form = $('<tr class=\"comForm\">');
+
     if (prefix == 'r-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
@@ -1669,60 +1772,80 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         }
     }
-    $form.append(
-        $('<td colspan=\"2\">').append(
-            $('<div>')
-                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">'))
-                .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                    var cm = $form.find('textarea').val();
-                    var data = {
-                        functionId: funId,
-                        functionOffset: addr,
-                        date: comObj == null ? "" : comObj.date,
-                        comment: cm
-                    };
-                    $.post(
-                        url,
-                        data,
-                        function (dataParsed) {
-                            if (dataParsed) {
-                                if (dataParsed.error && dataParsed.error.includes('Failed')) {
-                                    alert(dataParsed.error);
-                                    return;
-                                }
-                                dataParsed = dataParsed.result;
 
-                                var $row = $form.prev();
-                                $form.remove();
-                                var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
-                                var $row = $('#' + prefix + dataParsed.functionOffset);
-                                $row.next().append($cmbox);				   
-                            }
-                        }
-                    );
-                }).append('submit'))
-                .append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                    if (comObj != null) {
-                        var $row = $form.prev();
-                        createCommentRowSingle(comObj, url, prefix, addr).insertAfter($row);
+    var $formContainer = $('<td colspan=\"2\"/>');
+    var $divContainer = $('<div/>');
+    $form.append($formContainer);
+    $formContainer.append($divContainer);
+
+    $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
+    $divContainer.append($textArea);
+
+	appendCommentType($divContainer);
+
+    $submitButton = $('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px"/>').html("Submit");
+    $divContainer.append($submitButton);
+
+    $submitButton.on('click', function (event) {
+        var cm = $form.find('textarea').val();
+        var data = {
+            functionId: funId,
+            functionOffset: addr,
+            date: comObj == null ? "" : comObj.date,
+            comment: cm,
+            type: $("input[name=comment_type]:checked").val()
+        };
+
+        $.post(
+            url,
+            data,
+            function (dataParsed) {
+                if (dataParsed) {
+                    if (dataParsed.error && dataParsed.error.includes('Failed')) {
+                        alert(dataParsed.error);
+                        return;
                     }
+                    dataParsed = dataParsed.result;
+
+                    var $row = $form.prev();
                     $form.remove();
-                }).append('close'))
-                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">')
-                .append(useMarkdown == "true" ? 'Markdown Supported' : ''))
-        )
-    );
-    var $editArea = $form.find('textarea');
-    if(comObj != null)
-        $editArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
+                    var $row = $('#' + prefix + dataParsed.functionOffset);
+                    if (dataParsed.comment) {
+                        var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
+                        $row.next().append($cmbox);
+                    } else {
+						detachComment($row, dataParsed.type)
+                    }
+                }
+            }
+        );
+    });
+
+    $divContainer.append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
+        if (comObj != null) {
+            var $row = $form.prev();
+            createCommentRowSingle(comObj, url, prefix, addr).insertAfter($row);
+        }
+        $form.remove();
+    }).append('close'));
+
+    $divContainer.append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">'));
+    $divContainer.append(useMarkdown == "true" ? 'Markdown Supported' : '');
+
+    if (comObj != null)
+        $textArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
     if (useMarkdown == "true")
-        $editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+        $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
     if (prefix == 'l-') {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
     }
     return $form;
+}
+
+function capitalize(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
 function plotCommentSingle(url, func) {
@@ -1778,33 +1901,37 @@ function setUpTextHighlights(trigger, prefix) {
         highlighted.each(function (index, value) {
             let comments = $(value).data('cm');
             if (comments) {
-                for (commentInfo of comments) {
-                    if (!first_comment)
-                        first_comment = commentInfo;
-                    var type = commentInfo.type;
-                    var offset = 0;
-                    var isRepeatable = 0;
-                    if (commentInfo != first_comment) {
-                        offset = parseInt(commentInfo.functionOffset) - parseInt(first_comment.functionOffset);
-                    }
-                    if (type == "repeatable") {
-                        isRepeatable = 1;
-                        type = "regular"
-                    }
+                for (var currentType = all_cm_types.values(), val = null; val = currentType.next().value;) {
+                    if (comments[val]) {
+                        for (commentInfo of comments[val]) {
+                            if (!first_comment)
+                                first_comment = commentInfo;
+                            var type = commentInfo.type;
+                            var offset = 0;
+                            var isRepeatable = 0;
+                            if (commentInfo != first_comment) {
+                                offset = parseInt(commentInfo.functionOffset) - parseInt(first_comment.functionOffset);
+                            }
+                            if (type == "repeatable") {
+                                isRepeatable = 1;
+                                type = "regular"
+                            }
 
-                    if (!dict[type]) {
-                        dict[type] = []
-                    }
+                            if (!dict[type]) {
+                                dict[type] = []
+                            }
 
-                    if (type == "regular") {
-                        var com = commentInfo.comment.replace("\n\n", "\n")
-                        dict[type].push([offset, com, isRepeatable])
-                    } else {
-                        var lines = commentInfo.comment.split("\n\n");
-                        var lineNumber = 0;
-                        for (line of lines) {
-                            dict[type].push([offset, line, lineNumber])
-                            lineNumber++;
+                            if (type == "regular") {
+                                var com = commentInfo.comment.replace("\n\n", "\n")
+                                dict[type].push([offset, com, isRepeatable])
+                            } else {
+                                var lines = commentInfo.comment.split("\n\n");
+                                var lineNumber = 0;
+                                for (line of lines) {
+                                    dict[type].push([offset, line, lineNumber])
+                                    lineNumber++;
+                                }
+                            }
                         }
                     }
                 }

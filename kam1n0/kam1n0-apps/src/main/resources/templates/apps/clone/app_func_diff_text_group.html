@@ -175,32 +175,29 @@ textarea {
 	                        )
 	                );
 	            } else {
-	              $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
-                                $('<span class="o">').append(parts.slice(1, parts.length).join(' '))
-                        )
-                );
+	                $newRow.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
+                        $('<span class="o">').append(parts.slice(1, parts.length).join(' '))));
 	            }
-                $newRow.hover(
-                        function () {
-                            $(this).find('span.commenter').addClass('selected');
-                        }, function () {
-                            $(this).find('span.commenter').removeClass('selected');
-                        }
-                );
                 tblb.append($newRow);
             }
             $holder.append(tbl);
             tbl.data('top', tbl.position().top);
         }
 
+        $('.diff-line-num').hover(
+            function () {
+                hoverAddress(this.parentNode);
+            }, function () {
+                $(this).find('span.commenter').removeClass('selected');
+            }
+        );
     }
 
     function drawCommentForTable($left, $right){
-        var both = [$left, $right];
         var cms = {};
         var cm_left = $left.data('comments');
         var cm_right = $right.data('comments');
-        if(cm_left != null) {
+        if (cm_left != null) {
             for (var i = 0; i < cm_left.length; ++i) {
                 var $row = $('tr#' + cm_left[i][0]);
                 if (not_selected.has(cm_left[i][1].type))
@@ -212,7 +209,7 @@ textarea {
                 cms[$row.index()][0].push($cmr);
             }
         }
-        if(cm_right != null) {
+        if (cm_right != null) {
             for (var i = 0; i < cm_right.length; ++i) {
                 var $row = $('tr#' + cm_right[i][0]);
                 if (not_selected.has(cm_right[i][1].type))
@@ -311,9 +308,7 @@ textarea {
                 ulip.append($li);
                 $li.data('clone', cloneSet[j]);
 
-
                 var block_left, block_right;
-
 
                 $li.click(function (ev) {
 
@@ -429,13 +424,6 @@ textarea {
 	                                                $('<span class="o">').append(parts.slice(0, parts.length).join(' '))
 	                                        ))
                                 }
-                                $newRowLeft.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
                                 cache.push([$newRowLeft]);
                                 addr_ind_a++;
                                 if (index == -1)
@@ -459,13 +447,6 @@ textarea {
 	                                            )
 	                                    );
                                     }
-                                    $newRowRight.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     addr_ind_b++;
                                     cache[index].push($newRowRight);
                                     index++;
@@ -495,21 +476,7 @@ textarea {
 	                                            )
 	                                    );
                                     }
-                                    $newRowLeft.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     tbl_left.append($newRowLeft);
-                                    $newRowRight.hover(
-                                            function () {
-                                                $(this).find('span.commenter').addClass('selected');
-                                            }, function () {
-                                                $(this).find('span.commenter').removeClass('selected');
-                                            }
-                                    );
                                     tbl_right.append($newRowRight);
                                 }
                             } else {
@@ -529,7 +496,7 @@ textarea {
                                 var $newRowLeft = $('<tr id=\'' + addr_a[addr_ind_a]+ '\'>');
                                 var parts = line.split(' ');
                                 $newRowLeft.append($('<td class=\'diff-line-num\'>').append(addr_a[addr_ind_a++]).append($('<span class=\'commenter\'>').append('+')));
-                                if(!a_isVex){
+                                if (!a_isVex){
 	                                $newRowLeft.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
 	                                                $('<span class="m">').append(parts[0])
 	                                        ).append(' ').append(
@@ -543,7 +510,7 @@ textarea {
 	                                );
                                 }
                                 $newRowRight.append($('<td class=\'diff-line-num\'>').append(addr_b[addr_ind_b++]).append($('<span class=\'commenter\'>').append('+')));
-                                if(!b_isVex){
+                                if (!b_isVex){
 	                                $newRowRight.append($('<td class=\'diff-line-content\'>').append('&nbsp;').append(
 	                                                $('<span class="m">').append(parts[0])
 	                                        ).append(' ').append(
@@ -556,23 +523,9 @@ textarea {
 	                                        )
 	                                );
                                 }
-                                $newRowLeft.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
-                                tbl_left.append($newRowLeft);
-                                $newRowRight.hover(
-                                        function () {
-                                            $(this).find('span.commenter').addClass('selected');
-                                        }, function () {
-                                            $(this).find('span.commenter').removeClass('selected');
-                                        }
-                                );
-                                tbl_right.append($newRowRight);
 
+                                tbl_left.append($newRowLeft);
+                                tbl_right.append($newRowRight);
                             }
                         }
                     }// end of for each diff
@@ -611,6 +564,13 @@ textarea {
 
         holder.append(divlist);
 
+        $('.diff-line-num').hover(
+            function () {
+                hoverAddress(this.parentNode);
+            }, function () {
+                $(this).find('span.commenter').removeClass('selected');
+            }
+        );
 
         $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
         $('.tree li.parent_li > span').on('click', function (e) {
@@ -626,145 +586,109 @@ textarea {
         });
     }
 
-    function attachComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            map = [];
-            $table.data('comments',map);
-        }
-        map.push([comment.functionOffset, comment]);
-    }
-
-    function updateComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            return;
-        }
-        var indexToRemove = -1;
-        $.each(map, function(ind, ent){
-            if(ent[0] == comment.functionOffset){
-                if(ent[1].functionId == comment.functionId &&
-                        ent[1].date == comment.date) {
-                    ent[1] = comment;
-                }
-            }
-        });
-    }
-
-    function removeComment($table, comment){
-        var map = $table.data('comments');
-        if(map == null){
-            return;
-        }
-        var indexToRemove = -1;
-        $.each(map, function(ind, ent){
-            if(ent[0] == comment.functionOffset){
-                if(ent[1].functionId == comment.functionId &&
-                ent[1].date == comment.date) {
-                    indexToRemove = ind;
-                }
-            }
-        });
-        if(indexToRemove!=-1)
-            map.splice(indexToRemove , 1);
-    }
-
     // create comment form:
-    function createForm($rowBeforeInsert, currentLine, currentFun, comObj) {
+    function createForm(currentLine, currentFun, comObj) {
         if (typeof useMarkdown == "undefined") {
         	if (sessionStorage) {
             	useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         	}
-    	}
-        var $form = $('<tr class=\"comForm\">').append(
-                $('<td colspan=\"2\">').append(
-                        $('<div>')
-                                .append($('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"line-height:14px\">'))
-                                .append($('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                                    var cm = $form.find('textarea').val();
-                                    var data = {
-                                    		functionId: currentFun,
-                                    		functionOffset: currentLine,
-                                    		date: comObj == null ? "" : comObj.date,
-                                    		comment:cm};
-                                    $.post(
-                                    		/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
-                                            data,
-                                        function (dataParsed) {
-                                            if (dataParsed) {
-                                            	
-                                            	if(dataParsed.error && dataParsed.error.indexOf('Failed') > -1){
-                                            		dmas_alert(dataParsed.error);
-                                            		return;
-                                            	}else if(dataParsed.error){
-                                            		// index new func;
-                                            		if (confirm('Failed to persist this comment. This function is not indexed in the database. Do you want to index it now?')) {
-                                                    	external.IndexFunc(currentFun, function(msg){dmas_alert(msg)});
-                                               		}
-                                            	}
-                                            	dataParsed = dataParsed.result;
-                                            	
-                                                var $row = $form.prev();
-                                                $form.remove();
-                                                createCommentRow(dataParsed).insertAfter($row);
-                                                var tbl = $row.parent().parent();
-                                                if(comObj==null)
-                                                    attachComment(tbl, dataParsed);
-                                                else
-                                                    updateComment(tbl, dataParsed);
+        }
+        var $form = $('<tr class=\"comForm\">');
+        var $formContainer = $('<td colspan=\"2\"/>');
+        var $divContainer = $('<div/>');
 
-                                                // find prev row that has line number (not comment row)
-                                                var $lineNumberRow = $row;
-                                                while($lineNumberRow != null &&
-                                                    $lineNumberRow.find('td.diff-line-num').length == 0){
-                                                    $lineNumberRow = $lineNumberRow.prev();
-                                                }
-                                                if($lineNumberRow == null)
-                                                    return; // should never reach here.
+        $form.append($formContainer);
+        $formContainer.append($divContainer);
+
+        $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
+        $divContainer.append($textArea);
+
+        appendCommentType($divContainer);
+
+        $submitButton = $('<button class=\"btn-info btn-sm btn pull-right\" style="margin:2px"/>').html("Submit");
+        $divContainer.append($submitButton);
+
+        $submitButton.on('click', function (event) {
+            var cm = $form.find('textarea').val();
+            var data = {
+                functionId: currentFun,
+                functionOffset: currentLine,
+                date: comObj == null ? "" : comObj.date,
+                comment: cm,
+                type: $("input[name=comment_type]:checked").val()
+            };
+            $.post(
+                /*[[${model.prefix+ 'func_comment/'}]]*/ '/',
+                data,
+                function (dataParsed) {
+                    if (dataParsed) {
+                        if (dataParsed.error && dataParsed.error.includes('Failed')) {
+                            alert(dataParsed.error);
+                            return;
+                        }
+                        dataParsed = dataParsed.result;
+
+                        var $row = $form.prev();
+                        $form.remove();
+                        
+                        if (dataParsed.comment) {
+                            attachComment($row, dataParsed);
+                            createCommentRow(dataParsed).insertAfter($row);
+                        } else {
+                            detachComment($row, dataParsed.type)
+                        }
+												 
+                        // find prev row that has line number (not comment row)
+                        var $lineNumberRow = $row;
+                        while ($lineNumberRow != null &&
+                            $lineNumberRow.find('td.diff-line-num').length == 0) {
+                            $lineNumberRow = $lineNumberRow.prev();
+                        }
+                        if ($lineNumberRow == null)
+                            return; // should never reach here.
+
+                        // whether it is in the selected area
+                        if ($lineNumberRow.find('td.diff-line-num').hasClass('selected')) {
+                            // if it is in the area for comparison
+                            // add empty row on the other side
+
+                            //if row existed then we dont need to add an empty row to the other side.
+                            if (comObj == null) {
+                                var containerId = $row.parent().parent().parent().attr('id');
+                                var $opositeContainer = null;
+                                if (containerId.indexOf('left') > 0) {
+                                    $opositeContainer = $('#clone-text-right');
+                                } else {
+                                    $opositeContainer = $('#clone-text-left');
+                                }
+                                var $opositeElement = $opositeContainer.find('td.selected:eq(' + $row.index() + ')');
+                                createEmptyRowSelected().insertAfter($opositeElement.parent());
+                            }
+                            $form.remove();
+                            alignHeight($opositeElement.parent().parent().parent(), tbl);
+                        }
+                        else
+                            $form.remove();
+                    }
+                }
+            );
+        });
 
 
-                                                // whether it is in the selected area
-                                                if ($lineNumberRow.find('td.diff-line-num').hasClass('selected')) {
-                                                    // if it is in the area for comparison
-                                                    // add empty row on the other side
+        $divContainer.append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
+            if (comObj != null) {
+                var $row = $form.prev();
+                createCommentRow(comObj).insertAfter($row);
+            }
+            $form.remove();
+        }).append('close'));
+        $divContainer.append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">'));
+        $divContainer.append(useMarkdown == "true" ? 'Markdown Supported' : '');
 
-                                                    //if row existed then we dont need to add an empty row to the other side.
-                                                    if(comObj == null) {
-                                                        var containerId = $row.parent().parent().parent().attr('id');
-                                                        var $opositeContainer = null;
-                                                        if (containerId.indexOf('left') > 0) {
-                                                            $opositeContainer = $('#clone-text-right');
-                                                        } else {
-                                                            $opositeContainer = $('#clone-text-left');
-                                                        }
-                                                        var $opositeElement = $opositeContainer.find('td.selected:eq(' + $row.index() + ')');
-                                                        createEmptyRowSelected().insertAfter($opositeElement.parent());
-                                                    }
-                                                    $form.remove();
-                                                    alignHeight($opositeElement.parent().parent().parent(), tbl);
-                                                }
-                                                else
-                                                    $form.remove();
-                                            }
-                                        }
-                                    );
-                                }).append('submit'))
-                                .append($('<button class=\"btn-danger btn-sm btn pull-right\" style="margin:2px">').on('click', function (event) {
-                                    if(comObj!=null){
-                                        var $row = $form.prev();
-                                        createCommentRow(comObj).insertAfter($row);
-                                    }
-                                    $form.remove();
-                                }).append('close'))
-                                .append($('<span class=\"pull-left\" style="margin:2px;font-size: 12px;color: rgb(170, 170, 170);">')
-                                .append(useMarkdown == "true" ? 'Markdown Supported' : ''))
-                )
-        );
-        var $editArea = $form.find('textarea');
-        if(comObj != null)
-            $editArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
-		if (useMarkdown == "true")
-			$editArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
+        if (comObj != null)
+            $textArea.val(useMarkdown == "true" ? toMarkdown(comObj.comment) : comObj.comment);
+        if (useMarkdown == "true")
+            $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
         return $form;
     }
@@ -775,6 +699,7 @@ textarea {
             	useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         	}
     	}
+		var $row = $('#' + cm.functionOffset);
         var $tr = $('<tr class=\"cmrow\">').append(
                 $('<td colspan=\"2\">')
                         .append($('<span class=\"pull-right delete\">')
@@ -782,10 +707,12 @@ textarea {
                                 .click(function() {
                                     var $sp = $(this);
                                     var data = {
-                                    		functionId: cm.functionId,
-                                    		functionOffset: cm.functionOffset,
-                                    		date: cm.date,
-                                    		comment:""};
+                                    	functionId: cm.functionId,
+                                    	functionOffset: cm.functionOffset,
+                                    	date: cm.date,
+                                        comment: "",
+                                        type: cm.type
+                                    };
                                     $.post(
                                     	/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
                                         data,
@@ -794,9 +721,9 @@ textarea {
                                     			dmas_alert(data.error);
                                     			return;
                                     		}
+											detachComment($row, data.result.type);
                                             var $lineNumberRow = $sp.parent().parent().prev();
-                                            while($lineNumberRow != null &&
-                                            $lineNumberRow.find('td.diff-line-num').length == 0){
+                                            while ($lineNumberRow != null && $lineNumberRow.find('td.diff-line-num').length == 0){
                                                 $lineNumberRow = $lineNumberRow.prev();
                                             }
                                             if($lineNumberRow == null)
@@ -813,7 +740,6 @@ textarea {
                                                 var $opositeElement = $opositeContainer.find('td.selected:eq(' + $sp.parent().parent().index() + ')');
                                                 $opositeElement.parent().remove();
                                             }
-                                            removeComment($sp.parent().parent().parent().parent(), cm);
                                             $sp.parent().parent().remove();
                                         }
                                     );
@@ -833,9 +759,10 @@ textarea {
 
                                     var currentLine = $lineNumberRow.attr('id');
                                     var currentFun = $crow.parent().parent().data('block').functionId;
-                                    var $form = createForm($crow.prev(), currentLine, currentFun, cm).insertAfter($crow.prev());
+                                    var $form = createForm(currentLine, currentFun, cm).insertAfter($crow.prev());
                                     $form.find("textarea").focus();
                                     $crow.remove();
+									selectCommentType($lineNumberRow.data('cm'), cm);
                                 })
                 )
                         .append($('<div>').addClass('cmbox').addClass('cmbox-' + cm.type)
@@ -860,14 +787,22 @@ textarea {
     }
 
     function showCommentBox(tspan) {
+        if ($(".comForm")[0]) {
+            return;
+        }
         var $tspan = $(tspan);
         var row = $tspan.parent().parent();
-        if(row!=null && row.next() != null && row.next().hasClass('comForm')){
+
+        if (isAllCommentTypeExist(row))
+            return;
+
+        if (row != null && row.next() != null && row.next().hasClass('comForm')){
             row.next().remove();
-        }else{
+        } else {
             var currentLine = $(tspan).parent().text().replace('+', ' ');
             var currentFun = $(tspan).parent().parent().parent().parent().data('block').functionId;
-            var $form = createForm($tspan.parent().parent(),currentLine,currentFun).insertAfter(row);
+            var $form = createForm(currentLine, currentFun).insertAfter(row);
+			selectNewCommentType(row.data('cm'));
             $form.find('textarea').focus();
         }
     }
@@ -879,11 +814,10 @@ textarea {
     		$.each(data, function(ind, ent){
     			if(ent.functionOffset.length < 1)
     				return;
-                var $row = $holder.find('tr#'+ent.functionOffset);
+                var $row = $holder.find('tr#' + ent.functionOffset);
                 var $cmbox = createCommentRow(ent);
                 $cmbox.insertAfter($row);
-                var $tbl = $row.parent().parent();
-                attachComment($tbl, ent);
+                attachComment($row, ent);
             });
     	});
     }
@@ -1018,14 +952,6 @@ textarea {
     $(document).mouseup(function (e) {
         $(document).unbind('mousemove');
     });
-
-    $(function() {
-		var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
-
-		if (localStorage) {
-			sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
-		}
-	})
 
 		/*]]>*/
 	</script>

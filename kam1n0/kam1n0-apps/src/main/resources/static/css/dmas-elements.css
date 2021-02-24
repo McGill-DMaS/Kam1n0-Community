@@ -25,6 +25,10 @@
 	width: 250px;
 }
 
+.disabled {
+	color: darkgrey !important;
+}
+
 /* text diff */
 td.diff-line-content {
 	padding-left: 20px;

@@ -12,6 +12,8 @@
 		<output.dir>${user.dir}/build-bins/</output.dir>
 		<local.repo>${user.dir}/local-m2-repo</local.repo>
 		<!-- dependency versions in one place: TBA -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<modules>
 		<module>kam1n0-apps</module>
