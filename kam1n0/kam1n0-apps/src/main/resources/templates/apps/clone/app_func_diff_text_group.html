@@ -793,7 +793,7 @@ textarea {
         var $tspan = $(tspan);
         var row = $tspan.parent().parent();
 
-        if (isAllCommentTypeExist(row))
+        if (!isFunctionInDatabase(row) || isAllCommentTypeExist(row))
             return;
 
         if (row != null && row.next() != null && row.next().hasClass('comForm')){
@@ -855,7 +855,7 @@ textarea {
         drawBlockText(p_a, $('#clone-text-left'));
         drawBlockText(p_b, $('#clone-text-right'));
         drawCloneTextList(p_a, p_b, cloneParts, $('#clone-group-list'));
-
+		initFunctionInDatabase(p_a, p_b);
         plotComments(p_a, $('#clone-text-left'));
         plotComments(p_b, $('#clone-text-right'));
         // div->ul
