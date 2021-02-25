@@ -146,7 +146,8 @@ public class AppPlatform {
 		Function func = getFunction(rid, fid);
 		if (func == null)
 			return null;
-		return new FunctionDataUnit(func, false);
+
+		return new FunctionDataUnit(func, false, true);
 	}
 
 	public Function getFunction(long rid, long fid) {

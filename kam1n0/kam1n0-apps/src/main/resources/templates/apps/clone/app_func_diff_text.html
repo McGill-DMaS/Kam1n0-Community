@@ -113,9 +113,10 @@
 		    
 		    
 			var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
-			drawTextDiff(pa, pb, 'diff-title', 'diff-table', 'l-', 'r-', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-            plotCommentsWithPrefix(cm_url, pa, 'l-');
-            plotCommentsWithPrefix(cm_url, pb, 'r-');
+			drawTextDiff(pa, pb, 'diff-title', 'diff-table', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
+			initFunctionInDatabase(pa, pb);
+            plotCommentsWithPrefix(cm_url, pa, left_prefix);
+            plotCommentsWithPrefix(cm_url, pb, right_prefix);
 			initForm(cm_url);
             setUpTextHighlights('#btn-cp-cmt', 'r-p');
             setUpTextHighlights('#btn-cp-cmt', "\\+r-p");

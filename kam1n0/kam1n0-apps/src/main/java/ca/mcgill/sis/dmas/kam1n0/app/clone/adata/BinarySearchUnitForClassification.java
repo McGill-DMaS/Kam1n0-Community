@@ -281,7 +281,7 @@ public class BinarySearchUnitForClassification implements Closeable {
 			if (factory != null) {
 				Function func = factory.obj_functions.querySingle(this.appId, fid);
 				if (func != null)
-					return new FunctionDataUnit(func);
+					return new FunctionDataUnit(func, false, true);
 			}
 			byte[] val = this.functionMap.get(Long.toString(fid));
 			if (val != null)

@@ -100,6 +100,7 @@
 					var pb_fun = data;
 					var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
 					drawText(pb_fun, 'diff-title', 'diff-table');
+					initFunctionInDatabase(pb_fun, null);
 					plotCommentSingle(cm_url, pb_fun)
 					initForm(cm_url);
 					setUpTextHighlights('#btn-cp-cmt', '');

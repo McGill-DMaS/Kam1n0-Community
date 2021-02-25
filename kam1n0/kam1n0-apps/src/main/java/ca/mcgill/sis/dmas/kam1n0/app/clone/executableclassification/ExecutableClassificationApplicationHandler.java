@@ -383,7 +383,11 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 	public final List<FunctionDataUnit> getClusterFunctionInfos(@PathVariable("appId") long appId,
 			@RequestParam("id") String clusterName) {
 		Cluster clu = ((ExecutableClassificationApplicationMeta)(this.meta)).clusterFactory.querySingle(appId,clusterName);
-		List<FunctionDataUnit> result = this.meta.platform.objectFactory.obj_functions.queryMultipleBaisc(appId, "functionId", clu.functionIDList).collect().stream().map(func -> new FunctionDataUnit(func, true)).collect(Collectors.toList());
+		List<FunctionDataUnit> result = this.meta.platform.objectFactory.obj_functions.queryMultipleBaisc(appId, "functionId", clu.functionIDList)
+				.collect()
+				.stream()
+				.map(func -> new FunctionDataUnit(func, true, meta.getFunction(appId, func.functionId) != null))
+				.collect(Collectors.toList());
 		return result;
 	}
 

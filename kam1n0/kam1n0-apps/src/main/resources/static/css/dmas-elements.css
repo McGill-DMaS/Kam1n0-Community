@@ -64,7 +64,6 @@ td.diff-line-num {
 	text-align: right;
 	border: solid #eee;
 	border-width: 0 1px 0 0;
-	cursor: pointer;
 	border-left-width: 1px;
 	padding-left: 10px;
 	padding-right: 10px;
@@ -129,7 +128,6 @@ span.commenter {
 	color: #fff;
 	text-align: center;
 	text-indent: 0;
-	cursor: pointer;
 	background-color: orange;
 	border-radius: 3px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -243,4 +241,8 @@ li.dropdown{
 	width:60px;
 	padding:0;
 	    line-height: 8pt;
+}
+
+.pointerCursor {
+	cursor: pointer;
 }

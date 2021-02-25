@@ -119,12 +119,12 @@ public class FunctionCloneDetectorForWeb {
 
 	public FunctionCloneDetectionResultForWeb detectClones(long rid, Function function, double threadshold, int topK,
 			boolean avoidSameBinary) throws Exception {
-		FunctionCloneDetectionResultForWeb reslt = new FunctionCloneDetectionResultForWeb();
+		FunctionCloneDetectionResultForWeb result = new FunctionCloneDetectionResultForWeb();
 		detector.detectClonesForFunc(rid, function, threadshold, topK, avoidSameBinary).stream()
 				.map(entry -> new FunctionCloneEntryForWeb(entry)).filter(entry -> entry.similarity >= threadshold)
-				.forEach(reslt.clones::add);
-		reslt.function = new FunctionDataUnit(function);
-		return reslt;
+				.forEach(result.clones::add);
+		result.function = new FunctionDataUnit(function);
+		return result;
 	}
 
 	public void indexFuncs(long rid, Binary bianry, LocalJobProgress progress) throws Exception {

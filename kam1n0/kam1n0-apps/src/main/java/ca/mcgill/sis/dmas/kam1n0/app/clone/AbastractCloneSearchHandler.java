@@ -337,6 +337,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 
 			if (cloneDetail != null) {
 				FunctionCloneDetectionResultForWeb result = servingObj.getCloneDetail(cloneDetail);
+				result.function.functionInDatabase = meta.getFunction(appId, Long.parseLong(result.function.functionId)) != null;
 				FunctionCloneDataUnit unit = new FunctionCloneDataUnit(Lists.newArrayList(result));
 				unit.generateCloneGraph();
 				return ImmutableMap.of("object", unit);

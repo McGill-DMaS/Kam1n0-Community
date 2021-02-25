@@ -1287,7 +1287,7 @@ function isVexCode(p_func, code_key = 'srcCodes') {
     return false;
 }
 
-function drawTextDiff(p_a, p_b, titleId, tableId, left_prefix, right_prefix, normalize_opr = false, code_key = 'srcCodes') {
+function drawTextDiff(p_a, p_b, titleId, tableId, normalize_opr = false, code_key = 'srcCodes') {
 
     var a_isVex = isVexCode(p_a, code_key);
     var b_isVex = isVexCode(p_b, code_key);
@@ -1510,10 +1510,26 @@ function hoverAddress(element) {
         return;
     }
 
-    if (!isAllCommentTypeExist(element))
+    if (!isAllCommentTypeExist(element) && isFunctionInDatabase(element)) {
+        $(element).addClass('pointerCursor');
+        $(element).find('span.commenter').addClass('pointerCursor');
         $(element).find('span.commenter').addClass('selected');
+    }
 }
 
+function isFunctionInDatabase(element) {
+
+    if ($(element).attr('id').slice(0, 2) == right_prefix && right_function_in_database)
+        return true;
+
+    if ($(element).attr('id').slice(0, 2) == left_prefix && left_function_in_database)
+        return true;
+
+    if ($(element).attr('id').slice(0, 2) == '0x' && left_function_in_database && !right_function_in_database)
+        return true;
+
+    return false;
+}
 function isAllCommentTypeExist(element) {
     var $row = $('#' + $(element).attr('id'));
     var $row_data = $row.data('cm');
@@ -1537,7 +1553,7 @@ function initForm(url) {
         }
         var $rd = $(this).parent();
         
-		if (isAllCommentTypeExist($rd))
+		if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
             return;
         if ($rd.parent().next().hasClass('comForm')) {
             $rd.parent().next().remove();
@@ -1551,6 +1567,20 @@ function initForm(url) {
 }
 
 all_cm_types = new Set(['regular', 'repeatable', 'anterior', 'posterior']); // order is important, set the default in UI
+right_function_in_database = undefined;
+left_function_in_database = undefined;									   
+const left_prefix = 'l-';
+const right_prefix = 'r-';
+
+function initFunctionInDatabase(left_function, right_function) {
+
+    if (!left_function_in_database && left_function != null)
+        left_function_in_database = left_function.functionInDatabase;
+
+    if (!right_function_in_database && right_function != null)
+        right_function_in_database = right_function.functionInDatabase;
+
+}
 
 function plotCommentsWithPrefix(url, fun, prefix) {
     $.get(url, {
@@ -1612,10 +1642,10 @@ function createCommentRowSingle(cm, url, prefix) {
 	
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
-    if (typeof send_msg != 'undefined' && prefix == 'r-')
+    if (typeof send_msg != 'undefined' && prefix == right_prefix)
         interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
-    if (prefix == 'r-' && (cm.type === 'posterior' || cm.type === 'anterior')) {
+    if (prefix == right_prefix && (cm.type === 'posterior' || cm.type === 'anterior'))
         $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
         $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
     }
@@ -1677,7 +1707,7 @@ function createCommentRowSingle(cm, url, prefix) {
             .append(useMarkdown == "true" ? markdown.toHTML(cm.comment) : convertToHTML(cm.comment))
             )
     );
-    if (prefix == 'l-' && (cm.type === 'posterior' || cm.type === 'anterior')) {
+    if (prefix == left_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
         $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
         $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
     }
@@ -1763,7 +1793,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
 
     var $form = $('<tr class=\"comForm\">');
 
-    if (prefix == 'r-') {
+    if (prefix == right_prefix) {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
     }
@@ -1837,7 +1867,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
     if (useMarkdown == "true")
         $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
-    if (prefix == 'l-') {
+    if (prefix == left_prefix) {
         $form = $form.append($('<td class=\"diff-line-num empty\">'));
         $form = $form.append($('<td class=\"diff-line-content empty\">'));
     }
@@ -1998,7 +2028,7 @@ function drawText(p_a, titleId, tableId, code_key = 'srcCodes') {
     }
     $('.diff-line-num').hover(
         function () {
-            $(this).find('span.commenter').addClass('selected');
+            hoverAddress(this);
         }, function () {
             $(this).find('span.commenter').removeClass('selected');
         }
