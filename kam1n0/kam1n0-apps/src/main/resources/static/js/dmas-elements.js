@@ -1519,15 +1519,30 @@ function hoverAddress(element) {
 
 function isFunctionInDatabase(element) {
 
+    // app_func_diff_text
     if ($(element).attr('id').slice(0, 2) == right_prefix && right_function_in_database)
         return true;
 
+    // app_func_diff_text
     if ($(element).attr('id').slice(0, 2) == left_prefix && left_function_in_database)
         return true;
 
-    if ($(element).attr('id').slice(0, 2) == '0x' && left_function_in_database && !right_function_in_database)
+    // app_func_text
+    if ($(element).attr('id').slice(0, 2) == '0x' && left_function_in_database && right_function_in_database == undefined)
         return true;
 
+    // app_func_diff_text_group
+    if ($(element).attr('id').slice(0, 2) == '0x' &&
+        left_function_in_database != undefined &&
+        right_function_in_database != undefined) {
+
+        var containerId = $(element).parent().parent().parent().attr('id');
+        if (containerId.indexOf('left') > 0 && left_function_in_database) 
+            return true;
+        if (containerId.indexOf('right') > 0 && right_function_in_database)
+            return true;
+    }
+    
     return false;
 }
 function isAllCommentTypeExist(element) {
