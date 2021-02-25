@@ -170,12 +170,11 @@ public class UITest {
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.progress-label")));
 			boolean error = false;
 			do {
+				Thread.sleep(1000);
 				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
 				error = driver.findElementsByCssSelector("span.progress-label").stream()
 						.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
 				assertFalse(error);
-
-				Thread.sleep(1000);
 				if (prgs.size() == 0 || error)
 					break;
 			} while (true);
