@@ -22,7 +22,13 @@ public class UITestUtils {
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
 	}
 
-	public static void StartServer() throws Exception {
+	public static void debugWithExistingServer(String dataDirectory) throws Exception {
+		appProcess = null;
+		tempDirectory = new File(dataDirectory);
+		log("Debugging using server already running on {}", tempDirectory.getAbsolutePath());
+	}
+
+	public static void startServer() throws Exception {
 		tempDirectory = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
 		log("Starting server on {}", tempDirectory.getAbsolutePath());
 		ProcessBuilder builder = new ProcessBuilder();
@@ -61,9 +67,13 @@ public class UITestUtils {
 			appProcess.destroy();
 			if (appProcess.isAlive())
 				appProcess.destroyForcibly();
+
+			Thread.sleep(1000*5); // 5 seconds
+			deleteRecursively(tempDirectory);
+		} else {
+			log("Was debugging using a server already running on {}", tempDirectory.getAbsolutePath());
+			log("Files were NOT deleted as server might still be running.");
 		}
-		Thread.sleep(1000*5); // 5 seconds
-		deleteRecursively(tempDirectory);
 
 		log("UITestUtils Cleaning up End.");
 	}

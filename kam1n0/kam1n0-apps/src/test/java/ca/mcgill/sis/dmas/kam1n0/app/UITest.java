@@ -31,10 +31,19 @@ public class UITest {
 	List<String> errorStrings = Arrays.asList("SyntaxError", "EvalError", "ReferenceError", "RangeError", "TypeError",
 			"URIError");
 
+	private static boolean isDebuggingWithExistingServer = false;
+
 	@BeforeClass
 	public static void prepareServerAndBrowser() throws Exception {
 
-		UITestUtils.StartServer();
+		String existingServerDataFolder = System.getProperty("debugWithExistingServer");
+		if ( existingServerDataFolder != null ) {
+			UITestUtils.debugWithExistingServer(existingServerDataFolder);
+			isDebuggingWithExistingServer = true;
+		} else {
+			UITestUtils.startServer();
+		}
+
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
 
@@ -43,7 +52,12 @@ public class UITest {
 		options.setExperimentalOption("useAutomationExtension", false);
 		driver = new ChromeDriver(options);
 
-		Thread.sleep(1000 * 40); // sleep for 40 seconds (take a rest). Can be different on other computer.
+		if (!isDebuggingWithExistingServer) {
+			// Until we find a proper way to know when the server is ready to process requests, we simply sleep for a while
+			final int timeToWaitForServerSecond = 40;
+			log("Waiting {} seconds for server to be ready...", timeToWaitForServerSecond);
+			Thread.sleep(1000 * timeToWaitForServerSecond);
+		}
 
 		register();
 		login();
@@ -99,9 +113,14 @@ public class UITest {
 		driver.findElement(By.id("aggreeTLicense1")).click();
 		driver.findElement(By.tagName("button")).click();
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("strong")));
-		String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
-		assertEquals(response, "successfully");
+		if ( isDebuggingWithExistingServer ) {
+			log("Debugging with existing server: assuming registration was fine or already done in a previous run. Waiting 5 seconds.");
+			Thread.sleep(5000);
+		} else {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("strong")));
+			String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
+			assertEquals(response, "successfully");
+		}
 	}
 
 	public static void login() throws Exception {
@@ -112,7 +131,13 @@ public class UITest {
 		driver.findElement(By.tagName("button")).click();
 
 		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
+
+		if ( isDebuggingWithExistingServer ) {
+			log("Debugging with existing server: assuming login was fine and some apps perhaps already exist. Waiting 5 seconds.");
+			Thread.sleep(5000);
+		} else {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
+		}
 
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
