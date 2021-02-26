@@ -248,7 +248,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 					logger.error("Failed to set field " + info + "with value", e);
 				}
 			if (async) {
-				executeAsync(query);
+				executeAsync(sess, query);
 			} else {
 				sess.execute(query.toString());
 			}
@@ -260,19 +260,14 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		});
 	}
 
-	private void executeAsync(RegularInsert query) {
-		var sessionStage = CqlSession.builder().buildAsync();
-		var finalStringQuery = query.toString();
-		CompletionStage<AsyncResultSet> responseStage =
-				sessionStage.thenCompose(
-						session -> session.executeAsync(finalStringQuery));
 
+	private void executeAsync(CqlSession session, RegularInsert query) {
+		CompletionStage<AsyncResultSet> responseStage = session.executeAsync(query.toString());
 		responseStage.whenComplete(
 				(version, error) -> {
 					if (error != null) {
 						logger.error("Failed to put value.", error);
 					}
-					sessionStage.thenAccept(CqlSession::closeAsync);
 				});
 	}
 
