@@ -3,6 +3,7 @@ package ca.mcgill.sis.dmas.kam1n0.app;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
@@ -68,7 +69,7 @@ public class UITestUtils {
 			if (appProcess.isAlive())
 				appProcess.destroyForcibly();
 
-			Thread.sleep(1000*5); // 5 seconds
+			TimeUnit.SECONDS.sleep(5);
 			deleteRecursively(tempDirectory);
 		} else {
 			log("Was debugging using a server already running on {}", tempDirectory.getAbsolutePath());
