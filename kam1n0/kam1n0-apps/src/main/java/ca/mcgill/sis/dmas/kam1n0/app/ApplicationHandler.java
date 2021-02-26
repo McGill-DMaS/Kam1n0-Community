@@ -214,7 +214,8 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final Map<String, Object> putComment(@PathVariable("appId") long appId,
 			@RequestParam("functionId") long functionId, @RequestParam("functionOffset") String functionOffset,
-			@RequestParam("date") String date, @RequestParam("comment") String content, @RequestParam("type") String type) {
+			@RequestParam("date") String date, @RequestParam("comment") String content, @RequestParam("type") String type,
+			@RequestParam("userName") String userName) {
 		try {
 
 			if (content.length() > 0 && !meta.checkFunc(appId, functionId)) {
@@ -230,7 +231,7 @@ public abstract class ApplicationHandler {
 			else
 				comment.date = new Date().getTime();
 			comment.comment = content;
-			comment.userName = UserController.findUserName();
+			comment.userName = userName == "" ? UserController.findUserName() : userName;
 			meta.putComment(appId, comment);
 			return ImmutableMap.of("result", new CommentResult(comment));
 		} catch (Exception e) {

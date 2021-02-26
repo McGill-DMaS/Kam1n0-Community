@@ -1644,6 +1644,7 @@ function detachComment(row, type) {
         delete $row_data[type];
     }
 }
+
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {
@@ -1660,7 +1661,7 @@ function createCommentRowSingle(cm, url, prefix) {
     if (typeof send_msg != 'undefined' && prefix == right_prefix)
         interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
-    if (prefix == right_prefix && (cm.type === 'posterior' || cm.type === 'anterior'))
+    if (prefix == right_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
         $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
         $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
     }
@@ -1675,7 +1676,8 @@ function createCommentRowSingle(cm, url, prefix) {
                         functionOffset: cm.functionOffset,
                         date: cm.date,
                         comment: "",
-                        type: cm.type
+                        type: cm.type,
+                        userName: cm.userName
                     };
                     $.post(url,
                         data,
@@ -1838,7 +1840,8 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
             functionOffset: addr,
             date: comObj == null ? "" : comObj.date,
             comment: cm,
-            type: $("input[name=comment_type]:checked").val()
+            type: $("input[name=comment_type]:checked").val(),
+            userName: "" // empty userName will completed with the current user
         };
 
         $.post(

@@ -137,8 +137,7 @@ public class AppPlatform {
 		if (comment.comment.length() > 0)
 			objectFactory.obj_comments.put(appId, comment);
 		else
-			objectFactory.obj_comments.del(appId, comment.functionId, comment.functionOffset, comment.userName,
-					comment.date);
+			objectFactory.obj_comments.del(appId, comment.functionId, comment.functionOffset, comment.date);
 		return true;
 	}
 

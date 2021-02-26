@@ -615,7 +615,8 @@ textarea {
                 functionOffset: currentLine,
                 date: comObj == null ? "" : comObj.date,
                 comment: cm,
-                type: $("input[name=comment_type]:checked").val()
+                type: $("input[name=comment_type]:checked").val(),
+                userName: "" // empty userName will completed with the current user
             };
             $.post(
                 /*[[${model.prefix+ 'func_comment/'}]]*/ '/',
@@ -711,7 +712,8 @@ textarea {
                                     	functionOffset: cm.functionOffset,
                                     	date: cm.date,
                                         comment: "",
-                                        type: cm.type
+                                        type: cm.type,
+                        				userName: cm.userName
                                     };
                                     $.post(
                                     	/*[[${model.prefix+ 'func_comment/'}]]*/ '/',
