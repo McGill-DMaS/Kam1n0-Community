@@ -1519,6 +1519,9 @@ function hoverAddress(element) {
 
 function isFunctionInDatabase(element) {
 
+	if ($(element).attr('id') == null)
+	    return false;
+	    
     // app_func_diff_text
     if ($(element).attr('id').slice(0, 2) == right_prefix && right_function_in_database)
         return true;
@@ -1561,8 +1564,14 @@ function isAllCommentTypeExist(element) {
     return true;
 }
 
+isAddClick = false;
+
 function initForm(url) {
+    $('span.commenter').mousedown(function () {
+        isAddClick = true;
+    });
     $('span.commenter').click(function () {
+        isAddClick = false;			   
 	    if ($(".comForm")[0]) {
             return;
         }
@@ -1607,18 +1616,21 @@ function plotCommentsWithPrefix(url, fun, prefix) {
             if (!all_cm_types.has(ent.type))
                 return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
-            if (ent.type === 'anterior')
-                $cmbox.insertBefore($row.parent())
-            else if (ent.type === 'posterior')
-                $cmbox.insertAfter($row.parent());
-            else
-                $row.next().append($cmbox);
+			addCommentBoxToRow($cmbox, $row, ent);
         });
 
         // for comment row selection:
     });
 }
 
+function addCommentBoxToRow(cmbox, row, cm){
+    if (cm.type === 'anterior')
+        cmbox.insertBefore(row.parent())
+    else if (cm.type === 'posterior')
+        cmbox.insertAfter(row.parent());
+    else
+        row.next().append(cmbox);
+}
 function attachComment(row, cm) {
     var $row_data = row.data('cm');
     if ($row_data == null) {
@@ -1860,7 +1872,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                     var $row = $('#' + prefix + dataParsed.functionOffset);
                     if (dataParsed.comment) {
                         var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
-                        $row.next().append($cmbox);
+                        addCommentBoxToRow($cmbox, $row, dataParsed);
                     } else {
 						detachComment($row, dataParsed.type)
                     }
@@ -1917,7 +1929,7 @@ function setUpTextHighlights(trigger, prefix) {
             return false; // prevent text selection
         })
         .mouseover(function () {
-            if (isMouseDown) {
+            if (isMouseDown && !isAddClick) {
                 if (start)
                     start.addClass("highlighted");
                 isDragging = true;
@@ -1925,7 +1937,7 @@ function setUpTextHighlights(trigger, prefix) {
             }
         })
         .mouseup(function () {
-            if (!isDragging)
+            if (!isDragging && !isAddClick)
                 $(this).toggleClass("highlighted");
         })
 
@@ -1933,6 +1945,7 @@ function setUpTextHighlights(trigger, prefix) {
         .mouseup(function () {
             isMouseDown = false;
             isDragging = false;
+			isAddClick = false;
         });
 
     $(trigger).click(function () {
