@@ -225,7 +225,7 @@ for seg_ea in Segments():
             sblock['call'] = bcalls
             function['blocks'].append(sblock)
         if len(data['functions']) % batchSize == 0:
-            with open('%s.tmp%d.json' % (file_name, batchCount), 'w') as outfile:
+            with open('%s.tmp%d.json' % (file_name, batchCount), 'w', encoding='utf-8') as outfile:
                 json.dump(data, outfile, ensure_ascii=False)
             batchCount += 1
             del data['functions']

@@ -3,6 +3,7 @@ package ca.mcgill.sis.dmas.kam1n0.app;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
@@ -21,7 +22,13 @@ public class UITestUtils {
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
 	}
 
-	public static void StartServer() throws Exception {
+	public static void debugWithExistingServer(String dataDirectory) throws Exception {
+		appProcess = null;
+		tempDirectory = new File(dataDirectory);
+		log("Debugging using server already running on {}", tempDirectory.getAbsolutePath());
+	}
+
+	public static void startServer() throws Exception {
 		tempDirectory = Files.createTempDirectory("Kam1n0-TESTING-" + StringResources.timeString()).toFile();
 		log("Starting server on {}", tempDirectory.getAbsolutePath());
 		ProcessBuilder builder = new ProcessBuilder();
@@ -39,9 +46,13 @@ public class UITestUtils {
 			appProcess.destroy();
 			if (appProcess.isAlive())
 				appProcess.destroyForcibly();
+
+			TimeUnit.SECONDS.sleep(5);
+			deleteRecursively(tempDirectory);
+		} else {
+			log("Was debugging using a server already running on {}", tempDirectory.getAbsolutePath());
+			log("Files were NOT deleted as server might still be running.");
 		}
-		Thread.sleep(1000*5); // 5 seconds
-		deleteRecursively(tempDirectory);
 
 		log("UITestUtils Cleaning up End.");
 	}

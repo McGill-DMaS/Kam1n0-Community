@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
@@ -32,10 +33,19 @@ public class UITest {
 	List<String> errorStrings = Arrays.asList("SyntaxError", "EvalError", "ReferenceError", "RangeError", "TypeError",
 			"URIError");
 
+	private static boolean isDebuggingWithExistingServer = false;
+
 	@BeforeClass
 	public static void prepareServerAndBrowser() throws Exception {
 
-		UITestUtils.StartServer();
+		String existingServerDataFolder = System.getProperty("debugWithExistingServer");
+		if (existingServerDataFolder != null) {
+			UITestUtils.debugWithExistingServer(existingServerDataFolder);
+			isDebuggingWithExistingServer = true;
+		} else {
+			UITestUtils.startServer();
+		}
+
 		String envp = System.getenv().get("webdriver.chrome.driver");
 		System.setProperty("webdriver.chrome.driver", envp);
 
@@ -44,7 +54,12 @@ public class UITest {
 		options.setExperimentalOption("useAutomationExtension", false);
 		driver = new ChromeDriver(options);
 
-		Thread.sleep(1000 * 15); // sleep for 15 seconds (take a rest). Can be different on other computer.
+		if (!isDebuggingWithExistingServer) {
+			// Until we find a proper way to know when the server is ready to process requests, we simply sleep for a while
+			final int timeToWaitForServerSecond = 40;
+			log("Waiting {} seconds for server to be ready...", timeToWaitForServerSecond);
+			TimeUnit.SECONDS.sleep(timeToWaitForServerSecond);
+		}
 
 		register();
 		login();
@@ -54,7 +69,6 @@ public class UITest {
 	public static void cleanUp() throws Exception {
 		log("UITest Cleaning up...");
 		if (driver != null) {
-
 			driver.quit();
 		}
 
@@ -62,7 +76,7 @@ public class UITest {
 	}
 
 	@After
-	public void CloseAllPage(){
+	public void CloseAllPage() {
 		String parentWindowHandler = driver.getWindowHandle(); // Store your parent window
 		Set<String> handles = new HashSet<>(driver.getWindowHandles());
 		handles.remove(parentWindowHandler);
@@ -100,9 +114,14 @@ public class UITest {
 		driver.findElement(By.id("aggreeTLicense1")).click();
 		driver.findElement(By.tagName("button")).click();
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("strong")));
-		String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
-		assertEquals(response, "successfully");
+		if (isDebuggingWithExistingServer) {
+			log("Debugging with existing server: assuming registration was fine or already done in a previous run. Waiting 5 seconds.");
+			TimeUnit.SECONDS.sleep(5);
+		} else {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("strong")));
+			String response = driver.findElement(By.tagName("strong")).getText().trim().toLowerCase();
+			assertEquals(response, "successfully");
+		}
 	}
 
 	public static void login() throws Exception {
@@ -113,16 +132,22 @@ public class UITest {
 		driver.findElement(By.tagName("button")).click();
 
 		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
+
+		if (isDebuggingWithExistingServer) {
+			log("Debugging with existing server: assuming login was fine and some apps perhaps already exist. Waiting 5 seconds.");
+			TimeUnit.SECONDS.sleep(5);
+		} else {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createAppId")));
+		}
 
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
-        log("{}", url);
+		log("{}", url);
 		driver.executeScript("$(\"li.dropdown > a\").click()");
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h6")));
 		String userName = driver.findElement(By.tagName("h6")).getText().toLowerCase();
-        log("{}", driver.getPageSource());
-        log("{}", driver.findElement(By.tagName("body")).getText());
+		log("{}", driver.getPageSource());
+		log("{}", driver.findElement(By.tagName("body")).getText());
 		log("{}", userName);
 		assertTrue(userName.trim().equals("admin@dmas.com"));
 	}
@@ -136,7 +161,7 @@ public class UITest {
 		//driver.findElement(By.id("title")).sendKeys(identifier + "_title");
 		driver.findElement(By.id("description")).sendKeys(identifier + "_desp");
 		driver.findElement(By.id("btn_submit")).click();
-		Thread.sleep(5000);
+		TimeUnit.SECONDS.sleep(5);
 		String url = driver.getCurrentUrl();
 		assertTrue(url.endsWith("/userHome"));
 		WebElement title = driver.findElement(By.xpath("//h3[contains(text(), \"" + identifier + "\")]"));
@@ -169,17 +194,14 @@ public class UITest {
 			btn.click();
 
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.progress-label")));
-			boolean error = false;
-			do {
-				List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
-				error = driver.findElementsByCssSelector("span.progress-label").stream()
+			boolean hasActiveProgress = true;
+			while (hasActiveProgress) {
+				TimeUnit.SECONDS.sleep(1);
+				boolean hasError = driver.findElementsByCssSelector("span.progress-label").stream()
 						.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
-				assertFalse(error);
-
-				Thread.sleep(1000);
-				if (prgs.size() == 0 || error)
-					break;
-			} while (true);
+				assertFalse(hasError);
+				hasActiveProgress = !driver.findElementsByCssSelector("div.progress.active").isEmpty();
+			}
 
 			driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-conf-index-close")));
@@ -207,7 +229,7 @@ public class UITest {
 			List<WebElement> prgs = driver.findElementsByCssSelector("div.progress.active");
 			error = driver.findElementsByCssSelector("span.progress-label").stream()
 					.filter(sp -> sp.getText().toLowerCase().contains("exception")).findAny().isPresent();
-			Thread.sleep(500);
+			TimeUnit.MILLISECONDS.sleep(500);
 			if (prgs.size() == 0 || error)
 				break;
 		} while (true);
@@ -216,7 +238,7 @@ public class UITest {
 		driver.get(userHomeURL);
 		assertTrue(driver.getCurrentUrl().endsWith("/userHome"));
 
-		WebElement element =  driver.findElement(By.id("filename-change")); //driver.findElementByCssSelector(".href-file-open");
+		WebElement element =  driver.findElementByCssSelector(".href-file-open");
 		element.click();
 		HashSet<String> handlers = new HashSet<>(driver.getWindowHandles());
 		assertTrue(handlers.size() == 2);

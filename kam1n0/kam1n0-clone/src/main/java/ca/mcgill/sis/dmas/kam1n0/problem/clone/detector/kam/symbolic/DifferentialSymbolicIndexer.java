@@ -1183,7 +1183,7 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 				.filter(tp -> tp._2 != null && tp._1 != null).collect(Collectors.toList());
 		ls.forEach(tp -> bks.put(tp._1, tp._2));
 
-		results.parallelStream().forEach(result -> {
+		results.stream().forEach(result -> {
 			Block tar = result.query.blk.getBlock();
 			result.locations.stream().forEach(loc -> {
 				IOBucketCtn bk = bks.get(loc);

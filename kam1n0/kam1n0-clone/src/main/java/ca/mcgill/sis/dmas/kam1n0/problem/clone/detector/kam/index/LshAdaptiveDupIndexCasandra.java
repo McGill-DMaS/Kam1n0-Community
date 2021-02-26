@@ -317,7 +317,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 		if (sparkInstance.localMode) {
 			List<VecEntry<T, K>> collected = this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
 					session -> {
-						return hashIds.parallelStream().map(hid -> {
+						return hashIds.stream().map(hid -> {
 							return session.execute(QueryBuilder.select(selection)
 									.from(databaseName, dbToQuery).where(eq(_APP_ID, rid))
 									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
