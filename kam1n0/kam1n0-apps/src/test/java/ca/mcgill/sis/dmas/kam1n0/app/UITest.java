@@ -238,7 +238,7 @@ public class UITest {
 		driver.get(userHomeURL);
 		assertTrue(driver.getCurrentUrl().endsWith("/userHome"));
 
-		WebElement element =  driver.findElementByCssSelector(".href-file-open");
+		WebElement element =  driver.findElement(By.id("filename-change")); //driver.findElementByCssSelector(".href-file-open");
 		element.click();
 		HashSet<String> handlers = new HashSet<>(driver.getWindowHandles());
 		assertTrue(handlers.size() == 2);
