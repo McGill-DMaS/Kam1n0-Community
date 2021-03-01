@@ -1485,13 +1485,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, normalize_opr = false, code_ke
             }
         }
     }
-    $('.diff-line-num').hover(
-        function () {
-			hoverAddress(this);
-        }, function () {
-            $(this).find('span.commenter').removeClass('selected');
-        }
-    );
+
     if (cache.length > 0) {
         for (var k = 0; k < cache.length; ++k) {
             if (cache[k].children().length == 2) {
@@ -1503,6 +1497,13 @@ function drawTextDiff(p_a, p_b, titleId, tableId, normalize_opr = false, code_ke
         cache = [];
         index = -1;
     }
+    $('.diff-line-num').hover(
+        function () {
+            hoverAddress(this);
+        }, function () {
+            $(this).find('span.commenter').removeClass('selected');
+        }
+    );
 }
 
 function hoverAddress(element) {
