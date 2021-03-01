@@ -1658,6 +1658,13 @@ function detachComment(row, type) {
     }
 }
 
+function insertEmptyRowOnAnteriorAndPosteriorComment(tr, cm) {
+    commentType = cm === null ? null : cm.type;
+    if (commentType === null || commentType === 'posterior' || commentType === 'anterior') {
+        tr = tr.append($('<td class=\"diff-line-num empty\">'));
+        tr = tr.append($('<td class=\"diff-line-content empty\">'));
+    }
+}
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {
@@ -1674,10 +1681,9 @@ function createCommentRowSingle(cm, url, prefix) {
     if (typeof send_msg != 'undefined' && prefix == right_prefix)
         interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
-    if (prefix == right_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
-        $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
-        $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
-    }
+    
+	if (prefix == right_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($tr, cm);
     $tr.append(
         $('<td colspan=\"2\">')
             .append($('<span class=\"pull-right delete\">')
@@ -1737,10 +1743,8 @@ function createCommentRowSingle(cm, url, prefix) {
             .append(useMarkdown == "true" ? markdown.toHTML(cm.comment) : convertToHTML(cm.comment))
             )
     );
-    if (prefix == left_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
-        $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
-        $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
-    }
+    if (prefix == left_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($tr, cm);
     return $tr;
 }
 
@@ -1823,10 +1827,9 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
 
     var $form = $('<tr class=\"comForm\">');
 
-    if (prefix == right_prefix) {
-        $form = $form.append($('<td class=\"diff-line-num empty\">'));
-        $form = $form.append($('<td class=\"diff-line-content empty\">'));
-    }
+    if (prefix == right_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
+    
     if (typeof useMarkdown == "undefined") {
         if (sessionStorage) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
@@ -1898,10 +1901,8 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
     if (useMarkdown == "true")
         $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
-    if (prefix == left_prefix) {
-        $form = $form.append($('<td class=\"diff-line-num empty\">'));
-        $form = $form.append($('<td class=\"diff-line-content empty\">'));
-    }
+    if (prefix == left_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
     return $form;
 }
 
