@@ -1574,6 +1574,7 @@ function initForm(url) {
     $('span.commenter').click(function () {
         isAddClick = false;			   
 	    if ($(".comForm")[0]) {
+				$(".comForm")[0].remove();						  
             return;
         }
         var $rd = $(this).parent();
@@ -1825,7 +1826,20 @@ function selectNewCommentType(row_data) {
 
 function createFormSingle(url, addr, funId, comObj, prefix) {
 
-    var $form = $('<tr class=\"comForm\">');
+    var $form = null;
+    var $divContainer = null;
+
+    commentType = comObj === null ? null : comObj.type;
+    if (commentType === null || commentType === 'posterior' || commentType === 'anterior') {
+        $form = $('<tr class=\"comForm\">');
+        var $formContainer = $('<td colspan=\"2\"/>');
+        $divContainer = $('<div/>');
+        $form.append($formContainer);
+        $formContainer.append($divContainer);
+    } else {
+        $form = $('<span class=\"comForm\" >');
+        $divContainer = $form;
+    }	 
 
     if (prefix == right_prefix)
         insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
@@ -1835,11 +1849,6 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         }
     }
-
-    var $formContainer = $('<td colspan=\"2\"/>');
-    var $divContainer = $('<div/>');
-    $form.append($formContainer);
-    $formContainer.append($divContainer);
 
     $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
     $divContainer.append($textArea);
