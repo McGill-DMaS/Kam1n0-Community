@@ -1572,19 +1572,16 @@ function initForm(url) {
         isAddClick = true;
     });
     $('span.commenter').click(function () {
-        isAddClick = false;			   
-	    if ($(".comForm")[0]) {
-				$(".comForm")[0].remove();						  
-            return;
-        }
-        var $rd = $(this).parent();
+        isAddClick = false;
         
-		if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
+	    if ($(".comForm")[0])
             return;
-        if ($rd.parent().next().hasClass('comForm')) {
-            $rd.parent().next().remove();
+        
+        var $rd = $(this).parent();
+
+        if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
             return;
-        }
+			
         var $form = createFormSingle(url, $rd.text().replace('+', ''), $rd.data('func').functionId, null, $rd.data('prefix'))
         $form.insertAfter($rd.parent());
         selectNewCommentType($rd.data('cm'));
@@ -1832,6 +1829,8 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
     commentType = comObj === null ? null : comObj.type;
     if (commentType === null || commentType === 'posterior' || commentType === 'anterior') {
         $form = $('<tr class=\"comForm\">');
+    if (prefix == right_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
         var $formContainer = $('<td colspan=\"2\"/>');
         $divContainer = $('<div/>');
         $form.append($formContainer);
@@ -1841,9 +1840,6 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
         $divContainer = $form;
     }	 
 
-    if (prefix == right_prefix)
-        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
-    
     if (typeof useMarkdown == "undefined") {
         if (sessionStorage) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
