@@ -1485,13 +1485,7 @@ function drawTextDiff(p_a, p_b, titleId, tableId, normalize_opr = false, code_ke
             }
         }
     }
-    $('.diff-line-num').hover(
-        function () {
-			hoverAddress(this);
-        }, function () {
-            $(this).find('span.commenter').removeClass('selected');
-        }
-    );
+
     if (cache.length > 0) {
         for (var k = 0; k < cache.length; ++k) {
             if (cache[k].children().length == 2) {
@@ -1503,6 +1497,13 @@ function drawTextDiff(p_a, p_b, titleId, tableId, normalize_opr = false, code_ke
         cache = [];
         index = -1;
     }
+    $('.diff-line-num').hover(
+        function () {
+            hoverAddress(this);
+        }, function () {
+            $(this).find('span.commenter').removeClass('selected');
+        }
+    );
 }
 
 function hoverAddress(element) {
@@ -1519,6 +1520,9 @@ function hoverAddress(element) {
 
 function isFunctionInDatabase(element) {
 
+	if ($(element).attr('id') == null)
+	    return false;
+	    
     // app_func_diff_text
     if ($(element).attr('id').slice(0, 2) == right_prefix && right_function_in_database)
         return true;
@@ -1561,19 +1565,23 @@ function isAllCommentTypeExist(element) {
     return true;
 }
 
+isAddClick = false;
+
 function initForm(url) {
+    $('span.commenter').mousedown(function () {
+        isAddClick = true;
+    });
     $('span.commenter').click(function () {
-	    if ($(".comForm")[0]) {
-            return;
-        }
-        var $rd = $(this).parent();
+        isAddClick = false;
         
-		if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
+	    if ($(".comForm")[0])
             return;
-        if ($rd.parent().next().hasClass('comForm')) {
-            $rd.parent().next().remove();
+        
+        var $rd = $(this).parent();
+
+        if (!isFunctionInDatabase($rd) || isAllCommentTypeExist($rd))
             return;
-        }
+			
         var $form = createFormSingle(url, $rd.text().replace('+', ''), $rd.data('func').functionId, null, $rd.data('prefix'))
         $form.insertAfter($rd.parent());
         selectNewCommentType($rd.data('cm'));
@@ -1607,18 +1615,21 @@ function plotCommentsWithPrefix(url, fun, prefix) {
             if (!all_cm_types.has(ent.type))
                 return;
             var $cmbox = createCommentRowSingle(ent, url, prefix);
-            if (ent.type === 'anterior')
-                $cmbox.insertBefore($row.parent())
-            else if (ent.type === 'posterior')
-                $cmbox.insertAfter($row.parent());
-            else
-                $row.next().append($cmbox);
+			addCommentBoxToRow($cmbox, $row, ent);
         });
 
         // for comment row selection:
     });
 }
 
+function addCommentBoxToRow(cmbox, row, cm){
+    if (cm.type === 'anterior')
+        cmbox.insertBefore(row.parent())
+    else if (cm.type === 'posterior')
+        cmbox.insertAfter(row.parent());
+    else
+        row.next().append(cmbox);
+}
 function attachComment(row, cm) {
     var $row_data = row.data('cm');
     if ($row_data == null) {
@@ -1645,6 +1656,13 @@ function detachComment(row, type) {
     }
 }
 
+function insertEmptyRowOnAnteriorAndPosteriorComment(tr, cm) {
+    commentType = cm === null ? null : cm.type;
+    if (commentType === null || commentType === 'posterior' || commentType === 'anterior') {
+        tr = tr.append($('<td class=\"diff-line-num empty\">'));
+        tr = tr.append($('<td class=\"diff-line-content empty\">'));
+    }
+}
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {
@@ -1661,10 +1679,9 @@ function createCommentRowSingle(cm, url, prefix) {
     if (typeof send_msg != 'undefined' && prefix == right_prefix)
         interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
-    if (prefix == right_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
-        $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
-        $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
-    }
+    
+	if (prefix == right_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($tr, cm);
     $tr.append(
         $('<td colspan=\"2\">')
             .append($('<span class=\"pull-right delete\">')
@@ -1724,10 +1741,8 @@ function createCommentRowSingle(cm, url, prefix) {
             .append(useMarkdown == "true" ? markdown.toHTML(cm.comment) : convertToHTML(cm.comment))
             )
     );
-    if (prefix == left_prefix && (cm.type === 'posterior' || cm.type === 'anterior')) {
-        $tr = $tr.append($('<td class=\"diff-line-num empty\">'));
-        $tr = $tr.append($('<td class=\"diff-line-content empty\">'));
-    }
+    if (prefix == left_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($tr, cm);
     return $tr;
 }
 
@@ -1808,22 +1823,28 @@ function selectNewCommentType(row_data) {
 
 function createFormSingle(url, addr, funId, comObj, prefix) {
 
-    var $form = $('<tr class=\"comForm\">');
+    var $form = null;
+    var $divContainer = null;
 
-    if (prefix == right_prefix) {
-        $form = $form.append($('<td class=\"diff-line-num empty\">'));
-        $form = $form.append($('<td class=\"diff-line-content empty\">'));
-    }
+    commentType = comObj === null ? null : comObj.type;
+    if (commentType === null || commentType === 'posterior' || commentType === 'anterior') {
+        $form = $('<tr class=\"comForm\">');
+    if (prefix == right_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
+        var $formContainer = $('<td colspan=\"2\"/>');
+        $divContainer = $('<div/>');
+        $form.append($formContainer);
+        $formContainer.append($divContainer);
+    } else {
+        $form = $('<span class=\"comForm\" >');
+        $divContainer = $form;
+    }	 
+
     if (typeof useMarkdown == "undefined") {
         if (sessionStorage) {
             useMarkdown = JSON.parse(sessionStorage.getItem('useMarkdown'));
         }
     }
-
-    var $formContainer = $('<td colspan=\"2\"/>');
-    var $divContainer = $('<div/>');
-    $form.append($formContainer);
-    $formContainer.append($divContainer);
 
     $textArea = $('<textarea name=\"content\" data-height=\"200\" rows=\"10\" style=\"width:100%; line-height:14px\">');
     $divContainer.append($textArea);
@@ -1860,7 +1881,7 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
                     var $row = $('#' + prefix + dataParsed.functionOffset);
                     if (dataParsed.comment) {
                         var $cmbox = createCommentRowSingle(dataParsed, url, prefix, addr)
-                        $row.next().append($cmbox);
+                        addCommentBoxToRow($cmbox, $row, dataParsed);
                     } else {
 						detachComment($row, dataParsed.type)
                     }
@@ -1885,10 +1906,8 @@ function createFormSingle(url, addr, funId, comObj, prefix) {
     if (useMarkdown == "true")
         $textArea.markdown({ autofocus: true, savable: false, iconlibrary: 'fa', fullscreen: true });
 
-    if (prefix == left_prefix) {
-        $form = $form.append($('<td class=\"diff-line-num empty\">'));
-        $form = $form.append($('<td class=\"diff-line-content empty\">'));
-    }
+    if (prefix == left_prefix)
+        insertEmptyRowOnAnteriorAndPosteriorComment($form, comObj);
     return $form;
 }
 
@@ -1917,7 +1936,7 @@ function setUpTextHighlights(trigger, prefix) {
             return false; // prevent text selection
         })
         .mouseover(function () {
-            if (isMouseDown) {
+            if (isMouseDown && !isAddClick) {
                 if (start)
                     start.addClass("highlighted");
                 isDragging = true;
@@ -1925,7 +1944,7 @@ function setUpTextHighlights(trigger, prefix) {
             }
         })
         .mouseup(function () {
-            if (!isDragging)
+            if (!isDragging && !isAddClick)
                 $(this).toggleClass("highlighted");
         })
 
@@ -1933,6 +1952,7 @@ function setUpTextHighlights(trigger, prefix) {
         .mouseup(function () {
             isMouseDown = false;
             isDragging = false;
+			isAddClick = false;
         });
 
     $(trigger).click(function () {
