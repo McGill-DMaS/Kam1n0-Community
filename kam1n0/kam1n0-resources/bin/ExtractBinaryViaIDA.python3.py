@@ -140,8 +140,8 @@ first_segment_address = ""
 
 for seg_ea in Segments():
 
-    if not first_segment_address:
-        first_segment_address = get_segm_start(seg_ea)
+    if not first_segment_address and get_segm_name(seg_ea) != 'HEADER':
+            first_segment_address = get_segm_start(seg_ea)
 
     for function_ea in Functions(get_segm_start(seg_ea), get_segm_end(seg_ea)):#Functions(SegStart(seg_ea), SegEnd(seg_ea)):
         f_name = get_func_name(function_ea) #GetFunctionName(function_ea)
