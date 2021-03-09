@@ -39,7 +39,7 @@
 								<div class="row">
 									<a class="btn btn-danger pull-right btn-sm href-terminated"
 										style="width: 100px" data-toggle="modal"
-										th:attr="lnk=${'/userHome/terminate/'+ job.progress.jobId}"
+										th:attr="lnk=${job.taskName}"
 										data-target="#modalStop">Terminate</a>
 								</div>
 							</div>
@@ -89,37 +89,39 @@
 					<button type="button" class="btn btn-default btn-sm"
 						data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-warning btn-sm"
-						id="btn-conf-stop">Confirm</button>
+						id="btn-conf-stop" >Confirm</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
+	<script th:inline="javascript">
 		/*<![CDATA[*/
 		$(document).ready(
 				function() {
 					var toBeTerminated;
 					$(".href-terminated").click(function(ev) {
 						toBeTerminated = $(ev.target).attr('lnk');
-						console.log(toBeDeleted);
-						$('#btn-conf-stop').text('');
+						//console.log(toBeTerminated);
+						//$('#btn-conf-stop').text('');
 					});
 					$('#btn-conf-stop').click(function() {
-						if (toBeDeleted) {
-							$.post(toBeDeleted, '', function(msg) {
-								if (msg.error) {
-									$('#modalStop-msg').text(msg.error);
-								} else {
-									location.reload();
-								}
-							})
-						}
+                    $.ajax({
+                        type : "GET",
+                        url : '/JobTerminate',
+                        data : {
+                        	task : toBeTerminated
+                        },
+                        success : function(snyData) {
+                        //console.log("snyData:");
+                        }
+                    });
+                    window.location.replace('/userHome');
 					});
 
 					$('.progress-holder').each(
 							function(ind, ele) {
 								var $ele = $(ele);
-								console.log($ele.attr('taskName'));
+								//console.log($ele.attr('taskName'));
 								$ele.empty();
 								queryBinaryIndexJobProgress(
 										$ele.attr('taskName'),
@@ -130,6 +132,8 @@
 							});
 
 				});
+
+
 		/*]]>*/
 	</script>
 </div>

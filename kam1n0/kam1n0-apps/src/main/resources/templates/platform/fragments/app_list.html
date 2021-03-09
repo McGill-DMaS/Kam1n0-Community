@@ -46,7 +46,7 @@
 									<small style="font-size: 10pt">Permanent Link:</small> <a
 										th:href="@{${app.link}}"><span th:text="${app.link}"></span></a>
 								</h2>
-								<h3 th:inline="text">
+								<h3 th:inline="text"  th:title="${app.basicInfo.configuration}">
 									[[${app.basicInfo.name}]] <small style="font-size: 13pt;display: none;"
 										th:text="${app.basicInfo.title}"></small>
 								</h3>
@@ -235,7 +235,7 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
+	<script th:inline="javascript">
 		/*<![CDATA[*/
 		$(document).ready(
 				function() {

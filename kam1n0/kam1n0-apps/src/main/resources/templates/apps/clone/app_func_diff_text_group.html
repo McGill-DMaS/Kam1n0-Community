@@ -145,12 +145,12 @@ textarea {
         return line.replace(/^0x[0-9a-fA-F]+\s/g, "").replace(/\s{2,}/g, ' ').replace(/;[\s\S]*/g, '') + "\r\n";
     }
 
-    function drawBlockText(fun, $holder) {
+    function drawBlockText(fun, $holder,affix) {
     	var fun_isVex = isVexCode(fun);
         $holder.html('');
         for (var i = 0; i < fun.nodes.length; ++i) {
             $holder.append($('<div class="sep">').html(fun.nodes[i].name));
-            var tbl = $('<table class=\'block\' id=\'' + fun.nodes[i].blockID + '\'>');
+            var tbl = $('<table class=\'block\' id=\'' + fun.nodes[i].blockID+affix + '\'>');
             var tblb = tbl.append('<tbody>');
             tbl.data('block', fun.nodes[i]);
             for (var j = 0; j < fun.nodes[i].srcCodes.length; ++j) {
@@ -345,8 +345,8 @@ textarea {
 
 
                     var clone = $(this).data('clone');
-                    block_left = $('#' + clone._1);
-                    block_right = $('#' + clone._2);
+                    block_left = $('#' + clone._1+"_l");
+                    block_right = $('#' + clone._2+"_r");
                     block_left.find("tr").remove();
                     block_right.find("tr").remove();
 
@@ -386,8 +386,8 @@ textarea {
                     var diff = JsDiff.diffTrimmedLines(code_a, code_b);
 
                     var tbl_left, tbl_right;
-                    tbl_left = $('#' + clone._1 + ' > tbody:last');
-                    tbl_right = $('#' + clone._2 + ' > tbody:last');
+                    tbl_left = $('#' + clone._1+"_l" + ' > tbody:last');
+                    tbl_right = $('#' + clone._2 +"_r"+ ' > tbody:last');
 
                     for (var i = 0; i < diff.length; i++) {
                         // put remove ahead e.g.
@@ -896,10 +896,9 @@ textarea {
                    + " ]            compares to              [ " +
                    p_b.functionName + " @ " + p_b.binaryName + "]"
         );
-        
 
-        drawBlockText(p_a, $('#clone-text-left'));
-        drawBlockText(p_b, $('#clone-text-right'));
+        drawBlockText(p_a, $('#clone-text-left'),"_l");
+        drawBlockText(p_b, $('#clone-text-right'),"_r");
         drawCloneTextList(p_a, p_b, cloneParts, $('#clone-group-list'));
 
         plotComments(p_a, $('#clone-text-left'));
@@ -948,6 +947,8 @@ textarea {
 		
 
         var data = window.opener.fin_result;
+        console.log("data:");
+        console.log(data);
 		var ind1 = QueryString['in1'];
 		var ind2 = QueryString['in2'];
 		
