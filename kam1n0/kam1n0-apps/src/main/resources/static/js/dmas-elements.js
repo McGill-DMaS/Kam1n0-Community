@@ -341,6 +341,11 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
 									"format":"none"
 								}
 							},
+							"effects": {
+							    "pullOutSegmentOnClick": {
+							            "effect": "none"
+							    }
+							},
 							"misc": {
 								"canvasPadding": {
 									"top": 0,
@@ -693,6 +698,11 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
 									"format":"none"
 								}
 							},
+							"effects": {
+                                "pullOutSegmentOnClick": {
+                            			"effect": "none"
+                            	}
+                            },
 							"misc": {
 								"canvasPadding": {
 									"top": 0,

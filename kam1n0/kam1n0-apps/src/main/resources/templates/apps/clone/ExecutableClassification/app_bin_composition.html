@@ -92,8 +92,8 @@ text {
 								<div id='ClassDistribution' style="text-align: left;"></div>
 							</div>
 						</div>
-						
-						
+
+
 						<div class="row"
 							style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
 							<div class="col-xs-12"
@@ -103,7 +103,7 @@ text {
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="tab-pane" id="classificationdetails" style="height: 100%">
 						<div class="row" style="height: 100%">
 							<div class="col-xs-2 address-panel" style="height: 100%">
@@ -162,7 +162,9 @@ text {
 													search through all the functions.</p>
 											</div>
 										</li>
-										
+										<li><div class="row">
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
+										</div></li>
 										<li><div class="row">
 												<h6>Filter Clusters</h6>
 											</div></li>
@@ -200,10 +202,10 @@ text {
 							</div>
 						</div>
 					</div>
-					
-					
-					
-					
+
+
+
+
 				</div>
 			</div>
 		</div>
@@ -270,17 +272,17 @@ text {
 			return result;
 		}
 
-		
-		
-		
+
+
+
 		function createclassificationInfoAtAddress(info) {
-			
+
 			var max_id = undefined;
 			var max_score = 0;
 			$.each(info.mxs, function(a,b){
 				if(b>max_score) {max_score = b; max_id = a};
 			})
-			
+
 			var $div = $("<div>", {
 				'class' : 'entry'
 			});
@@ -371,17 +373,18 @@ text {
 
 					});
 
-			return $div;
+			arr = [$div, max_score];
+			return arr;
 		}
-		
-		
-		
-		
-		
-		
-		var cluster_not_selected = new Set(); 
-		
-		
+
+
+
+
+
+
+		var cluster_not_selected = new Set();
+
+
         function createClusterFilters(lis) {
           var $holder = $('#filters-clusters-div');
           onchanged = function(){
@@ -396,10 +399,10 @@ text {
             });
              $('#classificationaddrSelector').change();
           }
-          
+
           var cluster_set = new Set();
             console.log(lis);
-          
+
           $.each(lis, function(k,v) {
             console.log(v.mxs);
             $.each(v.mxs, function(k2,v2) {
@@ -428,14 +431,14 @@ text {
            }
           $.material.init();
         }
-		
-		
-		
+
+
+
 		function createClassDistributionCompositionBox(data) {
 			var $summaryList = $('#ClassDistribution');
 			var smy = data.classSummary;
-			
-			
+
+
 			var $divCont = $("<div>", {
 				'class' : 'col-lg-3 col-xs-6'
 			});
@@ -471,10 +474,10 @@ text {
 									.css('cursor',
 											'default')
 									.css("color", "gray"));
-			
-			
+
+
 			$summaryList.empty();
-			
+
 			//var results = [];
 			//var keys = [];
 			//$.each(smy.classCloneCounterSource,
@@ -482,72 +485,72 @@ text {
 			//				    results.push(v/smy.classSize[k])
 			//					keys.push(data.classIdToNameMap[k]);
 			//				});
-			
+
 			var classDistribution = new Map();
 			var classSize = new Map();
-			
-			
+
+
 			$.each(data.classNameToIdMap,
 							function(k, v) {
 							    classDistribution.set(k,0);
 							    classSize.set(k,0.00001);
 							});
-							
-			var clusterSize = new Map();		
-								
+
+			var clusterSize = new Map();
+
 			$.each(smy.clusterSize,
 							function(k, v) {
 							clusterSize.set(k,v);
 							});
-							
-							
-			var clusterToClass = new Map();				
+
+
+			var clusterToClass = new Map();
 			$.each(smy.clusterToClass,
 							function(k, v) {
 							    clusterToClass.set(k,v);
 							    classSize.set(v,classSize.get(v)+clusterSize.get(k));
 							});
-			
+
 			$.each(smy.clusterCloneCounter,
 							function(k, v) {
 							    classDistribution.set(clusterToClass.get(k), classDistribution.get(clusterToClass.get(k))+1);
 							});
-			
+
 			total = 0.00001;
-			
-			
+
+
 			//classDistribution.forEach(function(num,cls)  {
 			//    classDistribution.set(cls, num/classSize.get(cls))
             //});
-			
+
 			///classDistribution.forEach(function(num,cls)  {
             ///    total = total + num;
             ///});
-			
-			
-			var classAVGCluster = new Map();			
+
+
+			var classAVGCluster = new Map();
 			$.each(smy.classAVGCluster,
 							function(k, v) {
 							    classAVGCluster.set(k,v);
 							});
-			
-			
+
+
 			classDistribution.forEach(function(num,cls) {
-            
+
 				if(classAVGCluster.get(cls)==0){
 			        $divHeader.append($("<p>").append(cls+": 0"+"%"));
 				}else{
 			    $divHeader.append($("<p>").append(cls+": "+formatString(Math.min((num/classAVGCluster.get(cls)*100),100).toFixed(2))+"%"));
 				}
             });
-			
-			
+
+
 			//for (i = 0; i < results.length; i += 1) {
 			//    $divHeader.append($("<p>").append(keys[i]+": "+formatString((results[i]/total*100).toFixed(2))+"%"));
 			//}
-			
-			
-			
+
+
+
 			$divCont.append($divBox);
 			$summaryList.append($divCont);
 		}
@@ -638,13 +641,13 @@ text {
 				$(b).css("color", "white");
 				$(b).css("font-size", "15px");
 			});
-		}		
+		}
 
-		
-		
+
+
 		$(function() {
 			$(".slider").slider();
-			
+
 			$('#classificationaddress-bar-filter-menu').click(function(e) {
 				e.stopPropagation();
 			});
@@ -669,8 +672,8 @@ text {
 			classificationscaler.on('slide', function(slideEvt) {
 				classificationscale();
 			});
-			
-			
+
+
 
 			var bin_comp = /*[[${model.calculatePrefix() + 'BinaryComposition'}]]*/"";
 			var func_diff_text = /*[[${model.calculatePrefix() + 'func_diff_text'}]]*/"";
@@ -707,7 +710,7 @@ text {
 														$clusterselector.append($clusteroption);
 													}
 
-													
+
 													$clusterselector
 															.change(function() {
 
@@ -748,10 +751,22 @@ text {
 																											});
 																									for ( var info in struct.list) {
 																										var item = createclassificationInfoAtAddress(struct.list[info]);
-																										parent
-																												.append(item);
+																										var score = item[1];
+																										if($('#btn_unmatch').prop("checked")==true)
+																										{
+																											if(score != 0)
+																											{
+																												parent
+																													.append(item[0]);
+																											}
+																										}
+																										else
+																										{
+																											parent
+																												.append(item[0]);
+																										}
 																									}
-																									
+
 																									if($('#classificationinput-keyword').val().trim().length > 0){
 																										parent.highlight($('#classificationinput-keyword').val().trim());
 																									}
@@ -765,7 +780,7 @@ text {
 												}
 											});
 
-											
+
 								}, 2000);
 
 				$.ajax({
@@ -787,15 +802,15 @@ text {
 						return;
 					}
 				});
-                
-                
-                
-				
-                
-                
-						                                                                            
+
+
+
+
+
+
+
 			}
-			
+
 			var classificationinKeyWordSearch = false;
 			$('#classificationbutton-keyword').click(function(){
 				if(classificationinKeyWordSearch){
@@ -811,8 +826,12 @@ text {
 					$('#classificationaddrSelector').change();
 				}
 			});
-			
-			
+
+			$('#btn_unmatch').click(function(){
+				$('#classificationaddrSelector').change();
+			});
+
+
 		});
 
 		/*]]>*/

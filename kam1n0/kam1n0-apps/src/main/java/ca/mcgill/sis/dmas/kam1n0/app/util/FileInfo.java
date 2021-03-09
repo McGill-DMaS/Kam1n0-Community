@@ -25,7 +25,11 @@ public class FileInfo {
 	public long size = -1;
 	public long appId = -1;
 	public String appType = null;
-
+	public double threshold = 0.6;
+	public int top = 50;
+	public int blk_min = 1;
+	public int blk_max= 1300;
+	
 	public FileInfo() {
 	}
 

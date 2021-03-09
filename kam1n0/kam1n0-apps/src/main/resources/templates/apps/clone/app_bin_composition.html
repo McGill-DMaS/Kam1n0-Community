@@ -128,6 +128,9 @@ text {
 											</div>
 										</li>
 										<li><div class="row">
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
+										</div></li>
+										<li><div class="row">
 												<h6>Filter Functions</h6>
 											</div></li>
 										<li>
@@ -370,7 +373,8 @@ text {
 
 					});
 
-			return $div;
+			arr = [$div, max_score];
+			return arr;
 		}
 		
 		var not_selected = new Set(); 
@@ -614,8 +618,20 @@ text {
 																											});
 																									for ( var info in struct.list) {
 																										var item = createInfoAtAddress(struct.list[info]);
-																										parent
-																												.append(item);
+																										var score = item[1];
+																										if($('#btn_unmatch').prop("checked")==true)
+																										{
+																											if(score != 0)
+																											{
+																												parent
+																													.append(item[0]);
+																											}
+																										}
+																										else
+																										{
+																											parent
+																												.append(item[0]);
+																										}
 																									}
 																									scale();
 																									
@@ -682,6 +698,10 @@ text {
 					inKeyWordSearch = true;
 					$('#addrSelector').change();
 				}
+			});
+
+			$('#btn_unmatch').click(function(){
+				$('#addrSelector').change();
 			});
 		});
 

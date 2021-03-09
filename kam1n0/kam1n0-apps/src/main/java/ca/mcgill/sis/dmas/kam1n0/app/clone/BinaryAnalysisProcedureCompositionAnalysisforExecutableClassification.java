@@ -141,6 +141,10 @@ public class BinaryAnalysisProcedureCompositionAnalysisforExecutableClassificati
 			info.task = this.getJobName();
 			info.appType = appType;
 			info.appId = appId;
+			info.threshold = threshold;
+			info.top = top;
+			info.blk_min = blk_min;
+			info.blk_max = blk_max;
 			info.save();
 
 			unit.setClusters(clusters);
