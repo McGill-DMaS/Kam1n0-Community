@@ -431,7 +431,7 @@ class Hooks(idaapi.UI_Hooks):
                 popup,
                 "Kam1n0:queryFragment",
                 None)
-        if idaapi.get_widget_title(form) == "Functions window":
+        if idaapi.get_widget_title(form).startswith("Functions"):
             idaapi.attach_action_to_popup(
                 form,
                 popup,
