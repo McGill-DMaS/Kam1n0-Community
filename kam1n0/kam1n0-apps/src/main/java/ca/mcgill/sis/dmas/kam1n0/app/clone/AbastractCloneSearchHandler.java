@@ -322,15 +322,15 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 	@Access(AccessMode.READ)
 	public @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
 			@RequestParam("fileName") String fileName,
-			@RequestParam(value = "keyword", defaultValue = "*") String keyword, HttpServletRequest request) {
+			@RequestParam(value = "functionKeyword", defaultValue = "*") String functionKeyword,
+			@RequestParam(value = "clonesKeyword", defaultValue = "*") String clonesKeyword,
+			HttpServletRequest request) {
 
 		try {
 			String cloneDetail = request.getParameter("cloneDetail");
 			String list = request.getParameter("list");
-			String addRange = request.getParameter("addRange");
 			String summary = request.getParameter("summary");
 			String[] not_selected = request.getParameterValues("not_selected[]");
-			// int addrRange = 200000; depreciated.
 
 			fileName = URLDecoder.decode(fileName, "UTF-8");
 			BinarySearchUnit servingObj = FileServingUtils.getFileRelatedObject(fileName, BinarySearchUnit.class);
@@ -344,14 +344,8 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 			}
 
 			if (list != null) {
-				long addrStart = NumberUtils.toLong(request.getParameter("addrStart"), 0);
-				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
-				return ImmutableMap.of("object",
-						servingObj.getCloneInfoList(addrStart, addrEnd, not_selected, keyword));
-			}
-
-			if (addRange != null) {
-				return ImmutableMap.of("object", servingObj.getAddressRanges());
+				long startAddress = NumberUtils.toLong(request.getParameter("startAddress"), 0);
+				return ImmutableMap.of("object", servingObj.getCloneInfoList(startAddress, not_selected, functionKeyword, clonesKeyword));
 			}
 
 			if (summary != null) {

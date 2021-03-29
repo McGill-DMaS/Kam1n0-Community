@@ -268,7 +268,7 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
         else
             icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage + "</span>&nbsp;";
         node.percentage = percentage;
-        node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
+        node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + longToHexa(val.function.startAddress);
         node.lvl = 1;
         node.a_attr = { 'per': percentage, 'func': val.function, 'lvl': 1 };
         root.children.push(node);
@@ -294,7 +294,7 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
         tree_settings["contextmenu"] = {
             "items": function (node) {
                 var addr = parseInt(node.a_attr.func.startAddress);
-                var addr = "0x" + addr.toString(16);
+                var addr = longToHexa(addr);
                 var items = {
                     "jumpto": {
                         label: "Jump to " + addr + " in IDA",
@@ -451,7 +451,7 @@ function CreateClusterCloneList($container, dataParsed, callback, icons, views, 
  *            what icon and link should be added as prefix.
  * @returns
  */
-function CreateCloneList($container, dataParsed, callback, icons, views, viewnames, isPercent = true, open_all = false, margin_top = -30) {
+function CreateCloneList($container, dataParsed, callback, icons, views, viewnames, isPercent = true, open_all = false, margin_top = -30, clonesKeyword = '') {
 
     var interaction = false;
     if (typeof send_msg != 'undefined')
@@ -617,7 +617,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         else
             icon = "<i class='fa fa-fw fa-sitemap'></i><span class=\"sparkpie\">" + percentage + "</span>&nbsp;";
         node.percentage = percentage;
-        node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + val.function.startAddress;
+        node.text = icon + val.function.functionName + " [" + val.function.blockSize + " blks] start effective address: " + longToHexa(val.function.startAddress);
         node.lvl = 1;
         node.a_attr = { 'per': percentage, 'func': val.function, 'lvl': 1 };
         root.children.push(node);
@@ -643,7 +643,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         tree_settings["contextmenu"] = {
             "items": function (node) {
                 var addr = parseInt(node.a_attr.func.startAddress);
-                var addr = "0x" + addr.toString(16);
+                var addr = longToHexa(addr);
                 var items = {
                     "jumpto": {
                         label: "Jump to " + addr + " in IDA",
@@ -712,6 +712,10 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
                         });
                 });
             }
+            if (clonesKeyword != '') {
+                $search.val(clonesKeyword);
+                $list.jstree(true).search(clonesKeyword);
+            }		 
         }).
         on('changed.jstree', function (e, data) {
             if (data.node.children.length == 0 && data.node.a_attr['data-pair'] != null) {
@@ -788,9 +792,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         }
     }
     $box.init()
-
 }
-
 
 function CreateCloneGraph(graph, placeholderId, callback) {
 
@@ -1186,7 +1188,7 @@ function drawFlow(func, placeholderId, cloneSets, code_key = 'srcCodes') {
             if (typeof send_msg != 'undefined') {
                 var node = g.node(d);
                 var addr = parseInt(node.sea);
-                var addr = "0x" + addr.toString(16);
+                var addr = longToHexa(addr);
                 send_msg("jumpto(" + addr + ")");
             }
         })
@@ -1663,6 +1665,11 @@ function insertEmptyRowOnAnteriorAndPosteriorComment(tr, cm) {
         tr = tr.append($('<td class=\"diff-line-content empty\">'));
     }
 }
+
+function longToHexa(toConvert) {
+    return "0x" + Number(toConvert.trim()).toString(16).toUpperCase();
+}
+
 function createCommentRowSingle(cm, url, prefix) {
 
     if (typeof useMarkdown == "undefined") {

@@ -34,6 +34,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,10 +181,9 @@ public class BinarySearchUnitForClassification implements Closeable {
 		HashSet<String> filter = new HashSet<>();
 
 		List<String> to_filter = new ArrayList<String>();
-		
-		
+
 		if (not_selected != null)
-		{	
+		{
 			for(String cls:not_selected)
 			{
 				to_filter.addAll(getBinaryList(cls));
@@ -741,32 +741,60 @@ public class BinarySearchUnitForClassification implements Closeable {
 
 	public BinarySearchUnitForClassification(Long appId, File file) {
 		this.file = file;
-		this.db = DBMaker//
-				.fileDB(file)//
-				.transactionDisable()//
-				.executorEnable()//
-				.asyncWriteEnable()//
-				.fileMmapEnableIfSupported()//
-				.fileMmapCleanerHackEnable()//
-				.closeOnJvmShutdown()//
+		this.db = DBMaker
+				.fileDB(file)
+				.executorEnable()
+				.fileMmapEnableIfSupported()
+				.closeOnJvmShutdown()
 				.make();
 
-		this.functionMap = this.db.hashMap(FUNCMAP);
-		this.cloneDetails = this.db.hashMap(CLONEDETAILS);
-		this.properties = this.db.hashMap(PROPERTIES);
-		this.binaryIdToNameMap = this.db.hashMap(BINIDNAME);
-		this.binaryNameToIdMap = this.db.hashMap(BINNAMEID);
-		
+		this.functionMap = this.db.hashMap(FUNCMAP).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BYTE_ARRAY)
+				.createOrOpen();
+		this.cloneDetails = this.db.hashMap(CLONEDETAILS).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BYTE_ARRAY)
+				.createOrOpen();
+		this.properties = this.db.hashMap(PROPERTIES).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.binaryIdToNameMap = this.db.hashMap(BINIDNAME).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.binaryNameToIdMap = this.db.hashMap(BINNAMEID).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
 
-		this.clusters = this.db.hashMap(CLUSTERS);
-		this.funcToCluster = this.db.hashMap(FUNC2CLUSTER);
-		this.classIdToNameMap = this.db.hashMap(CLASSIDNAME);
-		this.classNameToIdMap = this.db.hashMap(CLASSNAMEID);
-		
-		this.binaryClass = this.db.hashMap(BINARYCLASS);
-		this.cloneInfoEntry = this.db.treeMap(CLONEINFO);
-		this.clusterCloneInfoEntry = this.db.treeMap(CLUSTERCLONEINFO);
-		this.binaryStats = this.db.treeMap(CLONESTAT);
+		this.clusters = this.db.hashMap(CLUSTERS).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BYTE_ARRAY)
+				.createOrOpen();
+		this.funcToCluster = this.db.hashMap(FUNC2CLUSTER).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.create();
+		this.classIdToNameMap = this.db.hashMap(CLASSIDNAME).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.classNameToIdMap = this.db.hashMap(CLASSNAMEID).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.binaryClass = this.db.hashMap(BINARYCLASS).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+
+		this.clusterCloneInfoEntry = this.db.treeMap(CLUSTERCLONEINFO)
+				.keySerializer(Serializer.LONG)
+				.valueSerializer(Serializer.JAVA)
+				.counterEnable()
+				.createOrOpen();
+
+		this.cloneInfoEntry = this.db.treeMap(CLONEINFO)
+				.keySerializer(Serializer.LONG)
+				.valueSerializer(Serializer.JAVA)
+				.counterEnable()
+				.createOrOpen();
+		this.binaryStats = this.db.treeMap(CLONESTAT).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BOOLEAN)
+				.createOrOpen();
+
 		String str = this.properties.get(PROP_SUM);
 		String classstr = this.properties.get(PROP_CLASS_SUM);
 		String rid = this.properties.get(PROP_RID);

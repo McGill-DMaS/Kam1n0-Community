@@ -406,7 +406,9 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 	@Access(AccessMode.READ)
 	public @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
 			@RequestParam("fileName") String fileName,
-			@RequestParam(value = "keyword", defaultValue = "*") String keyword, HttpServletRequest request) {
+			@RequestParam(value = "functionKeyword", defaultValue = "*") String functionKeyword,
+			@RequestParam(value = "clonesKeyword", defaultValue = "*") String clonesKeyword,
+			HttpServletRequest request) {
 
 		try {
 			String cloneDetail = request.getParameter("cloneDetail");
@@ -432,21 +434,21 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 				SummaryWrapper wrapper = servingObj.summarize();
 				long addrStart = 0;
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
-				return ImmutableMap.of("object", wrapper,"object2",servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+				return ImmutableMap.of("object", wrapper,"object2",servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (list != null) {
 				long addrStart = NumberUtils.toLong(request.getParameter("addrStart"), 0);
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
 				return ImmutableMap.of("object",
-						servingObj.getCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+						servingObj.getCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (cluster_list != null) {
 				long addrStart = NumberUtils.toLong(request.getParameter("addrStart"), 0);
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
 				return ImmutableMap.of("object",
-						servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+						servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (addRange != null) {

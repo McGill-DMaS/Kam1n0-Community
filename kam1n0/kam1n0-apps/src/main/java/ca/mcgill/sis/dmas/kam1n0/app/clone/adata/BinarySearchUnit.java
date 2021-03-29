@@ -25,26 +25,27 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Stream;
+
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ArrayListMultimap;
 
 import ca.mcgill.sis.dmas.env.LocalJobProgress;
@@ -54,15 +55,12 @@ import ca.mcgill.sis.dmas.io.LineSequenceWriter;
 import ca.mcgill.sis.dmas.io.Lines;
 import ca.mcgill.sis.dmas.io.collection.Counter;
 import ca.mcgill.sis.dmas.io.collection.Reporter;
-import ca.mcgill.sis.dmas.io.file.DmasFileOperations;
-import ca.mcgill.sis.dmas.kam1n0.app.adata.BlockDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.adata.FunctionDataUnit;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit.RenderInfo.InfoEntry;
 import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit.RenderInfo.SummaryInfo;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.AsmObjectFactory;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Block;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 
 public class BinarySearchUnit implements AutoCloseable {
@@ -132,33 +130,38 @@ public class BinarySearchUnit implements AutoCloseable {
 	/**
 	 * If keyword-search is activated, ignore address range (no pagination).
 	 * 
-	 * @param addrStart
-	 * @param addrEnd
+	 * @param startAddress
 	 * @param not_selected
-	 * @param keyWord
+	 * @param functionKeyword
+	 * @param clonesKeyword
 	 * @return
 	 */
-	public RenderInfo getCloneInfoList(long addrStart, long addrEnd, String[] not_selected, String keyWord) {
+	public RenderInfo getCloneInfoList(long startAddress, String[] not_selected, String functionKeyword, String clonesKeyword) {
 		RenderInfo rin = new RenderInfo();
 		HashSet<String> filter = new HashSet<>();
 		if (not_selected != null)
 			Arrays.stream(not_selected).forEach(lg_val -> filter.add(lg_val));
-		String tkw = keyWord.trim().toLowerCase();
-		boolean keyword_search = !tkw.equals("*") && tkw.length() > 0;
+		String trimFunctionKeyword = functionKeyword.trim().toLowerCase();
+		String trimClonesKeyword = clonesKeyword.trim().toLowerCase();
+		boolean functionKeywordSearch = !trimFunctionKeyword.equals("*") && trimFunctionKeyword.length() > 0;
+		boolean cloneKeywordSearch = !trimClonesKeyword.equals("*") && trimClonesKeyword.length() > 0;
 
-		Map<Long, InfoEntry> map = null;
-		if (keyword_search)
-			map = cloneInfoEntry;
-		else
-			map = cloneInfoEntry.subMap(addrStart, true, addrEnd, false);
-
-		rin.list = map.values().stream().filter(info -> !keyword_search || info.fn.toLowerCase().contains(tkw))
+		rin.loadingInfo = new RenderInfo.LoadingInfo();
+		rin.loadingInfo.total = cloneInfoEntry.size();
+		Supplier<Stream<InfoEntry>> supplier = () -> cloneInfoEntry.values().stream()
 				.filter(info -> {
 					if (not_selected == null)
 						return true;
 					info.mxs.keySet().removeAll(filter);
 					return info.mxs.size() > 0;
-				}).collect(Collectors.toList());
+				})
+				.filter(info -> !functionKeywordSearch || info.fn.toLowerCase().contains(trimFunctionKeyword))
+				.filter(info -> !cloneKeywordSearch || info.clonesFunctionName.stream().anyMatch(x -> x.toLowerCase().contains(trimClonesKeyword)));
+
+		rin.loadingInfo.filteredTotal = supplier.get().count();
+
+		rin.list = supplier.get().filter(info -> startAddress > 0 ? Long.parseLong(info.add) > startAddress : true)
+				.limit(100).collect(Collectors.toList());
 
 		return rin;
 	}
@@ -193,9 +196,7 @@ public class BinarySearchUnit implements AutoCloseable {
 	 * Page ranges are now pre-caculated. Since the number of functions between each
 	 * fix interval varies a lot. Return type is String since JS do not support
 	 * long/double.
-	 * 
-	 * @param length
-	 * @param keyword
+	 *
 	 * @return
 	 */
 	public List<String> getAddressRanges() {
@@ -206,9 +207,16 @@ public class BinarySearchUnit implements AutoCloseable {
 
 		private static final long serialVersionUID = -1588370464143022477L;
 		public List<InfoEntry> list;
+		public LoadingInfo loadingInfo;
 
 		public RenderInfo() {
 
+		}
+
+		public static class LoadingInfo implements Serializable {
+			private static final long serialVersionUID = -2283309803998517855L;
+			public int total;
+			public long filteredTotal;
 		}
 
 		public static class SummaryInfo implements Serializable {
@@ -225,6 +233,7 @@ public class BinarySearchUnit implements AutoCloseable {
 			public String fn;
 			public String fid;
 			public HashMap<String, Double> mxs = new HashMap<>();
+			public List<String> clonesFunctionName = new ArrayList<>();
 
 			public InfoEntry(FunctionCloneDetectionResultForWeb entry, String address, SummaryInfo info) {
 				this.add = address;
@@ -232,15 +241,13 @@ public class BinarySearchUnit implements AutoCloseable {
 				this.fid = entry.function.functionId;
 				if (entry.clones.size() > 0) {
 					for (FunctionCloneEntryForWeb clone : entry.clones) {
-						mxs.compute(clone.binaryId,
-								(k, v) -> v == null ? clone.similarity : (clone.similarity > v ? clone.similarity : v));
+						clonesFunctionName.add(clone.functionName);
+						mxs.compute(clone.binaryId, (k, v) -> v == null ? clone.similarity : (clone.similarity > v ? clone.similarity : v));
 					}
 				}
-				mxs.keySet().stream()
-						.forEach(key -> info.binaryCloneCounterTarget.compute(key, (k, v) -> v == null ? 1 : v + 1));
+				mxs.keySet().stream().forEach(key -> info.binaryCloneCounterTarget.compute(key, (k, v) -> v == null ? 1 : v + 1));
 			}
 		}
-
 	}
 
 	public void put(BinarySurrogate part) {
@@ -253,7 +260,6 @@ public class BinarySearchUnit implements AutoCloseable {
 			}
 		});
 		addBinary(bin.binaryName, Long.toString(bin.binaryId));
-
 	}
 
 	public void put(FunctionCloneDataUnit unit, AsmObjectFactory factory, LocalJobProgress progress) {
@@ -266,7 +272,6 @@ public class BinarySearchUnit implements AutoCloseable {
 		unit.results.stream().forEach(result -> {
 
 			try {
-
 				if (result.clones.size() < 1)
 					logger.warn("Empty result for {} {}", result.function.functionName, result.function.binaryName);
 
@@ -298,7 +303,6 @@ public class BinarySearchUnit implements AutoCloseable {
 		this.boundaries.addAll(boundaries);
 
 		stage.complete();
-
 	}
 
 	public void fetchFunctionFlowFromRepository(long rid, AsmObjectFactory factory) {
@@ -483,23 +487,35 @@ public class BinarySearchUnit implements AutoCloseable {
 	public BinarySearchUnit(Long appId, File file) {
 
 		this.file = file;
-		this.db = DBMaker//
-				.fileDB(file)//
-				.transactionDisable()//
-				.executorEnable()//
-				.asyncWriteEnable()//
-				.fileMmapEnableIfSupported()//
-				.fileMmapCleanerHackEnable()//
-				.closeOnJvmShutdown()//
+		this.db = DBMaker
+				.fileDB(file)
+				.executorEnable()
+				.fileMmapEnableIfSupported()
+				.closeOnJvmShutdown()
 				.make();
 
-		this.functionMap = this.db.hashMap(FUNCMAP);
-		this.cloneDetails = this.db.hashMap(CLONEDETAILS);
-		this.properties = this.db.hashMap(PROPERTIES);
-		this.binaryIdToNameMap = this.db.hashMap(BINIDNAME);
-		this.binaryNameToIdMap = this.db.hashMap(BINNAMEID);
-		this.cloneInfoEntry = this.db.treeMap(CLONEINFO);
-		this.binaryStats = this.db.treeMap(CLONESTAT);
+		this.functionMap = this.db.hashMap(FUNCMAP).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BYTE_ARRAY)
+				.createOrOpen();
+		this.cloneDetails = this.db.hashMap(CLONEDETAILS).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BYTE_ARRAY)
+				.createOrOpen();
+		this.properties = this.db.hashMap(PROPERTIES).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.binaryIdToNameMap = this.db.hashMap(BINIDNAME).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.binaryNameToIdMap = this.db.hashMap(BINNAMEID).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.STRING)
+				.createOrOpen();
+		this.cloneInfoEntry = this.db.treeMap(CLONEINFO).keySerializer(Serializer.LONG)
+				.valueSerializer(Serializer.JAVA)
+				.counterEnable()
+				.createOrOpen();
+		this.binaryStats = this.db.treeMap(CLONESTAT).keySerializer(Serializer.STRING)
+				.valueSerializer(Serializer.BOOLEAN)
+				.createOrOpen();
 		{
 			String strSum = this.properties.get(PROP_SUM);
 			if (strSum == null)
