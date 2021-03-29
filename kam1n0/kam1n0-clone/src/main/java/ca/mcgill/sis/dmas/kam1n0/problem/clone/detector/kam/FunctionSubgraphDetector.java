@@ -148,6 +148,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
 			int fc = finalFuncLength.count;
+
 			if (!spark.localMode) {
 				// (keyed: srcfuncid -> (tar, src, score)
 				JavaPairRDD<Long, Tuple3<Block, Block, Double>> func_sblks = b_to_b.mapToPair(t -> {
@@ -155,6 +156,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				});
 				// data locality
 				results = func_sblks.groupByKey().map(tp -> {
+					// FIXME: Causes NullPointerException: 2nd parameter must not be null. Broken since commit 44dd2ce... 2018-11-07.
 					FunctionCloneEntry sbi = SubgraphBlocksImpl3.mergeSingles2(fc, null);
 					return sbi;
 				}).collect();

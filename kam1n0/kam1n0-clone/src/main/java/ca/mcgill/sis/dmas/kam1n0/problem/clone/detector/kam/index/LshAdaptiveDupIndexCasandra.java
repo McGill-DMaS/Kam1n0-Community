@@ -15,13 +15,13 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.addAll;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.typeConverter;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +29,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.datastax.driver.core.TableMetadata;
+import com.datastax.driver.core.*;
+import com.datastax.spark.connector.japi.CassandraRow;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,18 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 
 	private static Logger logger = LoggerFactory.getLogger(LshAdaptiveDupIndexCasandra.class);
 
+	private static final String _ADAPTIVE_HASH = "ADAPTIVE_HASH".toLowerCase();
+	private static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
+	private static final String _ADAPTIVE_HASH_VEC = _ADAPTIVE_HASH + "_vec";
+
+	private static final String _APP_ID_COLUMN = "rid0";
+	private static final String _HASHID_COLUMN = "hashid";
+	private static final String _IND_COLUMN = "ind";
+	private static final String _FULLKEY_COLUMN = "full_key";
+	private static final String _SHARED_INFO_COLUMN = "share";
+	private static final String _VEC_INFO_COLUMN = "vecinfo";
+
+
 	/**
 	 * @param isSingleUserApplication   When set, adaptive_hash table is partitioned by hash ID instead of rid, which is
 	 * 	  							  more efficient in that case. Also, adaptive_hash_view is not required anymore.
@@ -61,65 +75,74 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	 * 	  							  stored in the DB (as a clustering key) for code compatibility.
 	 */
 	public LshAdaptiveDupIndexCasandra(SparkInstance sparkInstance, CassandraInstance cassandraInstance,
-			String databaseName, boolean isSingleUserApplication) {
+									   String databaseName, boolean isSingleUserApplication) {
 		super(sparkInstance);
 		this.databaseName = databaseName;
 		this.cassandraInstance = cassandraInstance;
 		this.isSingleUserApplication = isSingleUserApplication;
 	}
 
-	// classes:
-	public static final String _ADAPTIVE_HASH = "ADAPTIVE_HASH".toLowerCase();
-	public static final String _ADAPTIVE_HASH_VIEW = _ADAPTIVE_HASH + "_view";
+	private String getColumnsAsCsv(List<String> columnsLabels) {
+		return String.join(",", columnsLabels);
+	}
 
-	// properties:
-	public static final String _APP_ID = "rid0";
-	public static final String _ADAPTIVE_HASH_HASHID = "hashid";
-	public static final String _ADAPTIVE_HASH_IND = "ind";
-	public static final String _ADAPTIVE_HASH_FULLKEY = "full_key";
-	public static final String _ADAPTIVE_HASH_VIDS = "vids";
-	public static final String _ADAPTIVE_HASH_SHARED_INFO = "share";
+	private void assertExpectedKey(String tableName, String humanReadableKeyType,
+								   List<String> expectedKeyColumns, List<ColumnMetadata> existingKeyColumns) {
+		List<String> existingColumnLabels = existingKeyColumns.stream()
+				.map(columnMeta -> columnMeta.getName()).collect(Collectors.toList());
 
+		if (!expectedKeyColumns.equals(existingColumnLabels)) {
+			throw new RuntimeException("Existing " + databaseName + "." + tableName
+					+ " has " + humanReadableKeyType + " key ("
+					+ getColumnsAsCsv(existingColumnLabels) + ") but current use-case expects ("
+					+ getColumnsAsCsv(expectedKeyColumns) + "). Cannot create or reuse table.");
+		}
+	}
 
-	private void createTable() {
+	private void createTableOrValidateExisting(String tableName, List<String> columnLabelsAndType,
+											   List<String> partitionKeyColumns, List<String> clusteringKeyColumns) {
 
-		String partitionKey = isSingleUserApplication ? _ADAPTIVE_HASH_HASHID : _APP_ID;
-		String clusteringKey = isSingleUserApplication ? _APP_ID : _ADAPTIVE_HASH_HASHID;
-
-		if (!cassandraInstance.checkColumnFamilies(this.sparkInstance.getConf(), this.databaseName, _ADAPTIVE_HASH)) {
+		if (!cassandraInstance.checkColumnFamilies(this.sparkInstance.getConf(), this.databaseName, tableName)) {
 			this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
-				session.execute("CREATE KEYSPACE if not exists " + databaseName + " WITH "
-						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
-						+ " AND durable_writes = true;");
-
-				String createTableStatement = "create table if not exists " + databaseName + "." + _ADAPTIVE_HASH + " (" //
-						+ _APP_ID + " bigint," //
-						+ _ADAPTIVE_HASH_HASHID + " bigint, " //
-						+ _ADAPTIVE_HASH_IND + " int, " //
-						+ _ADAPTIVE_HASH_FULLKEY + " blob, " //
-						+ _ADAPTIVE_HASH_SHARED_INFO + " text, " //
-						+ _ADAPTIVE_HASH_VIDS + " set<text>, " //
-						+ " PRIMARY KEY ((" + partitionKey + "), " + clusteringKey + ")"
+				String createTableStatement = "create table if not exists "
+						+ databaseName + "." + tableName + " ("
+						+ getColumnsAsCsv(columnLabelsAndType) + ", "
+						+ " PRIMARY KEY ((" + getColumnsAsCsv(partitionKeyColumns) + "), " + getColumnsAsCsv(clusteringKeyColumns) + ") "
 						+ ");";
-				logger.info("Creating table {}.{} with {}", this.databaseName, _ADAPTIVE_HASH, createTableStatement);
+				logger.info("Creating table {}.{} with {}", this.databaseName, tableName, createTableStatement);
 				session.execute(createTableStatement);
 			});
 		} else {
-			logger.info("Found table {}.{}", this.databaseName, _ADAPTIVE_HASH);
+			logger.info("Found table {}.{}", this.databaseName, tableName);
 
-			List<String> existingPrimaryKey = cassandraInstance.doWithClusterWithReturn(this.sparkInstance.getConf(), cluster -> {
-						TableMetadata meta = cluster.getMetadata().getKeyspace(databaseName).getTable(_ADAPTIVE_HASH);
-						return meta.getPrimaryKey().stream().map(columnMeta -> columnMeta.getName()).collect(Collectors.toList());
-					}
-			);
-			List<String> expectedPrimaryKey = Arrays.asList(partitionKey, clusteringKey);
-
-			if (!existingPrimaryKey.equals(expectedPrimaryKey)) {
-				throw new RuntimeException("Existing " + databaseName + "." + _ADAPTIVE_HASH + " was created for a "
-						+ (isSingleUserApplication ? "multi" : "single") + "-user application DB and can't be re-used as a "
-						+ (isSingleUserApplication ? "single" : "multi") + "-user application DB");
-			}
+			cassandraInstance.doWithCluster(this.sparkInstance.getConf(), cluster -> {
+				TableMetadata meta = cluster.getMetadata().getKeyspace(databaseName).getTable(tableName);
+				assertExpectedKey(tableName, "partition", partitionKeyColumns, meta.getPartitionKey());
+				assertExpectedKey(tableName, "clustering", clusteringKeyColumns, meta.getClusteringColumns());
+			});
 		}
+	}
+
+
+	private void createMainTable() {
+
+		// Single-user-app use-cases can be optimized with finer partitioning (on hash_id), while multiple-user-app
+		// use-cases remain constrained to partitioning on app ID only (this may lead to very large partitions)
+		// Note that app ID column is useless in single-use-app (always -1) but was kept for compatibility with existing
+		// queries.
+		List<String> partitionKey = isSingleUserApplication ?
+				Arrays.asList(_HASHID_COLUMN) : Arrays.asList(_APP_ID_COLUMN);
+		List<String> clusteringKey = isSingleUserApplication ?
+				Arrays.asList(_APP_ID_COLUMN) : Arrays.asList(_HASHID_COLUMN);
+
+		List<String> columnsWithTypes = Arrays.asList(
+				_APP_ID_COLUMN + " bigint",
+				_HASHID_COLUMN + " bigint",
+				_IND_COLUMN + " int",
+				_FULLKEY_COLUMN + " blob",
+				_SHARED_INFO_COLUMN + " text");
+
+		createTableOrValidateExisting(_ADAPTIVE_HASH, columnsWithTypes, partitionKey, clusteringKey);
 	}
 
 	private void createViewOnTable() {
@@ -128,14 +151,14 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			return cluster.getMetadata().getKeyspace(databaseName).getMaterializedView(_ADAPTIVE_HASH_VIEW) != null;
 		});
 
-		if ( !hasView ) {
+		if (!hasView) {
 			if (!isSingleUserApplication) {
 				this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 					String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "
 							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "
-							+ "WHERE " + _APP_ID + " IS NOT NULL AND " + _ADAPTIVE_HASH_HASHID + " IS NOT NULL AND "
-							+ _ADAPTIVE_HASH_IND + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID + ", "
-							+ _ADAPTIVE_HASH_HASHID + "), " + _ADAPTIVE_HASH_IND
+							+ "WHERE " + _APP_ID_COLUMN + " IS NOT NULL AND " + _HASHID_COLUMN + " IS NOT NULL AND "
+							+ _IND_COLUMN + " IS NOT NULL " + "PRIMARY KEY((" + _APP_ID_COLUMN + ", "
+							+ _HASHID_COLUMN + "), " + _IND_COLUMN
 							+ ");";
 					logger.info("Creating view {}.{} with {}", this.databaseName, _ADAPTIVE_HASH_VIEW, createViewStatement);
 					session.execute(createViewStatement);
@@ -150,14 +173,41 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 		}
 	}
 
+	private void createVecTable() {
+
+		// Single-user-app use-cases can be optimized with finer partitioning (on hash_id), while multiple-user-app
+		// use-cases remain constrained to partitioning on app ID only (this may lead to very large partitions)
+		// Note that app ID column is useless in single-use-app (always -1) but was kept for compatibility with existing
+		// queries.
+		List<String> partitionKeys = isSingleUserApplication ?
+				Arrays.asList(_APP_ID_COLUMN, _HASHID_COLUMN) : Arrays.asList(_APP_ID_COLUMN);
+		List<String> clusteringKeys = isSingleUserApplication ?
+				Arrays.asList(_VEC_INFO_COLUMN) : Arrays.asList(_HASHID_COLUMN, _VEC_INFO_COLUMN);
+
+		List<String> columnsWithTypes = Arrays.asList(
+				_APP_ID_COLUMN + " bigint",
+				_HASHID_COLUMN + " bigint",
+				_VEC_INFO_COLUMN + " text");
+
+		createTableOrValidateExisting(_ADAPTIVE_HASH_VEC, columnsWithTypes, partitionKeys, clusteringKeys);
+	}
+
+
 	private void createSchema() {
-		createTable();
+		this.cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
+			session.execute("CREATE KEYSPACE if not exists " + databaseName + " WITH "
+					+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
+					+ " AND durable_writes = true;");
+		});
+
+		createMainTable();
 		createViewOnTable();
+		createVecTable();
 	}
 
 	@Override
 	public void init() {
-		this.createSchema();
+		createSchema();
 	}
 
 	@Override
@@ -169,49 +219,50 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	public List<VecEntry<T, K>> update(long rid, List<VecEntry<T, K>> vecs, StageInfo info) {
 		return this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(), session -> {
 			Counter counter = new Counter();
+
 			return vecs.stream().parallel()
-					.map(vec -> new Tuple2<>(vec,
-							session.execute(QueryBuilder.select(_ADAPTIVE_HASH_HASHID)
-									.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId))).one()))
-					//
-					.map(tp -> {
+					.map(vec -> {
 						if (info != null) {
 							counter.inc();
 							info.progress = counter.percentage(vecs.size());
 						}
-						VecEntry<T, K> vec = tp._1();
-
-						HashSet<String> vals = vec.vids.stream().map(VecInfo::serialize)
-								.collect(Collectors.toCollection(HashSet::new));
-
-						if (tp._2 == null) {
-
-							String shared = vec.sharedInfo.serialize();
-
-							this.calFullKey(vec);
-							if (vec.fullKey.length != 0) {
-								session.executeAsync(QueryBuilder.insertInto(databaseName, _ADAPTIVE_HASH)//
-										.value(_APP_ID, rid) //
-										.value(_ADAPTIVE_HASH_HASHID, vec.hashId)//
-										.value(_ADAPTIVE_HASH_IND, vec.ind)
-										.value(_ADAPTIVE_HASH_FULLKEY, ByteBuffer.wrap(vec.fullKey))
-										.value(_ADAPTIVE_HASH_SHARED_INFO, shared)//
-										.value(_ADAPTIVE_HASH_VIDS, vals));
-							}
-
-							return vec;
-						} else {
-							session.executeAsync(QueryBuilder.update(databaseName, _ADAPTIVE_HASH)
-									.with(addAll(_ADAPTIVE_HASH_VIDS, vals)) //
-									.where(eq(_APP_ID, rid)) //
-									.and(eq(_ADAPTIVE_HASH_HASHID, vec.hashId)));
-							return null;
-						}
-					}).filter(vec -> vec != null).collect(Collectors.toList());
-
+						return updateOrInsertVecEntry(session, rid, vec) ? vec : null;
+					}).filter(vec -> vec != null)
+					.collect(Collectors.toList());
 		});
 	}
+
+	private boolean updateOrInsertVecEntry(Session session, long rid, VecEntry<T, K> vec) {
+
+		boolean isNewEntry = session.execute(
+				QueryBuilder.select(_HASHID_COLUMN)
+						.from(databaseName, _ADAPTIVE_HASH)
+						.where(eq(_APP_ID_COLUMN, rid))
+						.and(eq(_HASHID_COLUMN, vec.hashId))).isExhausted();
+
+		if (isNewEntry) {
+			calFullKey(vec);
+			if (vec.fullKey.length != 0) {
+				session.executeAsync(QueryBuilder.insertInto(databaseName, _ADAPTIVE_HASH)
+						.value(_APP_ID_COLUMN, rid)
+						.value(_HASHID_COLUMN, vec.hashId)
+						.value(_IND_COLUMN, vec.ind)
+						.value(_FULLKEY_COLUMN, ByteBuffer.wrap(vec.fullKey))
+						.value(_SHARED_INFO_COLUMN, vec.sharedInfo.serialize())
+				);
+			}
+		}
+
+		for (T vecInfo : vec.vids) {
+			session.executeAsync(QueryBuilder.insertInto(databaseName, _ADAPTIVE_HASH_VEC)
+					.value(_APP_ID_COLUMN, rid)
+					.value(_HASHID_COLUMN, vec.hashId)
+					.value(_VEC_INFO_COLUMN, vecInfo.serialize()));
+		}
+
+		return isNewEntry;
+	}
+
 
 	public static class HidWrapper implements Serializable {
 		private static final long serialVersionUID = 8243393648116173793L;
@@ -297,95 +348,136 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 	// .mapToPair(val -> new Tuple2<>(val._1, val._2.blockId));
 	// }
 
-	private static final String[] selectAllInfo = new String[] { _ADAPTIVE_HASH_HASHID, _ADAPTIVE_HASH_IND,
-			_ADAPTIVE_HASH_FULLKEY, _ADAPTIVE_HASH_VIDS, _ADAPTIVE_HASH_SHARED_INFO };
-	private static final String[] selectAllInfoButVidsAndSharedInfo = new String[] { _ADAPTIVE_HASH_HASHID,
-			_ADAPTIVE_HASH_IND, _ADAPTIVE_HASH_FULLKEY };
+	private static final String[] selectAllInfo = new String[] { _HASHID_COLUMN, _IND_COLUMN,
+			_FULLKEY_COLUMN, _SHARED_INFO_COLUMN};
+	private static final String[] selectAllInfoButVidsAndSharedInfo = new String[] { _HASHID_COLUMN,
+			_IND_COLUMN, _FULLKEY_COLUMN};
 
 	@Override
 	public JavaRDD<VecEntry<T, K>> getVecEntryInfoAsRDD(long rid, HashSet<Long> hashIds, boolean excludeBlockIds,
-			Function<List<T>, List<T>> filter, int maxHidsPerPartition ) {
-
-		String[] selection;
-		if (excludeBlockIds)
-			selection = selectAllInfoButVidsAndSharedInfo;
-		else
-			selection = selectAllInfo;
+														Function<List<T>, List<T>> vecInfosfilter, int maxHidsPerPartition) {
 
 		String dbToQuery = isSingleUserApplication ? _ADAPTIVE_HASH : _ADAPTIVE_HASH_VIEW;
 
-		if (sparkInstance.localMode) {
-			List<VecEntry<T, K>> collected = this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
-					session -> {
-						return hashIds.stream().map(hid -> {
-							return session.execute(QueryBuilder.select(selection)
-									.from(databaseName, dbToQuery).where(eq(_APP_ID, rid))
-									.and(eq(_ADAPTIVE_HASH_HASHID, hid))).one();
-						}).filter(row -> row != null).map(row -> {
-							VecEntry<T, K> vec = new VecEntry<T, K>();
-							vec.hashId = row.getLong(0);
-							vec.ind = row.getInt(1);
-							ByteBuffer bb = row.getBytes(2);
-							vec.fullKey = new byte[bb.remaining()];
-							bb.get(vec.fullKey);
-							if (!excludeBlockIds) {
-								Set<String> vids = row.getSet(3, String.class);
-								List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
-								if (filter != null) {
-									ls = filter.apply(ls);
-								}
-								vec.vids = new HashSet<T>(ls);
-								// .collect(Collectors.toCollection(HashSet::new));
-								String shared = row.getString(4);
-								vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
-							}
-							return vec;
-						}).collect(Collectors.toList());
-					});
+		return sparkInstance.localMode ?
+				getVecEntriesOnLocalSpark(dbToQuery, rid, hashIds, excludeBlockIds, vecInfosfilter, maxHidsPerPartition) :
+				getVecEntriesOnDistributedSpark(dbToQuery, rid, hashIds, excludeBlockIds, vecInfosfilter);
+	}
 
-			int numPartitions = maxHidsPerPartition <= ALL_HIDS_IN_ONE_PARTITION ? 1 : (collected.size() / maxHidsPerPartition + 1);
-			return sparkInstance.getContext().parallelize(collected, numPartitions);
-		} else {
-			return javaFunctions(this.sparkInstance.getContext())
-					//
-					.cassandraTable(databaseName, dbToQuery)
-					//
-					.select(selection)//
-					.where(_APP_ID + " = ? AND " + _ADAPTIVE_HASH_HASHID + " in ?", rid, hashIds)//
-					.filter(row -> !row.isNullAt(0) && !row.isNullAt(1) & !row.isNullAt(2))
-					//
-					.map(row -> {
+	private JavaRDD<VecEntry<T, K>> getVecEntriesOnLocalSpark(
+			String dbToQuery, long rid, HashSet<Long> hashIds,
+			boolean excludeBlockIds, Function<List<T>, List<T>> vecInfosfilter, int maxHidsPerPartition) {
+
+		List<VecEntry<T, K>> collected = cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(),
+				session -> {
+					return hashIds.stream().map(hid -> {
+						return session.execute(QueryBuilder
+								.select(excludeBlockIds ? selectAllInfoButVidsAndSharedInfo : selectAllInfo)
+								.from(databaseName, dbToQuery).where(eq(_APP_ID_COLUMN, rid))
+								.and(eq(_HASHID_COLUMN, hid))).one();
+					}).filter(row -> row != null).map(row -> {
 						VecEntry<T, K> vec = new VecEntry<T, K>();
 						vec.hashId = row.getLong(0);
 						vec.ind = row.getInt(1);
 						ByteBuffer bb = row.getBytes(2);
 						vec.fullKey = new byte[bb.remaining()];
 						bb.get(vec.fullKey);
-
 						if (!excludeBlockIds) {
-							Set<String> vids = row.getSet(3, typeConverter(String.class));
-							List<T> ls = vids.stream().map(VecInfo::<T>deSerialize).collect(Collectors.toList());
-							if (filter != null) {
-								ls = filter.apply(ls);
-							}
-							vec.vids = new HashSet<T>(ls);
-							// .collect(Collectors.toCollection(HashSet::new));
-							String shared = row.getString(4);
+							String shared = row.getString(3);
 							vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
-						}
 
+							final List<T> ls = new ArrayList<>();
+							session.execute(QueryBuilder.select(_VEC_INFO_COLUMN)
+									.from(databaseName, _ADAPTIVE_HASH_VEC).where(eq(_APP_ID_COLUMN, rid))
+									.and(eq(_HASHID_COLUMN, vec.hashId))).forEach(vecRow -> {
+								ls.add(VecInfo.<T>deSerialize(vecRow.getString(0)));
+							});
+							if (vecInfosfilter != null) {
+								vec.vids = new HashSet<T>(vecInfosfilter.apply(ls));
+							} else {
+								vec.vids = new HashSet<T>(ls);
+							}
+						}
 						return vec;
-					});
-		}
+					}).collect(Collectors.toList());
+				});
+
+		int numPartitions = maxHidsPerPartition <= ALL_HIDS_IN_ONE_PARTITION ? 1 : (collected.size() / maxHidsPerPartition + 1);
+		return sparkInstance.getContext().parallelize(collected, numPartitions);
+	}
+
+	private JavaRDD<VecEntry<T, K>> getVecEntriesOnDistributedSpark(
+			String dbToQuery, long rid, HashSet<Long> hashIds,
+			boolean excludeBlockIds, Function<List<T>, List<T>> vecInfosfilter) {
+
+		JavaPairRDD<Long, VecEntry<T, K>> vecsByHashId = javaFunctions(sparkInstance.getContext())
+				.cassandraTable(databaseName, dbToQuery)
+				.select(excludeBlockIds ? selectAllInfoButVidsAndSharedInfo : selectAllInfo)
+				.where(_APP_ID_COLUMN + " = ? AND " + _HASHID_COLUMN + " in ?", rid, hashIds)//
+				.filter(row -> !row.isNullAt(0) && !row.isNullAt(1) & !row.isNullAt(2))
+				.mapToPair(row -> {
+					VecEntry<T, K> vec = new VecEntry<T, K>();
+					vec.hashId = row.getLong(0);
+					vec.ind = row.getInt(1);
+					ByteBuffer bb = row.getBytes(2);
+					vec.fullKey = new byte[bb.remaining()];
+					bb.get(vec.fullKey);
+
+					if (!excludeBlockIds) {
+						String shared = row.getString(3);
+						vec.sharedInfo = VecInfoShared.<K>deSerialize(shared);
+					}
+					return new Tuple2<>(vec.hashId, vec);
+				});
+
+		return excludeBlockIds ?
+				vecsByHashId.map(hashAndVecTuple -> hashAndVecTuple._2) :
+				joinVecInfosToVecEntries(vecsByHashId, rid, hashIds, vecInfosfilter);
+	}
+
+	private JavaRDD<VecEntry<T, K>> joinVecInfosToVecEntries(
+			JavaPairRDD<Long, VecEntry<T, K>> vecsByHashId,
+			long rid, HashSet<Long> hashIds, Function<List<T>, List<T>> vecInfosfilter) {
+
+		JavaPairRDD<Long, Iterable<String>> vecInfosByHashId = javaFunctions(sparkInstance.getContext())
+				.cassandraTable(databaseName, _ADAPTIVE_HASH_VEC)
+				.select(_HASHID_COLUMN, _VEC_INFO_COLUMN)
+				.where(_APP_ID_COLUMN + " = ? AND " + _HASHID_COLUMN + " in ?", rid, hashIds)
+				.mapToPair(row -> new Tuple2<>(row.getLong(0), row.getString(1)))
+				.groupByKey();
+
+		return vecsByHashId.join(vecInfosByHashId)
+				.map(hashAndMatchTuple -> {
+					VecEntry<T, K> vec = hashAndMatchTuple._2._1;
+					Iterable<String> vecInfosAsStrings = hashAndMatchTuple._2._2;
+
+					List<T> vecInfosFullList = new ArrayList<>();
+					vecInfosAsStrings.forEach(text -> vecInfosFullList.add(VecInfo.<T>deSerialize(text)));
+					if (vecInfosfilter != null) {
+						vec.vids = new HashSet<T>(vecInfosfilter.apply(vecInfosFullList));
+					} else {
+						vec.vids = new HashSet<T>(vecInfosFullList);
+					}
+
+					return vec;
+				});
 	}
 
 	public void dump(String file) {
 		try {
 			LineSequenceWriter writer = Lines.getLineWriter(file, false);
-			javaFunctions(this.sparkInstance.getContext()).cassandraTable(databaseName, _ADAPTIVE_HASH).select(_APP_ID,
-					_ADAPTIVE_HASH_HASHID, _ADAPTIVE_HASH_IND, _ADAPTIVE_HASH_FULLKEY, _ADAPTIVE_HASH_VIDS).map(row -> {
-						return row.toString();
-					}).collect().forEach(writer::writeLineNoExcept);
+			javaFunctions(sparkInstance.getContext())
+					.cassandraTable(databaseName, _ADAPTIVE_HASH)
+					.select(_APP_ID_COLUMN, _HASHID_COLUMN, _IND_COLUMN, _FULLKEY_COLUMN)
+					.map(CassandraRow::toString)
+					.toLocalIterator().forEachRemaining(writer::writeLineNoExcept);
+
+			javaFunctions(sparkInstance.getContext())
+					.cassandraTable(databaseName, _ADAPTIVE_HASH_VEC)
+					.select(_APP_ID_COLUMN, _HASHID_COLUMN, _VEC_INFO_COLUMN)
+					.map(CassandraRow::toString)
+					.toLocalIterator().forEachRemaining(writer::writeLineNoExcept);
+
 			writer.close();
 		} catch (Exception e) {
 			logger.error("Failed to dump index.", e);
@@ -398,9 +490,12 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 			this.cassandraInstance.doWithSession(sess -> {
 				if (isSingleUserApplication) {
 					sess.executeAsync(QueryBuilder.truncate(databaseName, _ADAPTIVE_HASH));
+					sess.executeAsync(QueryBuilder.truncate(databaseName, _ADAPTIVE_HASH_VEC));
 				} else {
 					sess.executeAsync(QueryBuilder.delete()
-							.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID, rid)));
+							.from(databaseName, _ADAPTIVE_HASH).where(eq(_APP_ID_COLUMN, rid)));
+					sess.executeAsync(QueryBuilder.delete()
+							.from(databaseName, _ADAPTIVE_HASH_VEC).where(eq(_APP_ID_COLUMN, rid)));
 				}
 			});
 		} catch (Exception e) {

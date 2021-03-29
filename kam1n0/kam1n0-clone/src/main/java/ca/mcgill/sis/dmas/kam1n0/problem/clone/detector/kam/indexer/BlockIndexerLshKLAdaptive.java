@@ -121,9 +121,11 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		ArrayListMultimap<Long, Double> candidates = ArrayListMultimap.create();
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
-		// get all the valid hids to a list
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(rid, Arrays.asList(obj), blockList ->
-			blockList.stream().filter(matchedBlock -> matchedBlock.functionId != blk.functionId).collect(Collectors.toList())
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(
+				rid,
+				Arrays.asList(obj),
+				(Function<List<VecInfoBlock>, List<VecInfoBlock>> & Serializable) blockList ->
+						blockList.stream().filter(matchedBlock -> matchedBlock.functionId != blk.functionId).collect(Collectors.toList())
 		)._2.collect();
 
 		infos.forEach(entry -> {
