@@ -1,12 +1,6 @@
 package ca.mcgill.sis.dmas.kam1n0;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -218,7 +212,9 @@ public class AppController {
 	public ModelAndFragment createAppList() {
 		UserInfo user = UserController.findUser();
 		List<ApplicationInfoSummary> apps = getAppInfo(user.ownedApps);
+		Collections.sort(apps, Collections.reverseOrder());
 		List<ApplicationInfoSummary> apps_shared = getAppInfo(user.accessibleApps);
+		Collections.sort(apps_shared, Collections.reverseOrder());
 		return new ModelAndFragment(FRAG_APP_LIST, ImmutableMap.of("owned", apps, "shared", apps_shared));
 	}
 
