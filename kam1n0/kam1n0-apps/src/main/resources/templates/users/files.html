@@ -62,6 +62,10 @@
 										th:text="${'File Type: ' + file.task}"></small>
 								</h3>
 								<h2 th:text="${file.appType + '/' + file.appId}"></h2>
+								<h6 th:text="${'Threshold: ' + file.threshold}"></h6>
+								<h6 th:text="${'Top-K: ' + file.top}"></h6>
+								<h6 th:text="${'Minimum Block Count: ' + file.blk_min}"></h6>
+								<h6 th:text="${'Maximum Block Count: ' + file.blk_max}"></h6>
 							</div>
 							<div class="col-sm-3">
 								<div class="row">

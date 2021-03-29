@@ -173,6 +173,10 @@ public class AppPlatform {
 		return scheduler.getJobProgress(UserController.findUserName(), taskName);
 	}
 
+	public boolean terminateJob(String taskName) {
+		return scheduler.terminateJob(UserController.findUserName(), taskName);
+	}
+
 	@Component
 	public class PrioritizeInterceptor extends HandlerInterceptorAdapter {
 

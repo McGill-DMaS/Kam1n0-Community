@@ -169,6 +169,9 @@ class Request:
         self.opener = opener
 
     def _do_get(self, url, params=None):
+    
+        if self.opener is None:
+            self.validate_and_install_if_needed()
         try:
             request = url
             if params is not None:

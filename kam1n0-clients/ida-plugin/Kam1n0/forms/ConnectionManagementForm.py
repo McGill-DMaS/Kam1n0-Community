@@ -20,6 +20,7 @@ import os
 import sys
 
 from Kam1n0 import IDAUtils
+from ..utilities.CloneConnector import CloneConnector
 
 if IDAUtils.is_hexrays_v7():
     from idaapi import Choose as Choose
@@ -160,13 +161,23 @@ class ConnectionManagementForm(QtWidgets.QDialog):
             app['app_url'] = str(self.url_line_edit.text())
             app['un'] = str(self.user_line_edit.text())
             app['pw'] = str(self.pass_line_edit.text())
-            self.configuration['apps'][app['app_url']] = app
-            self.listView.UpdateItems()
-            # Select the newly added item
-            idx = list(self.configuration['apps'].keys()).index(app['app_url'])
-            self.listView.setCurrentItem(self.listView.topLevelItem(idx))
-            self.UpdateDropDownList(idx)
-            info("The connection \'%s\' was added/updated." % app['app_url'])
+            cnn = CloneConnector(
+                    app_url=app['app_url'],
+                    un=app['un'],
+                    pw=app['pw'],
+                    msg_callback=IDAUtils.execute
+                )
+            resp = cnn.request._do_get(app['app_url']+'home')
+            if resp[0] == 0:
+                self.configuration['apps'][app['app_url']] = app
+                self.listView.UpdateItems()
+                # Select the newly added item
+                idx = list(self.configuration['apps'].keys()).index(app['app_url'])
+                self.listView.setCurrentItem(self.listView.topLevelItem(idx))
+                self.UpdateDropDownList(idx)
+                info("The connection \'%s\' was added/updated." % app['app_url'])
+            else:
+                info("The input information is not valid.")
 
     def OnButtonRemove(self):
         idx = int(self.listView.currentIndex().row())

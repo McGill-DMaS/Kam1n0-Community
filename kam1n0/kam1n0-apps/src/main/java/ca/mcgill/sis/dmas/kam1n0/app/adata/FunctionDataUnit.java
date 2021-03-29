@@ -16,9 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.adata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ca.mcgill.sis.dmas.io.collection.heap.Ranker;
@@ -39,6 +37,19 @@ public class FunctionDataUnit implements Serializable {
 	public String startAddress;
 	public int blockSize;
 	public SrcFunction srcFunc;
+
+
+	class BlockComparator implements Comparator<BlockDataUnit>
+	{
+		// Used for sorting in ascending order of
+		// roll number
+		public int compare(BlockDataUnit a, BlockDataUnit b)
+		{
+			int res = a.name.compareTo(b.name);
+			return res;
+		}
+	}
+
 
 	public ArrayList<BlockDataUnit> nodes = new ArrayList<>();
 	public ArrayList<Link> links = new ArrayList<>();
@@ -139,6 +150,7 @@ public class FunctionDataUnit implements Serializable {
 				validBlkIds.add(block.blockId);
 				node.appAttr = block.fillWebAttr();
 			}
+			Collections.sort(nodes,new BlockComparator());
 
 			for (Block block : function) {
 				for (long target : block.callingBlocks) {

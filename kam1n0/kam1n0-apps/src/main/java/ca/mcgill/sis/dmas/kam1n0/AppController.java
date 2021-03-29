@@ -277,6 +277,16 @@ public class AppController {
 			return ImmutableMap.of("error", "Failed to get job progress. Internal error.");
 		}
 	}
+	@Prioritize
+	@GetMapping("/JobTerminate")
+	public @ResponseBody Map<String, Object> getJobTerminate(@ModelAttribute("task") final String task) {
+		try {
+			boolean terminated = platform.terminateJob(task);
+		} catch (Exception e) {
+			logger.error("Failed to terminate job. ", e);
+		}
+		return ImmutableMap.of("object", "Job ternimated.");
+	}
 
 	@Prioritize
 	@RequestMapping(value = "/del_file", method = RequestMethod.POST)
