@@ -211,7 +211,7 @@ for seg_ea in Segments():
                     for ref in refdata:
                       dat[head] = format(get_qword(ref), 'x')[::-1]
             sblock['src'] = tlines
-            sblock['oprType'] = oprTypes
+            sblock['oprTypes'] = oprTypes
 
             # flow chart
             bcalls = list()

@@ -16,7 +16,6 @@
 package ca.mcgill.sis.dmas.kam1n0.framework.disassembly;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +55,40 @@ public class AsmLineNormalizationResource {
 				combination(prefix + element, groups, depth + 1, result);
 			}
 		});
+	}
+
+	// IDA API operand type enum, as defined on https://www.hex-rays.com/products/ida/support/sdkdoc/group__o__.html
+	// Comments below are taken from that documentation.
+	// Those constants haven't changed over several IDA version, if they ever had.
+	private enum IdaApiOperandType {
+		VOID(0), // No operand
+		REGISTER(1), // General Register (al,ax,es,ds...)
+		MEMORY(2), // Direct Memory Reference (DATA).
+		MEMORY_PHRASE(3), // Memory Ref [Base Reg + Index Reg]
+		MEMORY_DISPLACEMENT(4),  // Memory Ref [Base Reg + Index Reg + Displacement].
+		IMMEDIATE(5), // Immediate Value (constant)
+		IMMEDIATE_FAR(6), // Immediate Far Address (CODE).
+		IMMEDIATE_NEAR(7), // Immediate Near Address (CODE).
+		PROCESSOR_SPECIFIC_0(8), // processor specific type
+		PROCESSOR_SPECIFIC_1(9), // processor specific type
+		PROCESSOR_SPECIFIC_2(10), // processor specific type
+		PROCESSOR_SPECIFIC_3(11), // processor specific type
+		PROCESSOR_SPECIFIC_4(12), // processor specific type
+		PROCESSOR_SPECIFIC_5(13); // processor specific type
+
+		private final int value;
+
+		IdaApiOperandType(int value) {
+			this.value = value;
+		}
+
+		public static boolean isMemoryReference(int operandType) {
+			return operandType >= MEMORY.value && operandType <= MEMORY_DISPLACEMENT.value;
+		}
+
+		public static boolean isImmediate(int operandType) {
+			return operandType >= IMMEDIATE.value && operandType <= IMMEDIATE_NEAR.value;
+		}
 	}
 
 	public static final String NORM_REG = "REG";
@@ -218,24 +251,24 @@ public class AsmLineNormalizationResource {
 	}
 
 	public String normalizeOperand(String operand, Integer oprType, NormalizationSetting.NormalizationLevel level,
-			int enforcedLenth, boolean normalizeConstant) {
+			int enforcedLength, boolean normalizeConstant) {
 
 		operand = operand.trim().toUpperCase();
 
 		Register register = registers.get(operand);
 		if (register != null)
-			return normalizeRegister(level, register, enforcedLenth);
+			return normalizeRegister(level, register, enforcedLength);
 
 		if ((oprType == null && constantPattern.matcher(operand).find())
-				|| (oprType != null && oprType >= 5 && oprType <= 7))
+				|| (oprType != null && IdaApiOperandType.isImmediate(oprType)))
 			if (normalizeConstant)
 				return NORM_CONST;
 			else
 				return normalizeConstant(operand);
 
 		if ((oprType == null && memoryPattern.matcher(operand).find())
-				|| (oprType != null && oprType >= 2 && oprType <= 4))
-			return normalizeMemRef(level, operand, enforcedLenth);
+				|| (oprType != null && IdaApiOperandType.isMemoryReference(oprType)))
+			return normalizeMemRef(level, operand, enforcedLength);
 
 		// System.out.println("Discover unknown operand (treated as constant): "
 		// + operand);

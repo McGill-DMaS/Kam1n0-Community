@@ -251,7 +251,7 @@ def _get_ida_func_surrogate(func, arch):
                     struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
 
         block['src'] = instructions
-        block['oprType'] = oprTypes
+        block['oprTypes'] = oprTypes
 
         # flow chart
         block_calls = list()
@@ -336,7 +336,7 @@ def get_selected_code(sea, eea):
             dat[head] = binascii.hexlify(
                 struct.pack("<Q", idc.get_qword(ref))).decode('utf-8')
     block['src'] = instructions
-    block['oprType'] = oprTypes
+    block['oprTypes'] = oprTypes
     block['call'] = []
     func['blocks'].append(block)
     return surrogate
