@@ -188,6 +188,7 @@ public abstract class ApplicationHandler {
 	public final ModelAndView showFunctionText(@PathVariable("appId") long appId) {
 		try {
 			ApplicationInfoSummary summary = meta.getInfoSummary(appId);
+            summary.appAttrs.put("useMarkdown", System.getProperty("kam1n0.web.markdown", "true"));
 			return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(FRAG_APP_FUNC_TEXT, summary));
 		} catch (Exception e) {
 			logger.error("Failed creating func flow view.", e);

@@ -109,6 +109,12 @@
 		}
 
 		$(function() {
+			var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
+
+			if (sessionStorage) {
+				sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+			}
+
 			var id = QueryString['id'];
 			console.log(id);
 			if (id)

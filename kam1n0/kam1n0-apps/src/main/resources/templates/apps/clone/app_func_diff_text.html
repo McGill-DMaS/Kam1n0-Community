@@ -148,6 +148,12 @@
 		}
 
 		$(function() {
+			var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
+
+			if (sessionStorage) {
+				sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+			}
+
 			$menu = createDropDownMenu($('#diff-title-menu'));
 			tp = createCommentDropDownMenu(true);
 			$menu.add_menu_item('Show Comments', tp.items)

@@ -94,7 +94,7 @@ textarea {
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		
+
 
     function resize(){
         var docHeight = $('#card-body').height();
@@ -260,7 +260,7 @@ textarea {
         });
 
     }
-    
+
     function isVexCode(p_func){
 		if(p_func.nodes.length > 0 && p_func.nodes[0].srcCodes.length > 0)
 			return p_func.nodes[0].srcCodes[0].includes('SIMPLIFIED VEX CODE');
@@ -268,10 +268,10 @@ textarea {
 	}
 
     function drawCloneTextList(p_a, p_b, cloneParts, holder) {
-    
+
     	var a_isVex = isVexCode(p_a);
 		var b_isVex = isVexCode(p_b);
-	
+
     	// build name dict:
     	d_a = {}
     	for(var i = 0; i < p_a.nodes.length; ++i)
@@ -279,8 +279,8 @@ textarea {
     	d_b = {}
     	for(var i = 0; i < p_b.nodes.length; ++i)
     		d_b[p_b.nodes[i].blockID] = p_b.nodes[i].name;
-    	
-    	
+
+
         holder.html('');
         var divlist = $('<div class=\'tree\'>');
         var ulp = $('<ul>');
@@ -631,14 +631,14 @@ textarea {
 
                         var $row = $form.prev();
                         $form.remove();
-                        
+
                         if (dataParsed.comment) {
                             attachComment($row, dataParsed);
                             createCommentRow(dataParsed).insertAfter($row);
                         } else {
                             detachComment($row, dataParsed.type)
                         }
-												 
+
                         // find prev row that has line number (not comment row)
                         var $lineNumberRow = $row;
                         while ($lineNumberRow != null &&
@@ -852,7 +852,7 @@ textarea {
                    + " ]            compares to              [ " +
                    p_b.functionName + " @ " + p_b.binaryName + "]"
         );
-        
+
 
         drawBlockText(p_a, $('#clone-text-left'));
         drawBlockText(p_b, $('#clone-text-right'));
@@ -893,29 +893,29 @@ textarea {
                 return this.indexOf(str) === 0;
             };
         }
-        
+
         $synbarchk = $('<div>', {'class':'checkbox'}).append(
 				$('<label>').append(
 					$('<input>', {'class':'checkbox', 'type':'checkbox', 'id':'tcloneviewScrollSyn'})
 				).append(document.createTextNode('Synchronize Scroll Bars'))
 		)
-        
+
         createNormalizer(/*[[${model.prefix+ 'arch_rest/'}]]*/ '/', 'arm');
-		
+
 
         var data = window.opener.fin_result;
 		var ind1 = QueryString['in1'];
 		var ind2 = QueryString['in2'];
-		
+
         pa = data.results[ind1].function;
 		fid2 = data.results[ind1].clones[ind2].functionId;
 		retrieve(fid2, function(pb){
-			
+
 			function onchange(norm, arc){
 				normalize_opr = norm;
 				arch = arc;
 			}
-			
+
 			$menu = createDropDownMenu($('#clone-title-menu'));
 			tp = createCommentDropDownMenu(true);
 			not_selected = tp.not_selected
@@ -923,7 +923,7 @@ textarea {
 			$menu.add_menu_item('View Option', [$synbarchk])
 			// $menu.add_menu_item('Normalization', createNormalizationSettingMenu(onchange))
 			$menu.complete()
-			
+
 			drawCloneTextDiff(pa, pb, data.results[ind1].clones[ind2].clonedParts);
 		});
 
@@ -954,6 +954,14 @@ textarea {
     $(document).mouseup(function (e) {
         $(document).unbind('mousemove');
     });
+
+    $(function() {
+        var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
+
+        if (sessionStorage) {
+            sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+        }
+    })
 
 		/*]]>*/
 	</script>
