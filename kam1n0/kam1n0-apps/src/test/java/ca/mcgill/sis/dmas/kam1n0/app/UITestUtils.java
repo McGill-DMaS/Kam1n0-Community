@@ -3,6 +3,7 @@ package ca.mcgill.sis.dmas.kam1n0.app;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -100,7 +101,6 @@ public class UITestUtils {
 	}
 
 	public static void deleteTempFiles() {
-		String tempFilesDirectory = tempDirectory.getAbsolutePath() + "\\tmp\\admin\\";
-		deleteRecursively(new File(tempFilesDirectory));
+		deleteRecursively(Paths.get(tempDirectory.getAbsolutePath(), "tmp", "admin").toFile());
 	}
 }

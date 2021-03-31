@@ -3,19 +3,25 @@ package ca.mcgill.sis.dmas.kam1n0.app.clone;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.mcgill.sis.dmas.kam1n0.UserController;
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.SoftwareClassMeta;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -99,13 +105,15 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 				Long.toString(summary.basicInfo.appId), title, binaryList, request);
 	}
 
+	private String getUserTmpDir(long appId) {
+		return Paths.get(Environment.getUserTmpDir(UserController.findUserName()), Long.toString(appId)).toString();
+	}
+
 	@RequestMapping(value = "/{appId:.+}/push_bin", method = RequestMethod.POST)
 	public final @ResponseBody Map<String, Object> postBinary(@PathVariable("appId") long appId,
 			@RequestParam("files") Object[] objs) {
 		ArrayList<Object> nobjs = new ArrayList<>();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = getUserTmpDir(appId);
 		for (int i = 0; i < objs.length; ++i) {
 			if (objs[i] instanceof MultipartFile) {
 				MultipartFile file = ((MultipartFile) objs[i]);
@@ -152,7 +160,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 				Map<String, Object> params = new HashMap<String, Object>();
 				params.put(BinaryIndexProcedureLSHMR.KEY_FILES, nobjs);
 				ApplicationInfo appInfo = meta.getInfo(appId);
-				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 						BinaryIndexProcedureLSHMR.class, params);
 				return ImmutableMap.of("jid", idstr);
 			} catch (Exception e) {
@@ -171,9 +179,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 														  @RequestParam(value = "blk_min", defaultValue = "1") int blk_min, //
 														  @RequestParam(value = "blk_max", defaultValue = "1300") int blk_max, //
 														  @RequestParam(value = "bin") Object obj) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = getUserTmpDir(appId);
 		ArrayList<Object> nobjs = new ArrayList<>();
 		if (obj instanceof MultipartFile) {
 			MultipartFile file = ((MultipartFile) obj);
@@ -212,14 +218,37 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MIN, blk_min);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
-			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 					BinaryAnalysisProcedureCompositionAnalysis.class, params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {
 			logger.error("Failed submitting job.", e);
 			return ImmutableMap.of("error", e.getMessage());
 		}
+	}
 
+	@RequestMapping(value = "/{appId:.+}/get_tmp_files", method = RequestMethod.GET)
+	@ResponseBody
+	public final List<String> getTempFiles(@PathVariable("appId") long appId) {
+		String tmpDir = getUserTmpDir(appId);
+		File[] listOfFiles = new File(tmpDir).listFiles();
+		if (listOfFiles == null || listOfFiles.length == 0)
+			return new ArrayList<>();
+
+		return Arrays.stream(listOfFiles).map(File::getName).collect(Collectors.toList());
+	}
+
+	@RequestMapping(value = "/{appId:.+}/delete_tmp_files", method = RequestMethod.POST)
+	@Access(AccessMode.READ)
+	public @ResponseBody Map<String, Object> deleteTemp(@PathVariable("appId") long appId) {
+		try {
+			String tmpDir = getUserTmpDir(appId);
+			FileUtils.cleanDirectory(new File(tmpDir));
+			return ImmutableMap.of();
+		} catch (Exception e) {
+			logger.error("Failed submitting job.", e);
+			return ImmutableMap.of("error", e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/{appId:.+}/search_bin", method = RequestMethod.POST)
@@ -231,9 +260,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 			@RequestParam(value = "blk_min", defaultValue = "1") int blk_min, //
 			@RequestParam(value = "blk_max", defaultValue = "1300") int blk_max, //
 			@RequestParam(value = "bins") Object[] objs) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = getUserTmpDir(appId);
 		ArrayList<Object> nobjs = new ArrayList<>();
 		for (Object obj: objs) {
 			if (obj instanceof MultipartFile) {
@@ -274,7 +301,7 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		params.put(BinaryAnalysisProcedureCompositionAnalysis.KEY_BLK_MIN, blk_min);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
-			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 					BinaryAnalysisProcedureCompositionAnalysis.class, params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {
@@ -288,8 +315,6 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 	@Access(AccessMode.READ)
 	public final @ResponseBody Map<String, Object> searchBinaryDump(@PathVariable("appId") long appId,
 			@RequestParam(value = "bin") String file) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
 
 		try {
 			file = URLDecoder.decode(file, "UTF-8");
@@ -302,8 +327,8 @@ public abstract class AbastractCloneSearchHandler extends ApplicationHandler {
 		params.put(DumpCompositionAnalysis.KEY_FILE, bu);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
-			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name, DumpCompositionAnalysis.class,
-					params);
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
+					DumpCompositionAnalysis.class, params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {
 			logger.error("Failed submitting job.", e);

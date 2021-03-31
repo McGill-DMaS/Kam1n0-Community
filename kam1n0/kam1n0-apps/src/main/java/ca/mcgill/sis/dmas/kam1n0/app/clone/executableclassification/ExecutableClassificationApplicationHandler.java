@@ -270,9 +270,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 			@RequestParam("trainOrNot") final boolean trainOrNot, @RequestParam("clusterOrNot") final boolean clusterOrNot) {
 
 		ArrayList<Object> nobjs = new ArrayList<>();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = Environment.getUserTmpDir(UserController.findUserName());
 		for (int i = 0; i < objs.length; ++i) {
 			if (objs[i] instanceof MultipartFile) {
 				MultipartFile file = ((MultipartFile) objs[i]);
@@ -326,7 +324,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_DISTRIBUTION_THRESHOLD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).cluster_class_distribution_significance);
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_N_EXECUTABLE_THRESHOLD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).min_exe_per_cluster);
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_CLUSTER_METHOD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).clusterModel);
-				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 				BinaryIndexProcedureLSHMRforExecutableClassification.class, params);
 				return ImmutableMap.of("jid", idstr);
 			} catch (Exception e) {
@@ -476,9 +474,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 			@RequestParam(value = "bins") Object[] objs) {
 
 		ArrayList<Object> nobjs = new ArrayList<>();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = Environment.getUserTmpDir(UserController.findUserName());
 		for (Object obj: objs) {
 		if (obj instanceof MultipartFile) {
 			MultipartFile file = ((MultipartFile) obj);
@@ -514,7 +510,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 		params.put(BinaryAnalysisProcedureCompositionAnalysisforExecutableClassification.KEY_TOP, topk);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
-			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 					BinaryAnalysisProcedureCompositionAnalysisforExecutableClassification.class, params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {
