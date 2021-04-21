@@ -15,7 +15,7 @@
 #  *******************************************************************************/
 import idaapi
 res = idaapi.get_plugin_options("kam1n0")
-if res != 'noinit':
+if res != 'noinit' and res != None:
     import Kam1n0.Plugin as kp
     
     def PLUGIN_ENTRY():
