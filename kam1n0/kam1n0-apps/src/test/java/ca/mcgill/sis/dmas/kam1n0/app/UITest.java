@@ -45,8 +45,9 @@ public class UITest {
 			UITestUtils.startServer();
 		}
 
-		String envp = System.getenv().get("webdriver.chrome.driver");
-		System.setProperty("webdriver.chrome.driver", envp);
+		// assume in path.
+		// String envp = System.getenv().get("webdriver.chrome.driver");
+		// System.setProperty("webdriver.chrome.driver", envp);
 
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--start-maximized");
