@@ -329,32 +329,31 @@ public class UITest {
 		driver.switchTo().window(parentWindowHandler);
 	}
 
-	// @Test
-	// public void testDisassemblyFactory() throws Exception {
-	// log("Testing disassembly factory...");
-	// driver.get("http://127.0.0.1:8571/userHome");
-	// WebElement ele = createApp("/asm-clone");
-	// indexToApp(ele, "test-cases/disassembly_test_case/", "index-btn");
-	// }
+	@Test
+	public void testDisassemblyFactory() throws Exception {
+		log("Testing disassembly factory...");
+		driver.get("http://127.0.0.1:8571/userHome");
+		WebElement ele = createApp("/asm-clone");
+		indexToApp(ele, "test-cases/disassembly_test_case/", "index-btn");
+	}
 
-	// @Test
-	// public void testAsmClone() throws Exception {
-	// log("Testing asm-clone...");
-	// driver.get("http://127.0.0.1:8571/userHome");
-	// WebElement ele = createApp("/asm-clone");
-	// indexToApp(ele, "test-cases/asmclone/", "index-btn");
-	// searchExampleCode("Flow graph comparison.", "Full text alignment.", "Clone
-	// group alignment.");
-	// }
+	@Test
+	public void testAsmClone() throws Exception {
+		log("Testing asm-clone...");
+		driver.get("http://127.0.0.1:8571/userHome");
+		WebElement ele = createApp("/asm-clone");
+		indexToApp(ele, "test-cases/asmclone/", "index-btn");
+		searchExampleCode("Flow graph comparison.", "Full text alignment.", "Clone group alignment.");
+	}
 
-	// @Test
-	// public void testAsm2Vec() throws Exception {
-	// log("Testing asm2vec...");
-	// driver.get("http://127.0.0.1:8571/userHome");
-	// WebElement ele = createApp("/asm2vec-clone");
-	// indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
-	// searchExampleCode("Flow graph comparison.", "Full text alignment.");
-	// }
+	@Test
+	public void testAsm2Vec() throws Exception {
+		log("Testing asm2vec...");
+		driver.get("http://127.0.0.1:8571/userHome");
+		WebElement ele = createApp("/asm2vec-clone");
+		indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
+		searchExampleCode("Flow graph comparison.", "Full text alignment.");
+	}
 
 	// @Test
 	// public void testAsm2VecComposition() throws Exception {
