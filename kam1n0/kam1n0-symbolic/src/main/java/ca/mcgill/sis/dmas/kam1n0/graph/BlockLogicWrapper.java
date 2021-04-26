@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizer;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Block;
 import ca.mcgill.sis.dmas.kam1n0.vex.VEXIRBB;
-import shade.com.datastax.spark.connector.google.common.collect.ImmutableMap;
+import org.sparkproject.guava.collect.ImmutableMap;
 
 public class BlockLogicWrapper extends Block {
 	private static final long serialVersionUID = 3835277277624159207L;

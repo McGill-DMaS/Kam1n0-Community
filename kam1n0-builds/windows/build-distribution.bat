@@ -18,7 +18,6 @@ echo Exit Code = %ERRORLEVEL%
 if not "%ERRORLEVEL%" == "0" exit /b 1
 
 call mvn -DskipTests package
-call mvn -DskipTests package
 echo Exit Code = %ERRORLEVEL%
 if not "%ERRORLEVEL%" == "0" exit /b 1
 

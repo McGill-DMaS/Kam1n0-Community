@@ -198,7 +198,11 @@ textarea {
                 	continue;
                 var $cmr = createCommentRow(cm_left[i][1]);
                 if (cms[$row.index()] == null) {
-                    cms[$row.index()] = [[], []];
+                    // the double bracket is reserve keyword in ThymeLeaf 3.0 the parsing failed, separate the bracket
+                    cms[$row.index()] = [
+                    	[],
+                    	[]
+                    ];
                 }
                 cms[$row.index()][0].push($cmr);
             }
@@ -210,7 +214,11 @@ textarea {
                 	continue;
                 var $cmr = createCommentRow(cm_right[i][1]);
                 if (cms[$row.index()] == null) {
-                    cms[$row.index()] = [[], []];
+                	// the double bracket is reserve keyword in ThymeLeaf 3.0 the parsing failed, separate the bracket
+                    cms[$row.index()] = [
+                    	[],
+                    	[]
+                    ];
                 }
                 cms[$row.index()][1].push($cmr);
             }

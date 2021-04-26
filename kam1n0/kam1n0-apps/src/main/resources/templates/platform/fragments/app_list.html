@@ -2,7 +2,7 @@
 	<div th:if="${model.owned.isEmpty() and model.shared.isEmpty()}"
 		class="discription text-center"
 		style="font-size: 20pt; margin-top: 200px;">
-		You don't have any applications yet. Get started <a
+		You don't have any applications yet. Get started <a id="createAppId"
 			href="/createApp">here</a>.
 	</div>
 
@@ -65,7 +65,7 @@
 								<div class="row">
 									<a class="btn btn-danger pull-right btn-sm href-del"
 										style="width: 100px" data-toggle="modal"
-										th:attr="lnk=${app.basicInfo.calculatePrefix() + '/del/'}"
+										th:attr="lnk=${app.basicInfo.calculatePrefix() + 'del/'}"
 										data-target="#myModal">Delete</a> <a
 										th:href="${app.basicInfo.calculatePrefix() + 'editApp/'}"
 										class="btn btn-primary pull-right  btn-sm"

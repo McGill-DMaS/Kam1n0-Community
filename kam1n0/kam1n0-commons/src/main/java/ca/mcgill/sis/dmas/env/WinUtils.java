@@ -3,11 +3,9 @@ package ca.mcgill.sis.dmas.env;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.cassandra.thrift.Cassandra.AsyncProcessor.set_cql_version;
 
 import ca.mcgill.sis.dmas.env.WinUtils.WindowsReqistry;
 

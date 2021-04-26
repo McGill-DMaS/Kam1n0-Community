@@ -174,7 +174,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private void splitBucketRecursiveHandler(long rid, String plk, String clk, int depth,
 			List<VecEntry<T, K>> children) {
 		if (depth >= this.index_bucket.maxDepth) {
-			children.parallelStream().forEach(vec -> this.index_bucket.putHid(rid, plk, clk, depth, vec.hashId));
+			children.forEach(vec -> this.index_bucket.putHid(rid, plk, clk, depth, vec.hashId));
 			return;
 		}
 		// logger.info("Spliting depth {} with {}::{}", depth, plk, clk);
