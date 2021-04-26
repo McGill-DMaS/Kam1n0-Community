@@ -210,8 +210,6 @@ public class SubgraphBlocks implements Serializable {
 
 		Block aBlock = result.subgraphs.get(0).links.stream().findAny().get()._2().original;
 
-		entry.numBbs = aBlock.peerSize;
-
 		entry.similarity = score;
 
 		return entry;
@@ -286,7 +284,6 @@ public class SubgraphBlocks implements Serializable {
 		double link_coverage = clonedLinks.size() - node_coverage;
 		entry.similarity = (link_coverage * totalNodes + node_coverage) * 1.0
 				/ ((links.size() - totalNodes) * totalNodes + totalNodes);
-		entry.numBbs = block.peerSize;
 		return entry;
 
 	}

@@ -85,6 +85,11 @@ public class ArchitectureRepresentation {
 			this.identifier = identifier;
 			this.suffixs = new ArrayList<>(Arrays.asList(suffixs));
 		}
+		
+		@Override
+		public String toString(){
+			return this.identifier;
+		}
 	}
 
 	public static class OprGroup {

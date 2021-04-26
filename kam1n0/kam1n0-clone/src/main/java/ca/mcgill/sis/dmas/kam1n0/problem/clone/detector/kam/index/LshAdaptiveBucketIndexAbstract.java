@@ -173,8 +173,8 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 	/***
 	 * 
 	 * @param ind
-	 *            The index of a hash function (to be used as prefix for the hash
-	 *            key)
+	 *            The index of a hash function (to be used as prefix for the
+	 *            hash key)
 	 * @param fullKey
 	 *            The full hashed key according to maxDepth
 	 * @return set of unique hash ids
@@ -201,7 +201,8 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 		// if (right != null)
 		// vals.addAll(right.hids);
 		// }
-		// System.out.println("Collected " + vals.size() + " Depth " + bk.depth);
+		// System.out.println("Collected " + vals.size() + " Depth " +
+		// bk.depth);
 
 		return vals;
 	}
@@ -263,13 +264,16 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 					// get all the valid hids to a list
 					ArrayList<Tuple2<Long, T>> vals = new ArrayList<>();
 					for (int i = 0; i < bks.size(); ++i) {
+						if (bks.get(i).length < 1)
+							continue;
 						Tuple2<HashSet<Long>, Integer> hids = getHidsWithDepth(rid, i, bks.get(i));
 						Long bhid = blk.getUniqueHash();
 						Long id = HashUtils.constructID(//
 								DmasByteOperation.getBytes(i), //
 								DmasByteOperation.getBytes(bhid));
 						// System.out.println(
-						// "hids " + hids._1.size() + " contains? " + hids._1.contains(id) + " " +
+						// "hids " + hids._1.size() + " contains? " +
+						// hids._1.contains(id) + " " +
 						// blk.toString() + " " + id);
 						if (hids._1.size() < this.maxSize)
 							for (Long hid : getHids(rid, i, bks.get(i))) {
@@ -281,10 +285,11 @@ public abstract class LshAdaptiveBucketIndexAbstract {
 					}
 					return vals;
 
-				}).flatMap(// flat map the list (merge from different thread)
+				}).filter(ls -> ls != null).flatMap(// flat map the list (merge
+													// from different thread)
 						ls -> //
 						ls.stream())//
-				.collect(Collectors.toList());
+				.filter(x -> x != null).collect(Collectors.toList());
 	}
 
 	/*

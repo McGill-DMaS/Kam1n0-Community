@@ -11,7 +11,7 @@
 	<properties>
 		<start-class>ca.mcgill.sis.dmas.kam1n0.cli.Main</start-class>
 		<spring-boot-version>1.5.8.RELEASE</spring-boot-version>
-		<spring-load-version>1.2.6.RELEASEE</spring-load-version>
+		<spring-load-version>1.2.6.RELEASE</spring-load-version>
 
 	</properties>
 	<build>

@@ -41,7 +41,7 @@
 			<div class="card-header" data-background-color="green"
 				id="headerSource">
 				<h4 class="title" style="font-size: 15px" id='page_title'>
-					<i class="fa fa-cloud"></i> Textual Difference View <span id="diff-title-menu" class='pull-right'></span><span id="diff-title" class='pull-right'></span>
+					<i class="fa fa-cloud"></i> Textual Difference View <span id="diff-title-menu" class='pull-right'><a class="dropdown-toggle pull-right" id="btn-cp-cmt" title="copy comments"  data-toggle="dropdown" style="cursor:pointer"><i class="material-icons">content_copy</i></a> </span><span id="diff-title" class='pull-right'></span>
 				</h4>
 			</div>
 			<div class="card-content" style="height: 100%; padding-bottom: 50px">
@@ -49,12 +49,12 @@
 				<div
 					style="margin-left: 30px; margin-right: 20px; overflow-y: scroll; position: fixed; bottom: 60px; top: 80px; left: 10px; right: 10px;">
 					<table id="diff-table"
-						style="border-color: gray; display: table; width: 100%; border-spacing: 2px; border-right: solid 1px #eee; border-top: solid 1px #eee; border-bottom: solid 1px #eee;">
+						style="border-color: gray; display: table; width: 100%; table-layout: fixed; border-spacing: 2px; border-right: solid 1px #eee; border-top: solid 1px #eee; border-bottom: solid 1px #eee;">
 						<colgroup>
-							<col width="44" />
-							<col />
-							<col width="44" />
-							<col />
+							<col/>
+							<col/>
+							<col/>
+							<col/>
 						</colgroup>
 						<tbody>
 							<tr>
@@ -66,7 +66,6 @@
 			</div>
 		</div>
 	</div>
-
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		var QueryString = function() {
@@ -114,10 +113,13 @@
 		    
 		    
 			var cm_url = /*[[${model.prefix+ 'func_comment/'}]]*/ '/';
-			drawTextDiff(pa, pb, 'diff-title', 'diff-table', 'l-', 'r-', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
-			plotCommentsWithPrefix(cm_url, pa, 'l-')
-			plotCommentsWithPrefix(cm_url, pb, 'r-')
+			drawTextDiff(pa, pb, 'diff-title', 'diff-table', normalize, /*[[${model.getAppAttr('code_key', 'srcCodes')}]]*/);
+			initFunctionInDatabase(pa, pb);
+            plotCommentsWithPrefix(cm_url, pa, left_prefix);
+            plotCommentsWithPrefix(cm_url, pb, right_prefix);
 			initForm(cm_url);
+            setUpTextHighlights('#btn-cp-cmt', 'r-p');
+            setUpTextHighlights('#btn-cp-cmt', "\\+r-p");
 		}
 		
 		function build(normalize=false, arch='metapc'){
@@ -146,23 +148,19 @@
 		}
 
 		$(function() {
-			
-			
+			var useMarkDown = /*[[${model.getAppAttr('useMarkdown', 'true')}]]*/;
+
+			if (sessionStorage) {
+				sessionStorage.setItem('useMarkdown', JSON.stringify(useMarkDown));
+			}
+
 			$menu = createDropDownMenu($('#diff-title-menu'));
 			tp = createCommentDropDownMenu(true);
 			$menu.add_menu_item('Show Comments', tp.items)
-			// $menu.add_menu_item('Normalization', createNormalizationSettingMenu(build))
 			$menu.complete()
 			build()
-			
-			
-			
 		})
 
 		/*]]>*/
 	</script>
 </div>
-
-
-
-

@@ -1,365 +1,499 @@
 <div class="row">
-	<style>
-.tab-pane {
-	min-height: 800px;
-}
-
-/* layout.css Style */
-.upload-drop-zone {
-	height: 200px;
-	border-width: 2px;
-	margin-bottom: 20px;
-}
-
-/* skin.css Style*/
-.upload-drop-zone {
-	margin-top: 20px;
-	color: #ccc;
-	border-style: dashed;
-	border-color: #ccc;
-	line-height: 200px;
-	text-align: center;
-	color: #ccc;
-}
-
-.upload-drop-zone.drop {
-	color: #222;
-	border-color: #222;
-}
-
-.btn-file {
-	position: relative;
-	overflow: hidden;
-}
-
-.btn-file input[type=file] {
-	position: absolute;
-	top: 0;
-	right: 0;
-	min-width: 100%;
-	min-height: 100%;
-	font-size: 100px;
-	text-align: right;
-	filter: alpha(opacity = 0);
-	opacity: 0;
-	outline: none;
-	background: white;
-	cursor: inherit;
-	display: block;
-}
-</style>
-	<div class="col-sm-10 middle">
-		<div class="card card-nav-tabs">
-			<div class="card-header" data-background-color="purple">
-				<div class="nav-tabs-navigation">
-					<div class="nav-tabs-wrapper">
-						<span class="nav-tabs-title">Tasks</span>
-						<ul class="nav nav-tabs" data-tabs="tabs">
-							<li class="active"><a href="#profile" data-toggle="tab"
-								aria-expanded="false"> <i class="material-icons">bug_report</i>
-									Function Search
-									<div class="ripple-container"></div>
-							</a></li>
-							<li class=""><a href="#messages" data-toggle="tab"
-								aria-expanded="true"> <i class="material-icons">code</i>
-									Binary Composition
-									<div class="ripple-container"></div>
-							</a></li>
-							<li class=""><a href="#settings" data-toggle="tab"> <i
-									class="material-icons">cloud</i> Indexing
-									<div class="ripple-container"></div>
-							</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="card-content">
-				<div class="tab-content" style="min-heigth: 400px">
-					<div class="tab-pane active" id="profile">
-						<div
-							th:replace="${model.queryFragment}(model=${model.queryModel})"></div>
-					</div>
-					<div class="tab-pane" id="messages">
-						<h4>Analyze a Binary File</h4>
-						<div class="row">
-							<div class="col-sm-1"></div>
-							<div class="col-md-4">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-										class="material-icons">settings</i>
-									</span>
-									<div class="form-group  label-floating"  data-toggle="tooltip" title="Only show the Top-K most similar assembly functions">
-										<label class="control-label">Top-K</label> <input type="text"
-											id="input-topk" class="form-control" value="50" name="topk" />
-										<span class="material-input"></span>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-4">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-										class="material-icons">vertical_align_bottom</i>
-									</span>
-									<div class="form-group label-floating" data-toggle="tooltip" title="The threshold of minimal similarity to consider two assembly functions are clones of each other">
-										<label class="control-label">Threshold</label> <input
-											id="input-threshold" type="text" class="form-control"
-											value="0.6" name="threshold" /> <span class="material-input"></span>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="input-group">
-									<div class="form-group label-floating">
-										<div class="checkbox">
-											<label style="font-size: 9pt; margin-left: 10px"> <input
-												type="checkbox" id="input-avoidSameBinary"
-												name="avoidSameBinary" checked="true" /> Exclude the same binary from the results
-											</label>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-1"></div>
-							<div class="col-md-4">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-										class="material-icons">tune</i>
-									</span>
-									<div class="form-group  label-floating"  data-toggle="tooltip" title="The minimum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
-										<label class="control-label">Minimum block count Filter</label> <input type="text"
-											id="input-blkmin" class="form-control" value="1" name="blk_min" />
-										<span class="material-input"></span>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-4">
-								<div class="input-group">
-									<span class="input-group-addon"> <i
-										class="material-icons">tune</i>
-									</span>
-									<div class="form-group  label-floating"  data-toggle="tooltip" title="The maximum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
-										<label class="control-label">Maximum block count Filter</label> <input type="text"
-											id="input-blkmax" class="form-control" value="1300" name="blk_max" />
-										<span class="material-input"></span>
-									</div>
-								</div>
-							</div>
-							
-						</div>
-
-						<div class="row">
-							<div class="col-sm-1"></div>
-
-							<div class="col-sm-10">
-								<form class="form-horizontal" id="appForm">
-									<div class="row">
-										<div class="col-md-12">
-											<h5>Select binary files from your computer. They will be
-												searched against the repository of this application.</h5>
-											<form id="search-upload-form">
-												<span class="btn btn-default btn-file"> Browse <input
-													type="file" multiple="" id="search-upload-input" />
-												</span>
-											</form>
-											<div class="upload-drop-zone" id="search-drop-zone">Or
-												drag and drop files here</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12" style="min-height: 100px">
-											<table class="table" id='search-file-table'>
-												<thead>
-													<tr>
-														<th>#</th>
-														<th>Name</th>
-														<th>Type</th>
-														<th>Size</th>
-													</tr>
-												</thead>
-												<tbody>
-												</tbody>
-											</table>
-										</div>
-									</div>
-									<p class="description pull-right">You can leave this page
-										and track all your jobs on the home page.</p>
-									<div class="row"></div>
-									<div class="row">
-										<button class='btn btn-primary pull-right'
-											id="search-btn-binary">
-											<i class="material-icons">cloud_upload</i> Analyze
-										</button>
-									</div>
-									<div class="row" id="search-progress-holder"></div>
-								</form>
-							</div>
-							<div class="col-sm-1"></div>
-						</div>
-
-
-					</div>
-					<div class="tab-pane" id="settings">
-						<div
-							th:replace="${model.indexFragment}(model=${model.indexModel})"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-	<div class="modal fade" data-backdrop="false" id="modalCompNotifyFinish" tabindex="-1" role="dialog"
-		aria-labelledby="Indexing Finish" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header warning">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="modalStopLabel">Composition analysis Completed</h4>
-				</div>
-				<div class="modal-body">
-					<p id="comp-warning-words">The composition analysis has completed.</p>
-
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default btn-sm"
-						data-dismiss="modal" id="btn-conf-comp-close">Close</button>
-					<button type="button" class="btn btn-warning btn-sm"
-						id="btn-conf-comp-refresh">Go to User Home</button>
-				</div>
-			</div>
-		</div>
-	</div>
-    
-		<script th:inline="javascript">
-			/*<![CDATA[*/
-            
-            $('#btn-conf-comp-refresh').click(function() {
-                 window.location.replace("/userHome");
-		        });
-            
-        function sleep(milliseconds) {
-          var start = new Date().getTime();
-          for (var i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds){
-              break;
-            }
-          }
+    <style>
+        .tab-pane {
+            min-height: 800px;
         }
-			// search binary
-			var file_to_search=[];
-			$(function() {
-				var dropZone = document.getElementById('search-drop-zone');
-				var uploadForm = document.getElementById('search-upload-input');
 
-				var startUpload = function(files) {
-					console.log(files)
+        /* layout.css Style */
+        .upload-drop-zone {
+            height: 200px;
+            border-width: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* skin.css Style*/
+        .upload-drop-zone {
+            margin-top: 20px;
+            color: #ccc;
+            border-style: dashed;
+            border-color: #ccc;
+            line-height: 200px;
+            text-align: center;
+            color: #ccc;
+        }
+
+        .upload-drop-zone.drop {
+            color: #222;
+            border-color: #222;
+        }
+
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+    </style>
+    <div class="col-sm-10 middle">
+        <div class="card card-nav-tabs">
+            <div class="card-header" data-background-color="purple">
+                <div class="nav-tabs-navigation">
+                    <div class="nav-tabs-wrapper">
+                        <span class="nav-tabs-title">Tasks</span>
+                        <ul class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active">
+                                <a href="#profile" data-toggle="tab" aria-expanded="false">
+                                    <i class="material-icons">bug_report</i>
+                                    Function Search
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#messages" data-toggle="tab" aria-expanded="true">
+                                    <i class="material-icons">code</i>
+                                    Binary Composition
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#settings" data-toggle="tab">
+                                    <i class="material-icons">cloud</i> Indexing
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#deleteTmp" data-toggle="tab">
+                                    <i class="material-icons">delete</i> Delete temporary files
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="tab-content" style="min-heigth: 400px">
+                    <div class="tab-pane active" id="profile">
+                        <div th:replace="${model.queryFragment}(model=${model.queryModel})"></div>
+                    </div>
+                    <div class="tab-pane" id="messages">
+                        <h4>Analyze a Binary File</h4>
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">settings</i>
+                                    </span>
+                                    <div class="form-group  label-floating" data-toggle="tooltip"
+                                        title="Only show the Top-K most similar assembly functions">
+                                        <label class="control-label">Top-K</label> <input type="text" id="input-topk"
+                                            class="form-control" value="50" name="topk" />
+                                        <span class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">vertical_align_bottom</i>
+                                    </span>
+                                    <div class="form-group label-floating" data-toggle="tooltip"
+                                        title="The threshold of minimal similarity to consider two assembly functions are clones of each other">
+                                        <label class="control-label">Threshold</label> <input id="input-threshold"
+                                            type="text" class="form-control" value="0.6" name="threshold" /> <span
+                                            class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <div class="form-group label-floating">
+                                        <div class="checkbox">
+                                            <label style="font-size: 9pt; margin-left: 10px">
+                                                <input type="checkbox" id="input-avoidSameBinary" name="avoidSameBinary"
+                                                    checked="true" /> Exclude the same binary from the results
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">tune</i>
+                                    </span>
+                                    <div class="form-group  label-floating" data-toggle="tooltip"
+                                        title="The minimum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
+                                        <label class="control-label">Minimum block count Filter</label> <input
+                                            type="text" id="input-blkmin" class="form-control" value="1"
+                                            name="blk_min" />
+                                        <span class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">tune</i>
+                                    </span>
+                                    <div class="form-group  label-floating" data-toggle="tooltip"
+                                        title="The maximum number of basic blocks an assembly function in the target binary should have in order to be considered as a target">
+                                        <label class="control-label">Maximum block count Filter</label> <input
+                                            type="text" id="input-blkmax" class="form-control" value="1300"
+                                            name="blk_max" />
+                                        <span class="material-input"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-10">
+                                <form class="form-horizontal" id="appForm">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h5>
+                                                Select binary files from your computer. They will be
+                                                searched against the repository of this application.
+                                            </h5>
+                                            <form id="search-upload-form">
+                                                <span class="btn btn-default btn-file">
+                                                    Browse <input type="file" multiple="" id="search-upload-input" />
+                                                </span>
+                                            </form>
+                                            <div class="upload-drop-zone" id="search-drop-zone">
+                                                Or
+                                                drag and drop files here
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" style="min-height: 100px">
+                                            <table class="table" id='search-file-table'>
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Name</th>
+                                                        <th>Type</th>
+                                                        <th>Size</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <p class="description pull-right">
+                                        You can leave this page
+                                        and track all your jobs on the home page.
+                                    </p>
+                                    <div class="row"></div>
+                                    <div class="row">
+                                        <button class='btn btn-primary pull-right' id="search-btn-binary">
+                                            <i class="material-icons">cloud_upload</i> Analyze
+                                        </button>
+                                    </div>
+                                    <div class="row" id="search-progress-holder"></div>
+                                </form>
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="settings">
+                        <div th:replace="${model.indexFragment}(model=${model.indexModel})"></div>
+                    </div>
+                    <div class="tab-pane" id="deleteTmp">
+                        <h4>Temporary files:</h4>
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-6">
+                                <ul id="tmpFilesContainer"
+                                    style="overflow-y: auto; overflow-x: auto; background-color: lightgrey; height: 100%; list-style-type: none;">
+                                </ul>
+                                <div class="row">
+                                    <button class='btn btn-sm pull-right btn-danger' id="btn-file-del-tmp"
+                                        data-toggle="modal">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" data-backdrop="false" id="modalCompNotifyFinish" tabindex="-1" role="dialog"
+            aria-labelledby="Indexing Finish" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header information">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="modalStopLabel">Composition analysis Completed</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="comp-warning-words" value="The composition analysis has completed"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                            id="btn-conf-comp-close">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm" id="btn-conf-comp-refresh">
+                            Go to User Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" data-backdrop="false" id="modalDeleteTmpFile" tabindex="-1" role="dialog"
+            aria-labelledby="Delete Temporary Files" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header warning">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="modalWarnStopLabel">
+                            Warning: Delete all temporary files
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalDeleteTmpFile-warning-words"
+                            value="Are you sure you want to delete all temporary files for the current application: ">
+                        </p>
+                        <p id="modalDeleteTmpFile-msg" class="text-danger"></p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                            id="btn-conf-close-tmp">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm" id="btn-conf-file-del-tmp">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            var appId = /*[[${#strings.toString(model.summary.basicInfo.appId)}]]*/'/';
+
+            $('#btn-conf-comp-refresh').click(function () {
+                window.location.replace("/userHome");
+            });
+
+            function sleep(milliseconds) {
+                var start = new Date().getTime();
+                for (var i = 0; i < 1e7; i++) {
+                    if ((new Date().getTime() - start) > milliseconds) {
+                        break;
+                    }
+                }
+            }
+            // search binary
+            var file_to_search = [];
+            $(function () {
+                var dropZone = document.getElementById('search-drop-zone');
+                var uploadForm = document.getElementById('search-upload-input');
+
+                var startUpload = function (files) {
+                    console.log(files)
                     n_pre = file_to_search.length;
-                    if(file_to_search==[])
-                        {file_to_search = files;}
+                    if (file_to_search == []) { file_to_search = files; }
                     else
-				        file_to_search = $.merge(file_to_search,files);
-				    console.log("file_to_search");
-				    console.log(file_to_search);
+                        file_to_search = $.merge(file_to_search, files);
+                    console.log("file_to_search");
+                    console.log(file_to_search);
 
-					//$("#search-file-table").find("tr:gt(0)").remove();
-					for (var i = 0; i < files.length; i++) {
-						var file = files[i];
-						var row = $('<tr>');
-						row.append($('<td>').append(i+n_pre));
-						row.append($('<td>').append(file.name));
-						row.append($('<td>').append(file.type));
-						row.append($('<td>').append(
-								Math.round(file.size / 1024) + ' KB'));
-						$('#search-file-table > tbody').append(row);
-					}
-				}
+                    //$("#search-file-table").find("tr:gt(0)").remove();
+                    for (var i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        var row = $('<tr>');
+                        row.append($('<td>').append(i + n_pre));
+                        row.append($('<td>').append(file.name));
+                        row.append($('<td>').append(file.type));
+                        row.append($('<td>').append(
+                            Math.round(file.size / 1024) + ' KB'));
+                        $('#search-file-table > tbody').append(row);
+                    }
+                }
 
-				$("#search-upload-input")
-						.change(
-								function() {
-									var uploadFiles = document
-											.getElementById('search-upload-input').files;
-									startUpload(uploadFiles)
-								});
 
-				dropZone.ondrop = function(e) {
-					e.preventDefault();
-					this.className = 'upload-drop-zone';
-					startUpload(e.dataTransfer.files);
-				}
+                $("#search-upload-input")
+                    .change(
+                        function () {
+                            var uploadFiles = document.getElementById('search-upload-input').files;
+                            startUpload(uploadFiles);
+                        });
 
-				dropZone.ondragover = function() {
-					this.className = 'upload-drop-zone drop';
-					return false;
-				}
+                dropZone.ondrop = function (e) {
+                    e.preventDefault();
+                    this.className = 'upload-drop-zone';
+                    startUpload(e.dataTransfer.files);
+                }
 
-				dropZone.ondragleave = function() {
-					this.className = 'upload-drop-zone';
-					return false;
-				}
+                dropZone.ondragover = function () {
+                    this.className = 'upload-drop-zone drop';
+                    return false;
+                }
 
-				$("#search-btn-binary")
-						.click(
-								function() {
-									//document.getElementById('search-upload-input').files = file_to_search;
-									var formData = new FormData();
-									//formData.append('bin', file_to_search[0]);
-								    $.each(file_to_search,
-								    		function(i, file) {
-								    			formData.append('bins', file);
-								    		});
-									formData.append('threshold', $(
-											'#input-threshold').val());
-									formData.append('topk', $('#input-topk')
-											.val());
-									formData.append('blk_min', $('#input-blkmin')
-											.val());
-									formData.append('blk_max', $('#input-blkmax')
-											.val());
-									formData.append('avoidSameBinary', $(
-											'#input-avoidSameBinary').is(':checked') );
-									$
-											.ajax({
-												url : /*[[${model.summary.prefix + 'search_bin/'}]]*/'/',
-												type : 'post',
-												data : formData,
-												contentType : false,
-												processData : false,
-												cache : false,
-												success : function(data) {
-													if (data['error']) {
-														dmas_alert(data['error']);
-													} else {
-														$(
-																'#search-progress-holder')
-																.empty();
-														queryBinaryIndexJobProgress(
-																'BinaryComposition',
-																'#search-progress-holder',
-																function(progress) {
-                                                                    $('#modalCompNotifyFinish').modal({
-                                                                        keyboard: false,
-                                                                        focus: true,
-                                                                        show: true
-                                                                        })
-                                                                    //sleep(3000);
-	                                                                //window.location.replace("/userHome");
-																	// location.reload();
-																});
-													}
-												},
-												statusCode : {
-													500 : function() {
-														dmas_alert("Server ERROR 500. Please check the server log.")
-													}
-												}
-											});
-									return false;
-								});
-			});
+                dropZone.ondragleave = function () {
+                    this.className = 'upload-drop-zone';
+                    return false;
+                }
 
-			/*]]>*/
-		</script>
-	</div>
+                $("#search-btn-binary")
+                    .click(
+                        function () {
+                            document.getElementById('search-upload-input').files = file_to_search;
+                            var formData = new FormData();
+                            //formData.append('bin', file_to_search[0]);
+                            $.each(file_to_search,
+                                function (i, file) {
+                                    formData.append('bins', file);
+                                });
+                            formData.append('threshold', $('#input-threshold').val());
+                            formData.append('topk', $('#input-topk').val());
+                            formData.append('blk_min', $('#input-blkmin').val());
+                            formData.append('blk_max', $('#input-blkmax').val());
+                            formData.append('avoidSameBinary', $('#input-avoidSameBinary').is(':checked'));
+                            $.ajax({
+                                url: /*[[${model.summary.prefix + '/search_bin/'}]]*/'/',
+                                type: 'post',
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                cache: false,
+                                success: function (data) {
+                                    if (data['error']) {
+                                        dmas_alert(data['error']);
+                                    } else {
+                                        $('#search-progress-holder').empty();
+                                        queryBinaryIndexJobProgress(
+                                            'BinaryComposition',
+                                            '#search-progress-holder',
+                                            function (progress) {
+                                                if (progress.errorMessage != null) {
+                                                    dmas_alert($('#comp-warning-words').attr('value') +
+                                                        ' with error: ' +
+                                                        progress.errorMessage +
+                                                        '.');
+                                                } else {
+                                                    $('#comp-warning-words')
+                                                        .text($('#comp-warning-words').attr('value') +
+                                                            ' with success.');
+                                                    $('#modalCompNotifyFinish').modal({
+                                                        keyboard: false,
+                                                        focus: true,
+                                                        show: true
+                                                    });
+                                                }
+                                            }
+                                        );
+                                    }
+                                },
+                                statusCode: {
+                                    500: function () {
+                                        dmas_alert("Server ERROR 500. Please check the server log.");
+                                    }
+                                }
+                            });
+                            return false;
+                        }
+                    );
+
+                function addTmpFileLine(container, text) {
+                    var $li = $("<li>",
+                        {
+                            'class': 'entry'
+                        });
+                    var $span = $("<span>",
+                        {
+                            'class': 'fnspan'
+                        });
+                    $span.append(text);
+                    $li.append($span);
+                    $(container).append($li);
+                }
+
+                $.ajax({
+                    url: 'get_tmp_files',
+                    type: 'get',
+                    success: function (data) {
+                        if (data['error']) {
+                            dmas_alert(data['error']);
+                        } else {
+                            if (data.length == 0) {
+                                addTmpFileLine('#tmpFilesContainer', 'No file in tmp directory!');
+                                $("#btn-file-del-tmp").addClass("notactive");
+                                $("#btn-file-del-tmp").removeClass("btn-danger");
+                            } else {
+                                $("#btn-file-del-tmp").removeClass("notactive");
+                                $("#btn-file-del-tmp").addClass("btn-danger");
+                                $('#tmpFilesContainer').empty();
+                                for (var i = 0; i < data.length; i++) {
+                                    addTmpFileLine('#tmpFilesContainer', data[i]);
+                                }
+                            }
+                        }
+                    },
+                    statusCode: {
+                        500: function () {
+                            dmas_alert("Server ERROR 500. Please check the server log.");
+                        }
+                    }
+                });
+
+                $("#btn-file-del-tmp").click(function () {
+                    $('#modalDeleteTmpFile-warning-words').text(
+                        $('#modalDeleteTmpFile-warning-words').attr('value') + " " + appId + '?');
+                    $('#modalDeleteTmpFile').modal('show');
+                });
+
+                $('#btn-conf-file-del-tmp').click(function () {
+                    $('#btn-conf-close-tmp').hide();
+                    $('#btn-conf-file-del-tmp').hide();
+                    $.post('delete_tmp_files', function (data) {
+                        $('#modalDeleteTmpFile').modal('hide');
+                        if (data['error']) {
+                            dmas_alert(data['error']);
+                        } else {
+                            $('#tmpFilesContainer').empty();
+
+                            addTmpFileLine('#tmpFilesContainer', 'No file in tmp directory!');
+
+                            $("#btn-file-del-tmp").addClass("notactive");
+                            $("#btn-file-del-tmp").removeClass("btn-danger");
+                        }
+                    });
+                });
+            });
+            /*]]>*/
+        </script>
+    </div>
 </div>

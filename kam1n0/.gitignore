@@ -6,6 +6,8 @@ build-bins
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+iml,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+iml,maven
+# Created by https://www.toptal.com/developers/gitignore/api/intellij+iml
+# Edit at https://www.toptal.com/developers/gitignore?templates=intellij+iml
 
 ### Intellij+iml ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -103,3 +105,4 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,maven
+# End of https://www.toptal.com/developers/gitignore/api/intellij+iml

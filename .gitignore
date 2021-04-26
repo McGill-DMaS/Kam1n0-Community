@@ -121,3 +121,10 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,maven
+
+/kam1n0-builds/windows/installer-src-32-64/PluginDistributionX64/GroupPlugin.wxs
+/kam1n0-builds/windows/installer-src-32-64/PluginDistributionX86/GroupPlugin.wxs
+/kam1n0-builds/windows/installer-src-32-64/ServerDistribution/GroupDistribution.wxs
+/kam1n0/kam1n0-apps/src/main/resources/.idea/workspace.xml
+
+kam1n0/kam1n0-apps/debug.log

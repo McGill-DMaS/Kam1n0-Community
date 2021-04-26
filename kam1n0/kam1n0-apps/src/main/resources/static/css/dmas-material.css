@@ -728,7 +728,17 @@ span.progress-label {
 	color: transparent;
 }
 
+.modal-header.information {
+	background-color: #0000FF;
+	color: white;
+}
+
 .modal-header.warning {
+	background-color: #fbc02d;
+	color: white;
+}
+
+.modal-header.error {
 	background-color: #f44336;
 	color: white;
 }

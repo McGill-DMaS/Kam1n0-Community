@@ -55,7 +55,8 @@ public class UITest {
 		driver = new ChromeDriver(options);
 
 		if (!isDebuggingWithExistingServer) {
-			// Until we find a proper way to know when the server is ready to process requests, we simply sleep for a while
+			// Until we find a proper way to know when the server is ready to process
+			// requests, we simply sleep for a while
 			final int timeToWaitForServerSecond = 40;
 			log("Waiting {} seconds for server to be ready...", timeToWaitForServerSecond);
 			TimeUnit.SECONDS.sleep(timeToWaitForServerSecond);
@@ -158,7 +159,7 @@ public class UITest {
 		Select dropdown = new Select(driver.findElement(By.id("applicationType")));
 		dropdown.selectByValue(appType);
 		driver.findElement(By.id("name")).sendKeys(identifier);
-		//driver.findElement(By.id("title")).sendKeys(identifier + "_title");
+		// driver.findElement(By.id("title")).sendKeys(identifier + "_title");
 		driver.findElement(By.id("description")).sendKeys(identifier + "_desp");
 		driver.findElement(By.id("btn_submit")).click();
 		TimeUnit.SECONDS.sleep(5);
@@ -238,7 +239,7 @@ public class UITest {
 		driver.get(userHomeURL);
 		assertTrue(driver.getCurrentUrl().endsWith("/userHome"));
 
-		WebElement element =  driver.findElementByCssSelector(".href-file-open");
+		WebElement element = driver.findElement(By.id("filename-change")); // driver.findElementByCssSelector(".href-file-open");
 		element.click();
 		HashSet<String> handlers = new HashSet<>(driver.getWindowHandles());
 		assertTrue(handlers.size() == 2);
@@ -328,43 +329,44 @@ public class UITest {
 		driver.switchTo().window(parentWindowHandler);
 	}
 
-	@Test
-	public void testDisassemblyFactory() throws Exception {
-		log("Testing disassembly factory...");
-		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm-clone");
-		indexToApp(ele, "test-cases/disassembly_test_case/", "index-btn");
-	}
+	// @Test
+	// public void testDisassemblyFactory() throws Exception {
+	// log("Testing disassembly factory...");
+	// driver.get("http://127.0.0.1:8571/userHome");
+	// WebElement ele = createApp("/asm-clone");
+	// indexToApp(ele, "test-cases/disassembly_test_case/", "index-btn");
+	// }
 
-	@Test
-	public void testAsmClone() throws Exception {
-		log("Testing asm-clone...");
-		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm-clone");
-		indexToApp(ele, "test-cases/asmclone/", "index-btn");
-		searchExampleCode("Flow graph comparison.", "Full text alignment.", "Clone group alignment.");
-	}
+	// @Test
+	// public void testAsmClone() throws Exception {
+	// log("Testing asm-clone...");
+	// driver.get("http://127.0.0.1:8571/userHome");
+	// WebElement ele = createApp("/asm-clone");
+	// indexToApp(ele, "test-cases/asmclone/", "index-btn");
+	// searchExampleCode("Flow graph comparison.", "Full text alignment.", "Clone
+	// group alignment.");
+	// }
 
-	@Test
-	public void testAsm2Vec() throws Exception {
-		log("Testing asm2vec...");
-		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm2vec-clone");
-		indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
-		searchExampleCode("Flow graph comparison.", "Full text alignment.");
-	}
+	// @Test
+	// public void testAsm2Vec() throws Exception {
+	// log("Testing asm2vec...");
+	// driver.get("http://127.0.0.1:8571/userHome");
+	// WebElement ele = createApp("/asm2vec-clone");
+	// indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
+	// searchExampleCode("Flow graph comparison.", "Full text alignment.");
+	// }
 
-	@Test
-	public void testAsm2VecComposition() throws Exception {
-		log("Testing asm2VecComposition...");
-		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm2vec-clone");
-		indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
-		searchFile(
-				KamResourceLoader
-						.getFileThatWillNotInDistribution("test-cases/asm2vec/libz.so.1.2.11-gcc-g-O0-m32-fno-pic.bin"),
-				"http://127.0.0.1:8571/userHome");
-	}
+	// @Test
+	// public void testAsm2VecComposition() throws Exception {
+	// log("Testing asm2VecComposition...");
+	// driver.get("http://127.0.0.1:8571/userHome");
+	// WebElement ele = createApp("/asm2vec-clone");
+	// indexToApp(ele, "test-cases/asm2vec/", "reindex-btn");
+	// searchFile(
+	// KamResourceLoader
+	// .getFileThatWillNotInDistribution("test-cases/asm2vec/libz.so.1.2.11-gcc-g-O0-m32-fno-pic.bin"),
+	// "http://127.0.0.1:8571/userHome");
+	// }
 
 	@Test
 	public void testSym1n0() throws Exception {
@@ -377,12 +379,12 @@ public class UITest {
 				"Clone group alignment.");
 	}
 
-	@Test
-	public void testChromium() throws Exception {
-		log("Testing chrome indexing...");
-		driver.get("http://127.0.0.1:8571/userHome");
-		WebElement ele = createApp("/asm-clone");
-		indexToApp(ele, "test-cases/chrome-test/", "index-btn");
-		searchExampleCode("Flow graph comparison.", "Full text alignment.");
-	}
+	// @Test
+	// public void testChromium() throws Exception {
+	// log("Testing chrome indexing...");
+	// driver.get("http://127.0.0.1:8571/userHome");
+	// WebElement ele = createApp("/asm-clone");
+	// indexToApp(ele, "test-cases/chrome-test/", "index-btn");
+	// searchExampleCode("Flow graph comparison.", "Full text alignment.");
+	// }
 }

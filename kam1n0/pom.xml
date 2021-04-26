@@ -6,13 +6,15 @@
 	<version>${kam1n0.version}</version>
 	<packaging>pom</packaging>
 	<properties>
-		<kam1n0.version>2.0.0</kam1n0.version>
+		<kam1n0.version>2.0.2</kam1n0.version>
 		<java.version>11</java.version>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
 		<kam1n0.jar.name>kam1n0-server</kam1n0.jar.name>
 		<output.dir>${user.dir}/build-bins/</output.dir>
 		<local.repo>${user.dir}/local-m2-repo</local.repo>
 		<!-- dependency versions in one place: TBA -->
+		<!-- <maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target> -->
 	</properties>
 	<modules>
 		<module>kam1n0-apps</module>

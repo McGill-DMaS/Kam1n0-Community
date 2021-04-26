@@ -265,7 +265,7 @@ public class ObjectFactoryRAM<T extends Serializable> extends ObjectFactoryMulti
 
 	@Override
 	public JavaRDD<T> queryMultipleBaisc(long rid, String fieldName, Collection<? extends Object> keys) {
-		return queryMultiple(rid, keys);
+		return queryMultiple(rid, fieldName, keys);
 	}
 
 	@Override

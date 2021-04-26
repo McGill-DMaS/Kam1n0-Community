@@ -52,7 +52,7 @@ public class AsmApplicationMeta extends ApplicationMeta {
 						conf.normalizationSetting);
 				FunctionCloneDetector detector = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(
 						platform.spark, platform.cassandra, platform.objectFactory, processor, conf.kStart, conf.kMax,
-						conf.l, conf.mSplit, 0);
+						conf.l, conf.mSplit, 0, false);
 				detector.init();
 				val = new CloneSearchResources(platform.objectFactory, detector, processor.parser);
 				map.put(conf, val);

@@ -3,6 +3,7 @@ package ca.mcgill.sis.dmas.kam1n0.app;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -17,7 +18,6 @@ import static org.springframework.util.FileSystemUtils.deleteRecursively;
 public class UITestUtils {
 	private static Process appProcess;
 	private static File tempDirectory;
-
 	public static void log(String msg, Object... args) {
 		System.out.println(StringResources
 				.parse(UITest.class.getSimpleName() + " " + StringResources.timeString() + " " + msg, args));
@@ -78,7 +78,6 @@ public class UITestUtils {
 
 		log("UITestUtils Cleaning up End.");
 	}
-	
 
 	/**
 	 * From
@@ -123,7 +122,6 @@ public class UITestUtils {
 	}
 
 	public static void deleteTempFiles() {
-		String tempFilesDirectory = tempDirectory.getAbsolutePath() + "\\tmp\\admin\\";
-		deleteRecursively(new File(tempFilesDirectory));
+		deleteRecursively(Paths.get(tempDirectory.getAbsolutePath(), "tmp", "admin").toFile());
 	}
 }

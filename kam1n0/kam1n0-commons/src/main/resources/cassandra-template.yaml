@@ -35,10 +35,10 @@ native_transport_max_frame_size_in_mb: 2047
 incremental_backups: false
 snapshot_before_compaction: false
 column_index_size_in_kb: 64
-compaction_throughput_mb_per_sec: 16
+compaction_throughput_mb_per_sec: 0
 endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch
 dynamic_snitch: true
-dynamic_snitch_update_interval_in_ms: 100 
+dynamic_snitch_update_interval_in_ms: 100
 dynamic_snitch_reset_interval_in_ms: 600000
 dynamic_snitch_badness_threshold: 0.0
 commitlog_segment_size_in_mb: 128
