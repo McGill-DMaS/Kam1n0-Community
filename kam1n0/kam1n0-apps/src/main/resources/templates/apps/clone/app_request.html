@@ -370,7 +370,7 @@
                 $("#search-btn-binary")
                     .click(
                         function () {
-                            document.getElementById('search-upload-input').files = file_to_search;
+                            //document.getElementById('search-upload-input').files = file_to_search;
                             var formData = new FormData();
                             //formData.append('bin', file_to_search[0]);
                             $.each(file_to_search,
@@ -383,7 +383,7 @@
                             formData.append('blk_max', $('#input-blkmax').val());
                             formData.append('avoidSameBinary', $('#input-avoidSameBinary').is(':checked'));
                             $.ajax({
-                                url: /*[[${model.summary.prefix + '/search_bin/'}]]*/'/',
+                                url: /*[[${model.summary.prefix + 'search_bin/'}]]*/'/',
                                 type: 'post',
                                 data: formData,
                                 contentType: false,
