@@ -1,12 +1,6 @@
 package ca.mcgill.sis.dmas.kam1n0;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -218,7 +212,9 @@ public class AppController {
 	public ModelAndFragment createAppList() {
 		UserInfo user = UserController.findUser();
 		List<ApplicationInfoSummary> apps = getAppInfo(user.ownedApps);
+		Collections.sort(apps, Collections.reverseOrder());
 		List<ApplicationInfoSummary> apps_shared = getAppInfo(user.accessibleApps);
+		Collections.sort(apps_shared, Collections.reverseOrder());
 		return new ModelAndFragment(FRAG_APP_LIST, ImmutableMap.of("owned", apps, "shared", apps_shared));
 	}
 
@@ -230,7 +226,7 @@ public class AppController {
 					createAppList(), userController.createProgressList(), userController.createFileList());
 		} catch (Exception e) {
 			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			return MVCUtils.errorMV("Failed to create home page with applications list. ");
 		}
 	}
 
@@ -241,8 +237,8 @@ public class AppController {
 			return MVCUtils.wrapAuthenticatedHomePage("Job Details",
 					"Job details can also be found on your user home page.", userController.createProgressList());
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			logger.error("Failed to create userProgress. ", e);
+			return MVCUtils.errorMV("Failed to create home page with job progess. ");
 		}
 	}
 
@@ -253,8 +249,8 @@ public class AppController {
 			return MVCUtils.wrapAuthenticatedHomePage("File Details",
 					"File details can also be found under your user home page.", userController.createFileList());
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
-			return MVCUtils.errorMV("Failed to create homepage. ");
+			logger.error("Failed to create userFiles. ", e);
+			return MVCUtils.errorMV("Failed to create home page with file details. ");
 		}
 	}
 
@@ -273,7 +269,7 @@ public class AppController {
 				return ImmutableMap.of("error", "Not found.");
 			return ImmutableMap.of("progress", progress.toWrapper(inds, -1));
 		} catch (Exception e) {
-			logger.error("Failed to create userHome. ", e);
+			logger.error("Failed to create JobProgress. ", e);
 			return ImmutableMap.of("error", "Failed to get job progress. Internal error.");
 		}
 	}

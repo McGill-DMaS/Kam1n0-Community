@@ -37,6 +37,7 @@ public class FunctionDataUnit implements Serializable {
 	public String startAddress;
 	public int blockSize;
 	public SrcFunction srcFunc;
+	public boolean functionInDatabase;
 
 
 	class BlockComparator implements Comparator<BlockDataUnit>
@@ -82,6 +83,7 @@ public class FunctionDataUnit implements Serializable {
 		data.functionName = this.functionName;
 		data.startAddress = this.startAddress;
 		data.blockSize = this.blockSize;
+		data.functionInDatabase = this.functionInDatabase;
 		return data;
 	}
 
@@ -105,25 +107,15 @@ public class FunctionDataUnit implements Serializable {
 
 	}
 
-	public FunctionDataUnit(String binaryName, String binaryId, String functionName, String functionId,
-			String startAddress) {
-		this.binaryName = binaryName;
-		this.binaryId = binaryId;
-		this.functionName = functionName;
-		this.functionId = functionId;
-		this.startAddress = startAddress;
-		this.blockSize = 0;
-	}
-
 	public FunctionDataUnit(Function function) {
-		this(function, false);
+		this(function, false, false);
 	}
 
-	public FunctionDataUnit(Function function, boolean metaOnly) {
-		this(function, null, metaOnly);
+	public FunctionDataUnit(Function function, boolean metaOnly, boolean functionInDatabase) {
+		this(function, null, metaOnly, functionInDatabase);
 	}
 
-	public FunctionDataUnit(Function function, AsmLineNormalizer normalizer, boolean metaOnly) {
+	public FunctionDataUnit(Function function, AsmLineNormalizer normalizer, boolean metaOnly, boolean functionInDatabase) {
 
 		HashSet<Long> validBlkIds = new HashSet<>();
 
@@ -167,6 +159,7 @@ public class FunctionDataUnit implements Serializable {
 		this.startAddress = Long.toString(function.startingAddress);
 		this.blockSize = (int) function.numBlocks;
 		this.codeSize = (int) function.codeSize;
+		this.functionInDatabase = functionInDatabase;
 	}
 
 }

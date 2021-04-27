@@ -270,9 +270,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 			@RequestParam("trainOrNot") final boolean trainOrNot, @RequestParam("clusterOrNot") final boolean clusterOrNot) {
 
 		ArrayList<Object> nobjs = new ArrayList<>();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = Environment.getUserTmpDir(UserController.findUserName());
 		for (int i = 0; i < objs.length; ++i) {
 			if (objs[i] instanceof MultipartFile) {
 				MultipartFile file = ((MultipartFile) objs[i]);
@@ -326,7 +324,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_DISTRIBUTION_THRESHOLD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).cluster_class_distribution_significance);
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_N_EXECUTABLE_THRESHOLD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).min_exe_per_cluster);
 				params.put(BinaryIndexProcedureLSHMRforExecutableClassification.KEY_CLUSTER_METHOD, ((ExecutableClassificationApplicationConfiguration)(appInfo.configuration)).clusterModel);
-				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+				String idstr = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 				BinaryIndexProcedureLSHMRforExecutableClassification.class, params);
 				return ImmutableMap.of("jid", idstr);
 			} catch (Exception e) {
@@ -383,7 +381,11 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 	public final List<FunctionDataUnit> getClusterFunctionInfos(@PathVariable("appId") long appId,
 			@RequestParam("id") String clusterName) {
 		Cluster clu = ((ExecutableClassificationApplicationMeta)(this.meta)).clusterFactory.querySingle(appId,clusterName);
-		List<FunctionDataUnit> result = this.meta.platform.objectFactory.obj_functions.queryMultipleBaisc(appId, "functionId", clu.functionIDList).collect().stream().map(func -> new FunctionDataUnit(func, true)).collect(Collectors.toList());
+		List<FunctionDataUnit> result = this.meta.platform.objectFactory.obj_functions.queryMultipleBaisc(appId, "functionId", clu.functionIDList)
+				.collect()
+				.stream()
+				.map(func -> new FunctionDataUnit(func, true, meta.getFunction(appId, func.functionId) != null))
+				.collect(Collectors.toList());
 		return result;
 	}
 
@@ -402,7 +404,9 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 	@Access(AccessMode.READ)
 	public @ResponseBody Map<String, Object> searchBinaryRenderer(@PathVariable("appId") long appId,
 			@RequestParam("fileName") String fileName,
-			@RequestParam(value = "keyword", defaultValue = "*") String keyword, HttpServletRequest request) {
+			@RequestParam(value = "functionKeyword", defaultValue = "*") String functionKeyword,
+			@RequestParam(value = "clonesKeyword", defaultValue = "*") String clonesKeyword,
+			HttpServletRequest request) {
 
 		try {
 			String cloneDetail = request.getParameter("cloneDetail");
@@ -428,21 +432,21 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 				SummaryWrapper wrapper = servingObj.summarize();
 				long addrStart = 0;
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
-				return ImmutableMap.of("object", wrapper,"object2",servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+				return ImmutableMap.of("object", wrapper,"object2",servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (list != null) {
 				long addrStart = NumberUtils.toLong(request.getParameter("addrStart"), 0);
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
 				return ImmutableMap.of("object",
-						servingObj.getCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+						servingObj.getCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (cluster_list != null) {
 				long addrStart = NumberUtils.toLong(request.getParameter("addrStart"), 0);
 				long addrEnd = NumberUtils.toLong(request.getParameter("addrEnd"), Long.MAX_VALUE);
 				return ImmutableMap.of("object",
-						servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, keyword));
+						servingObj.getClusterCloneInfoList(addrStart, addrEnd, not_selected, functionKeyword));
 			}
 
 			if (addRange != null) {
@@ -470,9 +474,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 			@RequestParam(value = "bins") Object[] objs) {
 
 		ArrayList<Object> nobjs = new ArrayList<>();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName();
-		String tmpDir = Environment.getUserTmpDir(name);
+		String tmpDir = Environment.getUserTmpDir(UserController.findUserName());
 		for (Object obj: objs) {
 		if (obj instanceof MultipartFile) {
 			MultipartFile file = ((MultipartFile) obj);
@@ -508,7 +510,7 @@ public class ExecutableClassificationApplicationHandler extends AbastractCloneSe
 		params.put(BinaryAnalysisProcedureCompositionAnalysisforExecutableClassification.KEY_TOP, topk);
 		try {
 			ApplicationInfo appInfo = meta.getInfo(appId);
-			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, name,
+			String id = this.meta.submitJob(appId, meta.getAppType(), appInfo.name, UserController.findUserName(),
 					BinaryAnalysisProcedureCompositionAnalysisforExecutableClassification.class, params);
 			return ImmutableMap.of("jid", id);
 		} catch (Exception e) {

@@ -39,6 +39,9 @@ public class AsmLineNormalizer {
 	public static Pattern asmLineTokenizerBySpace = Pattern.compile("\\s+", Pattern.CASE_INSENSITIVE);
 	public static final ImmutableList<String> emptyList = ImmutableList.<String>builder().build();
 
+	// address and mnemonic come before operands
+	private static int NUMBER_OF_TOKENS_BEFORE_OPERANDS = 2;
+
 	public AsmLineNormalizationResource res;
 	public NormalizationSetting setting;
 
@@ -61,7 +64,7 @@ public class AsmLineNormalizer {
 			return emptyList;
 
 		// unmatched oprTyles length v.s. tkns length:
-		if (oprTypes != null && tkns.size() != oprTypes.size() + 1) {
+		if (oprTypes != null && tkns.size() != oprTypes.size() + NUMBER_OF_TOKENS_BEFORE_OPERANDS) {
 			logger.error("Unmatched oprTypes vs token length: {} - {}", tkns, oprTypes);
 			return emptyList;
 		}
@@ -88,7 +91,7 @@ public class AsmLineNormalizer {
 				if (setting.normalizationLevel == NormalizationLevel.NORM_TYPE_LENGTH
 						|| setting.normalizationLevel == NormalizationLevel.NORM_TYPE_LENGTH)
 					operationLevelLength = res.extractLengthInfpFromOperation(opC);
-				Integer tp = oprTypes == null ? null : oprTypes.get(j - 1);
+				Integer tp = oprTypes == null ? null : oprTypes.get(j - NUMBER_OF_TOKENS_BEFORE_OPERANDS);
 				rtokens.add(res.normalizeOperand(tkns.get(j), tp, setting.normalizationLevel, operationLevelLength,
 						setting.normalizeConstant));
 			}

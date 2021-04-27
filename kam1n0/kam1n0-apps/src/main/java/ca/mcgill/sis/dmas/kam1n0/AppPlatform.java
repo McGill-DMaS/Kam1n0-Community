@@ -22,7 +22,6 @@ import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 
 import org.apache.hadoop.yarn.webapp.hamlet.Hamlet.A;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,8 +136,7 @@ public class AppPlatform {
 		if (comment.comment.length() > 0)
 			objectFactory.obj_comments.put(appId, comment);
 		else
-			objectFactory.obj_comments.del(appId, comment.functionId, comment.functionOffset, comment.userName,
-					comment.date);
+			objectFactory.obj_comments.del(appId, comment.functionId, comment.functionOffset, comment.date);
 		return true;
 	}
 
@@ -146,7 +144,8 @@ public class AppPlatform {
 		Function func = getFunction(rid, fid);
 		if (func == null)
 			return null;
-		return new FunctionDataUnit(func, false);
+
+		return new FunctionDataUnit(func, false, true);
 	}
 
 	public Function getFunction(long rid, long fid) {

@@ -17,6 +17,7 @@ package ca.mcgill.sis.dmas.kam1n0.app.scheduling;
 
 import ca.mcgill.sis.dmas.env.LocalJobProgress;
 import ca.mcgill.sis.dmas.env.LocalJobProgress.StageInfo;
+import ca.mcgill.sis.dmas.kam1n0.utils.src.FormatMilliseconds;
 
 public class LocalDmasJobInfo {
 	public String userKey;
@@ -26,4 +27,8 @@ public class LocalDmasJobInfo {
 	public StageInfo lastStage;
 	public long runtime;
 	public LocalJobProgress progress;
+
+	public String runtimeFormatted() {
+		return FormatMilliseconds.ToReadableTime(runtime);
+	}
 }

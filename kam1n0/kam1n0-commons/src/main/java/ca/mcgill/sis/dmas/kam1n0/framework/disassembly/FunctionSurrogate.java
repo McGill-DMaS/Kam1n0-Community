@@ -55,4 +55,8 @@ public class FunctionSurrogate implements Iterable<BlockSurrogate> {
 		return StringResources.JOINER_LINE
 				.join(Iterables.transform(Iterables.concat(blocks), AsmLineNormalizer::formatCodeLine));
 	}
+
+	public int getNumberOfBlocks() {
+		return blocks.size();
+	}
 }

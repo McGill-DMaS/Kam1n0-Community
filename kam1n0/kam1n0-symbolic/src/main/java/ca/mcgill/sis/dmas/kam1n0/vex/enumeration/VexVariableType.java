@@ -21,8 +21,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.swing.internal.plaf.metal.resources.metal;
-
 import ca.mcgill.sis.dmas.kam1n0.vex.VexEnumeration;
 
 public enum VexVariableType {

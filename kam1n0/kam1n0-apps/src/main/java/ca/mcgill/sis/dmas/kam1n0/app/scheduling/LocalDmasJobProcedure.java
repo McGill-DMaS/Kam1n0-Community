@@ -16,6 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.scheduling;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import org.quartz.InterruptableJob;
@@ -96,13 +97,28 @@ public abstract class LocalDmasJobProcedure implements InterruptableJob {
 		ApplicationResources res = getAppResource(dataMap);
 		Long appId = getAppId(dataMap);
 		if (res == null || appId == null || user == null) {
-			logger.error("Access violation.. context: {}", dataMap);
-			StageInfo stage = progress.nextStage(LocalDmasJobProcedure.class, "Invalid request!");
+			String errorMessage = getAccessViolationMessage(res, appId, user);
+			logger.error(errorMessage);
+			StageInfo stage = progress.nextStage(LocalDmasJobProcedure.class, "Invalid request! " + errorMessage);
 			stage.complete();
-			progress.complete();
+			progress.complete(errorMessage);
 		} else
 			this.runProcedure(appId, appType, res, user, progress, parameters);
+	}
 
+	private String getAccessViolationMessage(ApplicationResources res, Long appId, String user) {
+		String subMessage = "Error.";
+		if (res == null) {
+			subMessage = "Application resource not found.";
+		}
+		if (appId == null) {
+			subMessage = subMessage + " Application Id not found.";
+		}
+		if (user == null) {
+			subMessage = subMessage + " User not found.";
+		}
+		String message = "Access violation. " + subMessage;
+		return message;
 	}
 
 	private String getAppType(JobDataMap dataMap) {

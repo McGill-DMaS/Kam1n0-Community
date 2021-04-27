@@ -36,6 +36,13 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 
 	private static Logger logger = LoggerFactory.getLogger(ALSH.class);
 
+	// Spark tuning magic number from experimentation.
+	// In all experiments, it was faster in general (and not more memory intensive) to use a single RDD partition to
+	// store "HID infos", and there are typically less than 100 HIDs per analyzed function, and very rarely above 1000.
+	// However, as a fail-safe in the case of a totally degenerate function (like 100000 HIDs), a limit of
+	// 1000 HID per RDD partition is applied.
+	private static final int MAX_HIDS_PER_PARTITION = 1000;
+
 	public boolean debug = false;
 	public transient LshAdaptiveDupFuncIndex<T, K> index_deduplication;
 	public transient LshAdaptiveBucketIndexAbstract index_bucket;
@@ -45,8 +52,15 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private HashSchemaTypes type;
 	private int L = 1;
 
+	/**
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 *                              an existing indexer DB, must be the same than when it was created (must depend on
+	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
+	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
+	 *                              ignored.
+	 */
 	public ALSH(SparkInstance sparkInstance, CassandraInstance cassandraInstance, List<String> features, int startingK,
-			int maxK, int L, int m, HashSchemaTypes type, boolean inMem, String name) {
+			int maxK, int L, int m, HashSchemaTypes type, boolean inMem, String name, boolean isSingleUserApplication) {
 		this.startingK = startingK;
 		this.maxK = maxK;
 
@@ -57,7 +71,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			this.index_bucket = new LshAdaptiveBucketIndexCassandra(sparkInstance, cassandraInstance, startingK, maxK,
 					m, ALSH::nextDepth, name + "_adaptivelsh");
 			this.index_deduplication = new LshAdaptiveDupIndexCasandra<>(sparkInstance, cassandraInstance,
-					name + "_adaptivelsh");
+					name + "_adaptivelsh", isSingleUserApplication);
 		}
 
 		this.L = L;
@@ -153,7 +167,8 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			partitionKey = bucket.pkey + bucket.cKey;
 		int nextDepth = nextDepth(bucket.depth);
 		List<Tuple3<String, String, Long>> children = this.index_deduplication
-				.getVecEntryInfoAsRDD(rid, bucket.hids, true, null).map(vec -> {
+				.getVecEntryInfoAsRDD(rid, bucket.hids, true, null, LshAdaptiveDupFuncIndex.ALL_HIDS_IN_ONE_PARTITION)
+				.map(vec -> {
 					int ind = vec.ind;
 					String nextKey = StringResources.FORMAT_3R.format(ind) + "-"
 							+ DmasByteOperation.toHexs(vec.fullKey, nextDepth);
@@ -166,7 +181,8 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private void splitBucketRecursive(long rid, AdaptiveBucket bucket) {
 		if (bucket.depth >= this.index_bucket.maxDepth)
 			return;
-		List<VecEntry<T, K>> children = this.index_deduplication.getVecEntryInfoAsRDD(rid, bucket.hids, true, null)
+		List<VecEntry<T, K>> children = this.index_deduplication.getVecEntryInfoAsRDD(
+				rid, bucket.hids, true, null, LshAdaptiveDupFuncIndex.ALL_HIDS_IN_ONE_PARTITION)
 				.collect();
 		splitBucketRecursiveHandler(rid, bucket.pkey, bucket.cKey, bucket.depth, children);
 	}
@@ -174,7 +190,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	private void splitBucketRecursiveHandler(long rid, String plk, String clk, int depth,
 			List<VecEntry<T, K>> children) {
 		if (depth >= this.index_bucket.maxDepth) {
-			children.parallelStream().forEach(vec -> this.index_bucket.putHid(rid, plk, clk, depth, vec.hashId));
+			children.forEach(vec -> this.index_bucket.putHid(rid, plk, clk, depth, vec.hashId));
 			return;
 		}
 		// logger.info("Spliting depth {} with {}::{}", depth, plk, clk);
@@ -205,12 +221,14 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	}
 
 	public <E extends VecObject<T, K>> Tuple2<List<Tuple2<Long, E>>, JavaRDD<VecEntry<T, K>>> query(long rid,
-			List<? extends E> objs, int topK, Function<List<T>, List<T>> filter) {
+			List<? extends E> objs, Function<List<T>, List<T>> filter) {
 		List<Tuple2<Long, E>> hid_tbid_l = this.index_bucket.collectHids(rid, objs, this::hash);
 		HashSet<Long> hids = hid_tbid_l.stream().map(tp -> tp._1).collect(Collectors.toCollection(HashSet::new));
-		// logger.info("hids {}", hids.size());
+
 		// hid->info
-		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(rid, hids, false, filter);// .cache();
+		JavaRDD<VecEntry<T, K>> hid_info = this.index_deduplication.getVecEntryInfoAsRDD(
+				rid, hids, false, filter, MAX_HIDS_PER_PARTITION);// .cache();
+
 		return new Tuple2<>(hid_tbid_l, hid_info);
 	}
 

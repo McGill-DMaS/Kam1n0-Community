@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import ca.mcgill.sis.dmas.kam1n0.app.adata.BlockDataUnit;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Cluster;
+import ca.mcgill.sis.dmas.kam1n0.framework.storage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.sun.mail.imap.AppendUID;
 
 import ca.mcgill.sis.dmas.kam1n0.AppController;
 import ca.mcgill.sis.dmas.kam1n0.AppPlatform;
@@ -38,9 +37,6 @@ import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.ArchitectureType;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizationResource;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizer;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.NormalizationSetting;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Comment;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 
 /**
  * All the APP services follow path:
@@ -136,7 +132,7 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final List<FunctionDataUnit> getFunctionInfos(@PathVariable("appId") long appId,
 			@RequestParam("id") long binaryId) {
-		return this.meta.getFunctions(appId, binaryId).stream().map(func -> new FunctionDataUnit(func, true))
+		return this.meta.getFunctions(appId, binaryId).stream().map(func -> new FunctionDataUnit(func, true, true))
 				.collect(Collectors.toList());
 	}
 
@@ -191,6 +187,7 @@ public abstract class ApplicationHandler {
 	public final ModelAndView showFunctionText(@PathVariable("appId") long appId) {
 		try {
 			ApplicationInfoSummary summary = meta.getInfoSummary(appId);
+            summary.appAttrs.put("useMarkdown", System.getProperty("kam1n0.web.markdown", "true"));
 			return MVCUtils.wrapAuthenticatedRenderer(new ModelAndFragment(FRAG_APP_FUNC_TEXT, summary));
 		} catch (Exception e) {
 			logger.error("Failed creating func flow view.", e);
@@ -217,7 +214,8 @@ public abstract class ApplicationHandler {
 	@ResponseBody
 	public final Map<String, Object> putComment(@PathVariable("appId") long appId,
 			@RequestParam("functionId") long functionId, @RequestParam("functionOffset") String functionOffset,
-			@RequestParam("date") String date, @RequestParam("comment") String content) {
+			@RequestParam("date") String date, @RequestParam("comment") String content, @RequestParam("type") String type,
+			@RequestParam("userName") String userName) {
 		try {
 
 			if (content.length() > 0 && !meta.checkFunc(appId, functionId)) {
@@ -227,14 +225,15 @@ public abstract class ApplicationHandler {
 			Comment comment = new Comment();
 			comment.functionId = functionId;
 			comment.functionOffset = functionOffset.trim();
+			comment.type = Comment.CommentType.valueOf(type);
 			if (date.trim().length() > 0)
 				comment.date = Long.parseLong(date.trim());
 			else
 				comment.date = new Date().getTime();
 			comment.comment = content;
-			comment.userName = UserController.findUserName();
+			comment.userName = userName == "" ? UserController.findUserName() : userName;
 			meta.putComment(appId, comment);
-			return ImmutableMap.of("result", comment);
+			return ImmutableMap.of("result", new CommentResult(comment));
 		} catch (Exception e) {
 			logger.error("Failed put commnet.", e);
 			return ImmutableMap.of("error", "Failed to update the comment.");

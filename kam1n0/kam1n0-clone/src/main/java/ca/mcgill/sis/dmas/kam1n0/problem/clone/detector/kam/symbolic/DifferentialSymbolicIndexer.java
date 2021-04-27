@@ -118,7 +118,8 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 				return new ArrayList<>();
 
 			// transform query (if haven't doen so)
-			// updated block will be transfered back to the UI (to include vex code etc.)
+			// updated block will be transfered back to the UI (to include vex
+			// code etc.)
 			function.blocks = function.blocks.stream().map(LogicGraphFactory::translate).collect(Collectors.toList());
 
 			ArrayList<Block> vBlks = new ArrayList<>();
@@ -554,8 +555,8 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 			if (round == this.maxRound - 1) {
 				// last round. sampling cant find result. wee seek for a solver:
 				if (debugLevel > 1) {
-					logger.info(prefix
-							+ "Depth {} - Round {} :  the last round. We seek for a solver to find a new value the yield different output.",
+					logger.info(
+							prefix + "Depth {} - Round {} :  the last round. We seek for a solver to find a new value the yield different output.",
 							depth, round);
 				}
 				Long solverNewVal = determineNewValSolver(newMajority, K2, logics, box);
@@ -714,8 +715,8 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 			index.setBucket(rid, K1, K2, bucket);
 			IntSummaryStatistics stat = bucket.entries.stream().mapToInt(ent -> ent.input.size()).summaryStatistics();
 
-			logger.warn(prefix
-					+ "Depth {} - Unable to find good split in {} rounds for {} logics. K1:{} K2:{} Limit:{} In-degree:avg-{}-max-{}-min-{}. {}",
+			logger.warn(
+					prefix + "Depth {} - Unable to find good split in {} rounds for {} logics. K1:{} K2:{} Limit:{} In-degree:avg-{}-max-{}-min-{}. {}",
 					depth, round, sizeToBeSplit, Long.toHexString(K1), K2, maxSize, stat.getAverage(), stat.getMax(),
 					stat.getMin(),
 					solverEquivalent ? "Solver said they are equivalent w.r.t. arbitary " + oldNewVal : "");
@@ -738,9 +739,9 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 							conf.outputSymbol.cNode.varName, Integer.toHexString(conf.outputSymbol.cNode.sHash),
 							conf.inputAssignments, conf.result.output.value,
 							""/*
-								 * conf.outputSymbol.cNode.sExpression(conf. configurable.nodes)
-								 */, conf.configurable.funcName, conf.configurable.arch.type,
-							conf.configurable.blockName);
+								 * conf.outputSymbol.cNode.sExpression(conf.
+								 * configurable.nodes)
+								 */, conf.configurable.funcName, conf.configurable.arch.type, conf.configurable.blockName);
 				});
 			}
 		}
@@ -1182,7 +1183,7 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 				.filter(tp -> tp._2 != null && tp._1 != null).collect(Collectors.toList());
 		ls.forEach(tp -> bks.put(tp._1, tp._2));
 
-		results.parallelStream().forEach(result -> {
+		results.stream().forEach(result -> {
 			Block tar = result.query.blk.getBlock();
 			result.locations.stream().forEach(loc -> {
 				IOBucketCtn bk = bks.get(loc);
@@ -1191,16 +1192,19 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 					Set<Integer> hids = bk.entries.stream().map(hm -> hm.hid).collect(Collectors.toSet());
 					List<IOEntry> ioEntries = hids.stream().map(hid -> {
 						IOSymHashCnt hbk;
-						if (!hidCache.containsKey(hid)) {
-							hbk = index.loadHashCnt(rid, hid);
-							hidCache.put(hid, hbk);
-						} else
-							hbk = hidCache.get(hid);
-						return hbk;
+						synchronized (hidCache) {
+							if (!hidCache.containsKey(hid)) {
+								hbk = index.loadHashCnt(rid, hid);
+								hidCache.put(hid, hbk);
+							} else
+								hbk = hidCache.get(hid);
+							return hbk;
+						}
 					}).filter(cnt -> cnt != null).flatMap(cnt -> cnt.entries.stream()).collect(Collectors.toList());
 					// tmp hack. causing error
 					if (ioEntries.size() < 1000) {
-						Set<Long> fids = ioEntries.stream().map(ioe -> ioe.functionId).collect(Collectors.toSet());
+						Set<Long> fids = ioEntries.stream().filter(ioe -> ioe != null).map(ioe -> ioe.functionId)
+								.collect(Collectors.toSet());
 						int size = fids.size();
 						ioEntries.stream().forEach(entry -> {
 							su.add(varName, tar, entry, size);
@@ -1215,11 +1219,13 @@ public class DifferentialSymbolicIndexer extends Indexer<Block> implements Seria
 					return;
 				Integer newHash = Long.hashCode(Long.parseUnsignedLong(conf.result.output.value, 16));
 				IOSymHashCnt hCnt;
-				if (!hidCache.containsKey(newHash)) {
-					hCnt = index.loadHashCnt(rid, newHash);
-					hidCache.put(newHash, hCnt);
-				} else
-					hCnt = hidCache.get(newHash);
+				synchronized (hidCache) {
+					if (!hidCache.containsKey(newHash)) {
+						hCnt = index.loadHashCnt(rid, newHash);
+						hidCache.put(newHash, hCnt);
+					} else
+						hCnt = hidCache.get(newHash);
+				}
 				String varName = conf.outputSymbol.cNode.varName;
 				// logger.info("Fetching static value: {} that contains {}
 				// entries.", conf.result.output.value,

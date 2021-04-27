@@ -13,28 +13,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
+import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.Insert;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.spark.connector.CassandraRowMetadata;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.spark.connector.japi.CassandraRow;
 import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
 import com.datastax.spark.connector.japi.rdd.CassandraTableScanJavaRDD;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
+
 import com.google.common.collect.Sets;
 
 import ca.mcgill.sis.dmas.env.Environment;
@@ -45,9 +45,7 @@ import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import scala.Tuple2;
 import scala.Tuple3;
-import shade.com.datastax.spark.connector.google.common.util.concurrent.FutureCallback;
-import shade.com.datastax.spark.connector.google.common.util.concurrent.Futures;
-import shade.com.datastax.spark.connector.google.common.util.concurrent.MoreExecutors;
+
 
 public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactoryMultiTenancy<T>
 		implements Serializable {
@@ -149,6 +147,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		if (!cassandra.checkColumnFamilies(spark.getConf(), name_db, name_cl)) {
 			logger.info("Creating table {} {}", name_db, name_cl);
 			cassandra.doWithSession(spark.getConf(), session -> {
+
 				session.execute("CREATE KEYSPACE if not exists " + name_db + " WITH "
 						+ "replication = {'class':'SimpleStrategy', 'replication_factor':1} "
 						+ " AND durable_writes = true;");
@@ -161,6 +160,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				// setup keys
 				String key_defs = getKeyDefinition();
 				// create table (CF)
+
 				String query = "create table if not exists " + name_db + "." + name_cl + " (" + attr_defs_str + ","
 						+ key_defs + ");";
 				logger.info("Issuing query {}", query);
@@ -211,8 +211,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	@SuppressWarnings("unchecked")
 	public void update(long rid, T obj, boolean async, boolean addC) {
 		cassandra.doWithSession(sess -> {
-			Insert query = QueryBuilder.insertInto(name_db, name_cl);
-			query.value(primaryKey_rid, rid);
+			InsertInto insert = QueryBuilder.insertInto(name_db, name_cl);
+			RegularInsert query = insert.value(primaryKey_rid, QueryBuilder.literal(rid));
 			for (FieldInformation info : allAttributes.values())
 				try {
 					Object val = clazz.getField(info.name).get(obj);
@@ -243,24 +243,14 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 						else
 							val = stream.collect(Collectors.toCollection(HashSet::new));
 					}
-					query.value(info.name, val);
+					query = query.value(info.name, QueryBuilder.literal(val));
 				} catch (Exception e) {
 					logger.error("Failed to set field " + info + "with value", e);
 				}
 			if (async) {
-				ResultSetFuture future = sess.executeAsync(query);
-				Futures.addCallback(future, new FutureCallback<ResultSet>() {
-					@Override
-					public void onSuccess(ResultSet result) {
-					}
-
-					@Override
-					public void onFailure(Throwable t) {
-						logger.error("Failed to put value.", t);
-					}
-				}, MoreExecutors.directExecutor());
+				executeAsync(sess, query);
 			} else {
-				sess.execute(query);
+				sess.execute(query.toString());
 			}
 			if (addC) {
 				PreparedStatement inc_stm = sess
@@ -268,6 +258,17 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				sess.executeAsync(inc_stm.bind(rid));
 			}
 		});
+	}
+
+
+	private void executeAsync(CqlSession session, RegularInsert query) {
+		CompletionStage<AsyncResultSet> responseStage = session.executeAsync(query.toString());
+		responseStage.whenComplete(
+				(version, error) -> {
+					if (error != null) {
+						logger.error("Failed to put value.", error);
+					}
+				});
 	}
 
 	private JavaRDD<T> get(long rid, String[] fields, Object... keys) {
@@ -369,18 +370,20 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				.collect(Collectors.toList());
 		JavaRDD<T> sblk = sblks.get(0);
 		if (sblks.size() > 1)
-			sblk = spark.getContext().union(sblk, sblks.subList(1, sblks.size()));
+			for(int i = 1; i<sblks.size();i++){
+				sblk = spark.getContext().union(sblk,sblks.get(i));
+			}
 		return sblk;
 	}
 
 	@Override
 	public JavaRDD<T> queryMultipleBaisc(long rid, String fieldName, Collection<? extends Object> keys) {
 		List<List<Object>> partitions = new ArrayList<>();
-		partitions.add(new ArrayList<Object>());
+		partitions.add(new ArrayList<>());
 		int c = 0;
 		for (Object sid : keys) {
 			if (++c % binSize == 0)
-				partitions.add(new ArrayList<Object>());
+				partitions.add(new ArrayList<>());
 			partitions.get(partitions.size() - 1).add(sid);
 		}
 
@@ -390,7 +393,9 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				.collect(Collectors.toList());
 		JavaRDD<T> sblk = sblks.get(0);
 		if (sblks.size() > 1)
-			sblk = spark.getContext().union(sblk, sblks.subList(1, sblks.size()));
+			for(int i = 1; i<sblks.size();i++){
+				sblk = spark.getContext().union(sblk,sblks.get(i));
+			}
 		return sblk;
 	}
 
@@ -453,7 +458,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 			params[1] = rid;
 			for (int i = 0; i < fullKey.length; ++i)
 				params[i + 2] = fullKey[i];
-			logger.info(cmt_statement.getQueryString());
+			logger.info(cmt_statement.getQuery());
 			logger.info(Arrays.toString(params));
 			sess.execute(cmt_statement.bind(params));
 		});
@@ -580,7 +585,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	@Override
 	public void dump() {
 		List<CassandraRow> tbl = javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl).collect();
-		tbl.stream().forEach(System.out::println);
+		tbl.forEach(System.out::println);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -620,13 +625,13 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 			logger.info(testFactory.queryMultipleBaisc(rid, i).collect().toString());
 
 		testFactory.addToCollection(rid, "all_ids_ls_str2", new TestClass.TestClassSub("hihihihihihihihihihihi!!!!"),
-				0l, 1l, 2l);
+				0L, 1L, 2L);
 
 		logger.info(testFactory.querySingle(rid, 0, 1, 2).toString());
 
 		logger.info(testFactory.queryMultiple(rid, 0).collect().toString());
 
-		logger.info("" + testFactory.check(rid, 0l, 1l, 2l));
+		logger.info("" + testFactory.check(rid, 0L, 1L, 2L));
 
 		testFactory.close();
 		cassandra.close();

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.mcgill.sis.dmas.env.Environment;
 import ca.mcgill.sis.dmas.io.file.DmasFileOperations;
+import ca.mcgill.sis.dmas.kam1n0.impl.disassembly.DisassemblyFactoryGhidra;
 import ca.mcgill.sis.dmas.kam1n0.impl.disassembly.DisassemblyFactoryIDA;
 
 /**
@@ -74,10 +75,22 @@ public abstract class DisassemblyFactory {
 	private static Logger logger = LoggerFactory.getLogger(DisassemblyFactory.class);
 
 	public static DisassemblyFactory getDefaultDisassemblyFactory() {
-		DisassemblyFactoryIDA factory = new DisassemblyFactoryIDA(
-				);
-		factory.init();
-		return factory;
+		String disassembler = System.getProperty("kam1n0.disassembler", "IDA");
+		if (disassembler.toLowerCase().equals("ida")) {
+			DisassemblyFactoryIDA factory = new DisassemblyFactoryIDA();
+			factory.init();
+			return factory;
+		} else {
+			DisassemblyFactoryGhidra ghidra;
+			try {
+				ghidra = new DisassemblyFactoryGhidra();
+				ghidra.init();
+				return ghidra;
+			} catch (Exception e) {
+				logger.error("Failed to create a ghidra wrapper.");
+			}
+		}
+		return null;
 	}
 
 	public static HashMap<File, BinarySurrogate> diassemble(List<File> buidDirs, final Pattern... filePatterns) {
@@ -91,7 +104,12 @@ public abstract class DisassemblyFactory {
 				for (File binary : binaries) {
 					logger.info("Disassembling {}", binary.getName());
 					try {
-						BinarySurrogate binarySurrogate = disassemblyFactory.load(binary.getAbsolutePath());
+						BinarySurrogate binarySurrogate = null;
+						if (binary.getName().endsWith(".json")) {
+							binarySurrogate = BinarySurrogate.load(binary);
+							binarySurrogate.processRawBinarySurrogate();
+						} else
+							binarySurrogate = disassemblyFactory.load(binary.getAbsolutePath());
 						asmFunctions.addAll(binarySurrogate.functions);
 						asmFiles.put(binary, binarySurrogate);
 					} catch (Exception e) {
