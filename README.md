@@ -8,6 +8,9 @@
 ![JDK](https://img.shields.io/badge/JDK%2FJSE-8-brightgreen.svg?style=flat-square&maxAge=86400)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&maxAge=86400)
 
+[![Build latest development release (Windows)](https://github.com/McGill-DMaS/Kam1n0/releases)
+
+[![Test release build (Windows)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild-test.yml/badge.svg)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild-test.yml)
 
 **_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It allows a user to first index a (large) collection of binaries into different repositories and provide different analytic services such as clone search and classification. It supports multi-tenancy access and management of assembly repositories by using the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: **_Asm-Clone_**, **_Sym1n0_**, and **_Asm2Vec_**, and an **_executable classification_** based on _Asm2Vec_. New application type can be further added to the platform.
 
