@@ -281,3 +281,5 @@ Copyright 2014-2021 McGill University and the Researchers. All rights reserved.
 ![image](https://img.shields.io/badge/Acknowledgement-NVIDIA%20Corporation%20for%20donating%20the%20Titan%20Xp%20used%20for%20this%20research-blue.svg?style=for-the-badge)
 
 ![image](https://img.shields.io/badge/Built%20in-Data%20Mining%20and%20Security%20Lab%2C%20SIS%2C%20McGill%20Univrsity-red.svg?style=for-the-badge)
+
+![image](https://img.shields.io/badge/Built%20in-L1NNA%20Research%20Laboratory%2C%20CS%2C%20Queen's%20Univrsity-red.svg?style=for-the-badge)
