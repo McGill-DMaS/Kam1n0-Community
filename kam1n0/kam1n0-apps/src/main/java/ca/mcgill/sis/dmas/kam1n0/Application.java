@@ -83,6 +83,7 @@ public class Application {
 		System.setProperty("spring.servlet.multipart.max-file-size", maxRequestSize);
 		System.setProperty("spring.servlet.multipart.max-request-size", maxRequestSize);
 		System.setProperty("server.tomcat.max-http-post-size", Integer.toString(sizeInByte));
+		System.setProperty("server.tomcat.max-http-form-post-size", Integer.toString(sizeInByte));
 
 		return port;
 	}
