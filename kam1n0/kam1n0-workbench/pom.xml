@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>kam1n0-workbench</artifactId>
 	<parent>
@@ -71,8 +70,7 @@
 								</includes>
 							</artifactSet>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>ca.mcgill.sis.dmas.kam1n0.workbench.controller.MainApp</mainClass>
 								</transformer>
 							</transformers>
@@ -96,6 +94,31 @@
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.1</version>
+				<configuration>
+					<options>
+						<option>--add-opens</option>
+						<option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
+						<option>--add-opens</option>
+						<option>javafx.controls/com.sun.javafx.scene.control=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.binding=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.graphics/com.sun.javafx.stage=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.event=com.jfoenix</option>
+					</options>
+					<mainClass>ca.mcgill.sis.dmas.kam1n0.workbench.controller.MainApp</mainClass>
+				</configuration>
+			</plugin>
+
 
 		</plugins>
 
@@ -105,22 +128,32 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>12.0.2</version>
+			<version>16</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>15-ea+7</version>
+			<version>16</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>1.10.0</version>
+			<version>9.0.10</version>
 		</dependency>
 		<dependency>
 			<groupId>de.jensd</groupId>
-			<artifactId>fontawesomefx</artifactId>
-			<version>8.9</version>
+			<artifactId>fontawesomefx-fontawesome</artifactId>
+			<version>4.7.0-9.1.2</version>
 		</dependency>
+		<dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialdesignfont</artifactId>
+            <version>2.0.26-9.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+            <version>9.1.2</version>
+        </dependency>
 	</dependencies>
 </project>

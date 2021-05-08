@@ -14,6 +14,7 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>..\..\kam1n0\logos\logo-server.ico</icon>
+  <var>PATH_TO_FX=javafx-sdk-11.0.2\lib</var>
   <singleInstance>
     <mutexName>Kam1n0-Sever</mutexName>
     <windowTitle>Kam1n0-Sever</windowTitle>
@@ -22,9 +23,10 @@
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>1.8.0</minVersion>
+    <minVersion>11.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64</runtimeBits>
+    <opt>--module-path lib\javafx-sdk-11.0.2\lib --add-modules=javafx.controls,javafx.fxml --add-reads javafx.base=ALL-UNNAMED --add-reads javafx.graphics=ALL-UNNAMED </opt>
   </jre>
 </launch4jConfig>
