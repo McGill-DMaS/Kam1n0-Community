@@ -250,10 +250,12 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 
 	private boolean updateOrInsertVecEntry(CqlSession session, long rid, VecEntry<T, K> vec) {
 
-		boolean isNewEntry = session.execute(
+		var res = session.execute(
 				QueryBuilder.selectFrom(databaseName, _ADAPTIVE_HASH).column(_HASHID_COLUMN)
 						.whereColumn(_APP_ID_COLUMN).isEqualTo(literal(rid))
-						.whereColumn(_HASHID_COLUMN).isEqualTo(literal(vec.hashId)).build()).one() != null;
+						.whereColumn(_HASHID_COLUMN).isEqualTo(literal(vec.hashId)).build()).one();
+						
+		boolean isNewEntry = res == null;
 
 		if (isNewEntry) {
 			calFullKey(vec);
