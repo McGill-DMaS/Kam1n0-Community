@@ -265,11 +265,13 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		public long functionId;
 		public int functionInstructionCount;
 		public int topK;
+		public boolean skipSameFunc;
 
 		public VecInfoBlockFilter(long functionId, int functionInstructionCount, int topK) {
 			this.functionId = functionId;
 			this.functionInstructionCount = functionInstructionCount;
 			this.topK = topK;
+			this.skipSameFunc = false;
 		}
 
 		public VecInfoBlockFilter() {
@@ -278,11 +280,11 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		@Override
 		public List<VecInfoBlock> apply(List<VecInfoBlock> ls) {
 			if (ls.size() < this.topK) {
-				return ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId).collect(Collectors.toList());
+				return ls.stream().filter(matchedBlock -> !skipSameFunc || matchedBlock.functionId != functionId).collect(Collectors.toList());
 			}
 
 			Ranker<VecInfoBlock> rk = new Ranker<>();
-			ls.stream().filter(matchedBlock -> matchedBlock.functionId != functionId)
+			ls.stream().filter(matchedBlock -> !skipSameFunc || matchedBlock.functionId != functionId)
 					.forEach(vb -> rk.push(-1 * Math.abs(vb.peerSize - functionInstructionCount), vb));
 			return rk.getTopK(topK).stream().map(ent -> ent.value).collect(Collectors.toList());
 		}

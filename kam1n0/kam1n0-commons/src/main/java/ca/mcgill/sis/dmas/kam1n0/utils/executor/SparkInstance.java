@@ -129,6 +129,7 @@ public class SparkInstance {
 			// conf.set("spark.scheduler.mode", "FIFO");
 			conf.set("spark.ui.showConsoleProgress", "false");
 			conf.set("spark.driver.maxResultSize", "4G");
+			conf.set("spark.io.compression.codec", "snappy");
 			// conf.set("spark.scheduler.minRegisteredResourcesRatio", "0.5");
 		} else {
 			conf.setMaster("spark://" + host + ":" + driverport);
@@ -139,6 +140,7 @@ public class SparkInstance {
 			conf.set("spark.executor.memory", rm_exc_mem);
 			conf.set("spark.ui.showConsoleProgress", "false");
 			conf.set("spark.driver.maxResultSize", "4G");
+			conf.set("spark.io.compression.codec", "snappy");
 		}
 		conf.set("spark.scheduler.allocation.file", KamResourceLoader.loadFile("fairschedule.xml").getAbsolutePath());
 		conf.set("spark.network.timeout", "800");
