@@ -132,7 +132,24 @@ text {
 										<li><div class="row">
 											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
 										</div></li>
-										
+
+										<li style="visibility: collapse;">
+											<div class="row">
+												<div class="input-group">
+													<div class="form-group">
+
+														<input id="input-clones-keyword" class="form-control" type="text"
+															   placeholder="Keyword"
+															   style="width: 200px; margin-top: 0; position: relative; top: 0;"/>
+
+														<button class="btn btn-sm btn-info" id="button-clones-keyword">
+															<i class="material-icons" style="color: white">search</i>
+														</button>
+													</div>
+												</div>
+											</div>
+										</li>
+
 										<li>
 											<div class="row">
 												<h6>Filter Binaries</h6>
@@ -371,7 +388,7 @@ text {
 						}); // end ajax
 				});
 
-			return $li;
+			return [$li, max_score];
 		}
 
 		var not_selected = new Set();
@@ -547,7 +564,14 @@ text {
                     });
                     for (var info in struct.list) {
                         var item = createInfoAtAddress(struct.list[info]);
-                        parent.append(item);
+                        var score = item[1];
+						if($('#btn_unmatch').prop("checked")==true){
+							if(score != 0){
+								parent.append(item[0]);
+							}
+						} else {
+							parent.append(item[0]);
+						}
                     }
                     scale();
 
@@ -661,6 +685,10 @@ text {
 
                 loadFunction(bin_comp, 0, true);
             });
+
+            $('#btn_unmatch').click(function(){
+				loadFunction(bin_comp, 0, true);
+			});
         })
 		/*]]>*/
 	</script>
