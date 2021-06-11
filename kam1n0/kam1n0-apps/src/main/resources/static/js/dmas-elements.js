@@ -750,6 +750,8 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         to = setTimeout(function () {
             var v = $search.val();
             $list.jstree(true).search(v);
+            $list.jstree('close_all');
+            $list.jstree('open_all');
         }, 1000);
     });
     $search.keyup(function (e) {
@@ -1984,10 +1986,12 @@ function setUpTextHighlights(trigger, prefix) {
         var first_comment = undefined;
         dict["is_func"] = false;
         let highlighted = $("td.diff-line-num.highlighted");
+        var first_comment_addr = undefined;
         if (highlighted.length < 1) {
             // select all if is_func
             highlighted = $("td.diff-line-num");
             dict["is_func"] = true;
+            first_comment_addr = parseInt($($('.diff-line-num')[0]).attr('id'));
         }
         highlighted.each(function (index, value) {
             let comments = $(value).data('cm');
@@ -1997,12 +2001,14 @@ function setUpTextHighlights(trigger, prefix) {
                         for (commentInfo of comments[val]) {
                             if (!first_comment)
                                 first_comment = commentInfo;
+                            if (!first_comment_addr)
+                                first_comment_addr = parseInt(first_comment.functionOffset);
                             var type = commentInfo.type;
                             var offset = 0;
                             var isRepeatable = 0;
-                            if (commentInfo != first_comment) {
-                                offset = parseInt(commentInfo.functionOffset) - parseInt(first_comment.functionOffset);
-                            }
+
+                            offset = parseInt(commentInfo.functionOffset) - first_comment_addr;
+
                             if (type == "repeatable") {
                                 isRepeatable = 1;
                                 type = "regular"
