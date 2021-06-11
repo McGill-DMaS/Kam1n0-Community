@@ -269,7 +269,7 @@ class Kam1n0PluginManager:
 
     def index_selected_func(self, ctx):
         title = self._get_ctx_title(ctx)
-        if title == "Functions window":
+        if title.startswith("Function"):
             if IDAUtils.is_hexrays_v7():
                 ida_funcs_t = [idaapi.getn_func(f_idx) for f_idx in
                              ctx.chooser_selection]
@@ -316,7 +316,7 @@ class Kam1n0PluginManager:
 
     def query_selected_func(self, ctx):
         title = self._get_ctx_title(ctx)
-        if title == "Functions window":
+        if title.startswith("Function"):
             if IDAUtils.is_hexrays_v7():
                 ida_funcs_t = [idaapi.getn_func(f_idx) for f_idx in
                              ctx.chooser_selection]
@@ -503,7 +503,7 @@ class Hooks(idaapi.UI_Hooks):
                 popup,
                 "Kam1n0:queryFragment",
                 None)
-        if idaapi.get_widget_title(form).startswith("Functions"):
+        if idaapi.get_widget_title(form).startswith("Function"):
             idaapi.attach_action_to_popup(
                 form,
                 popup,

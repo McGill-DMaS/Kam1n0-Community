@@ -326,9 +326,10 @@ def get_selected_code(sea, eea):
             block_number += 1
             blocks.append(block)
     for block in blocks:
-        block['call'] = [block_id_map[c] for c in block['call'] if c in block_id_map]
-    surrogate['functions'][0]['blocks'] = blocks    
-    
+        block['call'] = [block_id_map[c]
+                         for c in block['call'] if c in block_id_map]
+    surrogate['functions'][0]['blocks'] = blocks
+
     if surrogate['functions'][0]['see'] < eea:
         endsea = surrogate['functions'][0]['see'] + 1
         previous_endsea = surrogate['functions'][0]['see']
@@ -361,28 +362,29 @@ def _iter_extra_comments(ea, start):
     return "\n".join(lines)
 
 
+def _append_comments(ea, comments, type, text):
+    if text and len(text) > 0:
+        comments.append({'type': type, 'comment': text, 'offset': str(
+            hex(ea)).rstrip("L").upper().replace("0X", "0x")})
+
+# anterior comment with offset is equal to first_segment_address will be exclude
+
+
 def get_comments(ea):
+    first_segment_address = idc.get_segm_start(ea)
+
     comments = []
-    text = idc.get_cmt(ea, 1)
-    if text and len(text) > 0:
-        comments.append({'type': 'repeatable', 'comment': text,
-                         'offset': str(hex(ea)).rstrip("L").upper().replace(
-                             "0X", "0x")})
-    text = idc.get_cmt(ea, 0)
-    if text and len(text) > 0:
-        comments.append({'type': 'regular', 'comment': text,
-                         'offset': str(hex(ea)).rstrip("L").upper().replace(
-                             "0X", "0x")})
-    text = _iter_extra_comments(ea, idaapi.E_PREV)
-    if text and len(text) > 0:
-        comments.append({'type': 'anterior', 'comment': text,
-                         'offset': str(hex(ea)).rstrip("L").upper().replace(
-                             "0X", "0x")})
-    text = _iter_extra_comments(ea, idaapi.E_NEXT)
-    if text and len(text) > 0:
-        comments.append({'type': 'posterior', 'comment': text,
-                         'offset': str(hex(ea)).rstrip("L").upper().replace(
-                             "0X", "0x")})
+    _append_comments(ea, comments, 'repeatable',
+                     idc.get_cmt(ea, 1))  # RptCmt(ea)
+    _append_comments(ea, comments, 'regular',
+                     idc.get_cmt(ea, 0))  # Comment(ea)
+
+    anteriorComment = _iter_extra_comments(ea, idaapi.E_PREV)
+    if ea != first_segment_address:
+        _append_comments(ea, comments, 'anterior', anteriorComment)
+
+    _append_comments(ea, comments, 'posterior',
+                     _iter_extra_comments(ea, idaapi.E_NEXT))
     return comments
 
 
