@@ -129,11 +129,9 @@ text {
 												<h6>Filter Clones</h6>
 											</div>
 										</li>
-										<li><div class="row">
-											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
-										</div></li>
 
-										<li style="visibility: collapse;">
+
+										<li>
 											<div class="row">
 												<div class="input-group">
 													<div class="form-group">
@@ -149,6 +147,10 @@ text {
 												</div>
 											</div>
 										</li>
+
+										<li><div class="row">
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
+										</div></li>
 
 										<li>
 											<div class="row">
@@ -581,6 +583,14 @@ text {
 					$('#nbTotalFunction').text(struct.loadingInfo.total);
                     $('#nbTotalFunctionLoaded').text(parent[0].childElementCount);
                     $('#nbTotalFunctionFiltered').text(struct.loadingInfo.filteredTotal);
+
+					// in case of not being filled up at the first page (client-side filtering)
+					var infoContainer = $('#infoContainer')[0];
+					if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
+						var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+						console.log('scroll requesting from address' + str_startAddress);
+						loadFunction(bin_comp, str_startAddress);
+					}
                 }
             });
         }
@@ -617,6 +627,8 @@ text {
                         loadFunction(bin_comp, str_startAddress);
                     }
                 });
+
+
 
                 window.setTimeout(
                     function() {
