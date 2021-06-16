@@ -728,10 +728,7 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
                         });
                 });
             }
-            if (clonesKeyword != '') {
-                $search.val(clonesKeyword);
-                $list.jstree(true).search(clonesKeyword);
-            }
+
         }).
         on('changed.jstree', function (e, data) {
             if (data.node.children.length == 0 && data.node.a_attr['data-pair'] != null) {
@@ -745,6 +742,15 @@ function CreateCloneList($container, dataParsed, callback, icons, views, viewnam
         });
 
     var to = false;
+    if (clonesKeyword != '') {
+        $search.val(clonesKeyword);
+        to = setTimeout(function () {
+                    var v = $search.val();
+                    $list.jstree(true).search(v);
+                    $list.jstree('close_all');
+                    $list.jstree('open_all');
+                }, 100);
+    }
     $search.keyup(function () {
         if (to) { clearTimeout(to); }
         to = setTimeout(function () {
