@@ -1997,7 +1997,12 @@ function setUpTextHighlights(trigger, prefix) {
             // select all if is_func
             highlighted = $("td.diff-line-num");
             dict["is_func"] = true;
-            first_comment_addr = parseInt($($('.diff-line-num')[0]).attr('id'));
+
+            // text diff view
+            first_comment_addr = parseInt($($('.diff-line-num.pointerCursor')[0]).attr('id'));
+            // text view
+            if (!first_comment_addr)
+                first_comment_addr = parseInt($($('.diff-line-num.\\+r-p')[0]).attr('id').replace('r-', ''));
         }
         highlighted.each(function (index, value) {
             let comments = $(value).data('cm');
