@@ -21,12 +21,12 @@ if not exist %PYTHON_PIPY% (
 if exist %PYTHON_PIPY% (
 	"%PYTHON_EXE%" -c "import sys; sys.exit(64) if sys.maxsize > 2**32 else sys.exit(32)"
 	if errorlevel 64 (
-		echo "%PYTHON_PIPY%" install cefpython3-66.0-py2.py3-none-win_amd64.whl
-		"%PYTHON_PIPY%" install cefpython3-66.0-py2.py3-none-win_amd64.whl
+		echo "%PYTHON_PIPY%" install cefpython3-66.1-py2.py3-none-win_amd64.whl
+		"%PYTHON_PIPY%" install cefpython3-66.1-py2.py3-none-win_amd64.whl
 	)
 	if errorlevel 32  (
-		echo "%PYTHON_PIPY%" install cefpython3-66.0-py2.py3-none-win32.whl
-		"%PYTHON_PIPY%" install cefpython3-66.0-py2.py3-none-win32.whl
+		echo "%PYTHON_PIPY%" install cefpython3-66.1-py2.py3-none-win32.whl
+		"%PYTHON_PIPY%" install cefpython3-66.1-py2.py3-none-win32.whl
 	)
 )
 
