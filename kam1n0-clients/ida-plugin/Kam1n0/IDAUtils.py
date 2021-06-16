@@ -212,7 +212,7 @@ def _get_ida_func_surrogate(func, arch):
         block = dict()
         block['id'] = bb.id
         block['sea'] = bb.start_ea
-        if arch is 'arm':
+        if arch == 'arm':
             # for arm; the last bit indicates thumb mode.
             block['sea'] += idc.GetReg(bb.start_ea, 'T')
         block['eea'] = bb.end_ea
@@ -346,7 +346,7 @@ def get_selected_code(sea, eea):
             s = idc.get_bytes(block['sea'], block['eea'] - block['sea'])
             if s is not None:
                 block['bytes'] = "".join("{:02x}".format(c) for c in s)
-            if surrogate['architecture']['type'] is 'arm':
+            if surrogate['architecture']['type'] == 'arm':
                 # for arm; the last bit indicates thumb mode.
                 block['sea'] += idc.GetReg(block['sea'], 'T')
             block['name'] = 'loc_' + format(block['sea'], 'x').upper()

@@ -62,7 +62,7 @@ def resolve_url(url):
                 resolved.pop()
         elif segment not in ('./', '.'):
             resolved.append(segment)
-    resolved = [part for part in resolved if part is not '/']
+    resolved = [part for part in resolved if not part == '/']
     parts[2] = ''.join(resolved)
     return urlunsplit(parts)
 
