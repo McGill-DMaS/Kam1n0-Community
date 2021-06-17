@@ -1707,8 +1707,8 @@ function createCommentRowSingle(cm, url, prefix) {
 
     var ida_addr = $(`<input class=\"cp-addr\" value=${cm.functionOffset}>`);
     var interaction = false;
-    if (typeof send_msg != 'undefined' && prefix == right_prefix)
-        interaction = true;
+    //if (typeof send_msg != 'undefined' && prefix == right_prefix)
+    //    interaction = true;
     var $tr = $('<tr class=\"cmrow\">');
 
     if (prefix == right_prefix)
