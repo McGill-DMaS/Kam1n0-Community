@@ -43,6 +43,12 @@
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>3.0.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.jpountz.lz4</groupId>
+					<artifactId>lz4</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>

@@ -90,6 +90,12 @@
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>3.0.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.jpountz.lz4</groupId>
+					<artifactId>lz4</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- dependencies for testing; not included in the jar -->

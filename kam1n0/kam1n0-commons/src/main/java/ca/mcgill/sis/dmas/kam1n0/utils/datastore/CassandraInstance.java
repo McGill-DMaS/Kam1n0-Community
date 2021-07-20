@@ -180,7 +180,6 @@ public class CassandraInstance {
 			System.setProperty("hadoop.home.dir", f.getAbsolutePath());
 			System.setProperty("cassandra.config", "file:" + configFile.getPath());
 			System.setProperty("cassandra.jmx.local.port", "7199");
-			System.setProperty("cassandra.jmx.local.port", "7199");
 			System.setProperty("CASSANDRA_HOME", KamResourceLoader.jPath);
 
 			// create trigger directory for cassandra
@@ -204,8 +203,6 @@ public class CassandraInstance {
 	}
 
 	public void doWithSession(DoWithObj<CqlSession> func) {
-
-
 		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(spark.getConf()) //
@@ -322,7 +319,6 @@ public class CassandraInstance {
 					DatabaseDescriptor.daemonInitialization();
 					boolean runManaged = false;
 					cassandra = new CassandraDaemon(runManaged);
-					com.sun.jna.NativeLibrary.getInstance("kernel32", Collections.emptyMap());
 					cassandra.init(null);
 				} catch (IOException e) {
 					logger.error("Error initializing embedded cassandra", e);

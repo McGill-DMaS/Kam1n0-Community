@@ -271,6 +271,9 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 			this.functionId = functionId;
 			this.functionInstructionCount = functionInstructionCount;
 			this.topK = topK;
+
+			// Right now, functionId-based filtering is always disabled.
+			// Potential optimization: could be true when avoidSameBinary == true.
 			this.skipSameFunc = false;
 		}
 
@@ -331,7 +334,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		//
 		// Returned value is in two parts:
 		//  ._1: list (target block ID, targetBlkVectorInfo)  the matched subset of targetBlocksAsVectors
-		//  ._2: list of "buckets" (VecEntry is a bucket) for potential sources candidates (potential cones), and
+		//  ._2: list of "buckets" (VecEntry is a bucket) for potential sources candidates (potential clones), and
 		//          each VecEntry has: hid, list of corresponding source vec-BBs, etc.
 		// Note: this matching by ALSH is based on hashes.
 		Tuple2<List<Tuple2<Long, VecObjectBlock>>, JavaRDD<VecEntry<VecInfoBlock, VecInfoSharedBlock>>> tp2 =

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -316,21 +317,19 @@ public class Batch2 {
 
 			res.put(model.getClass().getSimpleName(), matrix, ds.labels);
  		} else if (!filterFilename.equals(filterValueForIndexingOnly))  {
-			Counter c = Counter.zero();
-			Counter tf = Counter.zero();
+			Counter fileCounter = Counter.zero();
+			AtomicInteger totalFunctionCount = new AtomicInteger(0);
 
 			if (!filterFilename.isEmpty() && !filterFilename.equals(filterValueForReuseIndexProcessAll)) {
 				ds.setProcessingFilter(m -> m._3().getName().equals(filterFilename));
 			}
 
 			StreamSupport.stream(ds.spliterator(), false).forEach(m -> m.forEach(x -> {
-				c.inc();
+				fileCounter.inc();
 				int x_ind = ds.labelMap.get(x.binaryName);
-				Counter ind = Counter.zero();
-				x.functions.parallelStream().forEach(xf -> {
+				AtomicInteger functionCount = new AtomicInteger(0);
 
-					ind.inc();
-					tf.inc();
+				x.functions.parallelStream().forEach(xf -> {
 
 					FunctionCloneSearchResult searchResult;
 					try {
@@ -341,9 +340,12 @@ public class Batch2 {
 						return;
 					}
 
-					System.out.format("%d/%d %d/%d/%d %s %d dt:%d\n",
-							ind.getVal(), x.functions.size(), c.getVal(), ds.size(), tf.getVal(),
-							xf.functionName, searchResult.foundClones.size(), searchResult.processTimeMs);
+					int completedFunctionCount = functionCount.incrementAndGet();
+					int totalCompletedFunctions = totalFunctionCount.incrementAndGet();
+					logger.info(String.format("File:%d/%d Function:%d/%d/%d %s clones:%d wallClockProcessTime:%d",
+							fileCounter.getVal(), ds.size(),
+							completedFunctionCount, x.functions.size(), totalCompletedFunctions,
+							xf.functionName, searchResult.foundClones.size(), searchResult.processTimeMs));
 
 					ds.vals.stream().forEach(t3 -> {
 

@@ -115,7 +115,7 @@ public class LshAdaptiveDupIndexCasandra<T extends VecInfo, K extends VecInfoSha
 				session.execute(createTableStatement);
 
 				// TODO: check materialized view existed nor not
-				if (tableName.equals(_ADAPTIVE_HASH)){
+				if (!isSingleUserApplication && tableName.equals(_ADAPTIVE_HASH)){
 					String createViewStatement = "CREATE MATERIALIZED VIEW " + databaseName + "." + _ADAPTIVE_HASH_VIEW + " AS "
 							+ "SELECT * FROM " + databaseName + "." + _ADAPTIVE_HASH + " "
 							+ "WHERE " + _APP_ID_COLUMN + " IS NOT NULL AND " + _HASHID_COLUMN + " IS NOT NULL AND "

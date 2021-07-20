@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.antlr.grammar.v3.ANTLRParser.option_return;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkJobInfo;
 import org.apache.spark.SparkStageInfo;
@@ -129,7 +128,6 @@ public class SparkInstance {
 			// conf.set("spark.scheduler.mode", "FIFO");
 			conf.set("spark.ui.showConsoleProgress", "false");
 			conf.set("spark.driver.maxResultSize", "4G");
-			conf.set("spark.io.compression.codec", "snappy");
 			// conf.set("spark.scheduler.minRegisteredResourcesRatio", "0.5");
 		} else {
 			conf.setMaster("spark://" + host + ":" + driverport);

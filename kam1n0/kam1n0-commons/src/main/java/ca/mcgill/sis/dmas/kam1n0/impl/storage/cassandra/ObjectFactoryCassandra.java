@@ -368,12 +368,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl)
 						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
 				.collect(Collectors.toList());
-		JavaRDD<T> sblk = sblks.get(0);
-		if (sblks.size() > 1)
-			for(int i = 1; i<sblks.size();i++){
-				sblk = spark.getContext().union(sblk,sblks.get(i));
-			}
-		return sblk;
+		return spark.getContext().union(sblks.toArray(JavaRDD[]::new));
 	}
 
 	@Override
@@ -391,12 +386,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl).select(basicAttributes)
 						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
 				.collect(Collectors.toList());
-		JavaRDD<T> sblk = sblks.get(0);
-		if (sblks.size() > 1)
-			for(int i = 1; i<sblks.size();i++){
-				sblk = spark.getContext().union(sblk,sblks.get(i));
-			}
-		return sblk;
+		return spark.getContext().union(sblks.toArray(JavaRDD[]::new));
 	}
 
 	@Override

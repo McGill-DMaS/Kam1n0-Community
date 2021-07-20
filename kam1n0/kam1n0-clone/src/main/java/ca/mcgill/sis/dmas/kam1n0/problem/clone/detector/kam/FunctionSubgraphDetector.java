@@ -102,7 +102,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 			// if(blkLength != blk.codesSize)
 			// logger.info("Incosistnent size {} vs {}", blkLength, blk.codesSize);
 			// System.out.println(blk.blockName + "," + blk.codesSize);
-			if (blkLength >= largestBlockLengthToIgnore) {
+			if (blkLength > largestBlockLengthToIgnore) {
 				vBlks.add(blk);
 				finalFuncLength.inc(blkLength);
 			}
