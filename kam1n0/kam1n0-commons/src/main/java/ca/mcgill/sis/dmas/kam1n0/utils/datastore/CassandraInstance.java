@@ -162,6 +162,7 @@ public class CassandraInstance {
 			dataDir = DmasApplication.createTmpFolder("TmpDatabase" + StringResources.timeString());
 		}
 		try {
+			logger.info("Cassandra version: {}", CassandraDaemon.class.getPackage().getImplementationVersion());
 			java.net.URL templateUrl = CassandraInstance.class.getClassLoader().getResource("cassandra-template.yaml");
 			Preconditions.checkNotNull(templateUrl, "Cassandra config template is null");
 			String baseFile = Resources.toString(templateUrl, Charset.defaultCharset());

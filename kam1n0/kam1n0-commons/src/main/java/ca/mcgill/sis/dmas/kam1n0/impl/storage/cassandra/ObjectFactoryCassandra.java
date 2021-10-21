@@ -55,6 +55,7 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	private transient CassandraInstance cassandra = null;
 	private transient SparkInstance spark = null;
 	private int binSize = 1000;
+	private int CassandraSSTableCompressionChunkSizeInKB = 64;
 
 	public ObjectFactoryCassandra(CassandraInstance cassandra, SparkInstance spark) {
 		String binSizeStr = System.getProperty("kam1n0.factory.cassandra.client.binsize", "500");
@@ -162,7 +163,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				// create table (CF)
 
 				String query = "create table if not exists " + name_db + "." + name_cl + " (" + attr_defs_str + ","
-						+ key_defs + ");";
+						+ key_defs + ") WITH compression = {'class': 'LZ4Compressor', 'chunk_length_in_kb': "
+						+ CassandraSSTableCompressionChunkSizeInKB + "};";
 				logger.info("Issuing query {}", query);
 				session.execute(query);
 			});

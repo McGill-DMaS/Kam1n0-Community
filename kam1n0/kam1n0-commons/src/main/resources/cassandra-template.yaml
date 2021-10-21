@@ -44,3 +44,4 @@ dynamic_snitch_badness_threshold: 0.0
 commitlog_segment_size_in_mb: 128
 read_request_timeout_in_ms: 65000
 enable_materialized_views: true
+file_cache_enabled: true
