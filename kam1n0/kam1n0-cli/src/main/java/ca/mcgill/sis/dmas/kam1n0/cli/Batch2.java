@@ -1,54 +1,28 @@
 package ca.mcgill.sis.dmas.kam1n0.cli;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang3.NotImplementedException;
+import ca.mcgill.sis.dmas.env.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SocketUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 
-import ca.mcgill.sis.dmas.env.ArgumentParser;
-import ca.mcgill.sis.dmas.env.Environment;
-import ca.mcgill.sis.dmas.env.LocalJobProgress;
-import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.env.ArgumentParser.OpType;
 import ca.mcgill.sis.dmas.env.ArgumentParser.Option;
 import ca.mcgill.sis.dmas.io.collection.Counter;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.BinaryAnalysisProcedureCompositionAnalysis;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.CloneSearchResources;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.FunctionCloneDetectorForWeb;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.BinarySearchUnit;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDataUnit;
-import ca.mcgill.sis.dmas.kam1n0.app.clone.adata.FunctionCloneDetectionResultForWeb;
-import ca.mcgill.sis.dmas.kam1n0.app.util.FileInfo;
-import ca.mcgill.sis.dmas.kam1n0.app.util.FileServingUtils;
-import ca.mcgill.sis.dmas.kam1n0.cli.Batch.Result;
 import ca.mcgill.sis.dmas.kam1n0.cli.dgen.Exp;
 import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture;
-import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.ArchitectureType;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmProcessor;
-import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
-import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.DisassemblyFactory;
-import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.FunctionSurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.NormalizationSetting;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.NormalizationSetting.NormalizationLevel;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.AsmObjectFactory;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneDetector;
-import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneDetectorForCLI;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.FunctionCloneEntry;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.DetectorsKam;
 import ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.symbolic.LogicGraphFactory;
@@ -57,21 +31,14 @@ import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import ca.mcgill.sis.dmas.nlp.model.astyle.MathUtilities;
 import ca.mcgill.sis.dmas.nlp.model.astyle._1_original.LearnerAsm2VecNew.Asm2VecNewParam;
-import scala.Tuple2;
-import scala.Tuple3;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Binary;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.BinaryMultiParts;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.Function;
 import ca.mcgill.sis.dmas.kam1n0.graph.Kam1n0SymbolicModule;
 
 public class Batch2 {
-	private static Logger logger = LoggerFactory.getLogger(Batch2.class);
+	private static final Logger logger = LoggerFactory.getLogger(Batch2.class);
 
-	// Any simple value would do, as long as this can't be a valid filename
-	private static String filterValueForIndexingOnly = "**";
-	private static String filterValueForReuseIndexProcessAll = "*";
-
-	private static int maxFindCloneRetriesOnError = 10;
+	private static final int MAX_FIND_CLONE_RETRIES_ON_ERROR = 10;
 
 	private static class FunctionCloneSearchResult {
         public List<FunctionCloneEntry> foundClones;
@@ -85,14 +52,9 @@ public class Batch2 {
 		public List<String> labels;
 	}
 
-	public static class EntryDetails {
-
-	}
-
 	public static class Result {
 		public Map<String, HeatMapData> contents = new HashMap<>();
 		public Map<String, String> templates = new HashMap<>();
-		public Map<String, EntryDetails> details = new HashMap<>();
 
 		public void put(String key, double[][] data, List<String> labels) {
 			HeatMapData hm = new HeatMapData();
@@ -103,103 +65,44 @@ public class Batch2 {
 		}
 	}
 
-	public static enum Model {
+	public enum Model {
 		asm2vec, asmbin2vec, sym1n0, asmclone, cassandra
 	}
 
-	public static class Dataset implements Iterable<BinaryMultiParts> {
+	private static FunctionCloneDetector instantiateModel(Model choice, SparkInstance spark, CassandraInstance cassandra,
+												   Architecture architecture) throws Exception {
+		NormalizationSetting setting = NormalizationSetting.New();
+		setting.setNormalizationLevel(NormalizationLevel.NORM_LENGTH);
+		AsmObjectFactory factory = AsmObjectFactory.init(spark, cassandra, "batch2t", "trial2");
+		AsmProcessor processor = new AsmProcessor(architecture.type.retrieveDefinition(), setting);
 
-		private static Binary loadAssembly(File p, boolean mergeFunctions) {
-			BinarySurrogate b;
-			try {
-				if (p.getName().endsWith(".json")) {
-					b = BinarySurrogate.load(p);
-					b.processRawBinarySurrogate();
-				} else {
-					b = DisassemblyFactory.disassembleSingle(p);
-					if (mergeFunctions) {
-						FunctionSurrogate fs = b.functions.get(0);
-						fs.blocks = b.functions.stream().flatMap(f -> f.blocks.stream())
-								.collect(Collectors.toCollection(ArrayList::new));
-						b.functions.clear();
-						b.functions.add(fs);
-					}
-				}
-				Binary bin = b.toBinary();
-				bin.binaryName = p.getName().split("\\.")[0] + '-' + b.md5.substring(0, 8);
-
-				return bin;
-			} catch (Exception e) {
-				logger.error("Failed to load " + p, e);
-				return null;
-			}
+		FunctionCloneDetector model;
+		if (choice == Model.asm2vec || choice == Model.asmbin2vec) {
+			Asm2VecNewParam param = new Asm2VecNewParam();
+			param.optm_iteration = 5;
+			param.vec_dim = 50;
+			param.optm_parallelism = 5;
+			// statefull model: indexation result is stored within the model itself
+			model = new Asm2VecCloneDetectorIntegration(factory, param);
+		} else if (choice == Model.asmclone) {
+			// stateless model instance: indexation result is stored in Cassandra DB
+			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(spark, cassandra, factory,
+					processor, 16, 1024, 1, 30, 1, true);
+		} else if (choice == Model.sym1n0) {
+			// stateless model instance: indexation result is stored in Cassandra DB
+			Kam1n0SymbolicModule.setup();
+			LogicGraphFactory logicFactory = LogicGraphFactory.init(spark, cassandra, "batch2t", "sym1n0");
+			model = DetectorsKam.getSymbolicSubGraphFunctionCloneDetectorCassandra(factory, logicFactory, spark,
+					cassandra, 40, 30, 3000, 0);
+		} else {
+			throw new IllegalArgumentException(MessageFormat.format("Failed to find a model based on {}", choice));
 		}
-
-		public List<Tuple3<Long, String, File>> vals;
-		public Architecture arch = null;
-		public boolean mergeFunctions = false;
-		public List<String> labels;
-		public Map<String, Integer> labelMap;
-		private Map<Long, Integer> functionCountByBinaryId;
-		private Predicate<? super Tuple3<Long, String, File>> processingFileFilter = (x -> true);
-
-		public Dataset(String path, boolean mergeFunctions) throws Exception {
-			this.mergeFunctions = mergeFunctions;
-			this.functionCountByBinaryId = new HashMap<>();
-			logger.info("creating a mapping between binary names and the data...");
-			// ID, name, & File
-			vals = new ArrayList<>(Files.walk(Paths.get(path)).filter(Files::isRegularFile).parallel().map(p -> {
-				Binary b = loadAssembly(p.toFile(), this.mergeFunctions);
-				if (b == null)
-					return null;
-				else {
-					if (this.arch == null)
-						this.arch = b.architecture;
-					functionCountByBinaryId.putIfAbsent(b.binaryId, b.functions.size());
-					return new Tuple3<>(b.binaryId, b.binaryName, p.toFile());
-				}
-				// filtering and de-duplication:
-			}).filter(t3 -> t3 != null).collect(Collectors.toMap(t3 -> t3._1(), t3 -> t3, (t3n, t3o) -> t3n)).values());
-
-			// sorted based on names
-			vals.sort((a, b) -> a._2().compareTo(b._2()));
-
-			this.labels = vals.stream().map(t3 -> t3._2()).collect(Collectors.toList());
-			this.labelMap = IntStream.range(0, this.labels.size()).mapToObj(ind -> ind)
-					.collect(Collectors.toMap(ind -> this.labels.get(ind), ind -> ind));
-		}
-
-		/**
-		 * Sets a filter when iterating on this Dataset. Filtered out assemblies will not be loaded at all when
-		 * iterating through iterator(), as opposed to a user filter applied after iterator().
-		 *
-		 * @param predicate Filter predicate
-		 */
-		public void setProcessingFilter(Predicate<? super Tuple3<Long, String, File>> predicate) {
-			processingFileFilter = predicate;
-		}
-
-		@Override
-		public Iterator<BinaryMultiParts> iterator() {
-			return vals.stream().
-					filter(processingFileFilter).
-					map(t3 -> loadAssembly(t3._3(), this.mergeFunctions).converToMultiPart()).
-					iterator();
-		}
-
-		public int size() {
-			return this.vals.size();
-		}
-
-		public int totalFunctions(){
-			return vals.stream().mapToInt(t3 -> functionCountByBinaryId.getOrDefault(t3._1(), 0)).sum();
-		}
-
+		model.init();
+		return model;
 	}
 
-
 	/**
-	 * This is a workaround for the Spark/Cassandra/Docker stack that seems to have random connection failures once
+	 * This is a workaround for the Spark/Cassandra stack that seems to have random connection failures once
 	 * every few hours (occurs on less than 0.1% of searches). No cause was ever identified yet. Retrying the clone
 	 * search normally just works.
 	 *
@@ -207,24 +110,25 @@ public class Batch2 {
 	 * @param targetFunction function to search clones for
 	 * @return found clones, or null if all retry attempts failed.
 	 */
-	private static FunctionCloneSearchResult detectClonesWithRetries(FunctionCloneDetector functionModel, Function targetFunction, int maxAttempts) throws Exception {
+	private static FunctionCloneSearchResult detectClonesWithRetries(
+			FunctionCloneDetector functionModel, Function targetFunction) throws Exception {
 
 		long attemptStartTime = 0;
 		int attempt = 0;
 		List<FunctionCloneEntry> foundClones = null;
 
-		while (foundClones == null && attempt < maxFindCloneRetriesOnError) {
+		while (foundClones == null && attempt < MAX_FIND_CLONE_RETRIES_ON_ERROR) {
 			attemptStartTime = new Date().getTime();
 			attempt++;
 
 			try {
-				foundClones = functionModel.detectClonesForFunc(-1l, targetFunction, 0.5, 200, true);
-			} catch (Exception e1) {
-				if (attempt < maxAttempts) {
+				foundClones = functionModel.detectClonesForFunc(-1L, targetFunction, 0.5, 200, true);
+			} catch (Exception e) {
+				if (attempt < MAX_FIND_CLONE_RETRIES_ON_ERROR) {
 					logger.warn(String.format("Failed to detect clone for %s, on attempt %d/%d. Will retry.",
-							targetFunction.functionName, attempt, maxAttempts), e1);
+							targetFunction.functionName, attempt, MAX_FIND_CLONE_RETRIES_ON_ERROR), e);
 				} else {
-					throw e1;
+					throw e;
 				}
 			}
 		}
@@ -235,163 +139,176 @@ public class Batch2 {
 		return result;
 	}
 
-	public static void process(String path, String resPath, String filterFilename, SparkInstance spark, Model choice,
+	private static void processFilesWithAsmBin2Vec(FunctionCloneDetector model, BatchState batch) {
+		BatchDataset dataset = batch.getDataset();
+		Asm2VecCloneDetectorIntegration model2 = (Asm2VecCloneDetectorIntegration) model;
+		Map<Long, double[]> embd = model2.embds.row(-1L);
+		Map<String, double[]> embdBin = new HashMap<>();
+		double[] matrixRow = new double[dataset.size()];
+
+		logger.info("Analyzing...");
+
+		Counter c = Counter.zero();
+		dataset.getEntries().parallelStream().forEach(x -> {
+			c.inc();
+			logger.info("Processing {}/{} {}", x.binaryName, c.getVal(), dataset.size());
+			double[] vec = new double[model2.param.vec_dim];
+			Arrays.fill(vec, 0.0);
+			for (Function xf : dataset.getBinary(x.matrixIndex, true)) {
+				MathUtilities.add(vec, embd.get(xf.functionId));
+			}
+			embdBin.put(x.binaryName, MathUtilities.normalize(vec));
+		});
+
+		c.count = 0;
+		dataset.getEntries().parallelStream().forEach(x -> {
+			c.inc();
+			logger.info("Processing {}/{} {}", x.binaryName, c.getVal(), dataset.size());
+			dataset.getEntries().parallelStream().forEach(y -> {
+				double score = MathUtilities.dot(embdBin.get(x.binaryName), embdBin.get(y.binaryName));
+				matrixRow[y.matrixIndex] = score;
+			});
+			try {
+				batch.notifyFileProcessed(x.matrixIndex, matrixRow);
+			} catch( Exception e ) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+	private static void processFilesGeneral(FunctionCloneDetector model, BatchState batch, String resPath) {
+		BatchDataset dataset = batch.getDataset();
+
+		List<Integer> doneSoFar = batch.getAlreadyDoneFiles();
+		Counter fileCounter = Counter.zero();
+		fileCounter.count = doneSoFar.size();
+		AtomicInteger totalFunctionCount = new AtomicInteger(
+				doneSoFar.stream().mapToInt(index -> dataset.getEntries().get(index).functionCount).sum() );
+
+		batch.getFilesToProcess().forEach(targetIndex -> {
+			fileCounter.inc();
+			AtomicInteger functionCount = new AtomicInteger(0);
+
+			double[] similarities = new double[dataset.size()];
+			Arrays.fill(similarities, 0.0);
+
+			Binary targetBinary = dataset.getBinary(targetIndex);
+			targetBinary.functions.parallelStream().forEach(targetFunction -> {
+
+				FunctionCloneSearchResult searchResult;
+				try {
+					searchResult = detectClonesWithRetries(model, targetFunction);
+				} catch (Exception e1) {
+					logger.error(String.format("Failed to detect clone for %s, after %d attempt(s). Similarity result will be wrong for this file.",
+							targetFunction.functionName, MAX_FIND_CLONE_RETRIES_ON_ERROR), e1);
+					return;
+				}
+
+				int completedFunctionCount = functionCount.incrementAndGet();
+				int totalCompletedFunctions = totalFunctionCount.incrementAndGet();
+				logger.info(String.format("File:#%d (%d/%d) Function:%d/%d/%d %s clones:%d wallClockProcessTime:%d",
+						targetIndex, fileCounter.getVal(), dataset.size(),
+						completedFunctionCount, targetBinary.functions.size(), totalCompletedFunctions,
+						targetFunction.functionName, searchResult.foundClones.size(), searchResult.processTimeMs));
+
+				dataset.getEntries().forEach(sourceEntry -> {
+					OptionalDouble val = searchResult.foundClones.stream().filter(e -> e.binaryId == sourceEntry.binaryId)
+							.mapToDouble(e -> e.similarity).max();
+					if (val.isPresent()) {
+						synchronized (similarities) {
+							similarities[sourceEntry.matrixIndex] += val.getAsDouble();
+						}
+					}
+				});
+			});
+
+			for (int i = 0; i < similarities.length; ++i)
+				similarities[i] /= targetBinary.functions.size();
+			similarities[targetIndex] = 1.0;
+
+			try {
+				batch.notifyFileProcessed(targetIndex, similarities);
+				writeSimilarityMatrix(resPath, batch.getSimilarityMatrix(), dataset, model.getClass().getSimpleName(), false);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+
+	private static void writeSimilarityMatrix(String resultPath, double[][] matrix, BatchDataset dataset,
+                                              String modelName, boolean finalResult) throws Exception {
+		Result result = new Result();
+		result.put(modelName, matrix, dataset.getEntries().stream().map(entry -> entry.binaryName).collect(Collectors.toList()));
+
+		logger.info("Writing similarity matrix {}to {}", finalResult ? "" : "so far ", resultPath);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writerWithDefaultPrettyPrinter().writeValue(new File(resultPath), result);
+	}
+
+	public static void process(String path, String resPath, boolean allowResume, SparkInstance spark, Model choice,
 			CassandraInstance cassandra) throws Exception {
 
-		Dataset ds = new Dataset(path, false);
-		logger.info("{} bins. {} functions.", ds.size(), ds.totalFunctions());
+		BatchState batch = BatchState.createOrResume(allowResume);
 
-		if (ds.size() < 1)
-			return;
-
-		NormalizationSetting setting = NormalizationSetting.New();
-		setting.setNormalizationLevel(NormalizationLevel.NORM_LENGTH);
-		AsmObjectFactory factory = AsmObjectFactory.init(spark, cassandra, "batch2t", "trial2");
-		AsmProcessor processor = new AsmProcessor(ds.arch.type.retrieveDefinition(), setting);
-
-		FunctionCloneDetector model = null;
-		if (choice == Model.asm2vec || choice == Model.asmbin2vec) {
-			Asm2VecNewParam param = new Asm2VecNewParam();
-			param.optm_iteration = 5;
-			param.vec_dim = 50;
-			param.optm_parallelism = 5;
-			model = new Asm2VecCloneDetectorIntegration(factory, param);
-		} else if (choice == Model.asmclone) {
-			model = DetectorsKam.getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(spark, cassandra, factory,
-					processor, 16, 1024, 1, 30, 1, true);
-		} else if (choice == Model.sym1n0) {
-			Kam1n0SymbolicModule.setup();
-			LogicGraphFactory logicFactory = LogicGraphFactory.init(spark, cassandra, "batch2t", "sym1n0");
-			model = DetectorsKam.getSymbolicSubGraphFunctionCloneDetectorCassandra(factory, logicFactory, spark,
-					cassandra, 40, 30, 3000, 0);
+		// Create/reuse dataset
+		BatchDataset dataset;
+		if (batch.getLastCompletedStage().compareTo(BatchState.Stage.CREATE_DATASET) < 0) {
+			dataset = new BatchDataset(Paths.get(path), false);
+			batch.notifyDatasetCreated(dataset);
 		} else {
-			logger.error("Failed to find a model based on {}", choice);
+			dataset = batch.getDataset();
+		}
+		if (dataset.size() == 0) {
+			logger.warn("Found no file to process. Aborting batch.");
+			batch.notifyCompleted();
 			return;
 		}
-		final FunctionCloneDetector fmodel = model;
-		fmodel.init();
 
+		// Instantiate model
+		// Note: 'resumable' models are stateless regarding indexing/processing stages below and keep all state/data
+		//       in an external database.
+		FunctionCloneDetector model = instantiateModel(choice, spark, cassandra, dataset.getArchitecture());
 		LocalJobProgress.enablePrint = true;
 		MathUtilities.createExpTable();
-		if (filterFilename.isEmpty() || filterFilename.equals(filterValueForIndexingOnly)) {
-			fmodel.index(-1l, ds, new LocalJobProgress());
+
+		// Index files
+		if (batch.getLastCompletedStage().compareTo(BatchState.Stage.INDEX_FILES) < 0) {
+			model.index(-1L, dataset.getAllBinariesAsMultiParts(), new LocalJobProgress());
+			logger.info("Indexing completed.");
+			batch.notifyIndexingDone();
 		}
-		logger.info("Indexing completed.");
+
 		cassandra.waitForCompactionTasksCompletion();
 
-		double[][] matrix = new double[ds.size()][ds.size()];
-		for (double[] row : matrix)
-			Arrays.fill(row, 0.0);
-
-		Result res = new Result();
+		// Process files
 		if (choice.equals(Model.asmbin2vec)) {
-			Asm2VecCloneDetectorIntegration model2 = (Asm2VecCloneDetectorIntegration) model;
-			Map<Long, double[]> embd = model2.embds.row(-1l);
-			Map<String, double[]> embdBin = new HashMap<>();
-			logger.info("Analyzing...");
-
-			Counter c = Counter.zero();
-			ds.vals.parallelStream().forEach(x -> {
-				c.inc();
-				logger.info("Processing {}/{} {}", x._2(), c.getVal(), ds.size());
-				double[] vec = new double[model2.param.vec_dim];
-				Arrays.fill(vec, 0.0);
-				for (Function xf : Dataset.loadAssembly(x._3(), true)) {
-					MathUtilities.add(vec, embd.get(xf.functionId));
-				}
-				embdBin.put(x._2(), MathUtilities.normalize(vec));
-			});
-
-			c.count = 0;
-			ds.vals.parallelStream().forEach(x -> {
-				c.inc();
-				logger.info("Processing {}/{} {}", x._2(), c.getVal(), ds.size());
-				ds.vals.parallelStream().forEach(y -> {
-					int x_ind = ds.labelMap.get(x._2());
-					int y_ind = ds.labelMap.get(y._2());
-					double score = MathUtilities.dot(embdBin.get(x._2()), embdBin.get(y._2()));
-					matrix[x_ind][y_ind] = score;
-					matrix[y_ind][x_ind] = score;
-				});
-			});
-
-			res.put(model.getClass().getSimpleName(), matrix, ds.labels);
- 		} else if (!filterFilename.equals(filterValueForIndexingOnly))  {
-			Counter fileCounter = Counter.zero();
-			AtomicInteger totalFunctionCount = new AtomicInteger(0);
-
-			if (!filterFilename.isEmpty() && !filterFilename.equals(filterValueForReuseIndexProcessAll)) {
-				ds.setProcessingFilter(m -> m._3().getName().equals(filterFilename));
-			}
-
-			StreamSupport.stream(ds.spliterator(), false).forEach(m -> m.forEach(x -> {
-				fileCounter.inc();
-				int x_ind = ds.labelMap.get(x.binaryName);
-				AtomicInteger functionCount = new AtomicInteger(0);
-
-				x.functions.parallelStream().forEach(xf -> {
-
-					FunctionCloneSearchResult searchResult;
-					try {
-						searchResult = detectClonesWithRetries(fmodel, xf, maxFindCloneRetriesOnError);
-					} catch (Exception e1) {
-						logger.error(String.format("Failed to detect clone for %s, after %d attempt(s). Similarity result will be wrong for this file.",
-								xf.functionName, maxFindCloneRetriesOnError), e1);
-						return;
-					}
-
-					int completedFunctionCount = functionCount.incrementAndGet();
-					int totalCompletedFunctions = totalFunctionCount.incrementAndGet();
-					logger.info(String.format("File:%d/%d Function:%d/%d/%d %s clones:%d wallClockProcessTime:%d",
-							fileCounter.getVal(), ds.size(),
-							completedFunctionCount, x.functions.size(), totalCompletedFunctions,
-							xf.functionName, searchResult.foundClones.size(), searchResult.processTimeMs));
-
-					ds.vals.stream().forEach(t3 -> {
-
-						long y_id = t3._1();
-						String y_name = t3._2();
-
-						int y_ind = ds.labelMap.get(y_name);
-						OptionalDouble val = searchResult.foundClones.stream().filter(e -> e.binaryId == y_id)
-								.mapToDouble(e -> e.similarity).max();
-
-						if (val.isPresent())
-							matrix[x_ind][y_ind] += val.getAsDouble();
-					});
-				});
-				for (int i = 0; i < ds.labels.size(); ++i)
-					matrix[x_ind][i] /= x.functions.size();
-				matrix[x_ind][x_ind] = 1;
-
-			}));
-
-			res.put(model.getClass().getSimpleName(), matrix, ds.labels);
-
+			processFilesWithAsmBin2Vec(model, batch);
+ 		} else {
+			processFilesGeneral(model, batch, resPath);
 		}
-		ObjectMapper mapper = new ObjectMapper();
-		logger.info("writing result file to {}", resPath);
-		mapper.writeValue(new File(resPath), res);
+
+		// Export result
+        writeSimilarityMatrix(resPath, batch.getSimilarityMatrix(), dataset, model.getClass().getSimpleName(), true);
+		batch.notifyCompleted();
 	}
 
 	public static class BatchFunction extends CLIFunction {
 
-		private ArgumentParser parser = ArgumentParser.create(Exp.class.getSimpleName());
+		private final ArgumentParser parser = ArgumentParser.create(Exp.class.getSimpleName());
 
-		private Option op_dir = parser.addOption("dir", OpType.Directory, false,
+		private final Option op_dir = parser.addOption("dir", OpType.Directory, false,
 				"The directory that contains a list of files to analyze.", new File("."));
 
-		private Option op_res = parser.addOption("res", OpType.File, false,
+		private final Option op_res = parser.addOption("res", OpType.File, false,
 				"The [path] and the name of the result file", new File("similarity.txt"));
 
-		private Option filterOption = parser.addOption("filter", OpType.String, false,
-				"asmclone only, 2-step process: // unspecified: normal batch processing // " +
-						filterValueForIndexingOnly + ": create permanent local DB only // " +
-						"filename: compare only that file against the previously made DB", "");
+		private final Option resumeOption = parser.addOption("resume", OpType.Boolean, false,
+				"asmclone/sym1n0 only: create/resume resumable batch process, creating/reusing DB under working folder", false);
 
-		private Option op_md = parser.addSelectiveOption("md", false, "The model used in batch mode",
+		private final Option op_md = parser.addSelectiveOption("md", false, "The model used in batch mode",
 				Model.asmbin2vec.toString(),
-				Arrays.asList(Model.values()).stream().map(m -> m.toString()).collect(Collectors.toList()));
+				Arrays.stream(Model.values()).map(Enum::toString).collect(Collectors.toList()));
 
 		@Override
 		public ArgumentParser getParser() {
@@ -419,23 +336,21 @@ public class Batch2 {
 				File dir = op_dir.getValue();
 				File res = op_res.getValue();
 				Model md = Model.valueOf(op_md.getValue());
-				String filterFilename = filterOption.getValue();
 
-				if ( !md.equals(Model.asmclone) && !filterFilename.isEmpty() ) {
-					logger.warn("'filter' option is for 'asmclone' only. Current value will be ignored.");
-					filterFilename = "";
+				boolean resuming = resumeOption.getValue();
+				if ( resuming && !md.equals(Model.asmclone) && !md.equals(Model.sym1n0) ) {
+					logger.warn("'resume' option is for 'asmclone' and 'sym1n0' only. Will be ignored.");
+					resuming = false;
 				}
 
-				boolean useTemporaryCassandraDB = !md.equals(Model.cassandra) && filterFilename.isEmpty();
-
-				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", useTemporaryCassandraDB, false);
+				CassandraInstance cassandra = CassandraInstance.createEmbeddedInstance("test-batch-mode", !resuming, false);
 				cassandra.init();
 
 				if (!md.equals(Model.cassandra)) {
 					SparkInstance spark = SparkInstance.createLocalInstance(cassandra.getSparkConfiguration());
 					spark.init();
 					cassandra.setSparkInstance(spark);
-					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), filterFilename, spark, md, cassandra);
+					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), resuming, spark, md, cassandra);
 				} else {
 					logger.info("No processing. Only running local cassandra server from database in current working directory.");
 
@@ -462,7 +377,7 @@ public class Batch2 {
 
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 	}
 
 }

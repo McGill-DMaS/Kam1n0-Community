@@ -49,6 +49,7 @@ public class UITestUtils {
 				"--add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED",
 				"--add-exports=java.rmi/sun.rmi.server=ALL-UNNAMED",
 				"--add-exports=java.sql/java.sql=ALL-UNNAMED",
+				"--add-opens=java.base/java.lang=ALL-UNNAMED",
 				"--add-opens=java.base/java.lang.module=ALL-UNNAMED",
 				"--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
 				"--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED",

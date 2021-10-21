@@ -1,6 +1,12 @@
 /target/
 *.jar
 
+
+### When running server from IDE, using /bin as the working folder.
+.toDelete
+ApplicationFiles/
+Database/
+
 ### Intellij+iml Patch ###
 # Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
 *.iml

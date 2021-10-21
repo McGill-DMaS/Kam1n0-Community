@@ -81,25 +81,23 @@ import scala.Tuple3;
 public class DifferentialSymbolicIndexer extends Indexer<Block> implements Serializable {
 
 	private static final long serialVersionUID = 3325447631567533634L;
-	private static Logger logger = LoggerFactory.getLogger(DifferentialSymbolicIndexer.class);
+	private static final Logger logger = LoggerFactory.getLogger(DifferentialSymbolicIndexer.class);
 
-	public List<Long> vals = new ArrayList<>();
-
-	public Random random = new Random();
+	public final Random random;
 	public final int maxSize;
 	public final int maxDepth;
-	public Long startValue = 0xaaaaaaal;
-	public int bound = 6000;
-	public int maxRound = 11;
+	public final Long startValue = 0xaaaaaaal;
+	public final int bound;
+	public final int maxRound = 11;
 
-	public int debugLevel = 2;
-	private int pool_core = 10;
-	DifferentialIndexAbstract index;
-	private ExecutorService threadPoolExecutor;
-	private AsmObjectFactory factory;
-	private LogicGraphFactory logicFactory;
+	public final int debugLevel;
+	private final int pool_core = 10;
+	private final DifferentialIndexAbstract index;
+	private final ExecutorService threadPoolExecutor;
+	private final AsmObjectFactory factory;
+	private final LogicGraphFactory logicFactory;
 
-	private static long rootId = -1;
+	private final static long rootId = -1;
 
 	public class Detector extends FunctionCloneDetector {
 

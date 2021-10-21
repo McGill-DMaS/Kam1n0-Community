@@ -34,7 +34,7 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 
 	private static final long serialVersionUID = -5210722050068882233L;
 
-	private static Logger logger = LoggerFactory.getLogger(ALSH.class);
+	private static final Logger logger = LoggerFactory.getLogger(ALSH.class);
 
 	// Spark tuning magic number from experimentation.
 	// In all experiments, it was faster in general (and not more memory intensive) to use a single RDD partition to
@@ -43,14 +43,14 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 	// 1000 HID per RDD partition is applied.
 	private static final int MAX_HIDS_PER_PARTITION = 1000;
 
-	public boolean debug = false;
+	public final boolean debug = false;
 	public transient LshAdaptiveDupFuncIndex<T, K> index_deduplication;
 	public transient LshAdaptiveBucketIndexAbstract index_bucket;
 	private transient ArrayList<HashSchema> schemas;
-	private int startingK = 128;
-	private int maxK = 512;
-	private HashSchemaTypes type;
-	private int L = 1;
+	private final int startingK;
+	private final int maxK;
+	private final HashSchemaTypes type;
+	private final int L;
 
 	/**
 	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing

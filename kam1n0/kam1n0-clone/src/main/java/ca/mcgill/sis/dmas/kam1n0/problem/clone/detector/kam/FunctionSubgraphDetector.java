@@ -55,22 +55,20 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 
 	private static Logger logger = LoggerFactory.getLogger(FunctionSubgraphDetector.class);
 
-	private Indexer<Block> indexer;
+	private final Indexer<Block> indexer;
 
-	private int largestBlockLengthToIgnore = 1;
-	private int debugLevel = 0;
-	private double basicCloneThreshold = 0.05;
-	private SparkInstance spark = null;
-	public boolean specialSingleBlkFuncSearch = true;
-	public int fixTopK = -1;
+	private final int largestBlockLengthToIgnore;
+	private final int debugLevel;
+	private final double basicCloneThreshold = 0.05;
+	private final SparkInstance spark;
+	private final boolean specialSingleBlkFuncSearch = true;
+	private final int fixTopK = -1;
 
 	public FunctionSubgraphDetector(AsmObjectFactory factory, SparkInstance instance, Indexer<Block> indexer,
 			int largestBlockLengthToIgnore, boolean debug) {
 		super(factory);
 		this.largestBlockLengthToIgnore = largestBlockLengthToIgnore;
-		if (debug) {
-			debugLevel = 1;
-		}
+		this.debugLevel = debug ? 1 : 0;
 		this.indexer = indexer;
 		this.spark = instance;
 	}
