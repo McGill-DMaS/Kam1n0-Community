@@ -18,6 +18,7 @@ package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -88,6 +89,10 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 		if (fixTopK > 0)
 			topK = fixTopK;
 
+		if (topK < 1) {
+			return new ArrayList<>();
+		}
+
 		// detection clones of the given function:
 		// calculate buckets of its blocks:
 
@@ -141,7 +146,7 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 
 			// convert (tar, src, score) to (srcfuncid, (tar, src, score))
 			JavaRDD<Tuple2<Long, Tuple3<Block, Block, Double>>> b_to_b = indexer//
-					.queryAsRdds(rid, vBlks, links, topK)//
+					.queryAsRdds(rid, vBlks, links, topK)  // may return up to topK*3 results plus ties
 					.filter(tuple -> !avoidSameBinary || (tuple._2().binaryId != function.binaryId))
 					.map(tuple -> new Tuple2<>(tuple._2().functionId, tuple));
 
@@ -176,7 +181,11 @@ public class FunctionSubgraphDetector extends FunctionCloneDetector implements S
 				// logger.info("finished {}", function.functionName);
 			}
 
-			// FIXME: (KAM1N0-206) filter topK results, right now we may have up to topK*3 results
+			if ( results.size() > topK ) {
+				Collections.sort(results, Collections.reverseOrder());
+				final double lowestSimilarityToKeep = results.get(topK-1).similarity;
+				results = results.stream().filter(r -> r.similarity >= lowestSimilarityToKeep).collect(Collectors.toList());
+			}
 		}
 
 		return results;
