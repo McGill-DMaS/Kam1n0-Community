@@ -621,7 +621,8 @@ text {
 
                 $('#infoContainer').scroll(function() {
                     var infoContainer = $('#infoContainer')[0];
-                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
+					console.log([infoContainer.scrollHeight, infoContainer.scrollTop, infoContainer.clientHeight])
+                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+10) {
                         var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
                         console.log('scroll requesting from address' + str_startAddress);
                         loadFunction(bin_comp, str_startAddress);
