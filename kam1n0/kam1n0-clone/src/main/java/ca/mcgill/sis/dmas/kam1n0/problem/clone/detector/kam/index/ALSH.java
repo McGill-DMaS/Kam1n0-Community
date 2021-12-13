@@ -68,10 +68,11 @@ public class ALSH<T extends VecInfo, K extends VecInfoShared> implements Seriali
 			this.index_bucket = new LshAdaptiveBucketIndexRam(sparkInstance, startingK, maxK, m, ALSH::nextDepth);
 			this.index_deduplication = new LshAdaptiveDupIndexRam<>(sparkInstance);
 		} else {
+			String databaseName = name + "_adaptivelsh";
 			this.index_bucket = new LshAdaptiveBucketIndexCassandra(sparkInstance, cassandraInstance, startingK, maxK,
-					m, ALSH::nextDepth, name + "_adaptivelsh");
+					m, ALSH::nextDepth, databaseName);
 			this.index_deduplication = new LshAdaptiveDupIndexCasandra<>(sparkInstance, cassandraInstance,
-					name + "_adaptivelsh", isSingleUserApplication);
+					databaseName, isSingleUserApplication);
 		}
 
 		this.L = L;

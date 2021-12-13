@@ -301,7 +301,8 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 	 * @param rid   Repository ID  (Cassandra)
 	 * @param blks  target blocks to find clone for, must be from the same function.
 	 * @param links target links between block
-	 * @param topK  keep only the top topK matching blocks (for each matched block in blks)
+	 * @param topK  keep only the top topK matching blocks (for each matched block in blks). Actually, up to topK*3
+	 *              matches (plus ties) are kept. The caller may perform further filtering before keeping topK matches.
 	 * @return Matched clones as (target, source, similarity) where similarity is always 1.0 at this point.
 	 */
 	@Override
@@ -354,6 +355,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		int junctionNumPartitions = Math.max(hid_tblk.getNumPartitions(), hid_info.getNumPartitions());
 		JavaPairRDD<Long, Tuple2<Block, VecInfoBlock>> jointed = hid_tblk.join(hid_info, junctionNumPartitions);
 
+		// This returns up to topK*3 results. See method for details.
 		JavaPairRDD<Long, Block> sbid_tblk = this.collectAndFilter2(rid, jointed, links, functionInstructionCount, topK);
 
 		Set<Long> sids = new HashSet<>(sbid_tblk.keys().collect());

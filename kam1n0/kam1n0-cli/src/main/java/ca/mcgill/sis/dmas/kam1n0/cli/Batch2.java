@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import ca.mcgill.sis.dmas.env.*;
+import org.apache.cassandra.db.commitlog.CommitLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,10 +207,10 @@ public class Batch2 {
 
 				int completedFunctionCount = functionCount.incrementAndGet();
 				int totalCompletedFunctions = totalFunctionCount.incrementAndGet();
-				logger.info(String.format("File:#%d (%d/%d) Function:%d/%d/%d %s clones:%d wallClockProcessTime:%d",
+				logger.info("File:#{} ({}/{}) Function:{}/{}/{} {} clones:{} wallClockProcessTime:{}",
 						targetIndex, fileCounter.getVal(), dataset.size(),
 						completedFunctionCount, targetBinary.functions.size(), totalCompletedFunctions,
-						targetFunction.functionName, searchResult.foundClones.size(), searchResult.processTimeMs));
+						targetFunction.functionName, searchResult.foundClones.size(), searchResult.processTimeMs);
 
 				dataset.getEntries().forEach(sourceEntry -> {
 					OptionalDouble val = searchResult.foundClones.stream().filter(e -> e.binaryId == sourceEntry.binaryId)
@@ -279,6 +280,11 @@ public class Batch2 {
 			batch.notifyIndexingDone();
 		}
 
+		// forceRecycleAllSegments() flushes data to SStables and removes unneeded commit logs. This makes read
+		// operations a bit faster afterwards (all data in SStable, not scattered in commit logs) and only makes sense
+		// at this point since we're done updating tables and will only query them for the rest of the batch process.
+		CommitLog.instance.forceRecycleAllSegments();
+		// Flushing also triggers SStable compaction if needed, then we wait for it to complete
 		cassandra.waitForCompactionTasksCompletion();
 
 		// Process files
