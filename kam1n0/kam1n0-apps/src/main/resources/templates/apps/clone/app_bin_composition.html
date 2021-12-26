@@ -63,21 +63,21 @@ text {
 	<div class="col-lg-12" style="height: 100%; margin-top: 10px;">
 		<div class="card card-nav-tabs" style="height: 100%; bottom: 20px;">
 			<div class="header header-danger"
-				style="height: 80px; border-bottom: none; padding-left: 10px; margin-top: -10px">
+				 style="height: 80px; border-bottom: none; padding-left: 10px; margin-top: -10px">
 				<div class="nav-tabs-navigation">
 					<div class="nav-tabs-wrapper">
 						<ul class="nav nav-tabs pull-left" data-tabs="tabs">
 							<li class="active"><a href="#summary" data-toggle="tab"
-								aria-expanded="false"> <i class="material-icons">chat</i>
-									Summary
-									<div class="ripple-container"></div></a></li>
+												  aria-expanded="false"> <i class="material-icons">chat</i>
+								Summary
+								<div class="ripple-container"></div></a></li>
 							<li class=""><a href="#details" data-toggle="tab"
-								aria-expanded="true"> <i class="material-icons">build</i>
-									Details
-									<div class="ripple-container"></div></a></li>
+											aria-expanded="true"> <i class="material-icons">build</i>
+								Details
+								<div class="ripple-container"></div></a></li>
 						</ul>
 						<a href="#" id="btn_dump" class="pull-right"  style="padding-right:10px;color:white" title="Save as JSON file.">
-						<i class="material-icons" >move_to_inbox</i>
+							<i class="material-icons" >move_to_inbox</i>
 						</a>
 					</div>
 				</div>
@@ -85,12 +85,12 @@ text {
 
 			<div class="content" style="height: 100%">
 				<div class="tab-content"
-					style="width: 100%; position: absolute; top: 80px; bottom: 0px; overflow: scroll;">
+					 style="width: 100%; position: absolute; top: 80px; bottom: 0px; overflow: scroll;">
 					<div class="tab-pane active" id="summary">
 						<div class="row"
-							style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
+							 style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
 							<div class="col-xs-12"
-								style="height: 100%; min-height: 100px; overflow-y: auto; overflow-x: hidden">
+								 style="height: 100%; min-height: 100px; overflow-y: auto; overflow-x: hidden">
 								<div id='summaryList' style="text-align: left;"></div>
 							</div>
 						</div>
@@ -98,90 +98,110 @@ text {
 					<div class="tab-pane" id="details" style="height: 100%">
 						<div class="row" style="height: 100%">
 							<div class="col-xs-2 address-panel" style="height: 100%">
-
-
-								<div class="dropdown" style="position: absolute; top: -16px;">
+								<div class="dropdown" style="position: absolute; top: -10px;">
 									<a href="#" class="btn btn-info btn-xs dropdown-toggle"
-										data-toggle="dropdown"> Filters <b class="caret"></b>
+									   data-toggle="dropdown">
+										Filters <b class="caret"></b>
 									</a>
-									<ul class="dropdown-menu" id="address-bar-filter-menu"
-										style='width: 300px;'>
-										<li><div class="row">
-												<h6>Address Range</h6>
-											</div></li>
+									<ul class="dropdown-menu" id="address-bar-filter-menu" style='width: 300px;'>
 										<li>
 											<div class="row">
-												<select id="addrSelector" class="form-control"
-													style="width: 100%; margin-top: 0; position: relative; top: 0;">
-												</select>
-											</div>
-										</li>
-										<li><div class="row">
-												<h6>Zoom Level</h6>
-											</div></li>
-										<li>
-											<div class="row">
-												<input type="text" id="infoListScaler" data-slider-min="3"
-													data-slider-max="20" data-slider-step="1"
-													data-slider-value="20" class="slider form-control"
-													data-slider-id="yellow" style='width: 100%' />
-											</div>
-										</li>
-										<li><div class="row">
 												<h6>Filter Functions</h6>
-											</div></li>
+											</div>
+										</li>
 										<li>
 											<div class="row">
-
 												<div class="input-group">
-
 													<div class="form-group">
-
-														<input id="input-keyword" class="form-control" type="text"
-															placeholder="Keyword"
-															style="width: 200px; margin-top: 0; position: relative; top: 0;">
-														</input>
-														<button class="btn btn-sm btn-info" id="button-keyword">
+                                                        <input id="input-keyword" class="form-control" type="text"
+                                                               placeholder="Keyword"
+                                                               style="width: 200px; margin-top: 0; position: relative; top: 0;"/>
+					  
+                                                        <button class="btn btn-sm btn-info" id="button-keyword">
 															<i class="material-icons" style="color: white">search</i>
 														</button>
 													</div>
 												</div>
-
-
-												<p class="small text-info">WARNING: Using this filter
-                                                will disable address pagination. 
-                                                It may also be slow to search through all functions.</p>
+                                            </div>
+										</li>
+										<li>
+											<div class="row">
+												<h6>Filter Clones</h6>
 											</div>
 										</li>
+
+
+										<li>
+											<div class="row">
+												<div class="input-group">
+													<div class="form-group">
+
+														<input id="input-clones-keyword" class="form-control" type="text"
+															   placeholder="Keyword"
+															   style="width: 200px; margin-top: 0; position: relative; top: 0;"/>
+
+														<button class="btn btn-sm btn-info" id="button-clones-keyword">
+															<i class="material-icons" style="color: white">search</i>
+														</button>
+													</div>
+												</div>
+											</div>
+										</li>
+
 										<li><div class="row">
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
+										</div></li>
+
+										<li>
+											<div class="row">
 												<h6>Filter Binaries</h6>
-											</div></li>
+											</div>
+										</li>
 										<li>
 											<div class="row" id='filters-div'></div>
 										</li>
-
 									</ul>
 								</div>
-
-								<div
-									style="padding-top: 30px; height: 100%; padding-bottom: 15px;">
-									<div id="infoContainer"
-										style="overflow-y: auto; overflow-x: scroll; background-color: lightgrey; height: 100%;">
-									</div>
+								<div class="dropdown" style="position: absolute; top: -10px; left: 100px">
+									<a href="#" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown">
+										Zoom <b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu" id="address-bar-zoom-menu" style='width: 300px;'>
+										<li>
+											<div class="row">
+												<h6>Zoom Level</h6>
+											</div>
+										</li>
+										<li>
+											<div class="row">
+												<input type="text" id="infoListScaler" data-slider-min="16"
+													   data-slider-max="20" data-slider-step="1"
+													   data-slider-value="20" class="slider form-control"
+													   data-slider-id="yellow" style='width: 100%' />
+											</div>
+										</li>
+									</ul>
 								</div>
-
-							</div>
-
-							<div class="col-xs-9" style="height: 100%">
+								<div style="padding-top: 30px; height: 100%; padding-bottom: 30px;">
+									<ul id="infoContainer"
+										style="overflow-y: auto; overflow-x: auto; background-color: lightgrey; height: 100%; list-style-type: none;">
+									</ul>
+								</div>
+                                <div style="position: absolute; bottom: 0">
+                                    <span>Total: </span><span id="nbTotalFunction"></span>
+                                    <span> Filtered: </span><span id="nbTotalFunctionFiltered"></span>
+                                    <span> Loaded: </span><span id="nbTotalFunctionLoaded"></span>
+                                </div>
+                            </div>
+                            <div class="col-xs-9" style="height: 100%">
 								<div id="cloneList" style="overflow: auto; height: 100%"></div>
 							</div>
-
 							<div id='clone-graph-box' class="fixed-box" style="bottom:80px; width:800px; right:-600px" data-right='30'>
 								<span class="pull-left vertical-text" style="margin-left:22px;margin-right: -98px;color:white;"><i class="material-icons pull-left">share</i>Clone Graph</span>
-										<div id="chart0"
-											style="height: 100%; overflow: hidden; background: white"></div>
+
+								<div id="chart0" style="height: 100%; overflow: hidden; background: white"></div>
 							</div>
-						</div>
+                         </div>
 					</div>
 				</div>
 			</div>
@@ -190,7 +210,8 @@ text {
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		var QueryString = function() {
+
+        var QueryString = function () {
 			// This function is anonymous, is executed immediately
 			var query_string = {};
 			var query = window.location.search.substring(1);
@@ -202,7 +223,7 @@ text {
 					query_string[pair[0]] = pair[1];
 					// If second entry with this name
 				} else if (typeof query_string[pair[0]] === "string") {
-					var arr = [ query_string[pair[0]], pair[1] ];
+					var arr = [query_string[pair[0]], pair[1]];
 					query_string[pair[0]] = arr;
 					// If third or later entry with this name
 				} else {
@@ -250,161 +271,160 @@ text {
 		}
 
 		function createInfoAtAddress(info) {
-			
+
 			var max_id = undefined;
 			var max_score = 0;
-			$.each(info.mxs, function(a,b){
-				if(b>max_score) {max_score = b; max_id = a};
+			$.each(info.mxs, function (a, b) {
+				if (b > max_score) { max_score = b; max_id = a };
 			})
-			
-			var $div = $("<div>", {
-				'class' : 'entry'
+
+			var $li = $("<li>", {
+                'class': 'entry'
 			});
-			var $divp = $("<div>", {
-				'class' : 'prg'
-			});
-			$divp.css({
-				"background-color" : colorF(max_id)
+            var $divp = $("<div>", {
+				'class': 'prg'
 			});
 			$divp.css({
-				width : (max_score * 100) + "%"
+				"background-color": colorF(max_id)
 			});
 			$divp.css({
-				overflow : "none"
+				width: (max_score * 100) + "%"
+			});
+			$divp.css({
+				overflow: "none"
 			});
 			var $span = $("<span>", {
-				'class' : 'fnspan'
+				'class': 'fnspan'
 			});
 			$span.append(info.fn);
 			$divp.append($span);
-			$div.prop('title', info.add + " " + info.fn);
-			$div.append($divp);
+			$li.prop('title', longToHexa(info.add) + " " + info.fn);
+            $li.data('address', info.add);
+            $li.val()
+            $li.append($divp);
 
-			$div
-					.click(function() {
-						$('div.entry').removeClass('selected');
-						$div.addClass('selected');
+            $li
+				.click(function () {
+					$('li.entry').removeClass('selected');
+					$li.addClass('selected');
 
-						$
-								.ajax({
-									type : 'POST',
-									dataType : 'json',
-									url : "BinaryComposition",
-									data : {
-										cloneDetail : info.fid,
-										fileName : fileName
-									},
-									success : function(data) {
-										if (data.error) {
-											dmas_alert(data.error);
-											return;
-										}
-										data = data.object;
-										fin_result = data;
+					$.ajax({
+							type: 'POST',
+							dataType: 'json',
+							url: "BinaryComposition",
+							data: {
+								cloneDetail: info.fid,
+								fileName: fileName
+							},
+							success: function (data) {
+								if (data.error) {
+									dmas_alert(data.error);
+									return;
+								}
+								data = data.object;
+								fin_result = data;
 
-										$('#chart0').empty();
-										$listParent = $('#cloneList').parent();
-										$listParent.empty();
-										$listParent
-												.append($(
-														'<div>',
-														{
-															'id' : 'cloneList',
-															'style' : 'overflow:auto; height:100%;'
-														}))
+								$('#chart0').empty();
+								$listParent = $('#cloneList').parent();
+								$listParent.empty();
+                                $listParent
+                                    .append($(
+                                        '<div>',
+                                        {
+                                            'id': 'cloneList',
+                                            'style': 'overflow:auto; height:100%;'
+                                        }));
 
-										var views = [ "func_diff_flow",
-												"func_diff_text",
-												"func_diff_text_group" ];
-										var viewIcons = [
-												"<i class='fa fa-fw  fa-object-ungroup lnk'></i>",
-												"<i class='fa fa-fw  fa-clone lnk'></i>",
-												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
-										var viewNames = [
-												"Flow Graph View",
-												"Textual Difference View",
-												"Clone Group View" ];
-												
-										if(/*[[${model.applicationType.toString().equals("/sym1n0-clone")}]]*/false){
-										views = [ "func_diff_flow", "func_diff_flow_vex", "func_diff_flow_logic", "func_diff_text", "func_diff_text_vex",
-												"func_diff_text_group" ];
-										viewIcons = [
-												"<i class='fa fa-fw  fa-object-ungroup'></i>",
-												"<i class='fa fa-fw  fa-code'></i>",
-												"<i class='fa fa-fw  fa-codepen'></i>",
-												"<i class='fa fa-fw  fa-clone lnk'></i>",
-												"<i class='fa fa-fw  fa-file-code-o'></i>",
-												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
-										viewNames = [ "Flow Graph View",  "Flow Graph View (VEX).", 
-												"Flow Graph View (syntax tree).", "Textual Difference View (ASM).", "Textual Difference View (VEX).",
-												"Clone Group View" ];
-										}
+								var views = ["func_diff_flow",
+									"func_diff_text",
+									"func_diff_text_group"];
+								var viewIcons = [
+									"<i class='fa fa-fw  fa-object-ungroup lnk'></i>",
+									"<i class='fa fa-fw  fa-clone lnk'></i>",
+									"<i class='fa fa-fw  fa-object-group lnk'></i>"];
+								var viewNames = [
+									"Flow graph comparison.",
+									"Full text alignment.",
+									"Clone group alignment."];
 
-										CreateCloneList($('#cloneList'), data,
-												function(arg) {
-													console.log(arg);
-												}, viewIcons, views, viewNames,
-												/*[[${!model.applicationType.toString().equals("/sym1n0-clone")}]]*/true, true, 0);
+								if (/*[[${model.applicationType.toString().equals("/sym1n0-clone")}]]*/false) {
+									views = ["func_diff_flow", "func_diff_flow_vex", "func_diff_flow_logic", "func_diff_text", "func_diff_text_vex",
+										"func_diff_text_group"];
+									viewIcons = [
+										"<i class='fa fa-fw  fa-object-ungroup'></i>",
+										"<i class='fa fa-fw  fa-code'></i>",
+										"<i class='fa fa-fw  fa-codepen'></i>",
+										"<i class='fa fa-fw  fa-clone lnk'></i>",
+										"<i class='fa fa-fw  fa-file-code-o'></i>",
+										"<i class='fa fa-fw  fa-object-group lnk'></i>"];
+									viewNames = ["Flow graph comparison.", "Flow graph comparison (VEX).",
+										"Flow graph comparison (syntax tree).", "Full text alignment (ASM).", "Full text alignment (VEX).",
+										"Clone group alignment."];
+								}
 
-										/*CreateCloneGraph(data.cloneGraph,
-												"chart0", function(svg, arg) {
-													console.log(arg);
-													$('#cloneList').jstree(
-															'select_node',
-															arg.index);
-													$('#cloneList').jstree(
-															'open_node',
-															arg.index);
-												});*/
-									    $('#clone-graph-box').show();
-										drawFixedBox($('#clone-graph-box'), function(){
-											CreateCloneGraph(data.cloneGraph, "chart0", function(svg, arg) {
-												console.log(arg);
-												$('#cloneList').jstree('select_node', arg.index);
-												$('#cloneList').jstree('open_node', arg.index);
-											});
-										});
+								CreateCloneList($('#cloneList'), data,
+									function (arg) {
+										console.log(arg);
+									}, viewIcons, views, viewNames, /*[[${!model.applicationType.toString().equals("/sym1n0-clone")}]]*/true
+									, true, 0, $('#input-clones-keyword').val().trim());
 
-									}
-								}); // end ajax
-
-					});
-
-			return $div;
-		}
-		
-		var not_selected = new Set(); 
-		function createFilters(smy) {
-			var $holder = $('#filters-div');
-			onchanged = function(){
-				$holder.find("input").each(function(){
-					 var input = $(this);
-					 if(!input.context.checked){
-						 not_selected.add(input.val());
-					 }else{
-						 not_selected.delete(input.val());
-					 }
+								/*CreateCloneGraph(data.cloneGraph,
+										"chart0", function(svg, arg) {
+											console.log(arg);
+											$('#cloneList').jstree(
+													'select_node',
+													arg.index);
+											$('#cloneList').jstree(
+													'open_node',
+													arg.index);
+										});*/
+								$('#clone-graph-box').show();
+								drawFixedBox($('#clone-graph-box'), function () {
+									CreateCloneGraph(data.cloneGraph, "chart0", function (svg, arg) {
+										console.log(arg);
+										$('#cloneList').jstree('select_node', arg.index);
+										$('#cloneList').jstree('open_node', arg.index);
+									});
+								});
+							}
+						}); // end ajax
 				});
+
+			return [$li, max_score];
+		}
+
+		var not_selected = new Set();
+		function createFilters(smy, bin_comp) {
+			var $holder = $('#filters-div');
+			onchanged = function () {
+				$holder.find("input").each(function() {
+					var input = $(this);
+					if (!input.context.checked) {
+						not_selected.add(input.val());
+					} else {
+						not_selected.delete(input.val());
+					}
+				});
+				loadFunction(bin_comp, 0, true);					
 				console.log(not_selected);
-				 $('#addrSelector').change();
 			}
-			
-			$.each(smy.summaryInfo.binaryCloneCounterSource, function(k, v) {
-				var clr = colorF(k) ;
+
+			$.each(smy.summaryInfo.binaryCloneCounterSource, function (k, v) {
+				var clr = colorF(k);
 				$div = $('<div>', {
-					'class' : 'togglebutton'
+					'class': 'togglebutton'
 				}).append(
-						$('<label>', {
-							'style' : 'color:grey'
-						}).append($('<input>', {
-							'class' : "checkbox",
-							'type' : "checkbox",
-							'checked' : 'true',
-							'value' : k
-						}).change(onchanged)).append(
-								document.createTextNode( smy.binaryIdToNameMap[k])))
-								.css('background-color', clr+ "20")
-								.css('border-left', 'solid 3px '+clr)
+					$('<label>', {
+						'style': 'color:grey'
+					}).append($('<input>', {
+						'class': "checkbox",
+						'type': "checkbox",
+						'checked': 'true',
+						'value': k
+					}).change(onchanged)).append(
+						document.createTextNode(smy.binaryIdToNameMap[k])))
+					.css('background-color', clr + "20")
+					.css('border-left', 'solid 3px ' + clr)
 				$holder.append($div);
 			});
 			$.material.init();
@@ -414,85 +434,84 @@ text {
 			var $summaryList = $('#summaryList');
 			var smy = data.summaryInfo;
 			$summaryList.empty();
-			$
-					.each(
-							smy.binaryCloneCounterTarget,
-							function(k, v) {
-							   // v = Math.min(v, smy.binarySize[k]);
-								var $divCont = $("<div>", {
-									'class' : 'col-lg-3 col-xs-6'
-								});
-								var $divBox = $("<div>", {
-									'class' : 'card card'
-								});
-								var $divHeader = $("<div>", {
-									'class' : 'card-header',
-									'data-background-color' : 'orange'
-								});
-								var $divInner = $("<div>", {
-									'class' : 'card-content'
-								});
-								//var $divFooter = $("<div>", {'class':'card-footer'});
+			$.each(
+					smy.binaryCloneCounterTarget,
+					function (k, v) {
+						// v = Math.min(v, smy.binarySize[k]);
+						var $divCont = $("<div>", {
+							'class': 'col-lg-3 col-xs-6'
+						});
+						var $divBox = $("<div>", {
+							'class': 'card card'
+						});
+						var $divHeader = $("<div>", {
+							'class': 'card-header',
+							'data-background-color': 'orange'
+						});
+						var $divInner = $("<div>", {
+							'class': 'card-content'
+						});
+						//var $divFooter = $("<div>", {'class':'card-footer'});
 
-								$divBox.append($divHeader);
-								$divBox.append($divInner);
-								//$divBox.append($divFooter);
+						$divBox.append($divHeader);
+						$divBox.append($divInner);
+						//$divBox.append($divFooter);
 
-								$divHeader
-										.append($("<h3>")
-												.append(
-														formatString(v)
-																+ "/"
-																+ formatString(smy.total)
-																+ "/"
-																+ formatString(smy.binarySize[k]))
-												.addClass("pull-right"))
-								$divInner
-										.append(
-												$("<p>").append(data.binaryIdToNameMap[k]).addClass(
-														"pull-left"))
-										.append(
-												$("<i>")
-														.append("help")
-														.addClass(
-																"material-icons")
-														.addClass("pull-right")
-														.prop(
-																'title',
-																'Number of Matched Target Functions / Total Number of Valid Queries / Number of Functions in the Source Binary. \nPercentage: Matched Target Functions/Total Number of Valid Queries')
-														.css('cursor',
-																'default')
-														.css("color", "gray"));
+						$divHeader
+							.append($("<h3>")
+								.append(
+									formatString(v)
+									+ "/"
+									+ formatString(smy.total)
+									+ "/"
+									+ formatString(smy.binarySize[k]))
+								.addClass("pull-right"))
+						$divInner
+							.append(
+								$("<p>").append(data.binaryIdToNameMap[k]).addClass(
+									"pull-left"))
+							.append(
+								$("<i>")
+									.append("help")
+									.addClass(
+										"material-icons")
+									.addClass("pull-right")
+									.prop(
+										'title',
+										'Number of Matched Target Functions / Total Number of Valid Queries / Number of Functions in the Source Binary. \nPercentage: Matched Target Functions/Total Number of Valid Queries')
+									.css('cursor',
+										'default')
+									.css("color", "gray"));
 
-								var $divHolder = $("<div>", {
-									'class' : 'knobholder'
-								});
-								var $input = $("<input>", {
-									'class' : 'knob'
-								});
-								var tv = v / smy.binarySize[k];
-								tv = Math.floor(tv*100)/100
-								$input.prop("type", "text");
-								$input.prop("value", tv);
-								$input.prop("val", tv);
-								$input.data("max", 1);
-								$input.prop("max", 1);
-								$input.data("min", 0);
-								$input.prop('readonly', true);
-								$divHolder.append($input);
-								$divHeader.append($divHolder);
-								$divCont.append($divBox);
-								$summaryList.append($divCont);
-							});
+						var $divHolder = $("<div>", {
+							'class': 'knobholder'
+						});
+						var $input = $("<input>", {
+							'class': 'knob'
+						});
+						var tv = v / smy.binarySize[k];
+						tv = Math.floor(tv * 100) / 100;
+						$input.prop("type", "text");
+						$input.prop("value", tv);
+						$input.prop("val", tv);
+						$input.data("max", 1);
+						$input.prop("max", 1);
+						$input.data("min", 0);
+						$input.prop('readonly', true);
+						$divHolder.append($input);
+						$divHeader.append($divHolder);
+						$divCont.append($divBox);
+						$summaryList.append($divCont);
+					});
 			$(".knob").knob({
-				'width' : 80,
-				'height' : 80,
-				'fgColor' : "white",
-				'bgColor' : "transparent",
-				'readonly' : 'true',
-				'tooltip' : 'true'
+				'width': 80,
+				'height': 80,
+				'fgColor': "white",
+				'bgColor': "transparent",
+				'readonly': 'true',
+				'tooltip': 'true'
 			});
-			$('.knob').each(function(a, b) {
+			$('.knob').each(function (a, b) {
 				b.value = Math.round(b.val * 100 / b.max) + "%";
 				b.disabled = true;
 				b.readonly = true;
@@ -500,195 +519,190 @@ text {
 				$(b).css("font-size", "15px");
 			});
 		}
+		
+        function scale() {
+            var scaler = $("#infoListScaler").slider();
+            var height = scaler.val();
+            $('.entry').height(height);
+            if (height > 15) {
+                $('.fnspan').css({
+                    'font-size': height
+                });
+                $('.fnspan').css({
+                    'color': 'white'
+                });
+            } else {
+                $('.fnspan').css({
+                    'color': 'transparent'
+                });
+            }
+        }
+		
+        function loadFunction(bin_comp, str_startAddress, emptyParent = false) {
+            $.ajax({
+                url: bin_comp,
+                type: 'post',
+                data: $.param({
+                    list: "a",
+                    startAddress: str_startAddress,
+                    fileName: fileName,
+                    not_selected: Array.from(not_selected),
+                    functionKeyword: $('#input-keyword').val().trim(),
+                    clonesKeyword: $('#input-clones-keyword').val().trim()
+                }),
+                success: function(data) {
+                    if (data.error) {
+                        dmas_alert(data.error);
+                        return;
+                    }
+                    var struct = data.object;
+					var parent = $('#infoContainer');
+                    if (emptyParent) {
+                        parent.empty();
+                    }
 
-		$(function() {
-			$('#clone-graph-box').hide();
-			$(".slider").slider();
-
-			$('#address-bar-filter-menu').click(function(e) {
-				e.stopPropagation();
-			});
-
-			var scaler = $("#infoListScaler").slider();
-			function scale(){
-				var height = scaler.val();
-				$('.entry').height(height);
-				if (height > 15) {
-					$('.fnspan').css({
-						'font-size' : height
-					});
-					$('.fnspan').css({
-						'color' : 'white'
-					});
-				} else {
-					$('.fnspan').css({
-						'color' : 'transparent'
-					});
-				}
-			}
-			scaler.on('slide', function(slideEvt) {
-				scale();
-			});
-
-			var bin_comp = /*[[${model.calculatePrefix() + 'BinaryComposition'}]]*/"";
-			var func_diff_text = /*[[${model.calculatePrefix() + 'func_diff_text'}]]*/"";
-			var func_diff_flow = /*[[${model.calculatePrefix() + 'func_diff_flow'}]]*/"";
-			var func_diff_text_group = /*[[${model.calculatePrefix() + 'func_diff_text_group'}]]*/"";
-
-			fileName = QueryString['fileName'];
-			colorF = d3.scale.category10();
-			console.log(fileName);
-			if (fileName) {
-
-				window
-						.setTimeout(
-								function() {
-
-									$
-											.ajax({
-												url : bin_comp,
-												type : 'POST',
-												data : $.param({
-													addRange : "a",
-													fileName : fileName
-												}),
-												success : function(data) {
-													if (data.error) {
-														dmas_alert(data.error);
-														return;
-													}
-													var ls = data.object;
-													var $selector = $('#addrSelector');
-													$selector.empty();
-													for (var i = 0; i < ls.length; i++) {
-														var $option = $('<option>');
-														$option.text('0x'+ls[i].toString(16));
-														$option.val(ls[i]);
-														$selector
-																.append($option);
-													}
-
-													$selector
-															.change(function() {
-
-																$(
-																		"select option:selected")
-																		.each(
-																				function() {
-																					var str_s = $(
-																							this)
-																							.val();
-																						var str_e = $(
-																							this).next()
-																							.val();
-																					console.log('requesting ' + str_s + ' ' + str_e);
-																						
-																					$
-																							.ajax({
-																								url : bin_comp,
-																								type : 'post',
-																								data :  $.param({
-																									list : "a",
-																									addrStart : str_s,
-																									addrEnd: str_e,
-																									fileName : fileName,
-																									not_selected: Array.from(not_selected),
-																									keyword: $('#input-keyword').val().trim(),
-																								}),
-																								success : function(
-																										data) {
-																									if (data.error) {
-																										dmas_alert(data.error);
-																										return;
-																									}
-																									var struct = data.object;
-																									var parent = $('#infoContainer');
-																									parent
-																											.empty();
-																									struct.list
-																											.sort(function(
-																													a,
-																													b) {
-																												return parseInt(a.add)
-																														- parseInt(b.add);
-																											});
-																									for ( var info in struct.list) {
-																										var item = createInfoAtAddress(struct.list[info]);
-																										parent
-																												.append(item);
-																									}
-																									scale();
-																									
-																									if($('#input-keyword').val().trim().length > 0){
-																										parent.highlight($('#input-keyword').val().trim());
-																									}
-																								}
-																							});
-																				});
-
-															});
-
-													$selector.change();
-
-												}
-											});
-								}, 2000);
-
-				$.ajax({
-					url : bin_comp,
-					type : 'POST',
-					data : {
-						summary : "",
-						fileName : fileName
-					},
-					success : function(data) {
-						if (data.error) {
-							dmas_alert(data.error);
+                    struct.list.sort(function(a, b) {
+                        return parseInt(a.add) - parseInt(b.add);
+                    });
+                    for (var info in struct.list) {
+                        var item = createInfoAtAddress(struct.list[info]);
+                        var score = item[1];
+						if($('#btn_unmatch').prop("checked")==true){
+							if(score != 0){
+								parent.append(item[0]);
+							}
+						} else {
+							parent.append(item[0]);
 						}
+                    }
+                    scale();
 
-						createCompositionBox(data.object);
-						createFilters(data.object);
-						
-						$('#btn_dump').click(function(){
-							$.ajax({
-									type : 'POST',
-									url : "search_bin_dump",
-									data : {
-										bin : fileName
-									},
-									success : function(data) {
-										if (data.error) {
-											dmas_alert(data.error);
-										}else
-											dmas_alert('Job submitted. Progress can be checked at user home page.\nResult file will be stored in %data_path%/userfile/');
-									}});
-						});
-						return;
+                    if ($('#input-keyword').val().trim().length > 0) {
+                        parent.highlight($('#input-keyword').val().trim());
+                    }
+					$('#nbTotalFunction').text(struct.loadingInfo.total);
+                    $('#nbTotalFunctionLoaded').text(parent[0].childElementCount);
+                    $('#nbTotalFunctionFiltered').text(struct.loadingInfo.filteredTotal);
+
+					// in case of not being filled up at the first page (client-side filtering)
+					var infoContainer = $('#infoContainer')[0];
+					if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
+						var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+						console.log('scroll requesting from address' + str_startAddress);
+						loadFunction(bin_comp, str_startAddress);
 					}
-				});
-			}
-			
-			var inKeyWordSearch = false;
-			$('#button-keyword').click(function(){
-				if(inKeyWordSearch){
-					$('#button-keyword > i').text('search');
-					$('#addrSelector').prop('disabled', false);
-					$('#input-keyword').val('');
-					$('#addrSelector').change();
-					inKeyWordSearch = false;
-				}else{
-					$('#button-keyword > i').text('cancel');
-					$('#addrSelector').prop('disabled', true);
-					inKeyWordSearch = true;
-					$('#addrSelector').change();
-				}
-			});
-		});
+                }
+            });
+        }
+        $(function() {
+            $('#clone-graph-box').hide();
+            $(".slider").slider();
 
+            $('#address-bar-filter-menu').click(function(e) {
+                e.stopPropagation();
+            });
+
+            var scaler = $("#infoListScaler").slider();
+            scaler.on('slide',
+                function(slideEvt) {
+                    scale();
+                });
+
+            var bin_comp = /*[[${model.calculatePrefix() + 'BinaryComposition'}]]*/"";
+            var func_diff_text = /*[[${model.calculatePrefix() + 'func_diff_text'}]]*/"";
+            var func_diff_flow = /*[[${model.calculatePrefix() + 'func_diff_flow'}]]*/"";
+            var func_diff_text_group = /*[[${model.calculatePrefix() + 'func_diff_text_group'}]]*/"";
+
+            fileName = QueryString['fileName'];
+            colorF = d3.scale.category10();
+            console.log(fileName);
+            if (fileName) {
+                boxElement = document.querySelector("#infoContainer");
+
+                $('#infoContainer').scroll(function() {
+                    var infoContainer = $('#infoContainer')[0];
+					console.log([infoContainer.scrollHeight, infoContainer.scrollTop, infoContainer.clientHeight])
+                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+10) {
+                        var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+                        console.log('scroll requesting from address' + str_startAddress);
+                        loadFunction(bin_comp, str_startAddress);
+                    }
+                });
+
+
+
+                window.setTimeout(
+                    function() {
+						loadFunction(bin_comp, 0);
+                    }, 2000);
+                $.ajax({
+                    url: bin_comp,
+                    type: 'POST',
+                    data: {
+                        summary: "",
+                        fileName: fileName
+                    },
+                    success: function(data) {
+                        if (data.error) {
+                            dmas_alert(data.error);
+                        }
+
+                        createCompositionBox(data.object);
+                        createFilters(data.object, bin_comp);
+
+                        $('#btn_dump').click(function() {
+                            $.ajax({
+                                type: 'POST',
+                                url: "search_bin_dump",
+                                data: {
+                                    bin: fileName
+                                },
+                                success: function(data) {
+                                    if (data.error) {
+                                        dmas_alert(data.error);
+                                    } else
+                                        dmas_alert(
+                                            'Job submitted. Progress can be checked at user home page.\nResult file will be stored in %data_path%/userfile/');
+                                }
+                            });
+                        });
+                        return;
+                    }
+                });
+            }
+
+            var inKeyWordSearch = false;
+            var inClonesKeywordSearch = false;
+            $('#button-keyword').click(function() {
+                if (inKeyWordSearch) {
+                    $('#button-keyword > i').text('search');
+                    $('#input-keyword').val('');
+                    inKeyWordSearch = false;
+                } else {
+                    $('#button-keyword > i').text('cancel');
+                    inKeyWordSearch = true;
+                }
+
+                loadFunction(bin_comp, 0, true);
+            });
+
+            $('#button-clones-keyword').click(function() {
+                if (inClonesKeywordSearch) {
+                    $('#button-clones-keyword > i').text('search');
+                    $('#input-clones-keyword').val('');
+                    inClonesKeywordSearch = false;
+                } else {
+                    $('#button-clones-keyword > i').text('cancel');
+                    inClonesKeywordSearch = true;
+                }
+
+                loadFunction(bin_comp, 0, true);
+            });
+
+            $('#btn_unmatch').click(function(){
+				loadFunction(bin_comp, 0, true);
+			});
+        })
 		/*]]>*/
 	</script>
 </div>
-
-
-
-

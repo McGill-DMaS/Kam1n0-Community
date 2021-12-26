@@ -18,6 +18,9 @@ package ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
@@ -25,8 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.*;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Session;
+
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
 
@@ -98,7 +100,7 @@ public class BucketIndexCassandra extends BucketIndex {
 	@Override
 	public boolean put(String bucketID, long value) {
 		CassandraConnector connector = CassandraConnector.apply(sparkInstance.getConf());
-		try (Session session = connector.openSession()) {
+		try (CqlSession session = connector.openSession()) {
 			HashSet<Long> set = new HashSet<>();
 			set.add(value);
 			PreparedStatement statement = session.prepare(getSetStatement());
@@ -110,7 +112,7 @@ public class BucketIndexCassandra extends BucketIndex {
 	@Override
 	public boolean put(String bucketID, HashSet<Long> values) {
 		CassandraConnector connector = CassandraConnector.apply(sparkInstance.getConf());
-		try (Session session = connector.openSession()) {
+		try (CqlSession session = connector.openSession()) {
 			PreparedStatement statement = session.prepare(getSetStatement());
 			session.execute(statement.bind(values, bucketID));
 			return true;
@@ -120,7 +122,7 @@ public class BucketIndexCassandra extends BucketIndex {
 	@Override
 	public boolean put(ArrayList<Bucket> data) {
 		CassandraConnector connector = CassandraConnector.apply(sparkInstance.getConf());
-		try (Session session = connector.openSession()) {
+		try (CqlSession session = connector.openSession()) {
 			for (Bucket bucket : data) {
 				PreparedStatement statement = session.prepare(getSetStatement());
 				session.execute(statement.bind(bucket.value, bucket.key));
@@ -132,8 +134,9 @@ public class BucketIndexCassandra extends BucketIndex {
 	@Override
 	public boolean drop(String bucketID, long value) {
 		cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
-			session.execute("DELETE " + _BUCKETDB_B_VA + " [?] FROM " + databaseName + "." + _BUCKETDB_B + " where "
-					+ _BUCKETDB_B_ID + " = ?", value, bucketID);
+			PreparedStatement statement = session.prepare("DELETE " + _BUCKETDB_B_VA + " [?] FROM " + databaseName + "." + _BUCKETDB_B + " where "
+					+ _BUCKETDB_B_ID + " = ?");
+			session.execute(statement.bind(value,bucketID));
 		});
 		return true;
 	}
@@ -141,8 +144,9 @@ public class BucketIndexCassandra extends BucketIndex {
 	@Override
 	public boolean drop(String bucketID) {
 		cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
-			session.execute("DELETE FROM " + databaseName + "." + _BUCKETDB_B + " where " + _BUCKETDB_B_ID + " = ?",
-					bucketID);
+			PreparedStatement statement = session.prepare("DELETE FROM " + databaseName + "." + _BUCKETDB_B + " where " + _BUCKETDB_B_ID + " = ?");
+
+			session.execute(statement.bind(bucketID));
 		});
 
 		return true;

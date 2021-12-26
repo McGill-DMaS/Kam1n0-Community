@@ -24,7 +24,7 @@ public class GeneralVectorIndex {
 			int maxK, int L, int m, HashSchemaTypes type, boolean inMem) {
 		List<String> features = IntStream.range(0, dim).mapToObj(ind -> "feature-" + ind).collect(Collectors.toList());
 		this.index = new ALSH<>(sparkInstance, cassandraInstance, features, startK, maxK, L, m, type, inMem,
-				"vec_alsh");
+				"vec_alsh", false);
 		this.index.init();
 	}
 
@@ -33,7 +33,7 @@ public class GeneralVectorIndex {
 	public List<Tuple2<Long, Double>> query(long rid, double[] vec, int topK, long identifier) {
 		VecObjectArray obj = new VecObjectArray(vec, identifier);
 		HashMap<Long, double[]> candidates = new HashMap<>();
-		List<VecEntry<VecInfoArray, VecInfoSharedArray>> infos = index.query(rid, Arrays.asList(obj), topK, null)._2
+		List<VecEntry<VecInfoArray, VecInfoSharedArray>> infos = index.query(rid, Arrays.asList(obj), null)._2
 				.collect();
 		infos.forEach(info -> {
 			info.vids.stream().forEach(vid -> {

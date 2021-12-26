@@ -15,17 +15,16 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.symbolic;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,6 +33,8 @@ import ca.mcgill.sis.dmas.io.LineSequenceWriter;
 import ca.mcgill.sis.dmas.io.Lines;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
+
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 
 public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 
@@ -143,11 +144,12 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 	@Override
 	public IOBucketCtn loadBucket(long rid, Long primaryKey, String secondaryKey) {
 		IOBucketCtn bucket = this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
-			Row row = session.execute((QueryBuilder.select(DIFF_FULL)//
-					.from(databaseName, _SYMBOLIC_DIFF))//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_DIFF_K1, primaryKey))//
-							.and(eq(_SYMBOLIC_DIFF_K2, secondaryKey))//
+			Row row = session.execute((QueryBuilder.selectFrom(databaseName, _SYMBOLIC_DIFF)
+							.columns(DIFF_FULL)//
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
+							.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(primaryKey))
+							.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(secondaryKey))
+							.build())//
 			).one();
 			// not existed
 			if (row == null)
@@ -193,19 +195,20 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 		this.cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
 			session.executeAsync(QueryBuilder//
 					.insertInto(databaseName, _SYMBOLIC_DIFF)//
-					.value(_REPO_PREFIX, rid) //
-					.value(_SYMBOLIC_DIFF_K1, K1)//
-					.value(_SYMBOLIC_DIFF_K2, val)//
-					.value(_SYMBOLIC_DIFF_K1L, cnt.K1)//
-					.value(_SYMBOLIC_DIFF_NVAL, cnt.newVal)//
-					.value(_SYMBOLIC_DIFF_MAJR, cnt.majority)//
-					.value(_SYMBOLIC_DIFF_CNT, cnts));
+					.value(_REPO_PREFIX, literal(rid)) //
+					.value(_SYMBOLIC_DIFF_K1, literal(K1))//
+					.value(_SYMBOLIC_DIFF_K2, literal(val))//
+					.value(_SYMBOLIC_DIFF_K1L, literal(cnt.K1))//
+					.value(_SYMBOLIC_DIFF_NVAL, literal(cnt.newVal))//
+					.value(_SYMBOLIC_DIFF_MAJR, literal(cnt.majority))//
+					.value(_SYMBOLIC_DIFF_CNT, literal(cnts)).build());
 
 			session.executeAsync(QueryBuilder.update(databaseName, _SYMBOLIC_DIFFC)
-					.with(QueryBuilder.incr(_SYMBOLIC_DIFFC_CT, cnt.count))//
-					.where(eq(_REPO_PREFIX, rid))//
-					.and(eq(_SYMBOLIC_DIFF_K1, K1))//
-					.and(eq(_SYMBOLIC_DIFF_K2, val)));
+					.increment(_SYMBOLIC_DIFFC_CT,literal(cnt.count))
+					.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
+					.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(K1))
+					.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(val))
+					.build());
 
 		});
 		return true;
@@ -215,19 +218,22 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 	public IOBucketMeta loadMeta(long rid, Long primaryKey, String secondaryKey) {
 		IOBucketMeta bucket = this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
 			Row row = session.execute((QueryBuilder//
-					.select(DIFF_META))//
-							.from(databaseName, _SYMBOLIC_DIFF)//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_DIFF_K1, primaryKey))//
-							.and(eq(_SYMBOLIC_DIFF_K2, secondaryKey)))
+					.selectFrom(databaseName, _SYMBOLIC_DIFF)
+							.columns(DIFF_META))//
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
+							.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(primaryKey))
+							.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(secondaryKey))
+							.build())
 					.one();
 
 			Row crow = session.execute((QueryBuilder//
-					.select(_SYMBOLIC_DIFFC_CT))//
-							.from(databaseName, _SYMBOLIC_DIFFC)//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_DIFF_K1, primaryKey))//
-							.and(eq(_SYMBOLIC_DIFF_K2, secondaryKey)))
+					.selectFrom(databaseName, _SYMBOLIC_DIFFC)
+							.columns(_SYMBOLIC_DIFFC_CT))//
+
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
+							.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(primaryKey))
+							.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(secondaryKey))
+							.build())//
 					.one();
 
 			// not existed
@@ -264,18 +270,19 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 					session.executeAsync(//
 							QueryBuilder//
 									.update(databaseName, _SYMBOLIC_DIFF)//
-									.with()//
-									.and(QueryBuilder.append(_SYMBOLIC_DIFF_CNT, ByteBuffer.wrap(cnt)))
-									.where(eq(_REPO_PREFIX, rid))//
-									.and(eq(_SYMBOLIC_DIFF_K1, K1))//
-									.and(eq(_SYMBOLIC_DIFF_K2, val))//
+									.appendListElement(_SYMBOLIC_DIFF_CNT, literal(ByteBuffer.wrap(cnt)))
+									.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
+									.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(K1))
+									.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(val))
+									.build()
 					);
 
 					session.executeAsync(QueryBuilder.update(databaseName, _SYMBOLIC_DIFFC)
-							.with(QueryBuilder.incr(_SYMBOLIC_DIFFC_CT))//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_DIFF_K1, K1))//
-							.and(eq(_SYMBOLIC_DIFF_K2, val)));
+							.increment(_SYMBOLIC_DIFFC_CT)//
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))
+							.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(K1))
+							.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(val))
+							.build());
 				});
 		} catch (JsonProcessingException e) {
 			logger.error("Failed to add hid to {}::{}", K1, val);
@@ -293,9 +300,10 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 					session.executeAsync(//
 							QueryBuilder//
 									.update(databaseName, _SYMBOLIC_HASH)//
-									.with(QueryBuilder.append(_SYMBOLIC_HASH_CNT, ByteBuffer.wrap(cnt)))
-									.where(eq(_REPO_PREFIX, rid))//
-									.and(eq(_SYMBOLIC_HASH_HID, hid))//
+									.appendListElement(_SYMBOLIC_HASH_CNT,literal(ByteBuffer.wrap(cnt)))
+									.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
+									.whereColumn(_SYMBOLIC_HASH_HID).isEqualTo(literal(hid))
+									.build()//
 					);
 				});
 		} catch (JsonProcessingException e) {
@@ -309,10 +317,11 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 		return this.cassandraInstance.doWithSessionWithReturn(sparkInstance.getConf(), session -> {
 			Row row = session.execute(//
 					QueryBuilder//
-							.select(_SYMBOLIC_HASH_HID)//
-							.from(databaseName, _SYMBOLIC_HASH)//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_HASH_HID, hid))//
+							.selectFrom(databaseName, _SYMBOLIC_HASH)
+							.column(_SYMBOLIC_HASH_HID)//
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
+							.whereColumn(_SYMBOLIC_HASH_HID).isEqualTo(literal(hid))
+							.build()//
 			).one();
 
 			if (row == null || row.isNull(0))
@@ -329,11 +338,12 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 	@Override
 	public IOSymHashCnt loadHashCnt(long rid, int hid) {
 		IOSymHashCnt bucket = this.cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
-			Row row = session.execute((QueryBuilder//
-					.select(HASH_FULL)//
-					.from(databaseName, _SYMBOLIC_HASH))//
-							.where(eq(_REPO_PREFIX, rid))//
-							.and(eq(_SYMBOLIC_HASH_HID, hid)))
+			Row row = session.execute(QueryBuilder//
+							.selectFrom(databaseName, _SYMBOLIC_HASH)
+							.columns(HASH_FULL)//
+							.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
+							.whereColumn(_SYMBOLIC_HASH_HID).isEqualTo(literal(hid))
+							.build())
 					.one();
 			// not existed
 			if (row == null)
@@ -385,8 +395,9 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 				LineSequenceWriter writer = Lines.getLineWriter(folder + "//btable.txt", false);
 				this.cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
 					session.execute(QueryBuilder//
-							.select(DIFF_ALL)//
-							.from(databaseName, _SYMBOLIC_DIFF)).all().forEach(row -> {
+							.selectFrom(databaseName, _SYMBOLIC_DIFF)
+							.columns(DIFF_ALL)//
+							.build()).all().forEach(row -> {
 
 								Long rid = row.isNull(0) ? null : row.getLong(0);
 								Long k1 = row.isNull(1) ? null : row.getLong(1);
@@ -396,11 +407,12 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 								Long maj = row.isNull(5) ? null : row.getLong(5);
 
 								Row crow = session.execute((QueryBuilder//
-										.select(_SYMBOLIC_DIFFC_CT))//
-												.from(databaseName, _SYMBOLIC_DIFFC)//
-												.where(eq(_REPO_PREFIX, rid))//
-												.and(eq(_SYMBOLIC_DIFF_K1, k1))//
-												.and(eq(_SYMBOLIC_DIFF_K2, k2)))
+										.selectFrom(databaseName, _SYMBOLIC_DIFFC)
+												.columns(_SYMBOLIC_DIFFC_CT))//
+												.whereColumn(_REPO_PREFIX).isEqualTo(literal(rid))//
+												.whereColumn(_SYMBOLIC_DIFF_K1).isEqualTo(literal(k1))//
+												.whereColumn(_SYMBOLIC_DIFF_K2).isEqualTo(literal(k2))//
+												.build())
 										.one();
 								Long count = crow.getLong(0);
 
@@ -454,12 +466,11 @@ public class DifferentialIndexCassandra extends DifferentialIndexAbstract {
 				// "hidt".toLowerCase();
 				// public static final String _SYMBOLIC_HASH_HID = "hid";
 				// public static final String _SYMBOLIC_HASH_CNT = "cnt";
-
 				LineSequenceWriter writer = Lines.getLineWriter(folder + "//htable.txt", false);
 				this.cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
 					session.execute(QueryBuilder//
-							.select(HASH_FULL)//
-							.from(databaseName, _SYMBOLIC_HASH)).all().forEach(row -> {
+							.selectFrom(databaseName, _SYMBOLIC_HASH).columns(HASH_FULL)
+							.build()).all().forEach(row -> {
 								List<IOEntry> metas = row.getList(1, ByteBuffer.class).stream().map(buff -> {
 									try {
 										return mapper.readValue(read(buff), IOEntry.class);

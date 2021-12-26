@@ -35,15 +35,13 @@ public class Comment implements Serializable {
 	public String functionOffset;
 
 	@ObjectFactoryMultiTenancy.KeyedSecondary(index = 2)
-	public String userName = StringResources.STR_EMPTY;
-
-	@ObjectFactoryMultiTenancy.KeyedSecondary(index = 3)
 	public long date;
 
+	public String userName = StringResources.STR_EMPTY;
 	public String comment = StringResources.STR_EMPTY;
 
 	@AsString
-	public CommentType type = CommentType.repeatable;
+	public CommentType type = CommentType.regular;
 
 	public Comment() {
 	}
@@ -58,3 +56,5 @@ public class Comment implements Serializable {
 	}
 
 }
+
+

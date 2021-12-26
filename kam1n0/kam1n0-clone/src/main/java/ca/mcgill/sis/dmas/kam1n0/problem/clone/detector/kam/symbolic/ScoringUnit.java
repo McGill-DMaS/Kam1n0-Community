@@ -46,7 +46,10 @@ public class ScoringUnit implements Serializable {
 		this.fidToAvoid = fidToAvoid;
 	}
 
-	public void add(String varName, Block tar, IOEntry entry, double normalizer) {
+	public synchronized void add(String varName, Block tar, IOEntry entry, double normalizer) {
+		
+		if (entry == null)
+			return;
 
 		Long srcFid = entry.functionId;
 		Long srcBid = entry.blockId;

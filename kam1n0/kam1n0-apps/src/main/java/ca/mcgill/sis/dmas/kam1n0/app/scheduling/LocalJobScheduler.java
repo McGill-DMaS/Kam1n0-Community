@@ -142,6 +142,26 @@ public class LocalJobScheduler {
 		}
 	}
 
+	public boolean terminateJob(String user, String taskName) {
+		try {
+			JobKey key = JobKey.jobKey(taskName, user);
+			boolean terminated = !jobScheduler.checkExists(key);
+			if (terminated)
+				jobStatusCacheInProgress.remove(constructJobId(key));
+			else
+			{
+				//jobScheduler.interrupt(key);
+				jobScheduler.deleteJob(key);
+				jobStatusCacheInProgress.remove(constructJobId(key));
+			}
+			terminated = !jobScheduler.checkExists(key);
+			//jobScheduler.shutdown(false);
+			return terminated; // && !jobStatusCacheInProgress.containsKey(constructJobId(key));
+		} catch (SchedulerException e) {
+			return false;
+		}
+	}
+
 	public ArrayList<LocalDmasJobInfo> listJobs() {
 		try {
 			ArrayList<LocalDmasJobInfo> infos = new ArrayList<>();

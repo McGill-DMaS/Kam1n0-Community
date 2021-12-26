@@ -40,17 +40,16 @@ import ca.mcgill.sis.dmas.kam1n0.utils.hash.HashSchema.HashSchemaTypes;
 public class DetectorsKam {
 
 	/**
-	 * RAM version
+	 * RAM version, for single user-application use cases only (such as batch processing with non-permanent DB)
 	 * 
 	 * @param spark
-	 * @param cassandra
 	 * @param platformName
 	 * @param appName
 	 * @param type
 	 * @return
 	 */
 	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorRam(SparkInstance spark,
-			CassandraInstance cassandra, String platformName, String appName, ArchitectureType type) {
+			String platformName, String appName, ArchitectureType type) {
 		NormalizationSetting setting = NormalizationSetting.New();
 		setting.setNormalizationLevel(NormalizationLevel.NORM_LENGTH);
 		AsmObjectFactory factory = AsmObjectFactory.init(spark, platformName, appName);
@@ -60,38 +59,35 @@ public class DetectorsKam {
 				spark, //
 				new BlockIndexerLshKLAdaptive(//
 						spark, //
-						cassandra, //
+						null, //
 						factory, //
 						new FeatureConstructor(processor.normalizer, FreqFeatures.getFeatureMemOprFreq(),
 								FreqFeatures.getFeatureMemGramFreq(2)), //
-						256, // start K
+						16, // start K
 						1024, // max K
 						1, // l
 						30, // m
-						HashSchemaTypes.SimHash, true), //
-				1, // min block length
+						HashSchemaTypes.SimHash, true, true), //
+				1, // Ignore single-line blocks for matching
 				false);// best 256-1024-1-30-4
 		// detector.fixTopK = 10;
 		return detector;
 	}
 
 	/**
-	 * Cassandra version
+	 * Cassandra version (as opposed to "all in RAM" version)
 	 * 
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param factory
-	 * @param processor
-	 * @param startK
-	 * @param K
-	 * @param L
-	 * @param m
-	 * @param minBlckLength
+	 * @param isSingleUserApplication Must be false on multi-user/app use cases, optionally true otherwise. When reusing
+	 *                              an existing indexer DB, must be the same than when it was created (must depend on
+	 *                              use case, not on any configurable parameter). When set, it optimizes some underlying
+	 *                              DB tables by assuming that any 'user-application ID' is always the same and can be
+	 *                              ignored.
+	 *
 	 * @return
 	 */
 	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(
 			SparkInstance sparkInstance, CassandraInstance cassandraInstance, AsmObjectFactory factory,
-			AsmProcessor processor, int startK, int K, int L, int m, int minBlckLength) {
+			AsmProcessor processor, int startK, int K, int L, int m, int largestBlockLengthToIgnore, boolean isSingleUserApplication) {
 		return new FunctionSubgraphDetector(//
 				factory, //
 				sparkInstance, //
@@ -103,44 +99,8 @@ public class DetectorsKam {
 						startK, //
 						K, //
 						L, //
-						m, HashSchemaTypes.SimHash, false), //
-				minBlckLength, //
-				false);//
-	}
-
-	/**
-	 * Cassandra version
-	 * 
-	 * @param sparkInstance
-	 * @param cassandraInstance
-	 * @param factory
-	 * @param inMem
-	 * @param processor
-	 * @param startK
-	 * @param K
-	 * @param L
-	 * @param m
-	 * @param minBlckLength
-	 * @param features
-	 * @return
-	 */
-	public static FunctionCloneDetector getLshAdaptiveSubGraphFunctionCloneDetectorCassandra(
-			SparkInstance sparkInstance, CassandraInstance cassandraInstance, AsmObjectFactory factory,
-			AsmProcessor processor, int startK, int K, int L, int m, int minBlckLength, List<Features> features) {
-		return new FunctionSubgraphDetector(//
-				factory, //
-				sparkInstance, //
-				new BlockIndexerLshKLAdaptive(//
-						sparkInstance, //
-						cassandraInstance, //
-						factory, //
-						new FeatureConstructor(processor.normalizer, features), // \
-						startK, //
-						K, //
-						L, //
-						m, HashSchemaTypes.SimHash, //
-						false), // inMem?
-				minBlckLength, //
+						m, HashSchemaTypes.SimHash, false, isSingleUserApplication), //
+				largestBlockLengthToIgnore, //
 				false);//
 	}
 

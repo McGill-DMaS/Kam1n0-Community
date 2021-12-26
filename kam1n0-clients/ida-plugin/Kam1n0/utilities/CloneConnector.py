@@ -51,28 +51,28 @@ class CloneConnector:
         t.start()
 
     def get_login_url(self):
-        return get_root_domain(self.app_url) + '/login'
+        return get_root_domain(self.app_url) + 'login'
 
     def get_user_home(self):
-        return get_root_domain(self.app_url) + '/userHome'
+        return get_root_domain(self.app_url) + 'userHome'
 
     def get_validation_url(self):
-        return get_root_domain(self.app_url) + '/validate'
+        return get_root_domain(self.app_url) + 'validate'
 
     def get_progress_url(self):
-        return get_root_domain(self.app_url) + '/userProgress'
+        return get_root_domain(self.app_url) + 'userProgress'
 
     def get_app_home(self):
-        return self.app_url + '/home'
+        return self.app_url + 'home'
 
     def get_search_url(self):
-        return self.app_url + '/search_func'
+        return self.app_url + 'search_func'
 
     def get_index_url(self):
-        return self.app_url + '/push_bin'
+        return self.app_url + 'push_bin'
 
     def get_composition_url(self):
-        return self.app_url + '/search_bin_single'
+        return self.app_url + 'search_bin_single'
 
     def open_user_home(self):
         self.request.show_get(self.get_user_home(),

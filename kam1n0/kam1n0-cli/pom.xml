@@ -11,7 +11,7 @@
 	<properties>
 		<start-class>ca.mcgill.sis.dmas.kam1n0.cli.Main</start-class>
 		<spring-boot-version>1.5.8.RELEASE</spring-boot-version>
-		<spring-load-version>1.2.6.RELEASEE</spring-load-version>
+		<spring-load-version>1.2.6.RELEASE</spring-load-version>
 
 	</properties>
 	<build>
@@ -20,10 +20,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
+					<release>${java.version}</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -125,5 +124,11 @@
 			<artifactId>kam1n0-rep</artifactId>
 			<version>${kam1n0.version}</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+    </dependencies>
 </project>

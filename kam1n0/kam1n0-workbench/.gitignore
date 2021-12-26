@@ -17,3 +17,7 @@ bin/kam1n0-workbench.jar
 *.class
 target/
 bin
+
+### Intellij+iml Patch ###
+# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
+*.iml

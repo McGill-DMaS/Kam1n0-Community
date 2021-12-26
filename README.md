@@ -5,9 +5,11 @@
 ![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square&maxAge=86400)
 ![GitHub (pre-)release](https://img.shields.io/badge/kam1n0%20release-v2.0.0-orange.svg?style=flat-square&maxAge=86400)
 ![Github All Releases](https://img.shields.io/github/downloads/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/total.svg?style=flat-square&&maxAge=86400)
-![JDK](https://img.shields.io/badge/JDK%2FJSE-8-brightgreen.svg?style=flat-square&maxAge=86400)
+![JDK](https://img.shields.io/badge/JDK%2FJSE-11-brightgreen.svg?style=flat-square&maxAge=86400)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&maxAge=86400)
 
+[![Build latest development release (Windows)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild.yml/badge.svg)](https://github.com/McGill-DMaS/Kam1n0/releases)
+[![Test release build (Windows)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild-test.yml/badge.svg)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild-test.yml)
 
 **_Kam1n0 v2.x_** is a scalable assembly management and analysis platform. It allows a user to first index a (large) collection of binaries into different repositories and provide different analytic services such as clone search and classification. It supports multi-tenancy access and management of assembly repositories by using the concept of **_Application_**. An application instance contains its own exclusive repository and provides a specialized analytic service. Considering the versatility of reverse engineering tasks, Kam1n0 v2.x server currently provides three different types of clone-search applications: **_Asm-Clone_**, **_Sym1n0_**, and **_Asm2Vec_**, and an **_executable classification_** based on _Asm2Vec_. New application type can be further added to the platform.
 
@@ -93,6 +95,22 @@ Asm2Vec leverages representation learning. It understands the lexical semantic r
   <img src="documentation/others/asm2vec.png"/>
 </p>
 
+## Executable Classification
+
+In this application, the user defines a set of software classes which are based on functional relatedness and provides binaries belong to each class. Then the system automatically groups functions into clusters in which functions are connected directly or indirectly by clone relation. The clusters that are discriminative for the classification are kept and serve as signatures of their classes. Given a target binary, the system shows the degree it belongs to each software class.
+
+* Use Asm2Vec as its function similarity computation model
+  * \+ Provide interpretable classification results.
+  * \+ Learn common characteristics (i.e., function clusters) of each class.
+  * \+ Able to handle smaller and imbalanced datasets than an ordinary machine learning model.
+  * \- The limitation is that the assumption that binaries in the same class share some common functions must hold for the system to work.
+
+
+  <p align="center">
+    <img src="documentation/others/execls.png"/>
+  </p>
+
+
 ## Platform Overview
 
 The figure below shows the major UI components and functionalities of Kam1n0 v2.x. We adopt a material design. In general, each user has an application list, a running-job list, and a result file list.
@@ -152,8 +170,7 @@ The current release of Kam1n0 consists of two installers: the core server and ID
 
 The Kam1n0 core engine is purely written in Java. You need the following dependencies:
 
-* [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-  * Java9 and Java10 are not supported at this moment.
+* [Required] The latest x64 11.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 * [Optional] The latest version of IDA Pro with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary.
 
 Download the ```Kam1n0-Server.msi``` file from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path. IDA Pro is optional if the server does not have to deal with any disassembling. In other words, the client side  uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. Kam1n0 server will automatically detect your IDA Pro by looking for the default application that you used to open `.i64` file.
@@ -169,11 +186,11 @@ Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page]
 
 ## Setting Up Kam1n0 on Ubuntu/Debian-based systems
 
-* Ensure you have the **Oracle** version of Java 8. (Not default-jdk in apt, and not Java 8 or 9.)
+* Ensure you have the **Oracle** version of Java 11. (Not default-jdk in apt.)
     * Add Oracle's PPA and then update your package repository: `sudo add-apt-repository ppa:webupd8team/java`
         * If you encounter any errors (such as `~webupd8team not found`), if you are on a proxy, make sure you set and export your `http_proxy` and `https_proxy` environment variables, and then try again with the `-E` option on sudo. Additionally, if you are getting a 'add-apt repository command not found error, try: `sudo apt install -y software-properties-common`.
     * Afterwards: `sudo apt-get update`, and `sudo apt-get install oracle-java8-installer`
-        * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-8-oracle`
+        * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-11-oracle`
 
 * Download the latest release for Linux (Kam1n0-IDA-Plugin.tar.gz and Kam1n0-Server.tar.gz) from [Kam1n0-Community](https://github.com/McGill-DMaS/Kam1n0-Community/releases).
 * Extract the two tarballs (i.e. tar –xvzf Kam1n0-IDA-Plugin.tar.gz and tar –xvzf Kam1n0-Server.tar.gz)

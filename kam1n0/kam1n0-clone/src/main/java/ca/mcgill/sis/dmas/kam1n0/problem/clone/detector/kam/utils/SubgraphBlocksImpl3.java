@@ -341,12 +341,16 @@ public class SubgraphBlocksImpl3 implements Serializable {
 		// System.out.println();
 		// }
 		HashMap<Long, Double> hashMap = new HashMap<>();
+		HashMap<Long, Double> hashMap_src = new HashMap<>();
 		picks.stream().flatMap(g -> g.stream()).forEach(lk -> hashMap.compute(lk.tar.blockId,
 				(k, v) -> v == null ? lk.score * lk.tar.codesSize : Math.max(lk.score * lk.tar.codesSize, v)));
+		picks.stream().flatMap(g -> g.stream()).forEach(lk -> hashMap_src.compute(lk.src.blockId,
+				(k, v) -> v == null ? lk.score * lk.src.codesSize : Math.max(lk.score * lk.src.codesSize, v)));
 		// entry.similarity = picks.stream().mapToDouble(g -> g.score).sum() * 1.0 /
 		// (Math.abs(funcLength));
-		double sum = hashMap.values().stream().mapToDouble(v -> v).sum() * 2;
-		entry.similarity = sum / (Math.abs(funcLength) + Math.abs(entry.codeSize));
+		double sum = hashMap.values().stream().mapToDouble(v -> v).sum() ;
+		double sum_src = hashMap_src.values().stream().mapToDouble(v -> v).sum() ;
+		entry.similarity = (sum+sum_src) / (Math.abs(funcLength) + Math.abs(entry.codeSize));
 		return entry;
 	}
 

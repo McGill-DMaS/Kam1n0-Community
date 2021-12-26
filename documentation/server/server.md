@@ -29,6 +29,16 @@
       * [Text diff view](#text-diff-view-1)
     * [Search with a binary file](#search-with-a-binary-file-1)
 
+  * [Executable classification](#executable-classification)
+    * [Create an application for classification](#create-an-application-for-classification)
+    * [Index files of each software class](#index-files-of-each-software-class)
+    * [Train and cluster](#train-and-cluster)
+    * [Classify target files](#classify-target-files)
+    * [Browse classification results](#browse-classification-results)
+    * [The summary of classification](#the-summary-of-classification)
+    * [Classification details](#classification-details)
+
+
 ## Configure and start engine
 After you start Kam1n0 workbench, you will see a control panel. In this step, you need to set the appropriate values for all properties. If you installed kam1n0 on a system boot disk, you need to run the workbench as administrator to edit the properties. The main property to edit is kam1n0.data.path. If you use kam1n0 server in Windows operating systems, the kam1n0.ida.home will be automatically recognized; If you use kam1n0 server in Linux, you need to correctly set the value of kam1n0.ida.home. Then you can start the engine.
 
@@ -257,3 +267,61 @@ You can edit the name of the result file by clicking its name.
 
 You can see the result by clicking `OPEN`.
 
+## Executable classification
+
+### Create an application for classification
+
+First, you need to create an executable classification application.
+
+![](images/execlsappcreate1.png)
+
+A software classes should be given. They should be separated by commas. The classes can also be loaded from a text file also in this format.
+
+![](images/execlsappcreate2.png)
+
+### Index files of each software class
+
+Then, you need to index the files that belong to each software class. Do not check Train or Cluster before you index the files for the last class since the training and clustering will begin from scratch after you index all the files and the previous training and clustering are wasted.
+
+![](images/indxeachcls.png)
+
+### Train and cluster
+
+After you index all the files for each class or when you index all the files for the last class, you can check the "Train Asm2vec" and cluster boxes. In the former case, no file should be chosen since all the files have already been indexed. The clustering algorithm needs to be done after training Asm2vec. If you check both of them, the order will be correct. You can also do it in two different runs.
+
+![](images/trainandcluster.png)
+
+### Browse clusters
+
+After clustering, you can examine the clusters of each class and the composition of each cluster.
+
+![](images/cluster.png)
+
+The popularity of each class of a cluster can also be viewed.
+
+![](images/popularity.png)
+
+### Classify target files
+
+Choose the files that you want to classify. You need to set the similarity threshold to consider two assembly functions are clone to each other.
+
+![](images/classify.png)
+
+### Browse classification results
+
+After the classification is complete, you can browse the result by opening the corresponding `.kam` file.
+
+![](images/browseclsresult.png)
+
+#### The summary of classification
+
+The confidence the target file belongs to each class is shown. The percentage of functions in each cluster which find clones in the target file is also given.
+
+![](images/clssum.png)
+
+#### Classification details
+
+By clicking `CLASSIFICATION DETAILS`, you can see an address bar on the left which displays the assembly functions that belong to a cluster. By clicking a function, the functions in a cluster that are clones of the clicked function will be shown together with their executable names and cluster names.
+
+
+![](images/clsdetails.png)

@@ -268,12 +268,43 @@ public class ArchitectureRepresentationMC68 {
 		ar.addOperation("sats", "", ".b", ".d", ".l", ".p", ".s", ".w", ".x");
 		ar.addOperation("bra", "", ".b", ".d", ".l", ".p", ".s", ".w", ".x");
 		ar.addOperation("s", "", ".b", ".d", ".l", ".p", ".", ".w", ".x");
+		ar.addOperation("sne");
 
 		// branching
-		ar.addJmpOperation("bsr");
+		ar.addJmpOperation("BCC", ".w", ".s");
+		ar.addJmpOperation("BCS", ".w", ".s");
+		ar.addJmpOperation("BEQ", ".w", ".s");
+		ar.addJmpOperation("BGE", ".w", ".s");
+		ar.addJmpOperation("BGT", ".w", ".s");
+		ar.addJmpOperation("BHCC", ".w", ".s");
+		ar.addJmpOperation("BHCS", ".w", ".s");
+		ar.addJmpOperation("BHI", ".w", ".s");
+		ar.addJmpOperation("BHS", ".w", ".s");
+		ar.addJmpOperation("BIH", ".w", ".s");
+		ar.addJmpOperation("BIL", ".w", ".s");
+		ar.addJmpOperation("BLE", ".w", ".s");
+		ar.addJmpOperation("BLO", ".w", ".s");
+		ar.addJmpOperation("BLS", ".w", ".s");
+		ar.addJmpOperation("BLT", ".w", ".s");
+		ar.addJmpOperation("BMC", ".w", ".s");
+		ar.addJmpOperation("BMI", ".w", ".s");
+		ar.addJmpOperation("BMS", ".w", ".s");
+		ar.addJmpOperation("BNE", ".w", ".s");
+		ar.addJmpOperation("BPL", ".w", ".s");
+		ar.addJmpOperation("BRCLR", ".w", ".s");
+		ar.addJmpOperation("BRN", ".w", ".s");
+		ar.addJmpOperation("BRSET", ".w", ".s");
+		ar.addJmpOperation("BSR", ".w", ".s");
+		ar.addJmpOperation("DBNE");
+
+		
+		
+		ar.addJmpOperation("dbf");
+		ar.addJmpOperation("st");
+		
+		
 		ar.addJmpOperation("call", "m");
 		ar.addJmpOperation("b", "", ".", ".d", ".l", ".p", ".s", ".w", ".x");
-		ar.addJmpOperation("bcc");
 		ar.addJmpOperation("fbcc");
 		ar.addJmpOperation("fb", "", ".b", ".d", ".l", ".p", ".s", ".w", ".x");
 		ar.addJmpOperation("db", "", ".b", ".d", ".l", ".p", ".s", ".w", ".x");

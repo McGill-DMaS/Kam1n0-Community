@@ -16,7 +16,6 @@
 package ca.mcgill.sis.dmas.kam1n0.problem.clone.detector.kam.index;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -41,11 +40,13 @@ public class LshAdaptiveBucketIndexRam extends LshAdaptiveBucketIndexAbstract {
 
 	@Override
 	public boolean clearHid(long rid, String primaryKey, String secondaryKey) {
-		TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
-		if (clMap == null)
-			return false;
-		clMap.put(secondaryKey, new HashSet<>());
-		return true;
+		synchronized (data) {
+			TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
+			if (clMap == null)
+				return false;
+			clMap.put(secondaryKey, new HashSet<>());
+			return true;
+		}
 	}
 
 	@Override
@@ -59,33 +60,37 @@ public class LshAdaptiveBucketIndexRam extends LshAdaptiveBucketIndexAbstract {
 
 	@Override
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, int newDepth, Long hid) {
-		TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
-		if (clMap == null) {
-			clMap = new TreeMap<>();
-			data.put(rid, primaryKey, clMap);
+		synchronized (data) {
+			TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
+			if (clMap == null) {
+				clMap = new TreeMap<>();
+				data.put(rid, primaryKey, clMap);
+			}
+			clMap.compute(secondaryKey, (k, v) -> {
+				if (v == null)
+					v = new HashSet<>();
+				v.add(hid);
+				return v;
+			});
+			return true;
 		}
-		clMap.compute(secondaryKey, (k, v) -> {
-			if (v == null)
-				v = new HashSet<>();
-			v.add(hid);
-			return v;
-		});
-		return true;
 	}
 
 	@Override
 	public boolean putHid(long rid, String primaryKey, String secondaryKey, HashSet<Long> hids) {
-		TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
-		if (clMap == null) {
-			clMap = new TreeMap<>();
-			data.put(rid, primaryKey, clMap);
+		synchronized (data) {
+			TreeMap<String, HashSet<Long>> clMap = data.get(rid, primaryKey);
+			if (clMap == null) {
+				clMap = new TreeMap<>();
+				data.put(rid, primaryKey, clMap);
+			}
+			HashSet<Long> oldHids = clMap.get(secondaryKey);
+			if (oldHids == null)
+				clMap.put(secondaryKey, hids);
+			else
+				oldHids.addAll(hids);
+			return true;
 		}
-		HashSet<Long> oldHids = clMap.get(secondaryKey);
-		if (oldHids == null)
-			clMap.put(secondaryKey, hids);
-		else
-			oldHids.addAll(hids);
-		return true;
 	}
 
 	@Override

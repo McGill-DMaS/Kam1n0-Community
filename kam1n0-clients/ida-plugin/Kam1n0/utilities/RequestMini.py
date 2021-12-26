@@ -62,7 +62,7 @@ def resolve_url(url):
                 resolved.pop()
         elif segment not in ('./', '.'):
             resolved.append(segment)
-    resolved = [part for part in resolved if part is not '/']
+    resolved = [part for part in resolved if not part == '/']
     parts[2] = ''.join(resolved)
     return urlunsplit(parts)
 
@@ -169,6 +169,9 @@ class Request:
         self.opener = opener
 
     def _do_get(self, url, params=None):
+    
+        if self.opener is None:
+            self.validate_and_install_if_needed()
         try:
             request = url
             if params is not None:

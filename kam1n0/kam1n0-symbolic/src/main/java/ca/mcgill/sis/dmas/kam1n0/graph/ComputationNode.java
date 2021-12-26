@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.org.apache.bcel.internal.generic.I2F;
 
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.kam1n0.graph.ComputationGraph.NodeType;

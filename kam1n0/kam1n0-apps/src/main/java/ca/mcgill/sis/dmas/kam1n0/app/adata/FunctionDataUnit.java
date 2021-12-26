@@ -16,9 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.adata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ca.mcgill.sis.dmas.io.collection.heap.Ranker;
@@ -39,6 +37,20 @@ public class FunctionDataUnit implements Serializable {
 	public String startAddress;
 	public int blockSize;
 	public SrcFunction srcFunc;
+	public boolean functionInDatabase;
+
+
+	class BlockComparator implements Comparator<BlockDataUnit>
+	{
+		// Used for sorting in ascending order of
+		// roll number
+		public int compare(BlockDataUnit a, BlockDataUnit b)
+		{
+			int res = a.name.compareTo(b.name);
+			return res;
+		}
+	}
+
 
 	public ArrayList<BlockDataUnit> nodes = new ArrayList<>();
 	public ArrayList<Link> links = new ArrayList<>();
@@ -71,6 +83,7 @@ public class FunctionDataUnit implements Serializable {
 		data.functionName = this.functionName;
 		data.startAddress = this.startAddress;
 		data.blockSize = this.blockSize;
+		data.functionInDatabase = this.functionInDatabase;
 		return data;
 	}
 
@@ -94,25 +107,15 @@ public class FunctionDataUnit implements Serializable {
 
 	}
 
-	public FunctionDataUnit(String binaryName, String binaryId, String functionName, String functionId,
-			String startAddress) {
-		this.binaryName = binaryName;
-		this.binaryId = binaryId;
-		this.functionName = functionName;
-		this.functionId = functionId;
-		this.startAddress = startAddress;
-		this.blockSize = 0;
-	}
-
 	public FunctionDataUnit(Function function) {
-		this(function, false);
+		this(function, false, false);
 	}
 
-	public FunctionDataUnit(Function function, boolean metaOnly) {
-		this(function, null, metaOnly);
+	public FunctionDataUnit(Function function, boolean metaOnly, boolean functionInDatabase) {
+		this(function, null, metaOnly, functionInDatabase);
 	}
 
-	public FunctionDataUnit(Function function, AsmLineNormalizer normalizer, boolean metaOnly) {
+	public FunctionDataUnit(Function function, AsmLineNormalizer normalizer, boolean metaOnly, boolean functionInDatabase) {
 
 		HashSet<Long> validBlkIds = new HashSet<>();
 
@@ -139,6 +142,7 @@ public class FunctionDataUnit implements Serializable {
 				validBlkIds.add(block.blockId);
 				node.appAttr = block.fillWebAttr();
 			}
+			Collections.sort(nodes,new BlockComparator());
 
 			for (Block block : function) {
 				for (long target : block.callingBlocks) {
@@ -155,6 +159,7 @@ public class FunctionDataUnit implements Serializable {
 		this.startAddress = Long.toString(function.startingAddress);
 		this.blockSize = (int) function.numBlocks;
 		this.codeSize = (int) function.codeSize;
+		this.functionInDatabase = functionInDatabase;
 	}
 
 }

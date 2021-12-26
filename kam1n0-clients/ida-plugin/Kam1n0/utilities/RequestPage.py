@@ -4,6 +4,7 @@ import sys
 import json
 from threading import Thread
 from subprocess import Popen, PIPE
+from urllib.parse import urlparse
 
 
 def get_python_path():
@@ -106,7 +107,7 @@ class ClientHandler(object):
         # global_manager.VisitAllCookies(CookieVisitor())
         if self.session is not None and len(self.session.strip()) > 0:
             cookie = cef.Cookie()
-            cookie.SetDomain('')
+            # cookie.SetDomain('FALSE')
             cookie.SetName('JSESSIONID')
             cookie.SetValue(self.session)
             cookie.SetPath('/')
@@ -181,25 +182,30 @@ def create_form_process(request_url, request_method='get', request_param=None,
               stdin=PIPE,
               stdout=PIPE,
               stderr=PIPE,
-              bufsize=1
+              bufsize=0
               )
 
     p.stdin.write(json.dumps(param).encode('utf-8'))
     p.stdin.close()
+    # out, err = p.communicate()
+    # print('ou',out)
+    # print('er',err)
+    # print('reading')
     for line in iter(p.stdout.readline, b''):
         lr = line.rstrip()
-        if len(lr) > 0:
+        if len(lr) > 0 and queue:
             queue.put(lr)
     p.stdout.close()
 
 
 def test():
-    create_form_process(request_url='http://127.0.0.1:8571/userHome',
+    create_form_process(request_url='http://127.0.0.1:8571/',
                         request_method='get',
-                        request_param=None,
-                        external_data=None,
+                        # request_param={'test':'test'},
+                        # external_data={'test':'test'},
                         session='2694D98ED7F4CD02E6332CE1292FA6F5')
 
 
 if __name__ == '__main__':
     parse()
+    # test()

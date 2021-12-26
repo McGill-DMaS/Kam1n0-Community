@@ -501,6 +501,8 @@
          height: container.outerHeight() + 'px'
       });
 
+      replacementContainer.css("line-height", "14px");
+
       if (this.$options.resize) {
         replacementContainer.css('resize',this.$options.resize);
       }

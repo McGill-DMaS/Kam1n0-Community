@@ -398,16 +398,90 @@
     <operation identifier="s">
       <suffixGroup>s_g</suffixGroup>
     </operation>
+    <operation identifier="sne"/>
   </operations>
   <operationJmps>
-    <operation identifier="bsr"/>
+    <operation identifier="BCC">
+      <suffixGroup>BCC_g</suffixGroup>
+    </operation>
+    <operation identifier="BCS">
+      <suffixGroup>BCS_g</suffixGroup>
+    </operation>
+    <operation identifier="BEQ">
+      <suffixGroup>BEQ_g</suffixGroup>
+    </operation>
+    <operation identifier="BGE">
+      <suffixGroup>BGE_g</suffixGroup>
+    </operation>
+    <operation identifier="BGT">
+      <suffixGroup>BGT_g</suffixGroup>
+    </operation>
+    <operation identifier="BHCC">
+      <suffixGroup>BHCC_g</suffixGroup>
+    </operation>
+    <operation identifier="BHCS">
+      <suffixGroup>BHCS_g</suffixGroup>
+    </operation>
+    <operation identifier="BHI">
+      <suffixGroup>BHI_g</suffixGroup>
+    </operation>
+    <operation identifier="BHS">
+      <suffixGroup>BHS_g</suffixGroup>
+    </operation>
+    <operation identifier="BIH">
+      <suffixGroup>BIH_g</suffixGroup>
+    </operation>
+    <operation identifier="BIL">
+      <suffixGroup>BIL_g</suffixGroup>
+    </operation>
+    <operation identifier="BLE">
+      <suffixGroup>BLE_g</suffixGroup>
+    </operation>
+    <operation identifier="BLO">
+      <suffixGroup>BLO_g</suffixGroup>
+    </operation>
+    <operation identifier="BLS">
+      <suffixGroup>BLS_g</suffixGroup>
+    </operation>
+    <operation identifier="BLT">
+      <suffixGroup>BLT_g</suffixGroup>
+    </operation>
+    <operation identifier="BMC">
+      <suffixGroup>BMC_g</suffixGroup>
+    </operation>
+    <operation identifier="BMI">
+      <suffixGroup>BMI_g</suffixGroup>
+    </operation>
+    <operation identifier="BMS">
+      <suffixGroup>BMS_g</suffixGroup>
+    </operation>
+    <operation identifier="BNE">
+      <suffixGroup>BNE_g</suffixGroup>
+    </operation>
+    <operation identifier="BPL">
+      <suffixGroup>BPL_g</suffixGroup>
+    </operation>
+    <operation identifier="BRCLR">
+      <suffixGroup>BRCLR_g</suffixGroup>
+    </operation>
+    <operation identifier="BRN">
+      <suffixGroup>BRN_g</suffixGroup>
+    </operation>
+    <operation identifier="BRSET">
+      <suffixGroup>BRSET_g</suffixGroup>
+    </operation>
+    <operation identifier="BSR">
+      <suffixGroup>BSR_g</suffixGroup>
+    </operation>
+    <operation identifier="DBNE"/>
+    <operation identifier="dbf"/>
+    <operation identifier="st"/>
     <operation identifier="call">
       <suffixGroup>call_g</suffixGroup>
     </operation>
     <operation identifier="b">
       <suffixGroup>b_g</suffixGroup>
     </operation>
-    <operation identifier="bcc"/>
     <operation identifier="fbcc"/>
     <operation identifier="fb">
       <suffixGroup>fb_g</suffixGroup>
@@ -2180,6 +2254,102 @@
       <suffix>.</suffix>
       <suffix>.w</suffix>
       <suffix>.x</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BCC_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BCS_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BEQ_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BGE_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BGT_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BHCC_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BHCS_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BHI_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BHS_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BIH_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BIL_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BLE_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BLO_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BLS_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BLT_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BMC_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BMI_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BMS_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BNE_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BPL_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BRCLR_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BRN_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BRSET_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
+    </suffixGroup>
+    <suffixGroup identifier="BSR_g">
+      <suffix>.w</suffix>
+      <suffix>.s</suffix>
     </suffixGroup>
     <suffixGroup identifier="call_g">
       <suffix>m</suffix>

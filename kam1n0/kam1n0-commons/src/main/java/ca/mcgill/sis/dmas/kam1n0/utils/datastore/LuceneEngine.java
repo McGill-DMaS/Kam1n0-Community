@@ -86,7 +86,7 @@ public class LuceneEngine {
 		if (query.trim().length() < 1)
 			return result;
 		Query q = new QueryParser("content", analyzer).parse(QueryParser.escape(query));
-		TopScoreDocCollector collector = TopScoreDocCollector.create(topK);
+		TopScoreDocCollector collector = TopScoreDocCollector.create(topK,topK);
 		searcher.search(q, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		for (int i = 0; i < hits.length; ++i) {
