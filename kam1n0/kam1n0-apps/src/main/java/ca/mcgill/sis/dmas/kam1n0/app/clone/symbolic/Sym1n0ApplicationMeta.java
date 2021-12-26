@@ -94,8 +94,12 @@ public class Sym1n0ApplicationMeta extends ApplicationMeta {
 	 */
 	public FunctionDataUnit getFunction(long appId, long fid) {
 		Function func = this.platform.getFunction(appId, fid);
-		func = this.fillAll(appId, func);
-		return new FunctionDataUnit(func, false);
+
+		if (func != null) {
+			func = this.fillAll(appId, func);
+			return new FunctionDataUnit(func, false, true);
+		}
+		return null;
 	}
 
 	public Function fillAll(long appId, Function func) {

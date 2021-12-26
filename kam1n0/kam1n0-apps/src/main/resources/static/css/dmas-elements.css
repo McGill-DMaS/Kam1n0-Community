@@ -25,6 +25,10 @@
 	width: 250px;
 }
 
+.disabled {
+	color: darkgrey !important;
+}
+
 /* text diff */
 td.diff-line-content {
 	padding-left: 20px;
@@ -60,7 +64,6 @@ td.diff-line-num {
 	text-align: right;
 	border: solid #eee;
 	border-width: 0 1px 0 0;
-	cursor: pointer;
 	border-left-width: 1px;
 	padding-left: 10px;
 	padding-right: 10px;
@@ -68,6 +71,11 @@ td.diff-line-num {
 
 td.diff-line-num.selected {
 	background-color: rgba(255, 165, 0, 0.1);
+}
+
+td.diff-line-num.highlighted {
+	background-color: orange;
+	color:white;
 }
 
 td.diff-line-num.empty.selected {
@@ -120,7 +128,6 @@ span.commenter {
 	color: #fff;
 	text-align: center;
 	text-indent: 0;
-	cursor: pointer;
 	background-color: orange;
 	border-radius: 3px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -161,6 +168,7 @@ div.cmbox-posterior {
 div.cmbox-regular {
 	    background-color: white;
 	    border-left: solid 2px gray;
+	    white-space: pre;
 }
 
 div.cmbox-repeatable {
@@ -211,4 +219,30 @@ span.delete {
 
 li.dropdown{
 	list-style-type: none;
+}
+
+/* regular/repeatable comments in text view*/
+.diff-line-content .cmrow{
+	display: inline-block;
+	flex-grow: 1;
+	margin-right: -10px;
+	margin-left: 10px;
+}
+
+.diff-line-content{
+	display: flex;
+}
+
+.diff-line-content .cmrow td{
+	display: block
+}
+
+.cp-addr{
+	width:60px;
+	padding:0;
+	    line-height: 8pt;
+}
+
+.pointerCursor {
+	cursor: pointer;
 }

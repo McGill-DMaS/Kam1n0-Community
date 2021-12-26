@@ -8,6 +8,18 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>kam1n0-resources</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<release>${java.version}</release>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.fusesource.jansi</groupId>

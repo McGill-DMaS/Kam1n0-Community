@@ -17,26 +17,26 @@ package ca.mcgill.sis.dmas.kam1n0.utils.datastore;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.*;
 
+import com.codahale.metrics.Gauge;
 import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.db.WindowsFailedSnapshotTracker;
+import org.apache.cassandra.metrics.CassandraMetricsRegistry;
 import org.apache.cassandra.service.CassandraDaemon;
-import org.apache.cassandra.thrift.Cassandra;
 import org.apache.spark.SparkConf;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TTransportException;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +54,17 @@ import ca.mcgill.sis.dmas.io.collection.Switch;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
 import ca.mcgill.sis.dmas.res.KamResourceLoader;
 
-import com.datastax.driver.core.*;
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.datastax.spark.connector.cql.SessionProxy;
 
 public class CassandraInstance {
-
 	private Logger logger = LoggerFactory.getLogger(CassandraInstance.class);
 
 	public static final int DEFAULT_PORT = 9042;
 	public static final int DEFAULT_STORAGE_PORT = 7000;
+
+	public static final int maxWaitForNewCompactionTasksToStartInMs = 5000;
+	public static final int compactionStatusPollingIntervalInMs = 1000;
 
 	public int port = DEFAULT_PORT;
 	public int port_storage = DEFAULT_STORAGE_PORT;
@@ -74,9 +75,6 @@ public class CassandraInstance {
 
 	public void setSparkInstance(SparkInstance spark) {
 		this.spark = spark;
-		this.doWithCluster(this.spark.getConf(), cluster -> {
-			cluster.getConfiguration().getPoolingOptions().setMaxQueueSize(2048);
-		});
 	}
 
 	private boolean inMem = false;
@@ -85,37 +83,47 @@ public class CassandraInstance {
 		return this.inMem;
 	}
 
+	public boolean isEmbedded() {
+		return this.isEmbedded;
+	}
+
 	public List<Tuple2<String, String>> getSparkConfiguration() {
-		return Arrays.asList(new Tuple2<String, String>("spark.cassandra.connection.host", host),
-				new Tuple2<String, String>("spark.cassandra.connection.port", Integer.toString(port)),
-				new Tuple2<String, String>("spark.cassandra.auth.username", "cassandra"),
-				new Tuple2<String, String>("spark.cassandra.auth.password", "cassandra"));
+		return Arrays.asList(new Tuple2<>("spark.cassandra.connection.host", host),
+				new Tuple2<>("spark.cassandra.connection.port", Integer.toString(port)),
+				new Tuple2<>("spark.cassandra.auth.username", "cassandra"),
+				new Tuple2<>("spark.cassandra.auth.password", "cassandra"));
+	}
+
+	public CqlSessionBuilder getSessionBuilder(){
+		return CqlSession.builder().addContactPoint(new InetSocketAddress(host, port));
 	}
 
 	private final ExecutorService service = Executors.newSingleThreadExecutor(
 			new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EmbeddedCassandra-%d").build());
 	private CassandraDaemon cassandra = null;
-	private File dataDir = null;
 	private boolean isEmbedded = true;
 
 	public static CassandraInstance createEmbeddedInstance(String clusterName, int port, int port_storage,
 			boolean temporary, boolean inMemory) {
+		CassandraInstance instance;
 		if (inMemory) {
-			CassandraInstance instance = new CassandraInstance();
-			return instance;
+			instance = new CassandraInstance();
+		} else {
+			instance = new CassandraInstance(port, port_storage, clusterName, temporary);
+			instance.isEmbedded = true;
 		}
-		CassandraInstance instance = new CassandraInstance(port, port_storage, clusterName, temporary);
-		instance.isEmbedded = true;
 		return instance;
 	}
 
+
 	public static CassandraInstance createEmbeddedInstance(String clusterName, boolean temporary, boolean inMemory) {
+		CassandraInstance instance;
 		if (inMemory) {
-			CassandraInstance instance = new CassandraInstance();
-			return instance;
+			instance = new CassandraInstance();
+		} else {
+			instance = new CassandraInstance(DEFAULT_PORT, DEFAULT_STORAGE_PORT, clusterName, temporary);
+			instance.isEmbedded = true;
 		}
-		CassandraInstance instance = new CassandraInstance(DEFAULT_PORT, DEFAULT_STORAGE_PORT, clusterName, temporary);
-		instance.isEmbedded = true;
 		return instance;
 	}
 
@@ -144,6 +152,7 @@ public class CassandraInstance {
 		this.clusterName = clusterName;
 		this.port = port;
 		this.port_storage = port_storage;
+		File dataDir = null;
 		if (!temporary) {
 			dataDir = new File(DmasApplication.applyDataContext("Database"));
 			if (!dataDir.exists()) {
@@ -153,6 +162,7 @@ public class CassandraInstance {
 			dataDir = DmasApplication.createTmpFolder("TmpDatabase" + StringResources.timeString());
 		}
 		try {
+			logger.info("Cassandra version: {}", CassandraDaemon.class.getPackage().getImplementationVersion());
 			java.net.URL templateUrl = CassandraInstance.class.getClassLoader().getResource("cassandra-template.yaml");
 			Preconditions.checkNotNull(templateUrl, "Cassandra config template is null");
 			String baseFile = Resources.toString(templateUrl, Charset.defaultCharset());
@@ -167,9 +177,9 @@ public class CassandraInstance {
 
 			logger.info("Cassandra config file: " + configFile.getPath());
 			System.setProperty("cassandra.storagedir", dataDir.getPath());
-			System.setProperty("hadoop.home.dir", new File(KamResourceLoader.jPath + "/hadoop/").getAbsolutePath());
+			File f = new File(KamResourceLoader.jPath + "/hadoop/");
+			System.setProperty("hadoop.home.dir", f.getAbsolutePath());
 			System.setProperty("cassandra.config", "file:" + configFile.getPath());
-			System.setProperty("cassandra.jmx.local.port", "7199");
 			System.setProperty("cassandra.jmx.local.port", "7199");
 			System.setProperty("CASSANDRA_HOME", KamResourceLoader.jPath);
 
@@ -178,89 +188,63 @@ public class CassandraInstance {
 			triggerDir.mkdir();
 			System.setProperty("cassandra.triggers_dir", triggerDir.getAbsolutePath());
 
-			// need to change the path of snapshot. (original value does not work with
-			// embedded instance on windows)
-			Field toDeleteFileField = WindowsFailedSnapshotTracker.class.getField("TODELETEFILE");
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			boolean origin = modifiersField.isAccessible();
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(toDeleteFileField, toDeleteFileField.getModifiers() & ~Modifier.FINAL);
-			toDeleteFileField.set(null, java.nio.file.Files.createTempFile("kam1n0-cassandra-tmp", ".ToDeleteFiles")
-					.toFile().getAbsolutePath());
-			modifiersField.setInt(toDeleteFileField, toDeleteFileField.getModifiers() & Modifier.FINAL);
-			modifiersField.setAccessible(origin);
-
 		} catch (Exception e) {
 			logger.error("Failed to initialize the deamon. ", e);
 		}
 	}
 
-	public Cassandra.Client getClient() throws TTransportException {
-		TTransport tr = new TSocket(host, port);
-		TProtocol proto = new TBinaryProtocol(tr);
-		Cassandra.Client client = new Cassandra.Client(proto);
-		tr.open();
-		return client;
-	}
 
-	public void doWithCluster(SparkConf conf, DoWithObj<Cluster> func) {
-		doWithSession(conf, session -> {
-			func.doWith(session.getCluster());
-		});
-	}
-
-	public <K> K doWithClusterWithReturn(SparkConf conf, DoWithObjHasReturn<Cluster, K> func) {
-		return doWithSessionWithReturn(conf, session -> {
-			return func.doWith(session.getCluster());
-		});
-	}
-
-	public void doWithSession(SparkConf conf, DoWithObj<Session> func) {
-		try (Session session = SessionProxy.wrap( //
+	public void doWithSession(SparkConf conf, DoWithObj<CqlSession> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction(
 				CassandraConnector //
 						.apply(conf) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";} )) {
 			func.doWith(session);
 		}
 	}
 
-	public void doWithSession(DoWithObj<Session> func) {
-		try (Session session = SessionProxy.wrap( //
+	public void doWithSession(DoWithObj<CqlSession> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(spark.getConf()) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			func.doWith(session);
 		}
 	}
 
-	public <K> K doWithSessionWithReturn(SparkConf conf, DoWithObjHasReturn<Session, K> func) {
-		try (Session session = SessionProxy.wrap( //
+	public <K> K doWithSessionWithReturn(SparkConf conf, DoWithObjHasReturn<CqlSession, K> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(conf) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			return func.doWith(session);
 		}
 	}
 
-	public <K> K doWithSessionWithReturn(DoWithObjHasReturn<Session, K> func) {
-		try (Session session = SessionProxy.wrap( //
+	public <K> K doWithSessionWithReturn(DoWithObjHasReturn<CqlSession, K> func) {
+		try (CqlSession session = SessionProxy.wrapWithCloseAction( //
 				CassandraConnector //
 						.apply(spark.getConf()) //
-						.openSession())) {
+						.openSession(),v1 -> {return "";})) {
 			return func.doWith(session);
 		}
 	}
+
 
 	public boolean checkColumnFamilies(SparkConf conf, String dbName, String... clmFamilyNames) {
 		final Switch swt = new Switch(false);
-		doWithCluster(conf, cluster -> {
-			KeyspaceMetadata keysapce = cluster.getMetadata().getKeyspace(dbName);
-			if (keysapce == null) {
+		doWithSession(conf, session -> {
+			KeyspaceMetadata keyspace;
+
+			if (session.getMetadata().getKeyspace(dbName).isPresent()){
+				keyspace = session.getMetadata().getKeyspace(dbName).get();
+			} else {
 				swt.value = false;
 				return;
 			}
+
 			for (String name : clmFamilyNames) {
-				if (keysapce.getTable(name) == null) {
+				if (keyspace.getTable(name).isEmpty()) {
 					swt.value = false;
 					return;
 				}
@@ -270,30 +254,83 @@ public class CassandraInstance {
 		return swt.value;
 	}
 
+	/**
+	 * Polls cassandra metrics until there are no more pending compaction tasks. Also, it logs the list of tables with
+	 * pending/running compaction tasks everytime that list changes (i.e when one or more tasks are completed or
+	 * added). This is only for an embedded Cassandra. In memory or on a distributed cluster, this returns immediately.
+	 */
+	public void waitForCompactionTasksCompletion() {
+		if (isEmbedded) {
+			@SuppressWarnings("unchecked")
+			Gauge<Map<String, Map<String, Integer>>> gauge =
+					CassandraMetricsRegistry.Metrics.getGauges().get("org.apache.cassandra.metrics.Compaction.PendingTasksByTableName");
+
+			if (gauge != null) {
+				Map<String, Map<String, Integer>> remainingTasks = gauge.getValue();
+				Map<String, Map<String, Integer>> previousTasks = new HashMap<>();
+
+				int remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartInMs;
+				if ( remainingTasks.isEmpty() ) {
+					logger.info("Waiting at most {} seconds for potential compaction tasks to be triggered",
+							maxWaitForNewCompactionTasksToStartInMs / 1000.0);
+				}
+
+				while (!remainingTasks.isEmpty() || remainingGracePeriodAfterLastCompaction > 0) {
+
+					if (!remainingTasks.equals(previousTasks)) {
+						previousTasks.clear();
+						if ( !remainingTasks.isEmpty() ) {
+							logger.info("Waiting for compaction tasks to finish on following tables:");
+							for (Map.Entry<String, Map<String, Integer>> keyspaceTasks : remainingTasks.entrySet()) {
+								for (Map.Entry<String, Integer> tableTasks : keyspaceTasks.getValue().entrySet()) {
+									String fullTableName = keyspaceTasks.getKey() + "." + tableTasks.getKey();
+									logger.info("    {}: {}", fullTableName, tableTasks.getValue());
+								}
+								previousTasks.put(keyspaceTasks.getKey(), new HashMap<>(keyspaceTasks.getValue()));
+							}
+						} else {
+							logger.info("Compaction tasks completed. Now waiting at most {} seconds for additional compaction tasks to be triggered",
+									maxWaitForNewCompactionTasksToStartInMs / 1000.0);
+							remainingGracePeriodAfterLastCompaction = maxWaitForNewCompactionTasksToStartInMs;
+						}
+					} else if (remainingTasks.isEmpty()) {
+						remainingGracePeriodAfterLastCompaction -= compactionStatusPollingIntervalInMs;
+					}
+
+					try {
+						Thread.sleep(compactionStatusPollingIntervalInMs);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+					remainingTasks = gauge.getValue();
+				}
+
+				logger.info("Done with database compaction.");
+			}
+		}
+	}
+
 	public void init() {
 		if (inMem)
 			return;
 		if (isEmbedded) {
 			logger.info("Starting embedded cassandra instance...");
-			Future<Object> future = service.submit(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					try {
-						DatabaseDescriptor.daemonInitialization();
-						boolean runManaged = false;
-						cassandra = new CassandraDaemon(runManaged);
-						cassandra.init(null);
-					} catch (IOException e) {
-						logger.error("Error initializing embedded cassandra", e);
-						throw e;
-					}
-					try {
-						cassandra.start();
-					} catch (Exception e) {
-						logger.error("Error initializing embedded cassandra", e);
-					}
-					return null;
+			Future<Object> future = service.submit(() -> {
+				try {
+					DatabaseDescriptor.daemonInitialization();
+					boolean runManaged = false;
+					cassandra = new CassandraDaemon(runManaged);
+					cassandra.init(null);
+				} catch (IOException e) {
+					logger.error("Error initializing embedded cassandra", e);
+					throw e;
 				}
+				try {
+					cassandra.start();
+				} catch (Exception e) {
+					logger.error("Error initializing embedded cassandra", e);
+				}
+				return null;
 			});
 
 			try {
@@ -305,33 +342,32 @@ public class CassandraInstance {
 		} else {
 			logger.info("Testing remote cassandra connection");
 			try {
-				Cluster cluster = Cluster.builder().addContactPoints(host).withPort(port).build();
-				Session session = cluster.connect();
+				CqlSession session = CqlSession.builder().addContactPoint(new InetSocketAddress(host, port)).build();
 				session.execute("SELECT now() FROM system.local;");
 				session.close();
-				cluster.close();
 				logger.info("Connection health checked.");
 			} catch (Exception e) {
 				logger.error("Failed to connect to the specified cassandra cluster.", e);
 			}
 		}
+
 	}
 
 	public boolean close() {
-		if (inMem)
-			return true;
+		boolean closed = true;
 		if (isEmbedded) {
 			try {
-				service.shutdownNow();
+				logger.info("Shutting down embedded Cassandra.");
+				this.waitForCompactionTasksCompletion();
+				service.shutdown();
 				cassandra.stop();
 				cassandra.deactivate();
-				return true;
 			} catch (Exception e) {
 				logger.error("error closing database", e);
+				closed = false;
 			}
-			return false;
 		}
-		return true;
+		return closed;
 	}
 
 	public static void main(String[] args) {
@@ -343,5 +379,7 @@ public class CassandraInstance {
 
 		instance.close();
 	}
+
+
 
 }

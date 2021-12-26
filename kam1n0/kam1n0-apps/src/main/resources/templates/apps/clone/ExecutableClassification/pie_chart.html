@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script  th:inline="javascript">
+
+
+window.onload = function() {
+
+var points = []
+var dist = [[${dist}]];
+for (const [k, v] of Object.entries(dist)) {
+points.push({y:v,label:k});
+}
+//console.log(points);
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title: {
+		text: "Class Popularity of Cluster: " + [[${clusterName}]]
+	},
+
+
+
+	data: [{
+		type: "pie",
+		startAngle: 0,
+		yValueFormatString: "##0.00\"%\"",
+		indexLabel: "{label} {y}",
+		dataPoints: points
+	}]
+});
+chart.render();
+
+}
+
+</script>
+</head>
+<body>
+
+
+
+
+
+<div id="chartContainer" style="height: 370px; max-width: 920px; margin: 0px auto;"></div>
+
+<script src="/js/canvasjs.min.js"></script>
+<a
+class="btn btn-danger pull-right btn-sm href-file-del"
+style="width: 100px"
+onclick="myFunction()"
+>Delete</a>
+
+
+</body>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+
+var url_cluster_delete = /*[[${info.calculatePrefix() + 'delCluster/'}]]*/'/';
+var cluname = /*[[${clusterName}]]*/;
+function myFunction() {
+	  window.location.replace(url_cluster_delete + "?id=" + cluname);
+}
+
+	/*]]>*/
+	</script>
+</html>

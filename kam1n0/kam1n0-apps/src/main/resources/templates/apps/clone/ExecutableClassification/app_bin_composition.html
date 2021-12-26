@@ -1,0 +1,844 @@
+<div class="row" style="height: 100%">
+	<script src="/plugin/jqueryKnob/jquery.knob.js"></script>
+	<script src="/plugin/highlight/jquery.highlight-5.js"></script>
+	<style>
+.form-group {
+	margin-top: 0px;
+}
+
+.slider.slider-horizontal {
+	width: 80%
+}
+
+.tooltip-inner {
+	min-width: 10px;
+}
+
+.slider {
+	background: transparent;
+}
+
+.entry {
+	color: white;
+	cursor: crosshair;
+	width: 100%;
+}
+
+.fnspan {
+	font-size: 12pt;
+	padding-left: 15px
+}
+
+.node circle {
+	stroke: #fff;
+}
+
+.link {
+	stroke: #333;
+}
+
+text {
+	font-size: 4pt;
+	color: gray;
+}
+
+.fa {
+	color: gray;
+}
+
+.selected {
+	border: solid red 2px;
+}
+
+.dropdown-menu>li>.row {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.highlight {
+	background-color: yellow;
+	color:black;
+}
+</style>
+	<div class="col-lg-12" style="height: 100%; margin-top: 10px;">
+		<div class="card card-nav-tabs" style="height: 100%; bottom: 20px;">
+			<div class="header header-danger"
+				style="height: auto; border-bottom: none; padding-left: 10px; margin-top: -10px">
+				<div class="nav-tabs-navigation">
+					<div class="nav-tabs-wrapper">
+						<ul class="nav nav-tabs" data-tabs="tabs">
+							<li class="active"><a href="#summary" data-toggle="tab"
+								aria-expanded="false"> <i class="material-icons">chat</i>
+									Summary
+									<div class="ripple-container"></div></a></li>
+							<li class=""><a href="#classificationdetails" data-toggle="tab"
+								aria-expanded="true"> <i class="material-icons">build</i>
+									Classification Details
+									<div class="ripple-container"></div></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="content" style="height: 100%">
+				<div class="tab-content"
+					style="width: 100%; position: absolute; top: 80px; bottom: 0px; overflow: scroll;">
+					<div class="tab-pane active" id="summary">
+						<div class="row"
+							style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
+							<div class="col-xs-12"
+								style="height: 100%; min-height: 100px; overflow-y: auto; overflow-x: hidden">
+								<div style="text-align: left;"><h3>Classification Result:</h3></div>
+								<div id='ClassDistribution' style="text-align: left;"></div>
+							</div>
+						</div>
+
+
+						<div class="row"
+							style="width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;">
+							<div class="col-xs-12"
+								style="height: 100%; min-height: 100px; overflow-y: auto; overflow-x: hidden">
+								<div style="text-align: left;"><h3>Cluster Level Clone Analysis Result:</h3></div>
+								<div id='clusterSummaryList' style="text-align: left;"></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-pane" id="classificationdetails" style="height: 100%">
+						<div class="row" style="height: 100%">
+							<div class="col-xs-2 address-panel" style="height: 100%">
+
+
+								<div class="dropdown" style="position: absolute; top: -16px;">
+									<a href="#" class="btn btn-info btn-xs dropdown-toggle"
+										data-toggle="dropdown"> Filters <b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu" id="classificationaddress-bar-filter-menu"
+										style='width: 300px;'>
+										<li><div class="row">
+												<h6>Address Range</h6>
+											</div></li>
+										<li>
+											<div class="row">
+												<select id="classificationaddrSelector" class="form-control"
+													style="width: 100%; margin-top: 0; position: relative; top: 0;">
+												</select>
+											</div>
+										</li>
+										<li><div class="row">
+												<h6>Zoom Level</h6>
+											</div></li>
+										<li>
+											<div class="row">
+												<input type="text" id="classificationinfoListScaler" data-slider-min="3"
+													data-slider-max="20" data-slider-step="1"
+													data-slider-value="20" class="slider form-control"
+													data-slider-id="classificationyellow" style='width: 100%' />
+											</div>
+										</li>
+										<li><div class="row">
+												<h6>Filter Functions</h6>
+											</div></li>
+										<li>
+											<div class="row">
+
+												<div class="input-group">
+
+													<div class="form-group">
+
+														<input id="classificationinput-keyword" class="form-control" type="text"
+															placeholder="Keyword"
+															style="width: 200px; margin-top: 0; position: relative; top: 0;">
+														</input>
+														<button class="btn btn-sm btn-info" id="classificationbutton-keyword">
+															<i class="material-icons" style="color: white">search</i>
+														</button>
+													</div>
+												</div>
+
+
+												<p class="small text-info">WARNING: using this filter
+													will disable address pagination and it may be slow to
+													search through all the functions.</p>
+											</div>
+										</li>
+										<li><div class="row">
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
+										</div></li>
+										<li><div class="row">
+												<h6>Filter Clusters</h6>
+											</div></li>
+										<li>
+											<div class="row" id='filters-clusters-div'></div>
+										</li>
+										<!--
+										<li><div class="row">
+												<h6>Filter Binaries</h6>
+											</div></li>
+										<li>
+											<div class="row" id='filters-binaries-div'></div>
+										</li>
+										-->
+
+									</ul>
+								</div>
+
+								<div
+									style="padding-top: 30px; height: 100%; padding-bottom: 15px;">
+									<div id="classificationinfoContainer"
+										style="overflow-y: auto; overflow-x: scroll; background-color: lightgrey; height: 100%;">
+									</div>
+								</div>
+
+							</div>
+
+							<div class="col-xs-7" style="height: 100%">
+								<div id="classificationcloneList" style="overflow: auto; height: 100%"></div>
+							</div>
+
+							<div class="col-xs-3" style="height: 100%;">
+								<div id="classificationchart0"
+									style="height: 100%; margin-left: 10px; overflow: hidden"></div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var QueryString = function() {
+			// This function is anonymous, is executed immediately
+			var query_string = {};
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				// If first entry with this name
+				if (typeof query_string[pair[0]] === "undefined") {
+					query_string[pair[0]] = pair[1];
+					// If second entry with this name
+				} else if (typeof query_string[pair[0]] === "string") {
+					var arr = [ query_string[pair[0]], pair[1] ];
+					query_string[pair[0]] = arr;
+					// If third or later entry with this name
+				} else {
+					query_string[pair[0]].push(pair[1]);
+				}
+			}
+			return query_string;
+		}();
+
+		var currentSelectedData = undefined;
+		var fileName = undefined;
+		var colorF = undefined;
+		var fin_result = undefined;
+
+		function formatString(val) {
+
+			if (val == undefined)
+				return val;
+
+			var residue = 0;
+			var rel = val;
+			var result = "";
+
+			do {
+				residue = rel % 1000;
+				rel = Math.floor(rel / 1000);
+				if (rel != 0) {
+					if (result.length != 0)
+						result = "," + result;
+					if (residue < 10)
+						result = "00" + residue.toString() + result;
+					else if (residue < 100)
+						result = "0" + residue.toString() + result;
+					else
+						result = residue.toString() + result;
+				} else {
+					break;
+				}
+			} while (true);
+			if (result.length != 0)
+				result = residue.toString() + "," + result;
+			else
+				result = residue.toString();
+			return result;
+		}
+
+
+
+
+		function createclassificationInfoAtAddress(info) {
+
+			var max_id = undefined;
+			var max_score = 0;
+			$.each(info.mxs, function(a,b){
+				if(b>max_score) {max_score = b; max_id = a};
+			})
+
+			var $div = $("<div>", {
+				'class' : 'entry'
+			});
+			var $divp = $("<div>", {
+				'class' : 'prg'
+			});
+			$divp.css({
+				"background-color" : colorF(max_id)
+			});
+			$divp.css({
+				width : (max_score * 100) + "%"
+			});
+			$divp.css({
+				overflow : "none"
+			});
+			var $span = $("<span>", {
+				'class' : 'fnspan'
+			});
+			$span.append(info.fn);
+			$divp.append($span);
+			$div.prop('title', info.add + " " + info.fn);
+			$div.append($divp);
+
+			$div
+					.click(function() {
+						$('div.entry').removeClass('selected');
+						$div.addClass('selected');
+
+						$
+								.ajax({
+									type : 'POST',
+									dataType : 'json',
+									url : "BinaryComposition",
+									data : {
+										clusterCloneDetail : info.fid,
+										fileName : fileName
+									},
+									success : function(data) {
+										if (data.error) {
+											dmas_alert(data.error);
+											return;
+										}
+										data = data.object;
+										fin_result = data;
+
+										$('#classificationchart0').empty();
+										$listParent = $('#classificationcloneList').parent();
+										$listParent.empty();
+										$listParent
+												.append($(
+														'<div>',
+														{
+															'id' : 'classificationcloneList',
+															'style' : 'overflow:auto; height:100%;'
+														}))
+
+										var views = [ "func_diff_flow",
+												"func_diff_text",
+												"func_diff_text_group" ];
+										var viewIcons = [
+												"<i class='fa fa-fw  fa-object-ungroup lnk'></i>",
+												"<i class='fa fa-fw  fa-clone lnk'></i>",
+												"<i class='fa fa-fw  fa-object-group lnk'></i>" ];
+										var viewNames = [
+												"Flow Graph View",
+												"Textual Difference View",
+												"Clone Group View" ];
+
+										CreateClusterCloneList($('#classificationcloneList'), data,
+												function(arg) {
+													console.log("arg:"+arg);
+												}, viewIcons, views, viewNames,
+												/*[[${!model.applicationType.toString().equals("/sym1n0-clone")}]]*/true, true, 0);
+
+										CreateCloneGraph(data.cloneGraph,
+												"classificationchart0", function(svg, arg) {
+													console.log(arg);
+													$('#classificationcloneList').jstree(
+															'select_node',
+															arg.index);
+													$('#classificationcloneList').jstree(
+															'open_node',
+															arg.index);
+												});
+
+									}
+								}); // end ajax
+
+					});
+
+			arr = [$div, max_score];
+			return arr;
+		}
+
+
+
+
+
+
+		var cluster_not_selected = new Set();
+
+
+        function createClusterFilters(lis) {
+          var $holder = $('#filters-clusters-div');
+          onchanged = function(){
+            $holder.find("input").each(function(){
+               var input = $(this);
+               if(!input.context.checked){
+                 cluster_not_selected.add(input.val());
+               }else{
+                 cluster_not_selected.delete(input.val());
+               }
+                console.log("cluster_not_selected:",cluster_not_selected);
+            });
+             $('#classificationaddrSelector').change();
+          }
+
+          var cluster_set = new Set();
+            console.log(lis);
+
+          $.each(lis, function(k,v) {
+            console.log(v.mxs);
+            $.each(v.mxs, function(k2,v2) {
+                 //console.log("add:"+k2);
+                 cluster_set.add(k2);
+            })
+          })
+           for (let k of cluster_set) {
+               //console.log("set: "+k);
+               var clr = colorF(k) ;
+               $div = $('<div>', {
+                 'class' : 'togglebutton'
+               }).append(
+                   $('<label>', {
+                     'style' : 'color:grey'
+                   }).append($('<input>', {
+                     'class' : "checkbox",
+                     'type' : "checkbox",
+                     'checked' : 'true',
+                     'value' : k
+                   }).change(onchanged)).append(
+                       document.createTextNode(k)))
+                       .css('background-color', clr+ "20")
+                       .css('border-left', 'solid 3px '+clr)
+               $holder.append($div);
+           }
+          $.material.init();
+        }
+
+
+
+		function createClassDistributionCompositionBox(data) {
+			var $summaryList = $('#ClassDistribution');
+			var smy = data.classSummary;
+
+
+			var $divCont = $("<div>", {
+				'class' : 'col-lg-3 col-xs-6'
+			});
+			var $divBox = $("<div>", {
+				'class' : 'card card'
+			});
+			var $divHeader = $("<div>", {
+				'class' : 'card-header',
+				'data-background-color' : 'blue'
+			});
+			var $divInner = $("<div>", {
+				'class' : 'card-content'
+			});
+			//var $divFooter = $("<div>", {'class':'card-footer'});
+
+			$divBox.append($divHeader);
+			$divBox.append($divInner);
+			//$divBox.append($divFooter);
+
+			$divInner
+					.append(
+							$("<p>").append(QueryString['fileName']).addClass(
+									"pull-left"))
+					.append(
+							$("<i>")
+									.append("help")
+									.addClass(
+											"material-icons")
+									.addClass("pull-right")
+									.prop(
+											'title',
+											'Number of Functions in the Cluster Matched Target Functions / Total Number of Functions in the Cluster\nPercentage: Number of Functions in the Cluster Matched Target Functions/Total Number of Functions in the Cluster.')
+									.css('cursor',
+											'default')
+									.css("color", "gray"));
+
+
+			$summaryList.empty();
+
+			//var results = [];
+			//var keys = [];
+			//$.each(smy.classCloneCounterSource,
+			//				function(k, v) {
+			//				    results.push(v/smy.classSize[k])
+			//					keys.push(data.classIdToNameMap[k]);
+			//				});
+
+			var classDistribution = new Map();
+			var classSize = new Map();
+
+
+			$.each(data.classNameToIdMap,
+							function(k, v) {
+							    classDistribution.set(k,0);
+							    classSize.set(k,0.00001);
+							});
+
+			var clusterSize = new Map();
+
+			$.each(smy.clusterSize,
+							function(k, v) {
+							clusterSize.set(k,v);
+							});
+
+
+			var clusterToClass = new Map();
+			$.each(smy.clusterToClass,
+							function(k, v) {
+							    clusterToClass.set(k,v);
+							    classSize.set(v,classSize.get(v)+clusterSize.get(k));
+							});
+
+			$.each(smy.clusterCloneCounter,
+							function(k, v) {
+							    classDistribution.set(clusterToClass.get(k), classDistribution.get(clusterToClass.get(k))+1);
+							});
+
+			total = 0.00001;
+
+
+			//classDistribution.forEach(function(num,cls)  {
+			//    classDistribution.set(cls, num/classSize.get(cls))
+            //});
+
+			///classDistribution.forEach(function(num,cls)  {
+            ///    total = total + num;
+            ///});
+
+
+			var classAVGCluster = new Map();
+			$.each(smy.classAVGCluster,
+							function(k, v) {
+							    classAVGCluster.set(k,v);
+							});
+
+
+			classDistribution.forEach(function(num,cls) {
+
+				if(classAVGCluster.get(cls)==0){
+			        $divHeader.append($("<p>").append(cls+": 0"+"%"));
+				}else{
+			    $divHeader.append($("<p>").append(cls+": "+formatString(Math.min((num/classAVGCluster.get(cls)*100),100).toFixed(2))+"%"));
+				}
+            });
+
+
+			//for (i = 0; i < results.length; i += 1) {
+			//    $divHeader.append($("<p>").append(keys[i]+": "+formatString((results[i]/total*100).toFixed(2))+"%"));
+			//}
+
+
+
+			$divCont.append($divBox);
+			$summaryList.append($divCont);
+		}
+
+
+
+		function createClusterCloneListCompositionBox(data) {
+			var $summaryList = $('#clusterSummaryList');
+			var smy = data.classSummary;
+			$summaryList.empty();
+			$
+					.each(
+							smy.clusterCloneCounter,
+							function(k, v) {
+								var $divCont = $("<div>", {
+									'class' : 'col-lg-3 col-xs-6'
+								});
+								var $divBox = $("<div>", {
+									'class' : 'card card'
+								});
+								var $divHeader = $("<div>", {
+									'class' : 'card-header',
+									'data-background-color' : 'green'
+								});
+								var $divInner = $("<div>", {
+									'class' : 'card-content'
+								});
+								//var $divFooter = $("<div>", {'class':'card-footer'});
+
+								$divBox.append($divHeader);
+								$divBox.append($divInner);
+								//$divBox.append($divFooter);
+
+								$divHeader
+										.append($("<h3>")
+												.append(
+														formatString(v)
+																+ "/"
+																+ formatString(smy.clusterSize[k]))
+												.addClass("pull-right"))
+								$divInner
+										.append(
+												$("<p>").append(k).addClass(
+														"pull-left"))
+										.append(
+												$("<i>")
+														.append("help")
+														.addClass(
+																"material-icons")
+														.addClass("pull-right")
+														.prop(
+																'title',
+																'Number of Functions in the Cluster Matched Target Functions / Total Number of Functions in the Cluster\nPercentage: Number of Functions in the Cluster Matched Target Functions/Total Number of Functions in the Cluster')
+														.css('cursor',
+																'default')
+														.css("color", "gray"));
+
+								var $divHolder = $("<div>", {
+									'class' : 'knobholder'
+								});
+								var $input = $("<input>", {
+									'class' : 'knob'
+								});
+								$input.prop("type", "text");
+								$input.prop("value", v);
+								$input.prop("val", v);
+								$input.data("max", smy.clusterSize[k]);
+								$input.prop("max", smy.clusterSize[k]);
+								$input.data("min", 0);
+								$input.prop('readonly', true);
+								$divHolder.append($input);
+								$divHeader.append($divHolder);
+								$divCont.append($divBox);
+								$summaryList.append($divCont);
+							});
+			$(".knob").knob({
+				'width' : 80,
+				'height' : 80,
+				'fgColor' : "white",
+				'bgColor' : "transparent",
+				'readonly' : 'true',
+				'tooltip' : 'true'
+			});
+			$('.knob').each(function(a, b) {
+				b.value = Math.round(b.val * 100 / b.max) + "%";
+				b.disabled = true;
+				b.readonly = true;
+				$(b).css("color", "white");
+				$(b).css("font-size", "15px");
+			});
+		}
+
+
+
+		$(function() {
+			$(".slider").slider();
+
+			$('#classificationaddress-bar-filter-menu').click(function(e) {
+				e.stopPropagation();
+			});
+
+			var classificationscaler = $("#classificationinfoListScaler").slider();
+			function classificationscale(){
+				var height = classificationscaler.val();
+				$('.entry').height(height);
+				if (height > 15) {
+					$('.fnspan').css({
+						'font-size' : height
+					});
+					$('.fnspan').css({
+						'color' : 'white'
+					});
+				} else {
+					$('.fnspan').css({
+						'color' : 'transparent'
+					});
+				}
+			}
+			classificationscaler.on('slide', function(slideEvt) {
+				classificationscale();
+			});
+
+
+
+			var bin_comp = /*[[${model.calculatePrefix() + 'BinaryComposition'}]]*/"";
+			var func_diff_text = /*[[${model.calculatePrefix() + 'func_diff_text'}]]*/"";
+			var func_diff_flow = /*[[${model.calculatePrefix() + 'func_diff_flow'}]]*/"";
+			var func_diff_text_group = /*[[${model.calculatePrefix() + 'func_diff_text_group'}]]*/"";
+
+			fileName = QueryString['fileName'];
+			colorF = d3.scale.category10();
+			console.log(fileName);
+			if (fileName) {
+
+				window
+						.setTimeout(
+								function() {
+
+									$
+											.ajax({
+												url : bin_comp,
+												type : 'POST',
+												data : $.param({
+													addRange : "a",
+													fileName : fileName
+												}),
+												success : function(data) {
+													if (data.error) {
+														dmas_alert(data.error);
+														return;
+													}
+													var ls = data.object;
+													var $clusterselector = $('#classificationaddrSelector');
+													for (var i = 0; i < ls.length; i++) {
+														var $clusteroption = $('<option>');
+														$clusteroption.text(ls[i]);
+														$clusterselector.append($clusteroption);
+													}
+
+
+													$clusterselector
+															.change(function() {
+
+																$(
+																		"#classificationaddrSelector option:selected")
+																		.each(
+																				function() {
+																					var str = $(
+																							this)
+																							.text();
+																					$
+																							.ajax({
+																								url : bin_comp,
+																								type : 'post',
+																								data :  $.param({
+																									cluster_list : "a",
+																									addrStart : str,
+																									fileName : fileName,
+																									not_selected: Array.from(cluster_not_selected),
+																									functionKeyword: $('#classificationinput-keyword').val().trim(),
+																									clonesKeyword: ''
+																								}),
+																								success : function(
+																										data) {
+																									if (data.error) {
+																										dmas_alert(data.error);
+																										return;
+																									}
+																									var struct = data.object;
+																									var parent = $('#classificationinfoContainer');
+																									parent
+																											.empty();
+																									struct.list
+																											.sort(function(
+																													a,
+																													b) {
+																												return parseInt(a.add)
+																														- parseInt(b.add);
+																											});
+																									for ( var info in struct.list) {
+																										var item = createclassificationInfoAtAddress(struct.list[info]);
+																										var score = item[1];
+																										if($('#btn_unmatch').prop("checked")==true)
+																										{
+																											if(score != 0)
+																											{
+																												parent
+																													.append(item[0]);
+																											}
+																										}
+																										else
+																										{
+																											parent
+																												.append(item[0]);
+																										}
+																									}
+
+																									if($('#classificationinput-keyword').val().trim().length > 0){
+																										parent.highlight($('#classificationinput-keyword').val().trim());
+																									}
+																								}
+																							});
+																				});
+															});
+
+													$clusterselector.change();
+
+												}
+											});
+
+
+								}, 2000);
+
+				$.ajax({
+					url : bin_comp,
+					type : 'POST',
+					data : {
+                        comb : "",
+						summary : "",
+						fileName : fileName
+					},
+					success : function(data) {
+						if (data.error) {
+							dmas_alert(data.error);
+						}
+
+						createClassDistributionCompositionBox(data.object);
+						createClusterCloneListCompositionBox(data.object);
+                        createClusterFilters(data.object2.list);
+						return;
+					}
+				});
+
+
+
+
+
+
+
+			}
+
+			var classificationinKeyWordSearch = false;
+			$('#classificationbutton-keyword').click(function(){
+				if(classificationinKeyWordSearch){
+					$('#classificationbutton-keyword > i').text('search');
+					$('#classificationaddrSelector').prop('disabled', false);
+					$('#classificationinput-keyword').val('');
+					$('#classificationaddrSelector').change();
+					classificationinKeyWordSearch = false;
+				}else{
+					$('#classificationbutton-keyword > i').text('cancel');
+					$('#classificationaddrSelector').prop('disabled', true);
+					classificationinKeyWordSearch = true;
+					$('#classificationaddrSelector').change();
+				}
+			});
+
+			$('#btn_unmatch').click(function(){
+				$('#classificationaddrSelector').change();
+			});
+
+
+		});
+
+		/*]]>*/
+	</script>
+</div>
+
+
+
+

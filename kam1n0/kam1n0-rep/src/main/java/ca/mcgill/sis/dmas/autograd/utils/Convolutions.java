@@ -52,7 +52,7 @@ public class Convolutions {
 			int channel = output.shape()[5];
 			output = output.permute(0, 5, 3, 4, 1, 2);
 			INDArray im = Nd4j.create(new int[] { batch, channel, in_h, in_w }, 'c');
-			Convolution.col2im(output, im, stride_h, stride_w, p_h, p_w, in_h, in_w);
+			Convolution.col2im(output, im, stride_h, stride_w, p_h, p_w, in_h, in_w,1,1);
 			return im;
 		}
 

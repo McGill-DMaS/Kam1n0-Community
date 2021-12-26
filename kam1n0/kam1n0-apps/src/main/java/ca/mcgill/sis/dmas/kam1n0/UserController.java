@@ -1,12 +1,8 @@
 package ca.mcgill.sis.dmas.kam1n0;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import ca.mcgill.sis.dmas.env.Environment;
 import ca.mcgill.sis.dmas.kam1n0.AppPlatform.Prioritize;
-import ca.mcgill.sis.dmas.kam1n0.app.ApplicationInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.scheduling.LocalDmasJobInfo;
 import ca.mcgill.sis.dmas.kam1n0.app.user.UserFactory;
 import ca.mcgill.sis.dmas.kam1n0.app.user.UserInfo;
@@ -146,8 +140,8 @@ public class UserController {
 		File userFolder = new File(Environment.getUserFolder(findUserName()));
 		List<FileInfo> files = Arrays.stream(userFolder.listFiles()).filter(file->file.isFile()).map(FileInfo::readFileInfo)
 				.filter(info -> info != null).collect(Collectors.toList());
+
+		Collections.sort(files, Collections.reverseOrder());
 		return new ModelAndFragment(FRAG_FILES, files);
-
 	}
-
 }

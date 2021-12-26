@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
-		<nd4j.version>0.9.1</nd4j.version>
+		<nd4j.version>1.0.0-beta</nd4j.version>
 		<nd4j.backend>nd4j-native-platform</nd4j.backend>
 	</properties>
 	<build>
@@ -18,10 +18,9 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
+					<version>${maven.compiler.plugin.version}</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
+						<release>${java.version}</release>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -40,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.nd4j</groupId>
-			<artifactId>${nd4j.backend}</artifactId>
+			<artifactId>nd4j-api</artifactId>
 			<version>${nd4j.version}</version>
 		</dependency>
 	</dependencies>

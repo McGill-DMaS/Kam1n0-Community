@@ -94,10 +94,10 @@ public class AsmObjectFactory {
 				.filter(func -> old_binary == null || !old_binary.functionIds.contains(func.functionId))
 				.forEach(func -> {
 					obj_functions.put(rid, func, false);
-					func.blocks.parallelStream().forEach(blk -> {
+					func.blocks.forEach(blk -> {
 						obj_blocks.put(rid, blk, false);
 					});
-					func.comments.parallelStream().forEach(cmm -> {
+					func.comments.forEach(cmm -> {
 						obj_comments.put(rid, cmm, false);
 					});
 					if(stage!=null) {

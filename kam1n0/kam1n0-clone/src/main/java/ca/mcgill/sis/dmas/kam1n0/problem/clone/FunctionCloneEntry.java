@@ -40,7 +40,6 @@ public class FunctionCloneEntry implements Serializable, Comparable<FunctionClon
 	public double similarity = Double.MAX_VALUE;
 	public long codeSize;
 	public long startingEA;
-	public long numBbs = 0;
 
 	/**
 	 * This field is only used for detectors that support subgraph detection
@@ -56,7 +55,6 @@ public class FunctionCloneEntry implements Serializable, Comparable<FunctionClon
 		this.functionId = function.functionId;
 		this.functionName = function.functionName;
 		this.similarity = similarity;
-		this.numBbs = function.numBlocks;
 		this.codeSize = function.codeSize;
 	}
 
@@ -66,7 +64,6 @@ public class FunctionCloneEntry implements Serializable, Comparable<FunctionClon
 		this.functionId = aBlk.functionId;
 		this.functionName = aBlk.functionName;
 		this.similarity = similarity;
-		this.numBbs = aBlk.peerSize;
 		this.codeSize = aBlk.funcCodeSize;
 	}
 

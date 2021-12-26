@@ -17,20 +17,22 @@ package ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra;
 
 import java.util.List;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.*;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
+import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.*;
+
 
 import ca.mcgill.sis.dmas.env.StringResources;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.index.BucketHierarchy;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.index.BucketHierarchyIndex;
 import ca.mcgill.sis.dmas.kam1n0.utils.datastore.CassandraInstance;
 import ca.mcgill.sis.dmas.kam1n0.utils.executor.SparkInstance;
+
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 
 public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 
@@ -126,7 +128,8 @@ public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 
 			cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
 				for (String child : childBkts) {
-					session.execute(STATE_INSERT, parentBkt, child);
+					PreparedStatement preparedStatement = session.prepare(STATE_INSERT);
+					session.execute(preparedStatement.bind(parentBkt,child));
 				}
 			});
 			return true;
@@ -141,11 +144,11 @@ public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 		try {
 			cassandraInstance.doWithSession(sparkInstance.getConf(), session -> {
 				PreparedStatement statement = session.prepare(STATE_INSERT);
-				BatchStatement batch = new BatchStatement();
+				BatchStatementBuilder builder = BatchStatement.builder(DefaultBatchType.LOGGED);
 				for (String child : relt.children) {
-					batch.add(statement.bind(relt.parent, child));
+					builder.addStatement(statement.bind(relt.parent, child));
 				}
-				session.execute(batch);
+				session.execute(builder.build());
 			});
 			return true;
 		} catch (Exception e) {
@@ -254,10 +257,11 @@ public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 		return cassandraInstance.doWithSessionWithReturn(this.sparkInstance.getConf(), session -> {
 			Row row = session
 					.execute(QueryBuilder
-							.select(_BUCKETDEPT_DEPTH)//
-							.from(databaseName, _BUCKETDEPT)//
-							.where(QueryBuilder//
-									.eq(_BUCKETDEPT_PATH, fullLength)))//
+							.selectFrom(databaseName, _BUCKETDEPT)
+							.column(_BUCKETDEPT_DEPTH)//
+							.whereColumn("_BUCKETDEPT_PATH")//
+							.isEqualTo(literal(fullLength)).build()
+					)//
 					.one();
 			if (row == null)
 				return null;
@@ -271,8 +275,8 @@ public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 		cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.execute(QueryBuilder
 					.insertInto(databaseName, _BUCKETDEPT)//
-					.value(_BUCKETDEPT_PATH, fullPath)//
-					.value(_BUCKETDEPT_DEPTH, depth));
+					.value(_BUCKETDEPT_PATH, literal(fullPath))//
+					.value(_BUCKETDEPT_DEPTH, literal(depth)).build());
 		});
 		return true;
 	}
@@ -281,10 +285,9 @@ public class BucketHierarchyTrackerCassandraDB extends BucketHierarchyIndex {
 	public boolean removeDepth(String fullPath) {
 		cassandraInstance.doWithSession(this.sparkInstance.getConf(), session -> {
 			session.execute(QueryBuilder
-					.delete()//
-					.from(databaseName, _BUCKETDEPT)//
-					.where(QueryBuilder//
-							.eq(_BUCKETDEPT_PATH, fullPath)));
+					.deleteFrom(databaseName, _BUCKETDEPT)//
+					.whereColumn("_BUCKETDEPT_PATH")//
+					.isEqualTo(literal(fullPath)).build());
 		});
 		return true;
 	}

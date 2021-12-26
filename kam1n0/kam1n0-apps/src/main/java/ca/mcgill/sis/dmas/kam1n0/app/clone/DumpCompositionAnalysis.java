@@ -16,6 +16,7 @@
 package ca.mcgill.sis.dmas.kam1n0.app.clone;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,13 +61,13 @@ public class DumpCompositionAnalysis extends LocalDmasJobProcedure {
 			stage.updateMsg("Dumping {}", unit.file.getName());
 			unit.dumpAsJson(progress);
 			stage.complete();
-			progress.complete();
+			progress.complete(null);
 
 		} catch (Exception e) {
+			String errorMessage = MessageFormat.format("Failed to process the " + getJobName() + " job from " + getJobName(), e);
 			logger.error("Failed to process the " + getJobName() + " job from " + getJobName(), e);
 			progress.nextStage(this.getClass(), "Failed to complete the job : " + e.getMessage());
+			progress.complete(errorMessage);
 		}
-
 	}
-
 }

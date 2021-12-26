@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.mcgill.sis.dmas.kam1n0.utils.src.FormatMilliseconds;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class CloneSearchResources extends ApplicationResources {
 		if (res != null)
 			results.add(res);
 
-		logger.info("Taken {} ms", System.currentTimeMillis() - start);
+		logger.info("Taken {}", FormatMilliseconds.ToReadableTime(System.currentTimeMillis() - start));
 
 		FunctionCloneDataUnit callBack = new FunctionCloneDataUnit(results);
 		callBack.takenTime = System.currentTimeMillis() - start;
@@ -81,8 +82,8 @@ public class CloneSearchResources extends ApplicationResources {
 		ArrayList<FunctionCloneDetectionResultForWeb> result = detector.detectClones(appId, surrogate, threshold, topK,
 				avoidSameBinary, progress);
 
-		logger.info("Queried {} functions. Taken {} ms", surrogate.functions.size(),
-				System.currentTimeMillis() - start);
+		logger.info("Queried {} functions. Taken {}", surrogate.functions.size(),
+				FormatMilliseconds.ToReadableTime(System.currentTimeMillis() - start));
 
 		// progress.currentProgress = 1;
 

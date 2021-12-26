@@ -16,26 +16,20 @@
 package ca.mcgill.sis.dmas.kam1n0.impl.storage.ram;
 
 import java.io.Serializable;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.NotSupportedException;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.tools.ant.types.resources.StringResource;
-import org.eclipse.cdt.internal.core.dom.parser.c.CLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
 
 import ca.mcgill.sis.dmas.env.Environment;
@@ -271,7 +265,7 @@ public class ObjectFactoryRAM<T extends Serializable> extends ObjectFactoryMulti
 
 	@Override
 	public JavaRDD<T> queryMultipleBaisc(long rid, String fieldName, Collection<? extends Object> keys) {
-		return queryMultiple(rid, keys);
+		return queryMultiple(rid, fieldName, keys);
 	}
 
 	@Override

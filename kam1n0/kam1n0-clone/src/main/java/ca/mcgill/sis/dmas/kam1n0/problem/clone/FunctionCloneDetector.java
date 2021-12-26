@@ -107,6 +107,10 @@ public abstract class FunctionCloneDetector {
 		this.index(rid, mulitParts, progress);
 	}
 
+	/**
+	 * Note: may return more than topK results depending on clone detector implementation and if there are ties for the
+	 * 'topK'th position (similarity-wise).
+	 */
 	public final List<FunctionCloneEntry> detectClonesForFunc(long rid, Function function, double threadshold, int topK,
 			boolean avoidSameBinary) throws Exception {
 		return this.detectClonesForFuncToBeImpleByChildren(rid, function, threadshold, topK, avoidSameBinary);
