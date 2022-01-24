@@ -561,6 +561,7 @@ text {
                         parent.empty();
                     }
 
+					var str_startAddress = -1;
                     struct.list.sort(function(a, b) {
                         return parseInt(a.add) - parseInt(b.add);
                     });
@@ -574,6 +575,7 @@ text {
 						} else {
 							parent.append(item[0]);
 						}
+						str_startAddress = struct.list[info].add;
                     }
                     scale();
 
@@ -587,7 +589,8 @@ text {
 					// in case of not being filled up at the first page (client-side filtering)
 					var infoContainer = $('#infoContainer')[0];
 					if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
-						var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+						if (str_startAddress < 0)
+							str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
 						console.log('scroll requesting from address' + str_startAddress);
 						loadFunction(bin_comp, str_startAddress);
 					}
@@ -622,7 +625,7 @@ text {
                 $('#infoContainer').scroll(function() {
                     var infoContainer = $('#infoContainer')[0];
 					console.log([infoContainer.scrollHeight, infoContainer.scrollTop, infoContainer.clientHeight])
-                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+10) {
+                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+1) {
                         var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
                         console.log('scroll requesting from address' + str_startAddress);
                         loadFunction(bin_comp, str_startAddress);
