@@ -5,7 +5,7 @@
 ![image](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square&maxAge=86400)
 ![GitHub (pre-)release](https://img.shields.io/badge/kam1n0%20release-v2.0.0-orange.svg?style=flat-square&maxAge=86400)
 ![Github All Releases](https://img.shields.io/github/downloads/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/total.svg?style=flat-square&&maxAge=86400)
-![JDK](https://img.shields.io/badge/JDK%2FJSE-8-brightgreen.svg?style=flat-square&maxAge=86400)
+![JDK](https://img.shields.io/badge/JDK%2FJSE-11-brightgreen.svg?style=flat-square&maxAge=86400)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&maxAge=86400)
 
 [![Build latest development release (Windows)](https://github.com/McGill-DMaS/Kam1n0/actions/workflows/msbuild.yml/badge.svg)](https://github.com/McGill-DMaS/Kam1n0/releases)
@@ -170,8 +170,7 @@ The current release of Kam1n0 consists of two installers: the core server and ID
 
 The Kam1n0 core engine is purely written in Java. You need the following dependencies:
 
-* [Required] The latest x64 8.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-  * Java9 and Java10 are not supported at this moment.
+* [Required] The latest x64 11.x JRE/JDK distribution from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 * [Optional] The latest version of IDA Pro with the [idapython](https://github.com/idapython/src/) plug-in installed. The Python plug-in and runtime should have already been installed with IDA Pro. Reinstall IDA Pro if necessary.
 
 Download the ```Kam1n0-Server.msi``` file from our [release page](https://github.com/McGill-DMaS/Kam1n0-Plugin-IDA-Pro/releases). Follow the instructions to install the server. You will be prompted to select an installation path. IDA Pro is optional if the server does not have to deal with any disassembling. In other words, the client side  uses the Kam1n0 plugin for IDA Pro. It is strongly suggested to have the IDA Pro installed with the Kam1n0 server. Kam1n0 server will automatically detect your IDA Pro by looking for the default application that you used to open `.i64` file.
@@ -187,11 +186,11 @@ Next, download the ```Kam1n0-IDA-Plugin.msi``` installer from our [release page]
 
 ## Setting Up Kam1n0 on Ubuntu/Debian-based systems
 
-* Ensure you have the **Oracle** version of Java 8. (Not default-jdk in apt, and not Java 8 or 9.)
+* Ensure you have the **Oracle** version of Java 11. (Not default-jdk in apt.)
     * Add Oracle's PPA and then update your package repository: `sudo add-apt-repository ppa:webupd8team/java`
         * If you encounter any errors (such as `~webupd8team not found`), if you are on a proxy, make sure you set and export your `http_proxy` and `https_proxy` environment variables, and then try again with the `-E` option on sudo. Additionally, if you are getting a 'add-apt repository command not found error, try: `sudo apt install -y software-properties-common`.
     * Afterwards: `sudo apt-get update`, and `sudo apt-get install oracle-java8-installer`
-        * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-8-oracle`
+        * Verify your Java version with `java -version`; you may need to manually set the JAVA_HOME environment variable (in `/etc/environment`), `JAVA_HOME=/usr/lib/jvm/java-11-oracle`
 
 * Download the latest release for Linux (Kam1n0-IDA-Plugin.tar.gz and Kam1n0-Server.tar.gz) from [Kam1n0-Community](https://github.com/McGill-DMaS/Kam1n0-Community/releases).
 * Extract the two tarballs (i.e. tar –xvzf Kam1n0-IDA-Plugin.tar.gz and tar –xvzf Kam1n0-Server.tar.gz)
