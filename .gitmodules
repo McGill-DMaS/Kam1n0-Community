@@ -4,7 +4,6 @@
 [submodule "kam1n0/kam1n0-apps/src/main/resources/static/material-kit"]
 	path = kam1n0/kam1n0-apps/src/main/resources/static/material-kit
 	url = https://github.com/creativetimofficial/material-kit
-
 [submodule "kam1n0/kam1n0-apps/src/main/resources/static/chartjs"]
 	path = kam1n0/kam1n0-apps/src/main/resources/static/chartjs
 	url = https://github.com/chartjs/Chart.js
