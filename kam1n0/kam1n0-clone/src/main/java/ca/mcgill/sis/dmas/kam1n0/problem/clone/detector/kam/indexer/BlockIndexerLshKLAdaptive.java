@@ -360,7 +360,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		Set<Long> sids = new HashSet<>(sbid_tblk.keys().collect());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
-				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
+		 		.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 
 		int finalJunctionNumPartitions = Math.max(sbid_tblk.getNumPartitions(), sbid_sblk.getNumPartitions());
 		JavaRDD<Tuple3<Block, Block, Double>> result = sbid_tblk

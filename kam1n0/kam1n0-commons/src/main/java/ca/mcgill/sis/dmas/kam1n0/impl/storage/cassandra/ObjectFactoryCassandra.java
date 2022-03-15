@@ -2,17 +2,12 @@ package ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra;
 
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -127,6 +122,9 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 	public String getKeyDefinition() {
 		String prefix = " PRIMARY KEY ((" + primaryKey_rid;
 
+		if (primaryKeyPartial != null)
+			prefix += ", " + primaryKeyPartial.name+"_pkp";
+
 		String user_defs = StringResources.JOINER_TOKEN_CSV_SPACE
 				.join(primaryKeys.stream().map(key -> key.name).collect(Collectors.toList()));
 		if (user_defs.trim().length() > 0)
@@ -155,6 +153,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				// setup attributes
 				List<String> attr_defs = new ArrayList<>();
 				attr_defs.add(primaryKey_rid + " bigint");
+				if (primaryKeyPartial != null && primaryKeyPartial.idxPrimaryPartialBytes > 0)
+					attr_defs.add(primaryKeyPartial.name+"_pkp int");
 				attr_defs.addAll(allAttributes.values().stream().map(tp3 -> tp3.name + " " + tp3.type)
 						.collect(Collectors.toList()));
 				String attr_defs_str = StringResources.JOINER_TOKEN_CSV_SPACE.join(attr_defs);
@@ -175,6 +175,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		// helpers for query:
 		queryConditions = new ArrayList<>();
 		queryConditions.add(primaryKey_rid + " = ?");
+		if (primaryKeyPartial != null && primaryKeyPartial.idxPrimaryPartialBytes > 0)
+			queryConditions.add(primaryKeyPartial.name + "_pkp");
 		queryConditions.addAll(primaryKeys.stream().map(info -> info.name + " = ?").collect(Collectors.toList()));
 		queryConditions.addAll(secondaryKey.stream().map(info -> info.name + " = ?").collect(Collectors.toList()));
 
@@ -218,6 +220,8 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 			for (FieldInformation info : allAttributes.values())
 				try {
 					Object val = clazz.getField(info.name).get(obj);
+					if (info.idxPrimaryPartialBytes > 0)
+						query = query.value(info.name+"_pkp", QueryBuilder.literal(getPartialKey(val, info.idxPrimaryPartialBytes)));
 
 					if (info.asByte)
 						val = ByteBuffer.wrap(DmasByteOperation.convertToBytes(val));
@@ -262,6 +266,18 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		});
 	}
 
+	private int getPartialKey(Object val, int bytes)  {
+		try {
+			if (val instanceof Long){
+				return Long.valueOf((Long)val).byteValue();
+			}
+			return DmasByteOperation.convertToBytes(val)[0];
+		} catch (IOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
 
 	private void executeAsync(CqlSession session, RegularInsert query) {
 		CompletionStage<AsyncResultSet> responseStage = session.executeAsync(query.toString());
@@ -275,10 +291,18 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 
 	private JavaRDD<T> get(long rid, String[] fields, Object... keys) {
 		String conditions = StringResources.JOINER_TOKEN_ANDC_SPACE.join(queryConditions.subList(0, keys.length + 1));
-		Object[] nkeys = new Object[keys.length + 1];
+		int offset = 1;
+		if (primaryKeyPartial != null && primaryKeyPartial.idxPrimaryPartialBytes > 0)
+			offset = 2;
+		Object[] nkeys = new Object[keys.length + offset];
 		nkeys[0] = rid;
+		if (offset == 2){
+			var val = getPartialKey(keys[0], primaryKeyPartial.idxPrimaryPartialBytes);
+			nkeys[1] = val;
+		}
+
 		for (int i = 0; i < keys.length; ++i)
-			nkeys[i + 1] = keys[i];
+			nkeys[i + offset] = keys[i];
 		CassandraTableScanJavaRDD<CassandraRow> tbl = javaFunctions(spark.getContext()).cassandraTable(name_db,
 				name_cl);
 		if (fields != null)
@@ -291,10 +315,18 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 				.join(keyMap.entrySet().stream().map(ent -> ent.getKey() + " = ?").collect(Collectors.toList()));
 		conditions = primaryKey_rid + " = ? AND " + conditions;
 		Object[] keys = keyMap.entrySet().stream().map(ent -> ent.getValue()).toArray();
-		Object[] nkeys = new Object[keys.length + 1];
+		int offset = 1;
+		if (primaryKeyPartial != null && primaryKeyPartial.idxPrimaryPartialBytes > 0)
+			offset = 2;
+		Object[] nkeys = new Object[keys.length + offset];
 		nkeys[0] = rid;
+		if (offset == 2){
+			var val = getPartialKey(keys[0], primaryKeyPartial.idxPrimaryPartialBytes);
+			nkeys[1] = val;
+		}
+
 		for (int i = 0; i < keys.length; ++i)
-			nkeys[i + 1] = keys[i];
+			nkeys[i + offset] = keys[i];
 		CassandraTableScanJavaRDD<CassandraRow> tbl = javaFunctions(spark.getContext()).cassandraTable(name_db,
 				name_cl);
 		if (fields != null)
@@ -356,39 +388,55 @@ public class ObjectFactoryCassandra<T extends Serializable> extends ObjectFactor
 		return get(rid, basicAttributes, keys);
 	}
 
-	@Override
-	public JavaRDD<T> queryMultiple(long rid, String fieldName, Collection<? extends Object> keys) {
-		List<List<Object>> partitions = new ArrayList<>();
-		partitions.add(new ArrayList<Object>());
-		int c = 0;
+	public JavaRDD<T> queryMultipleBase(long rid, String fieldName, Collection<? extends Object> keys, boolean basicOnly) {
+		logger.info("querying {} keys", keys.size());
+		HashMap<Integer, List<Object>> partitions = new HashMap<>();
 		for (Object sid : keys) {
-			if (++c % binSize == 0)
-				partitions.add(new ArrayList<Object>());
-			partitions.get(partitions.size() - 1).add(sid);
+			Integer key = 0;
+			if (primaryKeyPartial != null) {
+				key = getPartialKey(sid, primaryKeyPartial.idxPrimaryPartialBytes);
+			}
+			if (!partitions.containsKey(key))
+				partitions.put(key, new ArrayList<>());
+			partitions.get(key).add(sid);
 		}
-		List<JavaRDD<T>> sblks = partitions.parallelStream()
-				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl)
-						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
+		List<Tuple2<ByteBuffer, List<Object>>> final_entries = new ArrayList<>();
+
+		for (Map.Entry<Integer, List<Object>> e : partitions.entrySet()) {
+			int c = 0;
+			for (Object o : e.getValue()) {
+				if (c % binSize == 0)
+					final_entries.add(new Tuple2(e.getKey(), new ArrayList<>()));
+				final_entries.get(final_entries.size() - 1)._2.add(o);
+				c+=1;
+			}
+		}
+		//System.out.println(final_entries);
+
+		List<JavaRDD<T>> sblks = final_entries.parallelStream()
+				.map(par -> {
+					var res = javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl);
+					if (basicOnly)
+						res = res.select(basicAttributes);
+					var cond = primaryKey_rid + " = ? ";
+					if (primaryKeyPartial != null)
+						return res.where(primaryKey_rid + " = ? AND " + primaryKeyPartial.name + "_pkp = ? AND "+ fieldName + " in ?", rid,  par._1, par._2).map(this::map);
+					else
+						return res.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par._2).map(this::map);
+				})
 				.collect(Collectors.toList());
 		return spark.getContext().union(sblks.toArray(JavaRDD[]::new));
 	}
 
+
+	@Override
+	public JavaRDD<T> queryMultiple(long rid, String fieldName, Collection<? extends Object> keys) {
+		return this.queryMultipleBase(rid, fieldName, keys, false);
+	}
+
 	@Override
 	public JavaRDD<T> queryMultipleBaisc(long rid, String fieldName, Collection<? extends Object> keys) {
-		List<List<Object>> partitions = new ArrayList<>();
-		partitions.add(new ArrayList<>());
-		int c = 0;
-		for (Object sid : keys) {
-			if (++c % binSize == 0)
-				partitions.add(new ArrayList<>());
-			partitions.get(partitions.size() - 1).add(sid);
-		}
-
-		List<JavaRDD<T>> sblks = partitions.parallelStream()
-				.map(par -> javaFunctions(spark.getContext()).cassandraTable(name_db, name_cl).select(basicAttributes)
-						.where(primaryKey_rid + " = ? AND " + fieldName + " in ?", rid, par).map(this::map))
-				.collect(Collectors.toList());
-		return spark.getContext().union(sblks.toArray(JavaRDD[]::new));
+		return this.queryMultipleBase(rid, fieldName, keys, true);
 	}
 
 	@Override

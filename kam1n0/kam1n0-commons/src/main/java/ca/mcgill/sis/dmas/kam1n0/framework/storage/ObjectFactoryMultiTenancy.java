@@ -184,6 +184,12 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
+	public static @interface KeyedPrimaryPartial {
+		int bytes() default -1;
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
 	public static @interface AsBytes {
 	}
 
@@ -213,6 +219,14 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 			return -1;
 		else
 			return ann.index();
+	}
+
+	public static int checkPrimaryPartial(Field field) {
+		KeyedPrimaryPartial ann = field.getAnnotation(KeyedPrimaryPartial.class);
+		if (ann == null)
+			return -1;
+		else
+			return ann.bytes();
 	}
 
 	public static boolean checkAsBytes(Field field) {
@@ -257,6 +271,7 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 
 		public int idxPrimary = -1;
 		public int idxSecondary = -1;
+		public int idxPrimaryPartialBytes = -1;
 
 		@Override
 		public String toString() {
@@ -272,6 +287,7 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 			idxSecondary = checkSecondary(field);
 			asByte = checkAsBytes(field);
 			asString = checkAsString(field);
+			idxPrimaryPartialBytes = checkPrimaryPartial(field);
 			name = field.getName();
 			Class<?> fieldType = field.getType();
 			if (asByte) {
@@ -359,6 +375,7 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 	protected Map<String, FieldInformation> allAttributes = new HashMap<>();
 	protected List<FieldInformation> secondaryKey = new ArrayList<>();
 	protected List<FieldInformation> primaryKeys = null;
+	protected FieldInformation primaryKeyPartial = null;
 	protected String[] basicAttributes = null;
 	protected Set<String> collectionAttributes = null;
 	protected List<String> queryConditions = new ArrayList<>();
@@ -403,6 +420,8 @@ public abstract class ObjectFactoryMultiTenancy<T> implements Closeable, Seriali
 
 		primaryKeys = allAttributes.values().stream().filter(tp3 -> tp3.idxPrimary >= 0)
 				.sorted((i1, i2) -> Integer.compare(i1.idxPrimary, i2.idxPrimary)).collect(Collectors.toList());
+
+		primaryKeyPartial = allAttributes.values().stream().filter(tp3 -> tp3.idxPrimaryPartialBytes > 0).findAny().orElse(null);
 
 		initChild();
 	}
