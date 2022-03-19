@@ -18,6 +18,7 @@ import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture.InstructionSize;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BinarySurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.BlockSurrogate;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.FunctionSurrogate;
+import scala.Tuple2;
 
 public class DisassemblyFactoryGhidraModel {
 
@@ -28,26 +29,29 @@ public class DisassemblyFactoryGhidraModel {
 	public List<Comment> comments = new ArrayList<>();
 
 	public static class Binary {
+		public Long base = 0l;
 		public List<String> import_modules = new ArrayList<>();
-		public List<String> import_functions = new ArrayList<>();
-		public String description = "";
+		public Map<Long, List<String>> import_functions = new HashMap<>();
+		public Map<Long, String> export_functions = new HashMap<>();
+		public Map<Long, String> seg = new HashMap<>();
 		public String disassembled_at = "";
 		public int functions_count = 0;
 		public String architecture = "";
 		public String disassembler = "ghidra";
 		public String endian = "";
-		public String _id = "";
 		public String bits = "";
-		public List<String> strings = new ArrayList<>();
+		public Map<Long, String> strings = new HashMap<>();
+		public Map<Long, String> data = new HashMap<>();
 		public String compiler = "";
 		public String name;
+		public String sha256;
+		public List<Long> entry_points = new ArrayList<>();
 
 	}
 
 	public static class Func {
 		public long addr_start;
-		public String _id = "";
-		public List<String> calls;
+		public List<Long> calls;
 		public String bin_id = "";
 		public int bbs_len = 0;
 		public long addr_end;
@@ -64,11 +68,10 @@ public class DisassemblyFactoryGhidraModel {
 	public static class Block {
 		public long addr_start;
 		public String bin_id = "";
-		public String func_id = "";
-		public String _id = "";
 		public String name = "";
-		public List<String> calls = new ArrayList<>();
+		public List<Long> calls = new ArrayList<>();
 		public long addr_end;
+		public long addr_f;
 		public List<Ins> ins = new ArrayList<>();
 	}
 
@@ -77,6 +80,8 @@ public class DisassemblyFactoryGhidraModel {
 		public String mne = "";
 		public List<String> oprs = new ArrayList<>();
 		public List<String> oprs_tp = new ArrayList<>();
+		public List<Long> dr = new ArrayList<>();
+		public List<Long> cr = new ArrayList<>();
 
 		public List<String> toTokens() {
 			ArrayList<String> tokens = new ArrayList<>();
@@ -88,14 +93,13 @@ public class DisassemblyFactoryGhidraModel {
 	}
 
 	public static class Comment {
-		public String category = "";
+
+		public int category = 3;
 		public String content = "";
-		public String blk_id = "";
 		public String author = "ghidra";
-		public String bin_id = "";
 		public String created_at = "";
-		public String func_id = "";
 		public long address;
+		public long func;
 	}
 
 	public BinarySurrogate toBinarySurrogate() {
@@ -103,35 +107,33 @@ public class DisassemblyFactoryGhidraModel {
 		bin.architecture.type = ArchitectureType.valueOf(this.bin.architecture);
 		bin.architecture.size = InstructionSize.valueOf(this.bin.bits);
 		bin.architecture.endian = Endianness.valueOf(this.bin.endian);
-		bin.hash = this.bin._id.hashCode();
-		bin.md5 = this.bin._id;
+		bin.hash = this.bin.sha256.hashCode();
+		bin.md5 = this.bin.sha256;
 		bin.name = this.bin.name;
 
 		Map<Long, ArrayList<BlockSurrogate>> funcBlockMap = new HashMap<>();
 		this.blocks.stream().map(b -> {
 			BlockSurrogate bs = new BlockSurrogate();
-			bs.call = b.calls.stream().map(s -> Long.valueOf(s.hashCode()))
-					.collect(Collectors.toCollection(ArrayList::new));
+			bs.call = new ArrayList<>(b.calls);
 			bs.eea = b.addr_end;
 			bs.sea = b.addr_start;
-			bs.id = b._id.hashCode();
+			bs.id = b.addr_start;
 			bs.name = b.name;
 			bs.src = b.ins.stream().map(ins -> ins.toTokens()).collect(Collectors.toCollection(ArrayList::new));
-			return bs;
+			return new Tuple2<>(bs, b.addr_f);
 		}).forEach(b -> {
-			funcBlockMap.compute(b.id, (k, v) -> v == null ? new ArrayList<>() : v).add(b);
+			funcBlockMap.compute(b._2, (k, v) -> v == null ? new ArrayList<>() : v).add(b._1);
 		});
 
 		bin.functions = this.functions.stream().map(f -> {
 			FunctionSurrogate fs = new FunctionSurrogate();
 			fs.name = f.name;
-			fs.id = f._id.hashCode();
+			fs.id = f.addr_start;
 			fs.api = new ArrayList<>(f.api);
-			fs.call = f.calls.stream().map(c -> Long.valueOf(c.hashCode()))
-					.collect(Collectors.toCollection(ArrayList::new));
+			fs.call = new ArrayList<>(f.calls);
 			fs.sea = f.addr_start;
 			fs.see = f.addr_end;
-			fs.blocks = funcBlockMap.get(f._id);
+			fs.blocks = funcBlockMap.get(f.addr_start);
 			return fs;
 		}).collect(Collectors.toCollection(ArrayList::new));
 		return bin;
