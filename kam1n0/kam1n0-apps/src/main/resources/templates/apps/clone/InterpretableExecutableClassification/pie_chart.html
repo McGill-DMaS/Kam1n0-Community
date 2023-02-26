@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script  th:inline="javascript">
+
+
+window.onload = function() {
+
+var points = []
+var labels = []
+var data = []
+var dist = [[${dist}]];
+for (const [k, v] of Object.entries(dist)) {
+points.push({y:v,label:k});
+data.push(v);
+labels.push(k);
+}
+//console.log(points);
+bc = [];
+for(i = 0; i < data.length; i++)
+{
+r = Math.floor(Math.random()*255);
+g = Math.floor(Math.random()*255);
+b = Math.floor(Math.random()*255);
+bc.push('rgba('+r+','+g+','+b+',1)')
+}
+
+new Chart(document.getElementById("pie-chart"), {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Popularity",
+        backgroundColor:bc,
+        data: data
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Class Popularity of Cluster: " + [[${clusterName}]]
+      }
+    }
+});
+
+}
+
+</script>
+</head>
+<body>
+
+
+
+
+
+<canvas id="pie-chart" style="height: 370px; max-width: 920px; margin: 0px auto;"></canvas>
+
+<a
+class="btn btn-danger pull-right btn-sm href-file-del"
+style="width: 100px"
+onclick="myFunction()"
+>Delete</a>
+
+
+</body>
+
+
+<script src="/js/chartjs/chart.min.js"></script>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+
+var url_cluster_delete = /*[[${info.calculatePrefix() + 'delCluster/'}]]*/'/';
+var cluname = /*[[${clusterName}]]*/;
+function myFunction() {
+	  window.location.replace(url_cluster_delete + "?id=" + cluname);
+}
+
+
+
+	/*]]>*/
+	</script>
+</html>

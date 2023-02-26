@@ -36,15 +36,20 @@
         <script th:inline="javascript">
             /*<![CDATA[*/
             $(function() {
+                $('#sortOrderComboBox').change(function() {
+                    $('#jstree').jstree(true).refresh();
+                    localStorage.setItem('sortOrderComboBox', this.value);
+                });
+                if(localStorage.getItem('sortOrderComboBox')){
+                    $('#sortOrderComboBox').val(localStorage.getItem('sortOrderComboBox'));
+                }
+            });
+            $(function() {
                 var url_func = /*[[${model.calculatePrefix() + 'func_info/'}]]*/'/';
                 var url_bin = /*[[${model.calculatePrefix() + 'bin_info/'}]]*/'/';
                 var url_func_flow = /*[[${model.calculatePrefix() + 'func_flow_show/'}]]*/'/';
                 var url_func_text = /*[[${model.calculatePrefix() + 'func_text_show/'}]]*/'/';
                 var toBeDeleted;
-
-                $('#sortOrderComboBox').on('change', function () {
-                    $('#jstree').jstree(true).refresh();
-                });
 
                 $(".href-file-del").click(function (ev) {
                     if (toBeDeleted) {

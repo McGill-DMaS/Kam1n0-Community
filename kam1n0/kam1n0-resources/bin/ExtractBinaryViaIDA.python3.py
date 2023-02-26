@@ -28,14 +28,14 @@ print('start persisting...')
 
 def _iter_extra_comments(ea, start):
     end = idaapi.get_first_free_extra_cmtidx(ea, start)
-    lines = [idaapi.get_extra_cmt(ea, idx) for idx in
-             range(start, end)]
+    lines = [idaapi.get_extra_cmt(ea, idx) for idx in range(start, end)]
     lines = [line if line else '' for line in lines]
     return "\n".join(lines)
 
 def _append_comments(ea, comments, type, text):
     if text and len(text) > 0:
-        comments.append({'type':type, 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")})
+        comment = {'type':type, 'comment': text, 'offset' : str(hex(ea)).rstrip("L").upper().replace("0X", "0x")}
+        comments.append(comment)
 
 # anterior comment with offset is equal to first_segment_address will be exclude
 def get_comments(ea, first_segment_address):
@@ -164,7 +164,10 @@ for seg_ea in Segments():
 
         # comments
         function['comments'] = []
-        function['comments'].extend(get_comments(function_ea, first_segment_address))
+        comments = get_comments(function_ea, first_segment_address)
+        # get FUNCTION comment
+        _append_comments(function_ea, comments, 'repeatable', idc.get_func_cmt(function_ea, 1))
+        function['comments'].extend(comments)
 
         # basic bloc content
         for bblock in funcfc:
@@ -181,7 +184,6 @@ for seg_ea in Segments():
             tlines = []
             oprTypes = []
 
-
             s = get_bytes(bblock.start_ea, bblock.end_ea - bblock.start_ea)
             if s is not None:
                 sblock['bytes'] = "".join("{:02x}".format(c) for c in s)
@@ -189,11 +191,11 @@ for seg_ea in Segments():
                 print(sblock['name'])
 
             for head in Heads(bblock.start_ea, bblock.end_ea):
-                function['comments'].extend(get_comments(head, first_segment_address))
+                if head != function_ea: # already added by the first call done to get_comments
+                    function['comments'].extend(get_comments(head, first_segment_address))
                 tline = list()
                 oprType = list()
-                tline.append(
-                    str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
+                tline.append(str(hex(head)).rstrip("L").upper().replace("0X", "0x"))
                 mnem = idc.print_insn_mnem(head) #GetMnem(head)
                 if mnem == "":
                     continue

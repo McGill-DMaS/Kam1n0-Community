@@ -15,27 +15,13 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.framework.storage;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Iterables;
-
-import ca.mcgill.sis.dmas.env.StringResources;
-import ca.mcgill.sis.dmas.kam1n0.commons.defs.Architecture;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsBasic;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsBytes;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.AsString;
-import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.KeyedPrimary;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy.KeyedSecondary;
 
 
@@ -51,6 +37,9 @@ public class Cluster implements Serializable {
 
 	@AsString
 	public String className;
+
+	@AsString
+	public String patternID;
 
 	@AsString
 	public Set<Long> binaryIDList;
@@ -81,6 +70,7 @@ public class Cluster implements Serializable {
 	public Cluster() {
 		this.clusterName = "";
 		this.className = "";
+		this.patternID = "";
 		this.functionIDList = new HashSet<Long>();
 		this.binaryIDList = new HashSet<Long>();
 		this.classDist = new HashMap<String, Double>();

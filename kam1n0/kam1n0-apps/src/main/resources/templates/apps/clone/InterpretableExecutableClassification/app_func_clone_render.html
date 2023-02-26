@@ -1,0 +1,90 @@
+<div class="card" style="height: 100%;">
+	<style>
+.node circle {
+	stroke: #fff;
+}
+
+.link {
+	stroke: #333;
+}
+
+text {
+	font-size: 4pt;
+	color: gray;
+}
+
+.fa {
+	color: gray;
+}
+</style>
+	<div class="card-header" data-background-color="green">
+		<h4 class="title">
+			Clone Graph <small style="color: white">Double click on a
+				node to show the clone candidates.</small>
+		</h4>
+	</div>
+	<div class="card-content" style="height: 100%; padding-bottom: 50px">
+		<div class="row" style="height: 100%;">
+			<div  class="col-md-12"
+				style="background: white; padding-top: 10px; padding-bottom: 10px; height: 100%;">
+				<div id="cloneList" style="overflow: auto;  padding-left: 30px; padding-bottom: 10px; height: 100%;"></div>
+			</div>
+		</div>
+		<div id='clone-graph-box' class="fixed-box" style="bottom:80px; width:800px; right:-600px" data-right='30'>
+		<span class="pull-left vertical-text" style="margin-left:22px;margin-right: -98px;color:white;"><i class="material-icons pull-left">share</i>Clone Graph</span>
+				<div id="chart0"
+					style="height: 100%; overflow: hidden; background: white"></div>
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var fin_result;
+
+		$(function() {
+			if (window.opener) {
+				fin_result = window.opener.fin_result;
+				window.opener.close();
+			}
+
+			if (typeof fin_result == "undefined") {
+				if (sessionStorage) {
+					fin_result = JSON.parse(sessionStorage.getItem('cached'));
+				}
+			}
+			var data = fin_result;
+
+			var views = [ "func_diff_flow", "func_diff_text",
+					"func_diff_text_group" ];
+			var viewIcons = [
+					"<i class='fa fa-fw  fa-object-ungroup lnk'></i>",
+					"<i class='fa fa-fw  fa-clone lnk'></i>" ];
+			var viewNames = [ "Flow Graph View", "Textual Difference View" ];
+
+			CreateCloneList($('#cloneList'), data, function(arg) {
+				console.log(arg);
+			}, viewIcons, views, viewNames);
+
+			drawFixedBox($('#clone-graph-box'), function(){
+				CreateCloneGraph(data.cloneGraph, "chart0", function(svg, arg) {
+					console.log(arg);
+					$('#cloneList').jstree('select_node', arg.index);
+					$('#cloneList').jstree('open_node', arg.index);
+				});
+			});
+
+			if (localStorage) {
+				sessionStorage.setItem('cached', JSON.stringify(fin_result));
+			}
+
+			//when browser closed - psedocode
+			$(window).unload(function() {
+				sessionStorage.clear();
+			});
+
+		})
+
+		/*]]>*/
+	</script>
+</div>

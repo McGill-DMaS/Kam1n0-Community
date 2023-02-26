@@ -307,7 +307,10 @@ public class Batch2 {
 				"The directory that contains a list of files to analyze.", new File("."));
 
 		private final Option op_res = parser.addOption("res", OpType.File, false,
-				"The [path] and the name of the result file", new File("similarity.txt"));
+				"The [path] and the name of the result file.", new File("similarity.txt"));
+
+		private final Option op_excel = parser.addOption("excel", OpType.Boolean, false,
+				"Write a second result file in Excel (xsls) format.", false);
 
 		private final Option resumeOption = parser.addOption("resume", OpType.Boolean, false,
 				"asmclone/sym1n0 only: create/resume resumable batch process, creating/reusing DB under working folder", false);
@@ -342,6 +345,7 @@ public class Batch2 {
 				File dir = op_dir.getValue();
 				File res = op_res.getValue();
 				Model md = Model.valueOf(op_md.getValue());
+				boolean isExcelOutput = op_excel.getValue();
 
 				boolean resuming = resumeOption.getValue();
 				if ( resuming && !md.equals(Model.asmclone) && !md.equals(Model.sym1n0) ) {
@@ -357,6 +361,9 @@ public class Batch2 {
 					spark.init();
 					cassandra.setSparkInstance(spark);
 					Batch2.process(dir.getAbsolutePath(), res.getAbsolutePath(), resuming, spark, md, cassandra);
+					if (isExcelOutput) {
+						ConvertSimilarity.process(res, modifyFileExtension(res));
+					}
 				} else {
 					logger.info("No processing. Only running local cassandra server from database in current working directory.");
 
@@ -381,6 +388,13 @@ public class Batch2 {
 			return "JAR Utilities";
 		}
 
+		public static File modifyFileExtension(File file)
+		{
+			int index = file.getName().lastIndexOf(".");
+			var name = index == -1 ? file.getName() : file.getName().substring(0, index);
+			var newName = name + ".xlsx";
+			return new File(file.getParent(),  newName);
+		}
 	}
 
 	public static void main(String[] args) {
