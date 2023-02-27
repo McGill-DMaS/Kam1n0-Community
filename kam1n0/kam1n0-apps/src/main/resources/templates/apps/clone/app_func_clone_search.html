@@ -6,14 +6,14 @@
 		<div class="row" style="height: 100%;">
 			<div class="col-sm-12" style="margin-top: 80px;">
 				<div class="discription text-center"
-					style="font-size: 20pt; margin-top: 100px;" id="titleholder">Searching in
+					 style="font-size: 20pt; margin-top: 100px;" id="titleholder">Searching in
 					Progress...</div>
 				<div class="progress progress-striped middle active"
-					style="width: 80%; margin-top: 20px; height: 20px">
+					 style="width: 80%; margin-top: 20px; height: 20px">
 					<div class="progress-bar" style="width: 0%" id="bar"></div>
 				</div>
 				<div class="discription text-center"
-					style="font-size: 15pt; margin-top: 20px;" id="div-error"></div>
+					 style="font-size: 15pt; margin-top: 20px;" id="div-error"></div>
 			</div>
 		</div>
 
@@ -30,10 +30,19 @@
 				queries = window.opener.func_queries;
 				other_params = window.opener.other_params;
 			}
-			if (external && external.func_queries && external.other_params){
+			if (external){
 				queries = external.func_queries;
+				if(!queries)
+				{
+					queries = /*[[${model.func}]]*/;
+					queries = [queries];
+			    	use_external = false;
+				}
+				else
+				{
 				other_params = external.other_params;
-				user_external = true;
+				use_external = true;
+				}
 			}
 
 			var topk = /*[[${model.topk}]]*/20;
@@ -60,16 +69,31 @@
 				data = Object.assign({}, data, other_params);
 
 			function step(indx) {
+
 				var query = queries[indx];
 				if (use_external){
-				var query_obj = JSON.parse(query);
+				var query_obj = query;
+				if (typeof query === 'string') {
+					// from ida
+					query_obj = JSON.parse(query);
+				}else{
+					query = JSON.stringify(query);
+				}
+				var f_name = '';
+				var n_blks = 0;
+				if (!query_obj.blocks) {
+					f_name = query_obj.functions[0].name;
+					n_blks = query_obj.functions[0].blocks.length;
+				} else {
+					f_name = query_obj.functions[0].name;
+					n_blks = query_obj.blocks.length;
+				}
 				$('#titleholder').text(
-					'Searching ' + query_obj.functions[0].name + ' (' + query_obj.functions[0].blocks.length + ' blks)');
+					'Searching ' + f_name + ' (' + n_blks + ' blks)');
 					}
 				$.post(url, 
 						Object.assign({}, data, {func : query}), 
 						function(data) {
-					// console.log(data)
 					if (data.error) {
 						$('#div-error').text(data.error);
 						hasError = true;

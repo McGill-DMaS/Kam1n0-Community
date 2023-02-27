@@ -418,14 +418,13 @@ def get_comments(ea):
 
 
 def get_range():
-    '''Return the range of the selection.
+    """Return the range of the selection. Start address, End address and is a function
 
     If there is no selection the range is set to start and end of the current
     function.
     To get the comments for a single line, part of the line must be selected.
-    '''
-    has_selection, start_ea, end_ea = ida_kernwin.read_range_selection(
-        None)
+    """
+    has_selection, start_ea, end_ea = ida_kernwin.read_range_selection(None)
     if has_selection:
         return start_ea, end_ea, False
     else:
@@ -444,7 +443,7 @@ def get_range():
 def get_comments_in_selected_range():
     """ return comments in the selected region
         - Get the range for which to copy comments
-        - Get the function comments if the the start of the range is a function
+        - Get the function comments if the start of the range is a function
         - Get every type of comments for each address in the range
         - Put the comments in the clipboard as a JSON string
     """
@@ -502,38 +501,46 @@ def set_comments(cmts, ignore_offset_error=False):
     comment = operator.itemgetter(1)
     repeatable = operator.itemgetter(2)
     index = operator.itemgetter(2)
-
-    # get starting addr:
-    start = idc.get_func_attr(idc.get_screen_ea(
-    ), idc.FUNCATTR_START) if cmts['is_func'] else idc.get_screen_ea()
+    # get starting address:
+    start = idc.get_func_attr(idc.get_screen_ea(), idc.FUNCATTR_START) if cmts['is_func'] else idc.get_screen_ea()
 
     # Verify that all comments offsets match the beginning of an instruction.
     if not ignore_offset_error:
         for values in cmts.values():
             if isinstance(values, list):
                 for cmt in values:
-                    if not idc.is_head(
-                            idc.get_full_flags(start + offset(cmt))):
+                    if not idc.is_head(idc.get_full_flags(start + offset(cmt))):
                         return False
+
+    func_name = 'func_name'
+    if func_name in cmts:
+        current_function_name = idc.get_func_name(start)
+        if start == idc.get_screen_ea():
+            function_prefix = 'sub_'
+            if current_function_name.startswith(function_prefix):
+                function_name = cmts[func_name].split(function_prefix)[0]
+                if function_name[-1] != '_':
+                    function_name += '_'
+                idaapi.set_name(start, function_name + current_function_name, idaapi.SN_FORCE)
+            else:
+                print(f'Name does not start with {function_prefix}. Did not replace actual function name : {current_function_name} with imported name : {cmts[func_name]}')
+        else:
+            print(f'Paste was not done at function start. It did not replace actual function name : {current_function_name} with imported name : {cmts[func_name]}')
 
     # Set function comments if present
     for cmt in cmts['function']:
-        ida_funcs.set_func_cmt(ida_funcs.get_func(
-            start), comment(cmt), repeatable(cmt))
+        ida_funcs.set_func_cmt(ida_funcs.get_func(start), comment(cmt), repeatable(cmt))
 
     # Set regular comment if present
     for cmt in cmts['regular']:
-        ida_bytes.set_cmt(start + offset(cmt),
-                          comment(cmt), repeatable(cmt))
+        ida_bytes.set_cmt(start + offset(cmt), comment(cmt), repeatable(cmt))
 
     # Set anterior lines if present
     for cmt in cmts['anterior']:
-        ida_lines.update_extra_cmt(
-            start + offset(cmt), ida_lines.E_PREV + index(cmt), comment(cmt))
+        ida_lines.update_extra_cmt(start + offset(cmt), ida_lines.E_PREV + index(cmt), comment(cmt))
 
     # Set posterior lines if present
     for cmt in cmts['posterior']:
-        ida_lines.update_extra_cmt(
-            start + offset(cmt), ida_lines.E_NEXT + index(cmt), comment(cmt))
+        ida_lines.update_extra_cmt(start + offset(cmt), ida_lines.E_NEXT + index(cmt), comment(cmt))
 
     return True

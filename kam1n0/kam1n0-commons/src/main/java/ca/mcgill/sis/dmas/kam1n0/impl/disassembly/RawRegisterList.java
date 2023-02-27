@@ -77,14 +77,14 @@ public class RawRegisterList {
 			"mips16").stream().map(str -> str.toLowerCase()).collect(Collectors.toSet());
 
 	public static Set<String> get(ArchitectureType type) {
-		switch (type) {
-		case metapc:
+		switch (type.archName) {
+		case "metapc":
 			return REG_METAPC;
-		case arm:
+		case "arm":
 			return REG_ARM;
-		case ppc:
+		case "ppc":
 			return REG_PPC;
-		case mips:
+		case "mips":
 			return REG_MIPST;
 		default:
 			return null;

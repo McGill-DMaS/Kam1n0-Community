@@ -121,12 +121,8 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 		ArrayListMultimap<Long, Double> candidates = ArrayListMultimap.create();
 		VecObjectBlock obj = new VecObjectBlock(blk, featureGenerator);
 
-		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos = index.query(
-				rid,
-				Arrays.asList(obj),
-				(Function<List<VecInfoBlock>, List<VecInfoBlock>> & Serializable) blockList ->
-						blockList.stream().filter(matchedBlock -> matchedBlock.functionId != blk.functionId).collect(Collectors.toList())
-		)._2.collect();
+		List<VecEntry<VecInfoBlock, VecInfoSharedBlock>> infos =
+				index.query(rid, Arrays.asList(obj), null)._2.collect();
 
 		infos.forEach(entry -> {
 			double score = index.distApproximate(entry, obj);
@@ -360,7 +356,7 @@ public class BlockIndexerLshKLAdaptive extends Indexer<Block> implements Seriali
 
 		Set<Long> sids = new HashSet<>(sbid_tblk.keys().collect());
 		JavaPairRDD<Long, Block> sbid_sblk = objectFactory.obj_blocks.queryMultipleBaisc(rid, "blockId", sids)
-				.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
+		 		.mapToPair(blk -> new Tuple2<>(blk.blockId, blk));
 
 		int finalJunctionNumPartitions = Math.max(sbid_tblk.getNumPartitions(), sbid_sblk.getNumPartitions());
 		JavaRDD<Tuple3<Block, Block, Double>> result = sbid_tblk
