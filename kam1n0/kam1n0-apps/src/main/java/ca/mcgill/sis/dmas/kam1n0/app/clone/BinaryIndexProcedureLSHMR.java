@@ -110,8 +110,6 @@ public class BinaryIndexProcedureLSHMR extends LocalDmasJobProcedure {
 		} catch (Exception e) {
 			String errorMessage = MessageFormat.format("Failed to process the " + getJobName() + " job from " + userName, e);
 			logger.error(errorMessage);
-			System.out.println(e);
-			e.printStackTrace();
 			progress.nextStage(this.getClass(), "Failed to complete the job : " + e.getMessage());
 			progress.complete(errorMessage);
 		}

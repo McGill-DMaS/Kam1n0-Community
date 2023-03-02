@@ -40,6 +40,7 @@ import ca.mcgill.sis.dmas.kam1n0.app.util.ModelAndFragment;
 import ca.mcgill.sis.dmas.kam1n0.framework.storage.ObjectFactoryMultiTenancy;
 import ca.mcgill.sis.dmas.kam1n0.impl.storage.cassandra.ObjectFactoryCassandra;
 
+import ca.mcgill.sis.dmas.kam1n0.app.clone.executableclassification.ExecutableClassificationApplicationConfiguration;
 
 
 @Controller

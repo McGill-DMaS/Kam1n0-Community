@@ -18,29 +18,15 @@
 	background: transparent;
 }
 
-.liSpan {
+.entry {
 	color: white;
 	cursor: crosshair;
-	background-color: #cccc;
-	position:relative;
-  	flex-direction: row;
-  	align-items: center;
-  	display: flex;
-  	word-wrap: break-word;
-    white-space: pre;
+	width: 100%;
 }
 
-.liSpan:after {
-	background-color: #ccc;
-  	content:'';
-  	position:absolute;
-  	right:0;
-  	top:0;
-  	height:100%;
-}
-
-.liSpan.selected {
-	border: solid red 2px;
+.fnspan {
+	font-size: 12pt;
+	padding-left: 15px
 }
 
 .node circle {
@@ -58,6 +44,10 @@ text {
 
 .fa {
 	color: gray;
+}
+
+.selected {
+	border: solid red 2px;
 }
 
 .dropdown-menu>li>.row {
@@ -159,7 +149,7 @@ text {
 										</li>
 
 										<li><div class="row">
-											<input type="checkbox" id="btn_unmatch">FILTER UNMATCHED FUNCTIONS
+											<input type="checkbox"  id="btn_unmatch">FILTER UNMATCHED FUNCTIONS</input>
 										</div></li>
 
 										<li>
@@ -184,15 +174,15 @@ text {
 										</li>
 										<li>
 											<div class="row">
-												<input type="text" id="infoListScaler" data-slider-min="10"
-													   data-slider-max="25" data-slider-step="1"
+												<input type="text" id="infoListScaler" data-slider-min="16"
+													   data-slider-max="20" data-slider-step="1"
 													   data-slider-value="20" class="slider form-control"
 													   data-slider-id="yellow" style='width: 100%' />
 											</div>
 										</li>
 									</ul>
 								</div>
-								<div style="padding-top: 30px; height: 100%; padding-bottom: 40px;">
+								<div style="padding-top: 30px; height: 100%; padding-bottom: 30px;">
 									<ul id="infoContainer"
 										style="overflow-y: auto; overflow-x: auto; background-color: lightgrey; height: 100%; list-style-type: none;">
 									</ul>
@@ -247,7 +237,6 @@ text {
 		var fileName = undefined;
 		var colorF = undefined;
 		var fin_result = undefined;
-		var classSet = new Set()
 
 		function formatString(val) {
 
@@ -281,16 +270,6 @@ text {
 			return result;
 		}
 
-		function createClass(name, rules) {
-			var style = document.createElement('style');
-			style.type = 'text/css';
-			document.getElementsByTagName('head')[0].appendChild(style);
-			if (!(style.sheet||{}).insertRule)
-				(style.styleSheet || style.sheet).addRule(name, rules);
-			else
-				style.sheet.insertRule(name+"{"+rules+"}",0);
-		}
-
 		function createInfoAtAddress(info) {
 
 			var max_id = undefined;
@@ -299,31 +278,34 @@ text {
 				if (b > max_score) { max_score = b; max_id = a };
 			})
 
-			score = Math.round(max_score * 100);
-			class_name = 'percent_' + Math.round(max_score * 100);
-
-			if (!classSet.has(class_name) && score != 0) {
-				createClass('.liSpan.'+ class_name + ':after', "width: " + (100 - (max_score * 100)) + "%;");
-				classSet.add(class_name)
-			}
-
 			var $li = $("<li>", {
-                'class': 'liSpan ' + (score == 0 ? '' : class_name)
+                'class': 'entry'
 			});
-
-			if (score != 0)  {
-				$li.css({
-					"background-color": colorF(max_id)
-				});
-			}
-			$li.append(info.fn);
+            var $divp = $("<div>", {
+				'class': 'prg'
+			});
+			$divp.css({
+				"background-color": colorF(max_id)
+			});
+			$divp.css({
+				width: (max_score * 100) + "%"
+			});
+			$divp.css({
+				overflow: "none"
+			});
+			var $span = $("<span>", {
+				'class': 'fnspan'
+			});
+			$span.append(info.fn);
+			$divp.append($span);
 			$li.prop('title', longToHexa(info.add) + " " + info.fn);
             $li.data('address', info.add);
             $li.val()
+            $li.append($divp);
 
             $li
 				.click(function () {
-					$('li').removeClass('selected');
+					$('li.entry').removeClass('selected');
 					$li.addClass('selected');
 
 					$.ajax({
@@ -537,20 +519,23 @@ text {
 				$(b).css("font-size", "15px");
 			});
 		}
-
-		function scaleSpecific(height) {
-            var infoContainer = $("#infoContainer");
-            $('.liSpan').height(height);
-			$('.liSpan').css({
-				'font-size': height - 4
-			});
-        }
-
+		
         function scale() {
             var scaler = $("#infoListScaler").slider();
-            height = scaler.val()
-			scaleSpecific(height);
-			localStorage.setItem('zoomLevel', height);
+            var height = scaler.val();
+            $('.entry').height(height);
+            if (height > 15) {
+                $('.fnspan').css({
+                    'font-size': height
+                });
+                $('.fnspan').css({
+                    'color': 'white'
+                });
+            } else {
+                $('.fnspan').css({
+                    'color': 'transparent'
+                });
+            }
         }
 		
         function loadFunction(bin_comp, str_startAddress, emptyParent = false) {
@@ -576,7 +561,6 @@ text {
                         parent.empty();
                     }
 
-					var str_startAddress = -1;
                     struct.list.sort(function(a, b) {
                         return parseInt(a.add) - parseInt(b.add);
                     });
@@ -590,15 +574,8 @@ text {
 						} else {
 							parent.append(item[0]);
 						}
-						str_startAddress = struct.list[info].add;
                     }
-                    height = localStorage.getItem('zoomLevel');
-                    if (height) {
-						scaleSpecific(height);
-						$("#infoListScaler").slider('setValue', parseInt(height));
-					} else {
-                    	scale();
-                    }
+                    scale();
 
                     if ($('#input-keyword').val().trim().length > 0) {
                         parent.highlight($('#input-keyword').val().trim());
@@ -609,9 +586,8 @@ text {
 
 					// in case of not being filled up at the first page (client-side filtering)
 					var infoContainer = $('#infoContainer')[0];
-					if (infoContainer.clientHeight > 0 && infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
-						if (str_startAddress < 0)
-							str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+					if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight) {
+						var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
 						console.log('scroll requesting from address' + str_startAddress);
 						loadFunction(bin_comp, str_startAddress);
 					}
@@ -619,7 +595,6 @@ text {
             });
         }
         $(function() {
-
             $('#clone-graph-box').hide();
             $(".slider").slider();
 
@@ -629,10 +604,6 @@ text {
 
             var scaler = $("#infoListScaler").slider();
             scaler.on('slide',
-                function(slideEvt) {
-                    scale();
-                });
-            scaler.on('change',
                 function(slideEvt) {
                     scale();
                 });
@@ -650,11 +621,15 @@ text {
 
                 $('#infoContainer').scroll(function() {
                     var infoContainer = $('#infoContainer')[0];
-                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+3) {
+					console.log([infoContainer.scrollHeight, infoContainer.scrollTop, infoContainer.clientHeight])
+                    if (infoContainer.scrollHeight <= infoContainer.scrollTop + infoContainer.clientHeight+10) {
                         var str_startAddress = $($('#infoContainer')[0].lastChild).data('address');
+                        console.log('scroll requesting from address' + str_startAddress);
                         loadFunction(bin_comp, str_startAddress);
                     }
                 });
+
+
 
                 window.setTimeout(
                     function() {

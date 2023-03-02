@@ -65,26 +65,26 @@ public class VexArchitecture implements Serializable {
 	 */
 	public static VexArchitecture convert(Architecture architecture) {
 		VexArchitecture vex = new VexArchitecture();
-		switch (architecture.type.archName) {
-		case "metapc":
+		switch (architecture.type) {
+		case metapc:
 			if (architecture.size == InstructionSize.b32)
 				vex.type = VexArchitectureType.VexArchX86;
 			else
 				vex.type = VexArchitectureType.VexArchAMD64;
 			break;
-		case "arm":
+		case arm:
 			if (architecture.size == InstructionSize.b32)
 				vex.type = VexArchitectureType.VexArchARM;
 			else
 				vex.type = VexArchitectureType.VexArchARM64;
 			break;
-		case "ppc":
+		case ppc:
 			if (architecture.size == InstructionSize.b32)
 				vex.type = VexArchitectureType.VexArchPPC32;
 			else
 				vex.type = VexArchitectureType.VexArchPPC64;
 			break;
-		case "mips":
+		case mips:
 			if (architecture.size == InstructionSize.b32)
 				vex.type = VexArchitectureType.VexArchMIPS32;
 			else

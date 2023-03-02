@@ -88,7 +88,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		removeJavaLangIllegalArgumentException();
+
 		Environment.init();
 		initOptions();
 		System.setSecurityManager(null);
@@ -113,12 +113,6 @@ public class Main {
 		}
 		operation.process(Arrays.copyOfRange(args, 1, args.length));
 		logger.info("Exiting.");
-	}
-
-	private static void removeJavaLangIllegalArgumentException() {
-		// remove java.lang.IllegalArgumentException at org.apache.xerces.jaxp.DocumentBuilderFactoryImpl.setAttribute(Unknown Source)
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 	}
 
 }

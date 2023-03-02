@@ -1997,7 +1997,7 @@ function setUpTextHighlights(trigger, prefix) {
             // select all if is_func
             highlighted = $("td.diff-line-num");
             dict["is_func"] = true;
-            dict["func_name"] = $(function_name)[0].innerText;
+
             // text diff view
             first_comment_addr = parseInt($($('.diff-line-num')[0]).attr('id'));
             // text view
@@ -2020,27 +2020,23 @@ function setUpTextHighlights(trigger, prefix) {
 
                             offset = parseInt(commentInfo.functionOffset) - first_comment_addr;
 
-                            if (type == "repeatable" && first_comment_addr == parseInt(commentInfo.functionOffset)) {
-                                isRepeatable = 1;
-                                type = "function";
-                            }
                             if (type == "repeatable") {
                                 isRepeatable = 1;
-                                type = "regular";
+                                type = "regular"
                             }
 
                             if (!dict[type]) {
-                                dict[type] = [];
+                                dict[type] = []
                             }
 
-                            if (type == "regular" || type == "function") {
+                            if (type == "regular") {
                                 var com = commentInfo.comment.replace("\n\n", "\n")
-                                dict[type].push([offset, com, isRepeatable]);
+                                dict[type].push([offset, com, isRepeatable])
                             } else {
                                 var lines = commentInfo.comment.split("\n\n");
                                 var lineNumber = 0;
                                 for (line of lines) {
-                                    dict[type].push([offset, line, lineNumber]);
+                                    dict[type].push([offset, line, lineNumber])
                                     lineNumber++;
                                 }
                             }
@@ -2051,7 +2047,6 @@ function setUpTextHighlights(trigger, prefix) {
             }
         })
         console.log(dict);
-
         var comments = JSON.stringify(dict);
 
         var $body = document.getElementsByTagName('body')[0];
@@ -2066,9 +2061,10 @@ function setUpTextHighlights(trigger, prefix) {
 
 }
 
-function drawText(p_a, functionName, titleId, tableId, code_key = 'srcCodes') {
-    $('#' + functionName).html(p_a.functionName)
-    $('#' + titleId).html("(#" + p_a.functionId.toString(16) + ")@" + p_a.binaryName + "(#" + p_a.binaryId.toString(16) + ")");
+function drawText(p_a, titleId, tableId, code_key = 'srcCodes') {
+    $('#' + titleId).html(
+        p_a.functionName + "(#" + p_a.functionId.toString(16) + ")@" + p_a.binaryName + "(#" + p_a.binaryId.toString(16)
+        + ")");
 
     var code_a = [];
     var addr_a = [];

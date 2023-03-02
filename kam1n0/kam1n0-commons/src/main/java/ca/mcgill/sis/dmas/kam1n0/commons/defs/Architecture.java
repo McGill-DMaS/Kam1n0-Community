@@ -15,12 +15,8 @@
  *******************************************************************************/
 package ca.mcgill.sis.dmas.kam1n0.commons.defs;
 
-import java.io.File;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.ArchitectureRepresentation;
 import ca.mcgill.sis.dmas.kam1n0.framework.disassembly.AsmLineNormalizationResource;
@@ -32,46 +28,12 @@ public class Architecture implements Serializable {
 
 	private static final long serialVersionUID = -8443410803609589918L;
 
-	public static class ArchitectureType implements Serializable {
-		//		metapc, arm, ppc, mips, tms320c6, mc68;
-		public String archName = "metapc";
-
-		public ArchitectureType(){
-
-		}
-
-		public ArchitectureType(String name){
-			this.archName = name;
-		}
-
-		// for backward reference compatibility
-		public static ArchitectureType metapc = new ArchitectureType("metapc");
-		public static ArchitectureType arm = new ArchitectureType("arm");
-		public static ArchitectureType ppc = new ArchitectureType("ppc");
-		public static ArchitectureType mips = new ArchitectureType("mips");
-		public static ArchitectureType mc68 = new ArchitectureType("mc68");
-		public static ArchitectureType tms320c6 = new ArchitectureType("tms320c6");
-
-		public static List<String> values(){
-			File[] files = KamResourceLoader.loadFile("architectures").listFiles();
-			List<String> collected = Arrays.stream(files).map(f -> f.getName().substring(0, f.getName().indexOf('.'))
-				).collect(Collectors.toList());
-			return collected;
-		}
-
-		@Override
-		public String toString() {
-			return this.archName;
-		}
-
-		public static ArchitectureType valueOf(String val){
-			ArchitectureType at = new ArchitectureType(val);
-			return at;
-		}
+	public static enum ArchitectureType {
+		metapc, arm, ppc, mips, tms320c6, mc68;
 
 		public ArchitectureRepresentation retrieveDefinition() {
 			return ArchitectureRepresentation
-					.load(KamResourceLoader.loadFile("architectures/" + this.archName.toString() + ".xml"));
+					.load(KamResourceLoader.loadFile("architectures/" + this.toString() + ".xml"));
 		}
 
 		public AsmLineNormalizationResource retrieveNormalizationResource() {

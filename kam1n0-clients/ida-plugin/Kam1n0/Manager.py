@@ -15,29 +15,25 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  *******************************************************************************/
+
 import collections
 import json
 import operator
 import os
 import pickle
+
+import ida_kernwin
 import idaapi
 from PyQt5 import QtGui
-from .utilities.CloneConnector import CloneConnector
-from .forms.ConnectionManagementForm import ConnectionManagementForm
-from .forms.ClassificationConnectionManagementForm import ClassificationConnectionManagementForm
-from .forms.SelectionForm import SelectionForm
-from .forms.ClassificationSelectionForm import ClassificationSelectionForm
-from .forms.IndexForClassificationSelectionForm import IndexForClassificationSelectionForm
-import ida_kernwin
-from .forms.SelectionForm import SelectionForm
-from .utilities.CloneConnector import CloneConnector
 
 from . import IDAUtils
+from .forms.ConnectionManagementForm import ConnectionManagementForm
+from .forms.SelectionForm import SelectionForm
+from .utilities.CloneConnector import CloneConnector
 
 class Kam1n0PluginManager:
     def __init__(self):
         self.connector = None
-        self.cls_connector = None
         ida_kernwin.create_menu("Kam1n0Menu", "Kam1n0", "View")
         self.actions = list()
         self.conf_dir = os.path.expanduser("~") + "/Kam1n0"
@@ -47,13 +43,10 @@ class Kam1n0PluginManager:
 
         self.configuration = self.get_configuration()
         self.setup_default_connection()
-
         self.clipboard = QtGui.QGuiApplication.clipboard()
+
         self.connection_management_form = ConnectionManagementForm(self)
-        self.cls_connection_management_form = ClassificationConnectionManagementForm(self)
         self.selection_form = SelectionForm(self)
-        self.classification_selection_form = ClassificationSelectionForm(self)
-        self.index_for_classification_selection_form = IndexForClassificationSelectionForm(self)
 
         global hooks
         hooks = Hooks()
@@ -89,29 +82,7 @@ class Kam1n0PluginManager:
             self.configuration['apps'] = {}
             self.configuration['default-app'] = None
             self.connector = None
-            
-        if self.configuration is not None and 'cls-apps' not in self.configuration:
-            self.configuration['cls-apps'] = {}
-            self.configuration['default-cls-app'] = None
-        if self.configuration is not None and len(self.configuration['cls-apps']) > 0:
-            if self.configuration['default-cls-app'] is None:
-                self.connector = None
-            else:
-                info = self.configuration['cls-apps'][
-                    self.configuration['default-cls-app']]
-                self.cls_connector = CloneConnector(
-                    app_url=info['app_url'],
-                    un=info['un'],
-                    pw=info['pw'],
-                    msg_callback=IDAUtils.execute
-                )
-        else:
-            self.configuration['cls-apps'] = {}
-            self.configuration['default-cls-app'] = None
-            self.cls_connector = None
-            
-        print("self.configuration:",self.configuration)
-        
+
         if 'default-threshold' not in self.configuration:
             self.configuration['default-threshold'] = 0.01
 
@@ -120,7 +91,7 @@ class Kam1n0PluginManager:
 
         if 'default-avoidSameBinary' not in self.configuration:
             self.configuration['default-avoidSameBinary'] = False
-            
+
         if 'default-saveAsKam' not in self.configuration:
             self.configuration['default-saveAsKam'] = False
 
@@ -132,7 +103,7 @@ class Kam1n0PluginManager:
 
     def get_conf_avoidSameBinary(self):
         return self.configuration['default-avoidSameBinary']
-        
+
     def get_conf_saveAsKam(self):
         return self.configuration['default-saveAsKam']
 
@@ -162,7 +133,7 @@ class Kam1n0PluginManager:
             icon=self.icons.ICON_SEARCH_MULTIPLE,
             tooltip="Search the selected functions",
             shortcut="Ctrl+Shift+a",
-            menuPath= "",            #"Search/next code",
+            menuPath="",  # "Search/next code",
             callback=self.query_selected_func,
             args=None
         )
@@ -225,19 +196,6 @@ class Kam1n0PluginManager:
         self.actions.append(action)
         if not action.register_action(False):
             return 1
-        action = ActionWrapper(
-            id="Kam1n0:storageClassificationManagement",
-            name="Manage classification connections",
-            icon=self.icons.ICON_SETT,
-            tooltip="Manage classification connections",
-            shortcut="",
-            menuPath="Kam1n0/Classification/",
-            callback=self.open_cls_cnn_manager,
-            args=None
-        )
-        self.actions.append(action)
-        if not action.register_action(False):
-            return 1
 
         action = ActionWrapper(
             id="Kam1n0:compositionQuery",
@@ -254,45 +212,19 @@ class Kam1n0PluginManager:
             return 1
 
         action = ActionWrapper(
-            id="Kam1n0:Classification",
-            name="Classify the executable",
-            icon=self.icons.ICON_COMP,
-            tooltip="Classification",
-            shortcut="",
-            menuPath="Kam1n0/Classification/",
-            callback=self.query_binary_classification,
-            args=None
-        )
-        self.actions.append(action)
-        if not action.register_action(True):
-            return 1
-
-        action = ActionWrapper(
-                id="Kam1n0:indexForClassification",
-                name="Index the executable",
-                icon=self.icons.ICON_INDEX_MULTIPLE,
-                tooltip="Index the executable",
-                shortcut="",
-                menuPath="Kam1n0/Classification/",
-                callback=self.index_for_classification,
-                args=None
-            )
-        self.actions.append(action)
-        if not action.register_action():
-            return 1
-            
-        action = ActionWrapper(
             id="Kam1n0:queryFragment",
             name="Query fragment",
             icon=self.icons.ICON_FRAG,
             tooltip="Query a code fragment",
-            shortcut="",
-            menuPath="Kam1n0/",
+            shortcut="Ctrl-Shift-F",
+            menuPath="Search/next code",
             callback=self.query_fragment,
             args=None
         )
         self.actions.append(action)
-        
+        if not action.register_action(False):
+            return 1
+
         # clipboard:
         action = ActionWrapper(
             id="Kam1n0:copyComment",
@@ -316,11 +248,11 @@ class Kam1n0PluginManager:
             tooltip="Paste comments in selected region",
             shortcut="Ctrl-Shift-V",
             menuPath="Edit/Kam1n0/",
-            callback=self.paste_comments,
+            callback=self.past_comments,
             args=None,
             update_lambda=IDAUtils.ctx_in_disassembly_view
         )
-        
+        self.actions.append(action)
         if not action.register_action(False):
             return 1
         # no error registering all actions
@@ -334,12 +266,6 @@ class Kam1n0PluginManager:
             return 0
         if self._get_connector() is not None:
             self.connector.index(IDAUtils.get_as_single_surrogate(func))
-
-    def index_for_classification(self, *_):
-        class_name, classify_type, train_or_not, cluster_or_not, train_classifier_or_not,pattern_recognition_or_not,connector = self.get_index_options()
-        if connector is not None:
-            connector.index_for_classification(IDAUtils.get_as_single_surrogate(),class_name, classify_type, train_or_not, cluster_or_not, train_classifier_or_not, pattern_recognition_or_not)
-
 
     def index_selected_func(self, ctx):
         title = self._get_ctx_title(ctx)
@@ -431,27 +357,6 @@ class Kam1n0PluginManager:
         if self._get_connector() is not None:
             self.connector.search_binary(surrogate, self.get_conf_topk(),
                                          self.get_conf_threshold(), self.get_conf_avoidSameBinary())
-    def query_binary_classification(self, *_):
-        self.classification_selection_form.OnStart()
-        if self.classification_selection_form.exec():
-            selected_key = self.classification_selection_form.selected_app_key
-            app = self.configuration['cls-apps'][selected_key]
-            connector = CloneConnector(msg_callback=IDAUtils.execute, **app)
-            
-        surrogate = IDAUtils.get_as_single_surrogate()
-        if not surrogate:
-            print()
-            "Cannot generate the binary surrogate"
-            return 0
-        connector.search_binary(surrogate, self.get_conf_topk(),
-                                         self.get_conf_threshold(), self.get_conf_avoidSameBinary())
-
-
-    def open_cls_cnn_manager(self, *_):
-        self.cls_connection_management_form.OnStart()
-        if self.cls_connection_management_form.exec():
-            self.save_configuration(self.configuration)
-            self.setup_default_connection()
 
     def open_cnn_manager(self, *_):
         self.connection_management_form.OnStart()
@@ -480,30 +385,6 @@ class Kam1n0PluginManager:
                 connector = CloneConnector(msg_callback=IDAUtils.execute, **app)
                 return connector, ida_funcs, threshold, topk, avoidSameBinary, saveAsKam
         return None, None, None, None, None, None
-    
-    def get_index_options(self):
-        self.index_for_classification_selection_form.OnStart()
-        if self.index_for_classification_selection_form.exec():
-            selected_key = self.index_for_classification_selection_form.selected_app_key
-            if "Interpretable" in selected_key:
-                classify_type = "interpretable"
-            elif "Severity" in selected_key:
-                classify_type = "severity"
-            else:
-                classify_type = "family"
-            class_name = self.index_for_classification_selection_form.class_name
-            train_or_not = self.index_for_classification_selection_form.train_or_not
-            cluster_or_not = self.index_for_classification_selection_form.cluster_or_not
-            train_classifier_or_not = self.index_for_classification_selection_form.train_classifier_or_not
-            pattern_recognition_or_not = self.index_for_classification_selection_form.pattern_recognition_or_not
-            if selected_key is None:
-                app = None
-            else:
-                app = self.configuration['cls-apps'][selected_key]
-            if app:
-                connector = CloneConnector(msg_callback=IDAUtils.execute, **app)
-                return class_name, classify_type, train_or_not, cluster_or_not, train_classifier_or_not,pattern_recognition_or_not,connector
-        return None, None, None, None, None, None
 
     def get_configuration(self):
         conf_file = self.conf_dir + '/plugin-conf.pk'
@@ -516,14 +397,14 @@ class Kam1n0PluginManager:
         with open(conf_file, 'wb') as f:
             pickle.dump(conf, f, pickle.HIGHEST_PROTOCOL)
 
-
     def copy_comments(self, ctx):
         '''Processes the copy action.
         '''
-        self.clipboard.setText(json.dumps(IDAUtils.get_comments_in_selected_range()))
+        self.clipboard.setText(json.dumps(
+            IDAUtils.get_comments_in_selected_range()))
         return 0
 
-    def paste_comments(self, ctx):
+    def past_comments(self, ctx):
         '''Processes the paste action.
 
         - Make sure the clipboard contains a JSON string
@@ -532,7 +413,8 @@ class Kam1n0PluginManager:
         - Refresh the dissassembly view.
         '''
         try:
-            cmts = collections.defaultdict(list, json.loads(self.clipboard.text()))
+            cmts = collections.defaultdict(
+                list, json.loads(self.clipboard.text()))
         except ValueError:
             print("PowerClipboard Error: Clipboard content is invalid.")
             return 0

@@ -46,8 +46,6 @@ public class Block implements AsmFragment, Serializable {
 	private static ObjectMapper mapper = new ObjectMapper();
 
 	@KeyedSecondary
-//	@ObjectFactoryMultiTenancy.KeyedPrimaryPartial(bytes=1)
-//	@KeyedPrimary
 	public long blockId = -1;
 
 	@AsString

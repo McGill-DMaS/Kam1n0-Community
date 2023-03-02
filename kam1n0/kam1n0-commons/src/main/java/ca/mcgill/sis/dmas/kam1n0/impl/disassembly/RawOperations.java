@@ -696,14 +696,14 @@ public class RawOperations {
 			.collect(Collectors.toSet());
 
 	public static Set<String> get(ArchitectureType type) {
-		switch (type.archName) {
-		case "metapc":
+		switch (type) {
+		case metapc:
 			return OPR_METAPC;
-		case "arm":
+		case arm:
 			return OPR_ARM;
-		case "ppc":
+		case ppc:
 			return OPR_PPC;
-		case "mips":
+		case mips:
 			return OPR_MIPST;
 		default:
 			return null;

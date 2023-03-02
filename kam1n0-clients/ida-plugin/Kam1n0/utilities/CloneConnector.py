@@ -18,7 +18,7 @@ from .RequestMini import Request, get_root_domain, has_error, \
 import json, datetime
 from queue import Queue, Empty
 from threading import Thread
-import traceback
+
 
 
 def console_callback(error_code, message):
@@ -71,9 +71,6 @@ class CloneConnector:
     def get_index_url(self):
         return self.app_url + 'push_bin'
 
-    def get_index_url_for_classification(self):
-        return self.app_url + 'push_one_file'
-
     def get_composition_url(self):
         return self.app_url + 'search_bin_single'
 
@@ -82,11 +79,7 @@ class CloneConnector:
                               call_back=self.error_callback, queue=self.msg_queue)
 
     def _job_submit_callback(self, error_code, content):
-        if type(content) == bytes:
-            jid = 'jid'.encode('utf-8')
-        else:
-            jid = 'jid'
-        if jid in content:
+        if 'jid'.encode('utf-8') in content:
             self.request.show_get(self.get_progress_url(),
                                   call_back=self.error_callback, queue=self.msg_queue)
         else:
@@ -113,7 +106,6 @@ class CloneConnector:
             binary = binary[0]
         request_param = {'bin': json.dumps(binary, ensure_ascii=False), 'topk': topk,
                          'threshold': threshold, 'avoidSameBinary': avoid_same_binary}
-        #print("search_binary request_param:",request_param)
 
         self.request.ajax_post(self.get_composition_url(), request_param,
                                call_back=self._job_submit_callback)
@@ -127,27 +119,10 @@ class CloneConnector:
         param = [('files', binary) for binary in binaries]
         if len(param) == 1:
             param.append(('files', ''))
+
         self.request.ajax_post(self.get_index_url(), param,
                                call_back=self._job_submit_callback)
 
-    def index_for_classification(self, binaries,class_name, classify_type, train_or_not, cluster_or_not, train_classifier_or_not, pattern_recognition_or_not):
-        if not isinstance(binaries, list):
-            binaries = [binaries]
-        binaries = [
-            binary if isinstance(binary, str) else json.dumps(binary, ensure_ascii=False)
-            for binary in binaries]
-        #request_param = [('files',binaries),('softwareClass',class_name),("trainOrNot",train_or_not),("clusterOrNot",cluster_or_not)]   
-
-        request_param = {'file':binaries[0],'softwareClass':class_name,"trainOrNot":train_or_not,"clusterOrNot":cluster_or_not}   
-        if classify_type == 'severity':
-            request_param["trainClassifier"] = train_classifier_or_not
-            #request_param.append(("trainClassifier",train_classifier_or_not))
-        elif classify_type == "interpretable":
-            request_param["trainClassifier"] = train_classifier_or_not
-            request_param["clusterPatternRecognition"] = pattern_recognition_or_not
-
-        self.request.ajax_post(self.get_index_url_for_classification(), request_param,
-                               call_back=self._job_submit_callback)
 
 if __name__ == '__main__':
     cnn = CloneConnector(
